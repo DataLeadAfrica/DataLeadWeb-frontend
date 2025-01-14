@@ -1,15 +1,20 @@
 :root {
   --clr-dark-900: black;
   --clr-light-900: white;
+
+  --bg-color-light: white;
+  --bg-color-dark: #1c1b22;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     --font-color: var(--clr-dark-900);
     --font-color-inverse: var(--clr-light-900);
+    --bg-color: var(--bg-color-light);
+    --bg-color-inverse: var(--bg-color-dark);
   }
   body {
-    background-color: white;
+    background-color: var(--bg-color);
   }
 }
 
@@ -17,9 +22,12 @@
   :root {
     --font-color: var(--clr-light-900);
     --font-color-inverse: var(--clr-dark-900);
+    /* --bg-color: var(--bg-color-dark); */
+    --bg-color: var(--bg-color-light);
+    --bg-color-inverse: var(--bg-color-light);
   }
   body {
-    background-color: #1c1b22;
+    background-color: var(--bg-color);
   }
 }
 
