@@ -4,6 +4,21 @@
 
   --bg-color-light: white;
   --bg-color-dark: #1c1b22;
+
+  --clr-black: #151419;
+  --clr-orange: #f56e0f;
+  --clr-gray: #878787;
+  --clr-light-gray: #fbfbfb;
+  --clr-orange-light: color-mix(in srgb, var(--clr-orange) 20%, transparent);
+
+  --inner-padding: 4rem;
+
+  --gap-1: 1rem;
+  --gap-2: 2rem;
+  --gap-5: 5rem;
+
+  --transition-1: 0.1s;
+  --transition-2: 0.2s;
 }
 
 @media (prefers-color-scheme: light) {
@@ -20,11 +35,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --font-color: var(--clr-light-900);
-    --font-color-inverse: var(--clr-dark-900);
+    /* Change back to dark when done */
+    /*                               */
+    /* --font-color: var(--clr-light-900); */
+    /* --font-color-inverse: var(--clr-dark-900); */
     /* --bg-color: var(--bg-color-dark); */
+    /* --bg-color-inverse: var(--bg-color-light); */
+    --font-color: var(--clr-dark-900);
+    --font-color-inverse: var(--clr-light-900);
     --bg-color: var(--bg-color-light);
-    --bg-color-inverse: var(--bg-color-light);
+    --bg-color-inverse: var(--bg-color-dark);
   }
   body {
     background-color: var(--bg-color);
@@ -101,4 +121,28 @@ button {
 
 code {
   font-family: monospace;
+}
+
+a {
+  text-decoration: none;
+}
+
+.button {
+  background-color: transparent;
+  padding-block: 0.6rem;
+  padding-inline: 0.7rem;
+  border: 1px solid black;
+  border-radius: 0.7rem;
+  font-weight: bold;
+}
+.button:hover,
+.button:focus {
+  background-color: var(--clr-orange);
+  border: 1px solid transparent;
+  transition: var(--transition-2);
+}
+
+.button-light {
+  background-color: var(--clr-orange-light);
+  border: 1px solid transparent;
 }
