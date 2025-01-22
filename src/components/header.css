@@ -51,7 +51,8 @@
 }
 
 .drop-down__arrow {
-  font-size: 12px;
+  align-self: center;
+  font-size: 10px;
 }
 
 .drop-down__sep {

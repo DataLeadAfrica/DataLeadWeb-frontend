@@ -1,0 +1,40 @@
+.footer {
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-content: space-between;
+}
+
+.footer__logo {
+  max-height: 100%;
+  width: fit-content;
+}
+
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+}
+
+.footer__follow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+}
+
+.footer__col .col__header {
+  font-weight: bold;
+}
+
+.footer__col .get-in-touch {
+  display: flex;
+  gap: var(--gap-1);
+}
+.footer__col .get-in-touch i {
+  font-size: 1.25rem;
+}
+.footer .follow-links {
+  display: flex;
+  font-size: 1.5rem;
+  gap: var(--gap-1);
+}

@@ -16,7 +16,7 @@ export default function Header() {
       <div className="nav__dropdown-container">
         <Link to={self_link} className="nav__link">
           {title}
-          <p className="drop-down__arrow">⌄</p>
+          <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
         </Link>
         <div className="drop-down">
           <div className="drop-down__sep"></div>

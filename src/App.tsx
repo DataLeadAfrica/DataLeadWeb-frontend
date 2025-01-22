@@ -51,7 +51,54 @@ function App() {
             <img src="" alt="" />
           </div>
         </div>
-        <div className="companies__banner"></div>
+        <div className="companies__banner">
+          <div className="track">
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-1.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-2.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-3.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-4.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-5.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-6.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-7.png" alt="" />
+            </div>
+          </div>
+          <div aria-hidden className="track">
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-1.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-2.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-3.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-4.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-5.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-6.png" alt="" />
+            </div>
+            <div className="logo__container">
+              <img src="src/assets/trusted-by-logos/logo-7.png" alt="" />
+            </div>
+          </div>
+        </div>
         <div className="programs-section">
           <h2 className="sub-header">Our Programs</h2>
           <div className="programs">

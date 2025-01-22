@@ -1,7 +1,62 @@
+import { Link } from "react-router";
+import "/src/components/footer.css";
+
 export default function Footer() {
   return (
     <footer className="footer">
-      <h1>Footer</h1>
+      <div className="footer__col">
+        <img
+          src="/src/assets/logo-header.svg"
+          alt="Data-Lead Africa"
+          className="footer__logo"
+        />
+        <div className="footer__follow">
+          <h3 className="col__header">Follow us</h3>
+          <div className="follow-links">
+            <Link to="" className="follow-link">
+              <i className="nf nf-fa-instagram"></i>
+            </Link>
+            <Link to="" className="follow-link">
+              <i className="nf nf-dev-linkedin"></i>
+            </Link>
+            <Link to="" className="follow-link">
+              <i className="nf nf-dev-twitter"></i>
+            </Link>
+            <Link to="" className="follow-link">
+              <i className="nf nf-fa-youtube"></i>
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className="footer__col">
+        <h3 className="col__header">Company</h3>
+        <Link to="">Contact Us</Link>
+        <Link to="">Research</Link>
+        <Link to="">Careers</Link>
+        <Link to="">Blog</Link>
+      </div>
+      <div className="footer__col">
+        <h3 className="col__header">Products</h3>
+        <Link to="">Deaf learn Academy</Link>
+        <Link to="">Data lead foundation</Link>
+      </div>
+      <div className="footer__col">
+        <h3 className="col__header">Get in touch</h3>
+        <div className="get-in-touch">
+          <i className="nf nf-oct-location"></i>
+          <p>Plot 759, Bassan Plaza, Central Business District, Abuja.</p>
+        </div>
+        <div className="get-in-touch">
+          <i className="nf nf-oct-mail"></i>
+          <Link to="mailto:info@dataleadafrica.com">
+            info@dataleadafrica.com
+          </Link>
+        </div>
+        <div className="get-in-touch">
+          <i className="nf nf-fa-phone"></i>
+          <Link to="tel:+2347030500741">+234-703-0500-741</Link>
+        </div>
+      </div>
     </footer>
   );
 }
