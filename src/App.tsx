@@ -1,4 +1,7 @@
+import { useRef } from "react";
 import { Link, To } from "react-router";
+
+// TODO: Finish carousel cards in loved-by
 
 function Program({
   image_src,
@@ -20,9 +23,52 @@ function Program({
         <h3 className="program__title">{title}</h3>
         <p>{body}</p>
       </div>
-      <Link to={link} className="button">
+      <Link to={link} className="btn">
         Discover
       </Link>
+    </div>
+  );
+}
+
+function CarouselCard() {
+  return (
+    <div className="carousel-card">
+      <div className="card__person">
+        <img src="" alt="" />
+        <p>Person name</p>
+      </div>
+      <p className="card__paragraph">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus nemo
+        nesciunt deleniti tempore recusandae nobis placeat, accusamus rem,
+        repudiandae aliquid, quis consequatur maxime facilis quod. Est deleniti
+        velit expedita accusamus error illum saepe animi, eveniet nobis rerum,
+        quisquam suscipit debitis laboriosam nisi vel sapiente praesentium, et
+        voluptatem nulla voluptas quidem.
+      </p>
+    </div>
+  );
+}
+
+function Carousel() {
+  const cards = useRef(null);
+
+  // TODO: Handle carousel
+  return (
+    <div className="loved-by__carousel">
+      <div className="carousel-cards" ref={cards}>
+        <CarouselCard />
+        <CarouselCard />
+        <CarouselCard />
+        <CarouselCard />
+      </div>
+      <div className="carousel__buttons">
+        <button className="btn btn-orange" id="prev-btn">
+          <i className="nf nf-fa-chevron_left"></i>
+        </button>
+        <button className="btn btn-orange" id="next-btn">
+          <i className="nf nf-fa-chevron_right"></i>
+        </button>
+      </div>
     </div>
   );
 }
@@ -39,10 +85,10 @@ function App() {
               analytics and strategic consulting services.
             </p>
             <div className="hero__buttons">
-              <Link to={""} className="button button-light">
+              <Link to={""} className="btn btn-light-orange">
                 Explore our courses
               </Link>
-              <Link to={""} className="button">
+              <Link to={""} className="btn">
                 Request for consultation
               </Link>
             </div>
@@ -163,6 +209,17 @@ function App() {
               <video src=""></video>
             </div>
           </div>
+        </div>
+        <div className="loved-by">
+          <div className="loved-by__header">
+            <h2 className="sub-header">We are Loved By Our Learners</h2>
+            <p>
+              The little stories of each person that has gone through Data-Lead
+              Africa really counts for something more. And that is why we are
+              intentional about collecting this success story.
+            </p>
+          </div>
+          <Carousel />
         </div>
       </div>
     </>

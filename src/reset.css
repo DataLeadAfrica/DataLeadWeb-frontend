@@ -17,6 +17,8 @@
 
   --gap-1: 1rem;
   --gap-2: 2rem;
+  --gap-3: 3rem;
+  --gap-4: 4rem;
   --gap-5: 5rem;
 
   --transition-1: 0.1s;
@@ -129,22 +131,31 @@ a {
   text-decoration: none;
 }
 
-.button {
+.btn {
   background-color: transparent;
   padding-block: 0.6rem;
   padding-inline: 0.7rem;
   border: 1px solid black;
   border-radius: 0.7rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
 }
-.button:hover,
-.button:focus {
+.btn:hover,
+.btn:focus {
   background-color: var(--clr-orange);
   border: 1px solid transparent;
   transition: var(--transition-2);
 }
 
-.button-light {
+.btn-light-orange {
   background-color: var(--clr-orange-light);
+  color: var(--font-color);
+  border: 1px solid transparent;
+}
+
+.btn-orange {
+  background-color: var(--clr-orange);
+  color: var(--font-color);
   border: 1px solid transparent;
 }

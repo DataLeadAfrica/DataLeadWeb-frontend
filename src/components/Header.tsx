@@ -60,7 +60,7 @@ export default function Header() {
         />
         <nav className="header__nav">
           <DropDown title="About Us" self_link="" links={aboutLinks} />
-          <Link className="nav__link" to="">
+          <Link className="nav__link" to="/blog">
             Blog
           </Link>
           <Link className="nav__link" to="">
@@ -68,7 +68,7 @@ export default function Header() {
           </Link>
           <DropDown title="Programs" self_link="" links={programmesLinks} />
         </nav>
-        <button className="button">Contact Us</button>
+        <button className="btn">Contact Us</button>
       </header>
       <div className="header__spacer"></div>
     </>

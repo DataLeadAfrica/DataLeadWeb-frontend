@@ -1,0 +1,6 @@
+.blog-page {
+  height: 100vh;
+  background-color: var(--clr-orange-light);
+  padding: 4rem;
+  display: flex;
+}
