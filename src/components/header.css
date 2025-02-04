@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: var(--inner-padding);
+  padding-inline: var(--padding-4);
   background-color: var(--bg-color);
   z-index: 1;
 }

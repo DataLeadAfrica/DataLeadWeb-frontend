@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Link, To } from "react-router";
 
-// TODO: Finish carousel cards in loved-by
+import "./index.css";
 
 function Program({
   image_src,
@@ -22,10 +22,10 @@ function Program({
       <div className="program__body">
         <h3 className="program__title">{title}</h3>
         <p>{body}</p>
+        <Link to={link} className="btn">
+          Discover
+        </Link>
       </div>
-      <Link to={link} className="btn">
-        Discover
-      </Link>
     </div>
   );
 }
@@ -54,7 +54,7 @@ function Carousel() {
 
   // TODO: Handle carousel
   return (
-    <div className="loved-by__carousel">
+    <div className="testimonials__carousel">
       <div className="carousel-cards" ref={cards}>
         <CarouselCard />
         <CarouselCard />
@@ -79,7 +79,7 @@ function App() {
       <div className="landing-page">
         <div className="hero">
           <div className="hero__text">
-            <h1>Turning Data into decisions</h1>
+            <h1>Turning Data Into decisions</h1>
             <p>
               Data-Lead Africa is a consulting firm providing world-class data
               analytics and strategic consulting services.
@@ -99,54 +99,63 @@ function App() {
         </div>
         <div className="companies__banner">
           <div className="track">
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-1.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-2.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-3.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-4.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-5.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-6.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-7.png" alt="" />
-            </div>
+            <img src="src/assets/worked-with.svg" alt="clients" />
           </div>
           <div aria-hidden className="track">
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-1.png" alt="" />
+            <img src="src/assets/worked-with.svg" alt="clients" />
+          </div>
+        </div>
+        <div className="offerings-section">
+          <h2 className="offerings-section__title">Our offerings</h2>
+          <h3 className="offerings-section__subtitle">
+            Empowering individuals and organizations through data-driven
+            solutions.
+          </h3>
+          <div className="offerings-section__card">
+            <div className="card-section">
+              <i className="nf nf-md-file_search" />
+              <h4>Research</h4>
+              <p>
+                Uncover valuable insights with our rigorous research services.
+                We delve deep into complex issues, analyze data, and provide
+                actionable recommendations to inform strategic decision-making.
+              </p>
             </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-2.png" alt="" />
+            <div className="card-section">
+              <i className="nf nf-cod-pie_chart" />
+              <h4>Training</h4>
+              <p>
+                Empower your team with the skills and knowledge they need to
+                succeed. Our comprehensive training programs cover a wide range
+                of data-related topics, equipping individuals with the expertise
+                to harness the power of data effectively.
+              </p>
             </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-3.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-4.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-5.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-6.png" alt="" />
-            </div>
-            <div className="logo__container">
-              <img src="src/assets/trusted-by-logos/logo-7.png" alt="" />
+            <div className="card-section">
+              <i className="nf nf-md-chat" />
+              <h4>Consultancy</h4>
+              <p>
+                Partner with us for expert guidance and tailored solutions. Our
+                experienced consultants work closely with you to understand your
+                unique challenges and develop effective strategies to achieve
+                your data-driven goals.
+              </p>
             </div>
           </div>
         </div>
         <div className="programs-section">
-          <h2 className="sub-header">Our Programs</h2>
+          <h2 className="programs-section__title">
+            Our Programs <div className="title__bar"></div>
+          </h2>
+          <h3 className="programs-section__subtitle">
+            Building Data Literacy and Driving Impact
+          </h3>
+          <p className="programs-section__summary">
+            Data-Lead Africa is committed to making a lasting impact. Our
+            programs are designed to address critical development challenges in
+            Africa, from improving access to education and healthcare to
+            enhancing food security and promoting economic growth.
+          </p>
           <div className="programs">
             <Program
               image_src=""
@@ -195,8 +204,11 @@ function App() {
           </div>
         </div>
         <div className="deliver">
-          <h2 className="sub-header">What we deliver</h2>
           <div className="deliver__content">
+            <h2 className="deliver__title">
+              What we deliver
+              <div className="title__bar"></div>
+            </h2>
             <div className="deliver__text">
               <p>
                 Becoming data-driven starts with defining what really matters to
@@ -210,10 +222,13 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="loved-by">
-          <div className="loved-by__header">
-            <h2 className="sub-header">We are Loved By Our Learners</h2>
-            <p>
+        <div className="testimonials">
+          <div className="testimonials__header">
+            <h2 className="testimonials__title">Testimonials</h2>
+            <h3 className="testimonials__subtitle">
+              We are Loved By Our Learners
+            </h3>
+            <p className="testimonials__summary">
               The little stories of each person that has gone through Data-Lead
               Africa really counts for something more. And that is why we are
               intentional about collecting this success story.

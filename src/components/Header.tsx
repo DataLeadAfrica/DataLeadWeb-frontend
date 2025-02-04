@@ -34,7 +34,7 @@ export default function Header() {
   }
 
   const aboutLinks = {
-    "Who are we": "",
+    "Who we are": "",
     "Our Team": "",
   };
 
@@ -53,22 +53,30 @@ export default function Header() {
   return (
     <>
       <header className="header">
-        <img
-          src="/src/assets/logo-header.svg"
-          alt="Data-Lead Africa"
-          className="header__logo"
-        />
+        <Link to={"/"}>
+          <img
+            src="/src/assets/logo-header.svg"
+            alt="Data-Lead Africa"
+            className="header__logo"
+          />
+        </Link>
         <nav className="header__nav">
-          <DropDown title="About Us" self_link="" links={aboutLinks} />
+          <DropDown title="About Us" self_link="/about-us" links={aboutLinks} />
           <Link className="nav__link" to="/blog">
             Blog
           </Link>
-          <Link className="nav__link" to="">
+          <Link className="nav__link" to="/research">
             Research
           </Link>
-          <DropDown title="Programs" self_link="" links={programmesLinks} />
+          <DropDown
+            title="Programs"
+            self_link="/programs"
+            links={programmesLinks}
+          />
         </nav>
-        <button className="btn">Contact Us</button>
+        <Link to="" className="btn">
+          Contact Us
+        </Link>
       </header>
       <div className="header__spacer"></div>
     </>

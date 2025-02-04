@@ -5,11 +5,13 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer__col">
-        <img
-          src="/src/assets/logo-header.svg"
-          alt="Data-Lead Africa"
-          className="footer__logo"
-        />
+        <Link to={"/"}>
+          <img
+            src="/src/assets/logo-header.svg"
+            alt="Data-Lead Africa"
+            className="footer__logo"
+          />
+        </Link>
         <div className="footer__follow">
           <h3 className="col__header">Follow us</h3>
           <div className="follow-links">
