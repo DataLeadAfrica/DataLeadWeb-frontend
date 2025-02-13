@@ -34,7 +34,7 @@ export default function Header() {
   }
 
   const aboutLinks = {
-    "Who we are": "",
+    "Who we are": "/who-we-are",
     "Our Team": "",
   };
 
@@ -74,7 +74,7 @@ export default function Header() {
             links={programmesLinks}
           />
         </nav>
-        <Link to="" className="btn">
+        <Link to="/contact-us" className="btn">
           Contact Us
         </Link>
       </header>

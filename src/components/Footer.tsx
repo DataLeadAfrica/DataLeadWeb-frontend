@@ -32,10 +32,10 @@ export default function Footer() {
       </div>
       <div className="footer__col">
         <h3 className="col__header">Company</h3>
-        <Link to="">Contact Us</Link>
-        <Link to="">Research</Link>
-        <Link to="">Careers</Link>
-        <Link to="">Blog</Link>
+        <Link to="/contact-us">Contact Us</Link>
+        <Link to="/research">Research</Link>
+        <Link to="/careers">Careers</Link>
+        <Link to="/blog">Blog</Link>
       </div>
       <div className="footer__col">
         <h3 className="col__header">Products</h3>
@@ -46,7 +46,9 @@ export default function Footer() {
         <h3 className="col__header">Get in touch</h3>
         <div className="get-in-touch">
           <i className="nf nf-oct-location"></i>
-          <p>Plot 759, Bassan Plaza, Central Business District, Abuja.</p>
+          <address>
+            Plot 759, Bassan Plaza, Central Business District, Abuja.
+          </address>
         </div>
         <div className="get-in-touch">
           <i className="nf nf-oct-mail"></i>

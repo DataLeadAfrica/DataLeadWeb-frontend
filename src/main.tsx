@@ -5,6 +5,10 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Index from "./Index";
 import Blog from "./pages/Blog";
+import Research from "./pages/Research";
+import WhoWeAre from "./pages/WhoWeAre";
+import ContactUs from "./pages/ContactUs";
+import OurTeam from "./pages/OurTeam";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
@@ -12,6 +16,10 @@ createRoot(document.getElementById("root")!).render(
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/blog" element={<Blog />} />
+      <Route path="/research" element={<Research />} />
+      <Route path="/who-we-are" element={<WhoWeAre />} />
+      <Route path="/contact-us" element={<ContactUs />} />
+      <Route path="/our-team" element={<OurTeam />} />
     </Routes>
     <Footer />
   </BrowserRouter>,

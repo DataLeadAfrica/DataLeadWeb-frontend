@@ -1,4 +1,4 @@
-.landing-page {
+.landing {
   background: linear-gradient(
     to right,
     var(--bg-color),
@@ -7,10 +7,11 @@
   display: grid;
 }
 
-.landing-page > * {
+.landing > * {
+  max-width: 100vw;
   padding-block: 4rem;
 }
-.hero {
+.landing__hero {
   display: flex;
   gap: var(--gap-2);
   padding-inline: var(--padding-4);
@@ -20,49 +21,49 @@
   max-height: 100svh;
 }
 
-.hero > * {
+.landing__hero > * {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 50%;
 }
 
-.hero__text {
+.landing .hero__text {
   align-items: start;
   gap: var(--gap-1);
 }
 
-.hero__text h1 {
-  font-weight: 500;
+.landing .hero__text h1 {
+  width: 90%;
   font-size: 4rem;
 }
 
-.hero__text p {
+.landing .hero__text p {
   padding-inline-end: 50%;
   font-size: 1.3rem;
 }
 
-.hero__buttons {
+.landing .hero__buttons {
   width: 100%;
   display: flex;
   padding-inline-end: 25%;
   justify-content: space-between;
 }
 
-.companies__banner {
+.landing .companies__banner {
   display: flex;
   overflow: hidden;
   align-items: center;
   justify-content: center;
   background-color: var(--bg-color);
-  width: 100%;
   height: 6rem;
 }
 
-.companies__banner > * {
+.landing .companies__banner > * {
   padding-inline-end: var(--padding-2);
 }
-.companies__banner .track {
+
+.landing .companies__banner .track {
   height: 100%;
   display: flex;
   align-items: center;
@@ -72,7 +73,7 @@
   animation: scroll 10s linear infinite;
 }
 
-.companies__banner:hover .track {
+.landing .companies__banner:hover .track {
   animation-play-state: paused;
 }
 
@@ -85,7 +86,7 @@
   }
 }
 
-.offerings-section {
+.landing .offerings-section {
   background-color: var(--clr-black);
   display: flex;
   flex-direction: column;
@@ -95,20 +96,20 @@
   gap: var(--gap-3);
 }
 
-.offerings-section__title {
+.landing .offerings-section__title {
   font-size: 1rem;
   border: solid 1px var(--font-color-inverse);
   padding-inline: var(--padding-2);
   border-radius: 0.5rem;
 }
 
-.offerings-section__subtitle {
+.landing .offerings-section__subtitle {
   max-width: 50%;
   text-align: center;
   font-size: 2.5rem;
 }
 
-.offerings-section__card {
+.landing .offerings-section__card {
   width: 90%;
   min-height: 25rem;
   background-color: white;
@@ -133,44 +134,44 @@
   }
 }
 
-.programs-section {
+.landing .programs-section {
   display: grid;
-  gap: var(--gap-1);
+  gap: var(--gap-2);
   justify-content: center;
   padding-inline: var(--padding-4);
 }
 
-.programs-section__title {
+.landing .programs-section__title {
   display: flex;
   align-items: center;
   gap: var(--gap-1);
 }
 
-.programs-section__title .title__bar {
+.landing .programs-section__title .title__bar {
   border: solid 1px var(--clr-orange);
   background-color: var(--clr-orange);
   height: 3px;
   width: 4rem;
 }
 
-.programs-section__subtitle {
+.landing .programs-section__subtitle {
   font-size: 2.5rem;
   font-weight: 700;
   min-width: 30rem;
   width: 35%;
 }
 
-.programs-section__summary {
+.landing .programs-section__summary {
   width: 50%;
 }
 
-.programs {
+.landing .programs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-5);
+  gap: var(--gap-4);
 }
 
-.program {
+.landing .program {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -178,14 +179,16 @@
   background-color: var(--bg-color);
   border-radius: 0.75rem;
   box-shadow: var(--shadow);
+  border: solid 1px var(--clr-black);
+  box-shadow: -15px 15px 0px 0 var(--clr-black);
 }
 
-.program__image {
+.landing .program__image {
   min-height: 15rem;
   max-height: 20rem;
 }
 
-.program__body {
+.landing .program__body {
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
@@ -193,57 +196,58 @@
   padding-block-end: var(--padding-4);
 }
 
-.program__title {
+.landing .program__title {
   font-size: 1.35rem;
 }
 
-.program .btn {
+.landing .program .btn {
   position: absolute;
   bottom: 5%;
   font-size: 1rem;
   align-self: center;
 }
 
-.deliver {
+.landing .deliver {
   background-color: var(--clr-orange-light);
   padding: var(--padding-2);
 }
 
-.deliver__title {
+.landing .deliver__title {
   display: flex;
   align-items: center;
   gap: var(--gap-1);
 }
 
-.deliver__title .title__bar {
+.landing .deliver__title .title__bar {
   border: solid 1px var(--clr-orange);
   background-color: var(--clr-orange);
   height: 3px;
   width: 4rem;
 }
 
-.deliver__content {
+.landing .deliver__content {
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
 }
 
-.deliver__content > * {
+.landing .deliver__content > * {
   width: 50%;
 }
 
-.deliver__text {
+.landing .deliver__text {
   width: 40%;
 }
 
-.testimonials {
+.landing .testimonials {
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
+  overflow: hidden;
   background-color: var(--clr-black);
 }
 
-.testimonials__header {
+.landing .testimonials__header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -252,14 +256,14 @@
   color: white;
 }
 
-.testimonials__title {
+.landing .testimonials__title {
   font-size: 1rem;
   border: solid 1px var(--font-color-inverse);
   padding-inline: var(--padding-2);
   border-radius: 0.5rem;
 }
 
-.testimonials__subtitle {
+.landing .testimonials__subtitle {
   display: grid;
   font-size: 2rem;
   font-weight: 500;
@@ -269,25 +273,27 @@
   justify-content: center;
 }
 
-.testimonials__summary {
+.landing .testimonials__summary {
   width: 40%;
   text-align: center;
 }
 
-.testimonials__carousel {
+.landing .testimonials__carousel {
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
   align-items: center;
 }
-.testimonials__carousel .carousel-cards {
-  padding-inline: 2rem;
+
+.landing .testimonials__carousel .carousel-cards {
+  padding-inline: var(--padding-2);
+  padding-block-end: var(--padding-2);
   display: flex;
   overflow: hidden;
   gap: var(--gap-2);
 }
 
-.testimonials__carousel .carousel-card {
+.landing .testimonials__carousel .carousel-card {
   flex: 0 0 40%;
   height: 15rem;
   padding-block: 1rem;
@@ -296,13 +302,15 @@
   background: var(--clr-light-gray);
   color: var(--font-color);
   border-radius: 1rem;
+  border: solid 1px black;
+  box-shadow: -15px 15px 0px 0 white;
 }
 
-.testimonials__carousel .carousel__buttons {
+.landing .testimonials__carousel .carousel__buttons {
   display: flex;
   gap: var(--gap-1);
 }
 
-.testimonials__carousel .carousel__buttons .btn {
+.landing .testimonials__carousel .carousel__buttons .btn {
   border-radius: 999rem;
 }

@@ -76,10 +76,10 @@ function Carousel() {
 function App() {
   return (
     <>
-      <div className="landing-page">
-        <div className="hero">
+      <div className="landing">
+        <div className="landing__hero">
           <div className="hero__text">
-            <h1>Turning Data Into decisions</h1>
+            <h1>TURNING DATA INTO DECISION</h1>
             <p>
               Data-Lead Africa is a consulting firm providing world-class data
               analytics and strategic consulting services.
