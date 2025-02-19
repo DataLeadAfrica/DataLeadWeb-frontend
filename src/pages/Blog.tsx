@@ -71,7 +71,7 @@ export default function Blog() {
       </div>
       <div className="blog-posts">
         <BlogPost
-          image_src="/src/assets/blog/temp.svg"
+          image_src="assets/blog/temp.svg"
           title="Lorem ipsum dolor"
           body="Lörem ipsum digital-tv bepresk, planådade, läling. Readelig ikise om eukask äsm trädmord. Makrogyv kangen. Åsygt pase. Bessade hemigybel. Tide tresamma. "
           date=""

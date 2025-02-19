@@ -99,10 +99,10 @@ function App() {
         </div>
         <div className="companies__banner">
           <div className="track">
-            <img src="src/assets/worked-with.svg" alt="clients" />
+            <img src="assets/worked-with.svg" alt="clients" />
           </div>
           <div aria-hidden className="track">
-            <img src="src/assets/worked-with.svg" alt="clients" />
+            <img src="assets/worked-with.svg" alt="clients" />
           </div>
         </div>
         <div className="offerings-section">

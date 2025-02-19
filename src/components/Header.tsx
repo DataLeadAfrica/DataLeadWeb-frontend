@@ -55,7 +55,7 @@ export default function Header() {
       <header className="header">
         <Link to={"/"}>
           <img
-            src="/src/assets/logo-header.svg"
+            src="assets/logo-header.svg"
             alt="Data-Lead Africa"
             className="header__logo"
           />

@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="footer__col">
         <Link to={"/"}>
           <img
-            src="/src/assets/logo-header.svg"
+            src="assets/logo-header.svg"
             alt="Data-Lead Africa"
             className="footer__logo"
           />
