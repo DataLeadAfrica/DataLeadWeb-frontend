@@ -1,4 +1,4 @@
-import ".././css/research.css";
+import "../css/research.css";
 
 function ResearchesPost() {
   return <div className="researches__post"></div>;

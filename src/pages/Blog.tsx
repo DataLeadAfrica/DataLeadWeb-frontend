@@ -1,5 +1,5 @@
 import { Link, To } from "react-router";
-import ".././css/blog.css";
+import "../css/blog.css";
 
 function TopPost() {
   return (
@@ -19,13 +19,13 @@ function TopPost() {
 }
 
 function BlogPost({
-  image_src,
+  img_src,
   title,
   body,
   date,
   link,
 }: {
-  image_src: string;
+  img_src: string;
   title: string;
   body: string;
   date: string;
@@ -35,7 +35,7 @@ function BlogPost({
     <div className="blog-post__wrapper">
       <div className="blog-post">
         <div className="blog-post__image">
-          <img src={image_src} alt="" />
+          <img src={img_src} alt="" />
         </div>
         <div className="blog-post__content">
           <div className="blog-post__body">
@@ -71,16 +71,16 @@ export default function Blog() {
       </div>
       <div className="blog-posts">
         <BlogPost
-          image_src="assets/blog/temp.svg"
+          img_src="assets/blog/temp.svg"
           title="Lorem ipsum dolor"
           body="Lörem ipsum digital-tv bepresk, planådade, läling. Readelig ikise om eukask äsm trädmord. Makrogyv kangen. Åsygt pase. Bessade hemigybel. Tide tresamma. "
           date=""
           link={""}
         />
-        <BlogPost image_src="" title="" body="" date="" link={""} />
-        <BlogPost image_src="" title="" body="" date="" link={""} />
-        <BlogPost image_src="" title="" body="" date="" link={""} />
-        <BlogPost image_src="" title="" body="" date="" link={""} />
+        <BlogPost img_src="" title="" body="" date="" link={""} />
+        <BlogPost img_src="" title="" body="" date="" link={""} />
+        <BlogPost img_src="" title="" body="" date="" link={""} />
+        <BlogPost img_src="" title="" body="" date="" link={""} />
       </div>
     </div>
   );

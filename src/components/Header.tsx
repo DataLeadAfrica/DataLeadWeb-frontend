@@ -35,7 +35,7 @@ export default function Header() {
 
   const aboutLinks = {
     "Who we are": "/who-we-are",
-    "Our Team": "",
+    "Our Team": "/our-team",
   };
 
   const programmesLinks = {

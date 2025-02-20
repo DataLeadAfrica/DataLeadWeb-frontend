@@ -15,18 +15,18 @@ export default function Footer() {
         <div className="footer__follow">
           <h3 className="col__header">Follow us</h3>
           <div className="follow-links">
-            <Link to="" className="follow-link">
+            <a href="" className="follow-link">
               <i className="nf nf-fa-instagram"></i>
-            </Link>
-            <Link to="" className="follow-link">
+            </a>
+            <a href="" className="follow-link">
               <i className="nf nf-dev-linkedin"></i>
-            </Link>
-            <Link to="" className="follow-link">
+            </a>
+            <a href="" className="follow-link">
               <i className="nf nf-dev-twitter"></i>
-            </Link>
-            <Link to="" className="follow-link">
+            </a>
+            <a href="" className="follow-link">
               <i className="nf nf-fa-youtube"></i>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
