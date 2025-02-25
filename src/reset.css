@@ -166,3 +166,17 @@ a {
   color: var(--font-color);
   border: 1px solid transparent;
 }
+
+.title-bar {
+  border: solid 1px var(--clr-orange);
+  background-color: var(--clr-orange);
+  height: 3px;
+  width: 4rem;
+}
+
+.title-bar--inverse {
+  border: solid 1px var(--clr-light-900);
+  background-color: var(--clr-light-900);
+  height: 3px;
+  width: 4rem;
+}

@@ -37,13 +37,6 @@
   gap: var(--gap-1);
 }
 
-.researches__title .title__bar {
-  border: solid 1px var(--clr-orange);
-  background-color: var(--clr-orange);
-  height: 3px;
-  width: 4rem;
-}
-
 .researches__content {
   display: grid;
   grid-template-columns: repeat(1fr, 3);

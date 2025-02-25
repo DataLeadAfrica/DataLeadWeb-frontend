@@ -1,0 +1,107 @@
+.data-analytics__page {
+  position: relative;
+}
+
+.data-analytics__head {
+  color: var(--font-color-inverse);
+  background-image: url("assets/bootcamps/data-analytics.png");
+  background-size: 1500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 30rem;
+
+  & h1 {
+    font-size: 3rem;
+  }
+}
+
+.data-analytics__overlay {
+  color: var(--font-color);
+  position: absolute;
+  top: 20rem;
+  height: 40vh;
+  height: 40svh;
+  width: 90vw;
+  width: 90svw;
+  background-color: white;
+  padding: var(--padding-2);
+  display: flex;
+
+  & > * {
+    width: 50%;
+  }
+
+  & .overlay__desc {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: var(--clr-orange);
+
+    & span {
+      color: var(--font-color);
+    }
+  }
+}
+
+.data-analytics__about {
+  height: 100vh;
+  height: 100svh;
+  background-color: var(--clr-orange-light);
+  padding: var(--padding-5);
+  padding-top: 15rem;
+  display: flex;
+  gap: var(--gap-2);
+
+  & > * {
+    width: 50%;
+  }
+
+  & .about__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-1);
+
+    & h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-1);
+    }
+
+    & p {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.data-analytics__modules {
+  background-color: var(--clr-black);
+  color: var(--font-color-inverse);
+  padding: var(--padding-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-2);
+
+  & h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-1);
+    color: var(--clr-orange);
+  }
+
+  & ol {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2);
+    padding-inline: var(--padding-1);
+
+    & > li {
+      font-size: 1.25rem;
+      font-weight: bold;
+      & > * {
+        font-size: 1rem;
+        font-weight: normal;
+      }
+    }
+  }
+}

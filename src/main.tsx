@@ -9,18 +9,24 @@ import Research from "./pages/Research";
 import WhoWeAre from "./pages/WhoWeAre";
 import ContactUs from "./pages/ContactUs";
 import OurTeam from "./pages/OurTeam";
+import DataAnalytics from "./pages/bootcamps/DataAnalytics";
+import { StrictMode } from "react";
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <Header />
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/research" element={<Research />} />
-      <Route path="/who-we-are" element={<WhoWeAre />} />
-      <Route path="/contact-us" element={<ContactUs />} />
-      <Route path="/our-team" element={<OurTeam />} />
-    </Routes>
-    <Footer />
-  </BrowserRouter>,
+  <StrictMode>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/research" element={<Research />} />
+        <Route path="/who-we-are" element={<WhoWeAre />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/our-team" element={<OurTeam />} />
+
+        <Route path="/data-analytics-bootcamp" element={<DataAnalytics />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  </StrictMode>,
 );

@@ -41,7 +41,7 @@ export default function Header() {
   const programmesLinks = {
     "Business Analytics Bootcamp": "",
     "Data Science Bootcamp": "",
-    "Data Analytics Bootcamp": "",
+    "Data Analytics Bootcamp": "/data-analytics-bootcamp",
     "Human Resource Analytics": "",
     "Short Courses": "",
     "Deaf-in-Tech": "",

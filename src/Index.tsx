@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link, To } from "react-router";
 
 import "./index.css";
+import Card from "./components/Card";
 
 function Program({
   image_src,
@@ -15,37 +16,41 @@ function Program({
   link: To;
 }) {
   return (
-    <div className="program">
-      <div className="program__image">
-        <img src={image_src} alt="" />
-      </div>
-      <div className="program__body">
-        <h3 className="program__title">{title}</h3>
-        <p>{body}</p>
+    <Card>
+      <div className="program">
+        <div className="program__image">
+          <img src={image_src} alt="" />
+        </div>
+        <div className="program__body">
+          <h3 className="program__title">{title}</h3>
+          <p>{body}</p>
+        </div>
         <Link to={link} className="btn">
           Discover
         </Link>
       </div>
-    </div>
+    </Card>
   );
 }
 
 function CarouselCard() {
   return (
-    <div className="carousel-card">
-      <div className="card__person">
-        <img src="" alt="" />
-        <p>Person name</p>
+    <Card>
+      <div className="carousel__card">
+        <div className="card__person">
+          <img src="" alt="" />
+          <p>Person name</p>
+        </div>
+        <p className="card__paragraph">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus nemo
+          nesciunt deleniti tempore recusandae nobis placeat, accusamus rem,
+          repudiandae aliquid, quis consequatur maxime facilis quod. Est
+          deleniti velit expedita accusamus error illum saepe animi, eveniet
+          nobis rerum, quisquam suscipit debitis laboriosam nisi vel sapiente
+          praesentium, et voluptatem nulla voluptas quidem.
+        </p>
       </div>
-      <p className="card__paragraph">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus nemo
-        nesciunt deleniti tempore recusandae nobis placeat, accusamus rem,
-        repudiandae aliquid, quis consequatur maxime facilis quod. Est deleniti
-        velit expedita accusamus error illum saepe animi, eveniet nobis rerum,
-        quisquam suscipit debitis laboriosam nisi vel sapiente praesentium, et
-        voluptatem nulla voluptas quidem.
-      </p>
-    </div>
+    </Card>
   );
 }
 
@@ -55,7 +60,7 @@ function Carousel() {
   // TODO: Handle carousel
   return (
     <div className="testimonials__carousel">
-      <div className="carousel-cards" ref={cards}>
+      <div className="carousel__cards" ref={cards}>
         <CarouselCard />
         <CarouselCard />
         <CarouselCard />
@@ -111,41 +116,53 @@ function App() {
             Empowering individuals and organizations through data-driven
             solutions.
           </h3>
-          <div className="offerings-section__card">
-            <div className="card-section">
-              <i className="nf nf-md-file_search" />
-              <h4>Research</h4>
-              <p>
-                Uncover valuable insights with our rigorous research services.
-                We delve deep into complex issues, analyze data, and provide
-                actionable recommendations to inform strategic decision-making.
-              </p>
+          <Card>
+            <div className="offerings-section__card">
+              <div className="card-section">
+                <i className="nf nf-md-file_search" />
+                <h4>Research</h4>
+                <p>
+                  Uncover valuable insights with our rigorous research services.
+                  We delve deep into complex issues, analyze data, and provide
+                  actionable recommendations to inform strategic
+                  decision-making.
+                </p>
+                <Link to={""} className="btn">
+                  Discover
+                </Link>
+              </div>
+              <div className="card-section">
+                <i className="nf nf-cod-pie_chart" />
+                <h4>Training</h4>
+                <p>
+                  Empower your team with the skills and knowledge they need to
+                  succeed. Our comprehensive training programs cover a wide
+                  range of data-related topics, equipping individuals with the
+                  expertise to harness the power of data effectively.
+                </p>
+                <Link to={""} className="btn">
+                  Discover
+                </Link>
+              </div>
+              <div className="card-section">
+                <i className="nf nf-md-chat" />
+                <h4>Consultancy</h4>
+                <p>
+                  Partner with us for expert guidance and tailored solutions.
+                  Our experienced consultants work closely with you to
+                  understand your unique challenges and develop effective
+                  strategies to achieve your data-driven goals.
+                </p>
+                <Link to={""} className="btn">
+                  Discover
+                </Link>
+              </div>
             </div>
-            <div className="card-section">
-              <i className="nf nf-cod-pie_chart" />
-              <h4>Training</h4>
-              <p>
-                Empower your team with the skills and knowledge they need to
-                succeed. Our comprehensive training programs cover a wide range
-                of data-related topics, equipping individuals with the expertise
-                to harness the power of data effectively.
-              </p>
-            </div>
-            <div className="card-section">
-              <i className="nf nf-md-chat" />
-              <h4>Consultancy</h4>
-              <p>
-                Partner with us for expert guidance and tailored solutions. Our
-                experienced consultants work closely with you to understand your
-                unique challenges and develop effective strategies to achieve
-                your data-driven goals.
-              </p>
-            </div>
-          </div>
+          </Card>
         </div>
         <div className="programs-section">
           <h2 className="programs-section__title">
-            Our Programs <div className="title__bar"></div>
+            Our Programs <div className="title-bar"></div>
           </h2>
           <h3 className="programs-section__subtitle">
             Building Data Literacy and Driving Impact
@@ -207,7 +224,7 @@ function App() {
           <div className="deliver__content">
             <h2 className="deliver__title">
               What we deliver
-              <div className="title__bar"></div>
+              <div className="title-bar"></div>
             </h2>
             <div className="deliver__text">
               <p>
@@ -217,9 +234,9 @@ function App() {
                 your whole system to achieve value, faster.
               </p>
             </div>
-            <div className="deliver__video">
-              <video src=""></video>
-            </div>
+          </div>
+          <div className="deliver__video">
+            <video src=""></video>
           </div>
         </div>
         <div className="testimonials">

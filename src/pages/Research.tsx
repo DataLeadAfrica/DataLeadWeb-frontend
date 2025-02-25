@@ -27,7 +27,7 @@ export default function Research() {
       <div className="research__researches">
         <div className="researches__title">
           <h3>Researches</h3>
-          <div className="title__bar"></div>
+          <div className="title-bar"></div>
         </div>
         <div className="researches__content">
           <ResearchesPost />

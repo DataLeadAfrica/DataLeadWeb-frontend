@@ -1,5 +1,6 @@
 import { Link, To } from "react-router";
 import "../css/blog.css";
+import Card from "../components/Card";
 
 function TopPost() {
   return (
@@ -32,7 +33,7 @@ function BlogPost({
   link: To;
 }) {
   return (
-    <div className="blog-post__wrapper">
+    <Card>
       <div className="blog-post">
         <div className="blog-post__image">
           <img src={img_src} alt="" />
@@ -48,17 +49,17 @@ function BlogPost({
           </Link>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 export default function Blog() {
   return (
     <div className="blog-page">
       <div className="look-up">
-        <div className="search-wrapper">
+        <Card>
           <input className="search" type="text" placeholder="Search" />
-        </div>
-        <div className="top-posts__wrapper">
+        </Card>
+        <Card>
           <div className="top-posts">
             <h2>Top Posts</h2>
             <ol>
@@ -67,7 +68,7 @@ export default function Blog() {
               <TopPost />
             </ol>
           </div>
-        </div>
+        </Card>
       </div>
       <div className="blog-posts">
         <BlogPost
