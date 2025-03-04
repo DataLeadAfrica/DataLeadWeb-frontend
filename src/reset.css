@@ -140,30 +140,31 @@ a {
 }
 
 .btn {
-  background-color: transparent;
-  padding-block: 0.6rem;
-  padding-inline: 0.7rem;
-  border: 1px solid black;
-  border-radius: 0.7rem;
+  padding: 0.5rem;
+  border: 1px solid transparent;
   display: flex;
+  background-color: var(--clr-orange);
+  color: var(--font-color-inverse);
   align-items: center;
 }
 .btn:hover,
-.btn:focus {
-  background-color: var(--clr-orange);
-  border: 1px solid transparent;
+.btn:focus-visible {
+  background-color: transparent;
+  border: 1px solid black;
+  color: var(--font-color);
   transition: var(--transition-2);
 }
 
-.btn-light-orange {
-  background-color: var(--clr-orange-light);
+.btn-transparent {
+  background-color: transparent;
   color: var(--font-color);
-  border: 1px solid transparent;
+  border: 1px solid black;
 }
 
-.btn-orange {
+.btn-transparent:hover,
+.btn-transparent:focus-visible {
   background-color: var(--clr-orange);
-  color: var(--font-color);
+  color: var(--font-color-inverse);
   border: 1px solid transparent;
 }
 

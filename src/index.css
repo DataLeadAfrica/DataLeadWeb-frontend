@@ -118,7 +118,10 @@
   padding: var(--padding-3);
   display: flex;
   gap: var(--gap-2);
-  background-color: var(--bg-color);
+
+  & .btn {
+    align-self: flex-start;
+  }
 
   & > * {
     display: flex;

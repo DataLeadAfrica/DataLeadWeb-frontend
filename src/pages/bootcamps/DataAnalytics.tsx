@@ -1,5 +1,26 @@
 import { Link } from "react-router";
 import "../../css/bootcamps/data-analytics.css";
+import Card from "../../components/Card";
+
+function LearnMethod({
+  heading,
+  paragraph,
+  img,
+}: {
+  heading: string;
+  paragraph: string;
+  img: string;
+}) {
+  return (
+    <div className="learn__method">
+      <div className="text">
+        <h3>{heading}</h3>
+        <p>{paragraph}</p>
+      </div>
+      <img src={img} alt="" />
+    </div>
+  );
+}
 
 export default function DataAnalytics() {
   return (
@@ -96,7 +117,53 @@ export default function DataAnalytics() {
           </li>
         </ol>
       </div>
-      <div className="data-analytics__join"></div>
+      <div className="data-analytics__join">
+        <Card>
+          <div className="card__content">
+            <h2>who can join?</h2>
+            <p>
+              At Data-Lead Africa, we believe that everyone should have the
+              opportunity to thrive in the field of data analytics. Our unique
+              facilitation method ensures that even if you come from a
+              non-computational background, our expert instructors will guide
+              you through the fundamentals. We start from scratch and make
+              complex concepts relatable.
+            </p>
+          </div>
+        </Card>
+      </div>
+      <div className="data-analytics__learn">
+        <h2>How will you learn?</h2>
+        <div className="learn__methods">
+          <LearnMethod
+            heading="Onsite & Online"
+            paragraph="Join and collaborate with other interns online and onsite."
+            img="assets/bootcamps/data-analytics/online.svg"
+          />
+          <LearnMethod
+            heading="Video Content"
+            paragraph="High-quality easy-to-comprehend recorded video lessons."
+            img="assets/bootcamps/data-analytics/video.svg"
+          />
+          <LearnMethod
+            heading="Peer to peer review sessions"
+            paragraph="Share knowledge with other interns and gain multidimensional perspectives of problem solving."
+            img="assets/bootcamps/data-analytics/review.svg"
+          />
+          <LearnMethod
+            heading="Case Studies"
+            paragraph="Work on real-life projects by applying what you learn to solve related business problems."
+            img="assets/bootcamps/data-analytics/case.svg"
+          />
+        </div>
+      </div>
+      <div className="data-analytics__payment">
+        <Card>
+          <div className="payment__option">
+            <h1>test</h1>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

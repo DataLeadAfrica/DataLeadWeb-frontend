@@ -67,10 +67,10 @@ function Carousel() {
         <CarouselCard />
       </div>
       <div className="carousel__buttons">
-        <button className="btn btn-orange" id="prev-btn">
+        <button className="btn" id="prev-btn">
           <i className="nf nf-fa-chevron_left"></i>
         </button>
-        <button className="btn btn-orange" id="next-btn">
+        <button className="btn" id="next-btn">
           <i className="nf nf-fa-chevron_right"></i>
         </button>
       </div>
@@ -90,10 +90,10 @@ function App() {
               analytics and strategic consulting services.
             </p>
             <div className="hero__buttons">
-              <Link to={""} className="btn btn-light-orange">
+              <Link to={""} className="btn">
                 Explore our courses
               </Link>
-              <Link to={""} className="btn">
+              <Link to={""} className="btn btn-transparent">
                 Request for consultation
               </Link>
             </div>
