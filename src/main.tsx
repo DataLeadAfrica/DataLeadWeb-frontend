@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { StrictMode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import "./reset.css";
 import Footer from "./components/Footer";
@@ -10,13 +11,15 @@ import WhoWeAre from "./pages/WhoWeAre";
 import ContactUs from "./pages/ContactUs";
 import OurTeam from "./pages/OurTeam";
 import DataAnalytics from "./pages/bootcamps/DataAnalytics";
-import { StrictMode } from "react";
+import NotFound from "./pages/NotFound";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Header />
       <Routes>
+        <Route path="*" element={<NotFound />} />
+
         <Route path="/" element={<Index />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/research" element={<Research />} />

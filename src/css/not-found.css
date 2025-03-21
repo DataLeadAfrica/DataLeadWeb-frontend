@@ -1,0 +1,12 @@
+.not-found {
+  height: 90svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--clr-orange-light);
+
+  & h1 {
+    font-size: 8rem;
+  }
+}

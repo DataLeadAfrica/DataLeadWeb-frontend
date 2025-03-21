@@ -158,11 +158,34 @@ export default function DataAnalytics() {
         </div>
       </div>
       <div className="data-analytics__payment">
-        <Card>
-          <div className="payment__option">
-            <h1>test</h1>
-          </div>
-        </Card>
+        <div className="payment__options">
+          <Card>
+            <div className="payment__option">
+              <i className="icon nf nf-fa-user_circle"></i>
+              <div className="option__plan">
+                <p className="plan__name">Nysc Plan</p>
+                <p className="plan__price">₦ 150,000</p>
+                <p className="plan__old-price">₦ 300,000</p>
+              </div>
+              <hr />
+              <p>
+                <i className="nf nf-md-check_circle_outline"></i>
+                Save 16.67% when you pay in full today.
+              </p>
+              <button className="btn">Enroll now</button>
+            </div>
+          </Card>
+          <Card>
+            <div className="payment__option">
+              <h1>test</h1>
+            </div>
+          </Card>
+          <Card>
+            <div className="payment__option">
+              <h1>test</h1>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

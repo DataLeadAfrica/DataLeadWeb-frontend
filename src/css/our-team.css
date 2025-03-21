@@ -1,12 +1,9 @@
 .our-team__page {
-  background-color: var(--clr-orange-light);
-  height: 100vh;
-  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--gap-2);
+  gap: var(--gap-5);
 }
 
 .our-team__heading {
@@ -15,6 +12,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 4rem;
   gap: var(--gap-1);
 
   & h2 {
@@ -25,28 +23,45 @@
 }
 
 .our-team__members {
-  display: grid;
   width: 100%;
-  gap: var(--gap-2);
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-5);
+  & > * {
+    display: grid;
+    gap: var(--gap-4);
+    grid-template-columns: repeat(3, 1fr);
+    padding-inline: var(--padding-5);
+  }
 }
 
-.our-team__member {
+& .our-team__member {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--gap-1);
+  overflow: hidden;
 
   & .member__image {
-    width: 50%;
-    border-radius: 99999px;
-    overflow: hidden;
+    background-color: var(--clr-orange-light);
+    border-bottom: solid 1px var(--clr-black);
   }
 
-  & .socials {
+  & .member__info {
     display: flex;
-    font-size: 1.2rem;
+    flex-direction: column;
+    align-items: center;
     gap: var(--gap-1);
+    padding: var(--padding-1);
+
+    & h3 {
+      font-size: 1.75rem;
+      font-weight: 400;
+    }
+
+    & p {
+      font-size: 1.25rem;
+    }
   }
 }

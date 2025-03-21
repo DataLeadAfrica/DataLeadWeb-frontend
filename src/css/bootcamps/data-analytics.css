@@ -224,6 +224,23 @@
 .data-analytics__payment {
   padding: var(--padding-4);
   display: flex;
+  flex-direction: column;
   align-items: center;
   background-color: var(--clr-orange-light);
+
+  & .payment__options {
+    display: flex;
+    gap: var(--gap-2);
+
+    & .payment__option {
+      padding: var(--padding-1);
+
+      & .icon {
+        border-radius: 9999rem;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        border: solid 1px black;
+      }
+    }
+  }
 }

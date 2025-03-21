@@ -1,42 +1,36 @@
+import { Link } from "react-router";
 import "../css/our-team.css";
+import Card from "../components/Card";
 
 function TeamMember({
-  img_src,
+  imgLink,
   name,
   title,
-  instagram,
-  linkedin,
-  twitter,
+  bioLink,
 }: {
-  img_src: string;
+  imgLink: string;
   name: string;
   title: string;
-  instagram: string;
-  linkedin: string;
-  twitter: string;
+  bioLink: string;
 }) {
   return (
-    <div className="our-team__member">
-      <div className="member__image">
-        <img src={img_src} alt="" />
+    <Card>
+      <div className="our-team__member">
+        <div className="member__image">
+          <img src={imgLink} alt="" />
+        </div>
+        <div className="member__info">
+          <h3>{name}</h3>
+          <p>{title}</p>
+          <Link to={bioLink} className="btn btn-transparent">
+            Read Bio
+          </Link>
+        </div>
       </div>
-      <h3>{name}</h3>
-      <p>{title}</p>
-      <div className="socials">
-        <a href={instagram} className="socials__link">
-          <i className="nf nf-fa-instagram"></i>
-        </a>
-        <a href={linkedin} className="socials__link">
-          <i className="nf nf-dev-linkedin"></i>
-        </a>
-        <a href={twitter} className="socials__link">
-          <i className="nf nf-dev-twitter"></i>
-        </a>
-      </div>
-    </div>
+    </Card>
   );
 }
-
+// NOTE: Ask about image sizes
 export default function OurTeam() {
   return (
     <div className="our-team__page">
@@ -49,54 +43,46 @@ export default function OurTeam() {
         </h2>
       </div>
       <div className="our-team__members">
-        <TeamMember
-          img_src="assets/blog/temp.svg"
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
-        <TeamMember
-          img_src="assets/blog/temp.svg"
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
-        <TeamMember
-          img_src=""
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
-        <TeamMember
-          img_src=""
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
-        <TeamMember
-          img_src=""
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
-        <TeamMember
-          img_src=""
-          name="John Doe"
-          title="Head of"
-          instagram=""
-          linkedin=""
-          twitter=""
-        />
+        <div className="our-team__management">
+          <TeamMember
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
+            bioLink=""
+          />
+          <TeamMember
+            imgLink="/assets/our-team/Felicia.png"
+            name="Felicia"
+            title="Head of Communications"
+            bioLink=""
+          />
+          <TeamMember
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
+            bioLink=""
+          />
+        </div>
+        <div className="our-team__programmes">
+          <TeamMember
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
+            bioLink=""
+          />
+          <TeamMember
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
+            bioLink=""
+          />
+          <TeamMember
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
+            bioLink=""
+          />
+        </div>
       </div>
     </div>
   );
