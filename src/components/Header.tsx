@@ -39,15 +39,15 @@ export default function Header() {
   };
 
   const programmesLinks = {
-    "Business Analytics Bootcamp": "",
-    "Data Science Bootcamp": "",
+    "Business Analytics Bootcamp": "/business-analytics-bootcamp",
+    "Data Science Bootcamp": "/data-science-bootcamp",
     "Data Analytics Bootcamp": "/data-analytics-bootcamp",
-    "Human Resource Analytics": "",
-    "Short Courses": "",
-    "Deaf-in-Tech": "",
-    "Python for Kids": "",
-    "Digits and Signs": "",
-    Bioinformatics: "",
+    "Human Resource Analytics": "/human-resource-analytics",
+    "Short Courses": "/short-courses",
+    "Deaf-in-Tech": "/deaf-in-tech",
+    "Python for Kids": "/python-for-kids",
+    "Digits and Signs": "/digits-and-signs",
+    Bioinformatics: "/bioinformatics",
   };
 
   return (
@@ -74,9 +74,12 @@ export default function Header() {
             links={programmesLinks}
           />
         </nav>
-        <Link to="/contact-us" className="btn">
+        <Link to="/contact-us" className="btn contact-us">
           Contact Us
         </Link>
+        <button className="header__menu">
+          <img src="assets/header/menu.svg" alt="" />
+        </button>
       </header>
       <div className="header__spacer"></div>
     </>

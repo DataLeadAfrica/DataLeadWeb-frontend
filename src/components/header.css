@@ -23,6 +23,10 @@
   justify-content: space-between;
 }
 
+.header__menu {
+  display: none;
+}
+
 .nav__link {
   position: relative;
 }
@@ -88,4 +92,22 @@
 
 .header__spacer {
   height: 5rem;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding-inline: var(--padding-2);
+  }
+  .header__nav,
+  .contact-us {
+    display: none;
+  }
+
+  .header__menu {
+    display: block;
+    min-width: 2.5rem;
+    max-width: 2.5rem;
+    background-color: transparent;
+    border: none;
+  }
 }

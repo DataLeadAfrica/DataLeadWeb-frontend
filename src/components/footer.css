@@ -1,8 +1,9 @@
 .footer {
-  padding: 3rem;
+  padding: var(--padding-4);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   justify-content: space-between;
+  gap: var(--gap-2);
 }
 
 .footer a:focus,
@@ -37,10 +38,16 @@
   gap: var(--gap-1);
 }
 .footer__col .get-in-touch i {
-  font-size: 1.25rem;
+  font-size: var(--font-md);
 }
 .footer .follow-links {
   display: flex;
-  font-size: 1.5rem;
+  font-size: var(--font-md);
   gap: var(--gap-1);
+}
+
+@media (max-width: 768px) {
+  .footer {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

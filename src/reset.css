@@ -12,6 +12,7 @@
   --clr-gray: #878787;
   --clr-black: #2c2b2d;
   --clr-orange: #f56e0f;
+  --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
   /* --clr-orange-light: color-mix(in srgb, var(--clr-orange) 20%, transparent); */
   --padding-1: 1rem;
@@ -30,6 +31,12 @@
   --transition-2: 0.2s;
 
   --shadow: -5px 5px 10px 0 var(--clr-gray);
+
+  --font-xs: 0.75rem;
+  --font-sm: 1rem;
+  --font-md: 1.5rem;
+  --font-lg: 2.5rem;
+  --font-xl: 4rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -139,10 +146,18 @@ a {
   text-decoration: none;
 }
 
+p,
+a,
+input,
+address {
+  font-size: var(--font-sm);
+}
+
 .btn {
   padding: 0.5rem;
   border: 1px solid transparent;
   display: flex;
+  font-size: var(--font-sm);
   background-color: var(--clr-orange);
   color: var(--font-color-inverse);
   align-items: center;
@@ -180,4 +195,20 @@ a {
   background-color: var(--clr-light-900);
   height: 3px;
   width: 4rem;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --padding-1: 0.75rem;
+    --padding-2: 1.75rem;
+    --padding-3: 2.75rem;
+    --padding-4: 3.75rem;
+    --padding-5: 4.75rem;
+
+    --font-xs: 0.5rem;
+    --font-sm: 0.75rem;
+    --font-md: 1rem;
+    --font-lg: 1.5rem;
+    --font-xl: 2.5rem;
+  }
 }

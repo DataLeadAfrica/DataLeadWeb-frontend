@@ -1,3 +1,6 @@
+:root {
+  --card-radius: 1.75rem;
+}
 .card {
   position: relative;
   z-index: 1;
@@ -5,7 +8,7 @@
   & > * {
     border: solid 1px var(--clr-black);
     background-color: var(--bg-color);
-    border-radius: 0.75rem;
+    border-radius: var(--card-radius);
   }
 }
 
@@ -15,7 +18,7 @@
   position: absolute;
   top: 10px;
   left: -10px;
-  border-radius: 0.75rem;
+  border-radius: var(--card-radius);
   background-color: var(--bg-color);
   border: solid 1px var(--clr-black);
   width: 100%;
