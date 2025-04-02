@@ -1,0 +1,26 @@
+.coming-soon__page {
+  background-color: var(--clr-orange-light);
+  height: 90vh;
+  height: 90svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  & > img {
+    max-width: 5rem;
+  }
+
+  & > p a {
+    text-decoration: underline;
+    transition: var(--transition-1);
+  }
+  & > p a:hover {
+    color: var(--clr-orange);
+    transition: var(--transition-1);
+  }
+
+  & h1 {
+    font-size: var(--font-xl);
+  }
+}

@@ -12,6 +12,7 @@ import ContactUs from "./pages/ContactUs";
 import OurTeam from "./pages/OurTeam";
 import DataAnalytics from "./pages/bootcamps/DataAnalytics";
 import NotFound from "./pages/NotFound";
+import ComingSoon from "./pages/ComingSoon";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,14 +20,24 @@ createRoot(document.getElementById("root")!).render(
       <Header />
       <Routes>
         <Route path="*" element={<NotFound />} />
-
         <Route path="/" element={<Index />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/research" element={<Research />} />
         <Route path="/who-we-are" element={<WhoWeAre />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/our-team" element={<OurTeam />} />
-
+        // Not finished pages
+        <Route path="/about-us" element={<ComingSoon />} />
+        <Route path="/programs" element={<ComingSoon />} />
+        <Route path="/business-analytics-bootcamp" element={<ComingSoon />} />
+        <Route path="/data-science-bootcamp" element={<ComingSoon />} />
+        <Route path="/human-resource-analytics" element={<ComingSoon />} />
+        <Route path="/short-courses" element={<ComingSoon />} />
+        <Route path="/deaf-in-tech" element={<ComingSoon />} />
+        <Route path="/python-for-kids" element={<ComingSoon />} />
+        <Route path="/digits-and-signs" element={<ComingSoon />} />
+        <Route path="/digits-and-signs" element={<ComingSoon />} />
+        <Route path="/bioinformatics" element={<ComingSoon />} />
         <Route path="/data-analytics-bootcamp" element={<DataAnalytics />} />
       </Routes>
       <Footer />

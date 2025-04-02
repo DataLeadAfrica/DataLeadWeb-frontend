@@ -173,7 +173,7 @@
     }
   }
 
-  .learn__methods {
+  & .learn__methods {
     display: grid;
     gap: var(--gap-2);
     grid-template-columns: repeat(2, 1fr);
@@ -227,19 +227,122 @@
   flex-direction: column;
   align-items: center;
   background-color: var(--clr-orange-light);
+}
 
-  & .payment__options {
+.data-analytics__payment .payment__options {
+  display: flex;
+  gap: var(--gap-2);
+}
+
+.data-analytics__payment .payment__option {
+  padding: var(--padding-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+
+  & .option__pitch {
     display: flex;
-    gap: var(--gap-2);
+    align-items: center;
+    gap: var(--gap-1);
+    & i {
+      font-size: var(--font-md);
+    }
+  }
 
-    & .payment__option {
-      padding: var(--padding-1);
+  & .icon {
+    border-radius: 9999rem;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    border: solid 1px black;
+    align-self: flex-start;
+  }
 
-      & .icon {
-        border-radius: 9999rem;
-        font-size: 1.5rem;
-        padding: 0.5rem;
-        border: solid 1px black;
+  & .btn {
+    align-self: center;
+    padding-inline: var(--padding-2);
+  }
+}
+
+.data-analytics__payment .payment__option .option__plan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-1);
+  padding-inline: var(--padding-2);
+  min-height: 15rem;
+  & hr {
+    width: 100%;
+  }
+  & .plan__name {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    padding-inline: var(--padding-2);
+    border-radius: 99rem;
+    background-color: var(--clr-orange-light);
+    color: var(--clr-orange);
+  }
+  & .plan__price {
+    font-size: var(--font-lg);
+  }
+  & .plan__old-price {
+    font-size: var(--font-md);
+    position: relative;
+  }
+  & .plan__old-price::before {
+    content: "";
+    display: block;
+    position: absolute;
+    border-left: solid 2px var(--clr-orange);
+    top: -4rem;
+    right: 4rem;
+    height: 10rem;
+    rotate: 80deg;
+  }
+  & .plan__old-price::after {
+    content: "";
+    display: block;
+    position: absolute;
+    border-left: solid 2px var(--clr-orange);
+    top: -4rem;
+    right: 4rem;
+    height: 10rem;
+    rotate: -80deg;
+  }
+}
+
+.data-analytics__page .call-to-action__wrapper {
+  padding: var(--padding-5);
+  background-color: var(--clr-black);
+  & .call-to-action__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-1);
+
+    & h2 {
+      font-size: var(--font-lg);
+      text-align: center;
+    }
+
+    & p {
+      font-size: var(--font-md);
+      width: 70%;
+      text-align: center;
+    }
+
+    & .btns {
+      display: flex;
+      padding-inline: var(--padding-5);
+      width: 100%;
+      gap: var(--gap-1);
+
+      & > * {
+        width: 50%;
+        display: flex;
+        justify-content: center;
       }
     }
   }

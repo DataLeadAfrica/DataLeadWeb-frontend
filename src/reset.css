@@ -37,6 +37,7 @@
   --font-md: 1.5rem;
   --font-lg: 2.5rem;
   --font-xl: 4rem;
+  --font-xxl: 6rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -149,6 +150,7 @@ a {
 p,
 a,
 input,
+textarea,
 address {
   font-size: var(--font-sm);
 }
@@ -199,16 +201,18 @@ address {
 
 @media (max-width: 768px) {
   :root {
-    --padding-1: 0.75rem;
-    --padding-2: 1.75rem;
-    --padding-3: 2.75rem;
-    --padding-4: 3.75rem;
-    --padding-5: 4.75rem;
+    --padding-1: calc(3 / 5 * 1rem);
+    --padding-2: calc(3 / 5 * 2rem);
+    --padding-3: calc(3 / 5 * 3rem);
+    --padding-4: calc(3 / 5 * 4rem);
+    --padding-5: calc(3 / 5 * 5rem);
 
-    --font-xs: 0.5rem;
-    --font-sm: 0.75rem;
-    --font-md: 1rem;
-    --font-lg: 1.5rem;
-    --font-xl: 2.5rem;
+    --font-xs: calc(4 / 5 * 0.75rem);
+    --font-sm: calc(4 / 5 * 1rem);
+    /* NOTE: Change by different margin because of how small text gets */
+    --font-md: calc(3 / 5 * 1.5rem);
+    --font-lg: calc(3 / 5 * 2.5rem);
+    --font-xl: calc(3 / 5 * 4rem);
+    --font-xxl: calc(3 / 5 * 6rem);
   }
 }

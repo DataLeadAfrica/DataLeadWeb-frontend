@@ -55,3 +55,12 @@
   transform: translate(50%, -50%);
   z-index: -2;
 }
+
+@media (max-width: 1200px) {
+  .landing .call-to-action__wrapper {
+    padding: 0;
+  }
+  .landing .call-to-action {
+    border-radius: 0;
+  }
+}

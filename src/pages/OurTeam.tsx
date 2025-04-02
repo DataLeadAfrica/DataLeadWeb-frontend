@@ -51,9 +51,9 @@ export default function OurTeam() {
             bioLink=""
           />
           <TeamMember
-            imgLink="/assets/our-team/Felicia.png"
-            name="Felicia"
-            title="Head of Communications"
+            imgLink="/assets/our-team/OJ.png"
+            name="Ojone Akor"
+            title="Chief Operating Officer"
             bioLink=""
           />
           <TeamMember

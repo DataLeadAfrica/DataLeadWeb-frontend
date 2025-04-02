@@ -1,31 +1,26 @@
 .who-we-are-page > * {
   padding: var(--padding-4);
 }
+.who-we-are-page > img {
+  padding: 0;
+}
 
 .who-we-are__hero {
   display: flex;
   align-items: center;
+  background-color: var(--clr-orange-light);
   gap: var(--gap-2);
-  min-height: 90vh;
-  min-height: 90svh;
 
   & > * {
     width: 50%;
   }
-}
-
-.who-we-are__hero .hero__text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-2);
-
   & h2 {
-    font-size: 3.5rem;
+    font-size: var(--font-lg);
     font-weight: 500;
   }
 
   & p {
-    font-size: 1.5rem;
+    font-size: var(--font-md);
   }
 }
 
@@ -40,7 +35,7 @@
   min-height: 80svh;
 
   & h2 {
-    font-size: 6rem;
+    font-size: var(--font-xxl);
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke: 1px;
   }

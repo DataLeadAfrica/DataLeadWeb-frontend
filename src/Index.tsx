@@ -104,11 +104,13 @@ function App() {
         </div>
       </div>
       <div className="offerings-section">
-        <h2 className="offerings-section__title">Our offerings</h2>
-        <h3 className="offerings-section__subtitle">
-          Empowering individuals and organizations through data-driven
-          solutions.
-        </h3>
+        <div className="offerings-section__header">
+          <h2 className="offerings-section__title">Our offerings</h2>
+          <h3 className="offerings-section__subtitle">
+            Empowering individuals and organizations through data-driven
+            solutions.
+          </h3>
+        </div>
         <Card>
           <div className="offerings-section__card">
             <div className="card-section">

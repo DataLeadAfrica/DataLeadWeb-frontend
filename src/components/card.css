@@ -1,5 +1,5 @@
 :root {
-  --card-radius: 1.75rem;
+  --card-radius: 1.25rem;
 }
 .card {
   position: relative;
@@ -16,8 +16,8 @@
   content: "";
   display: block;
   position: absolute;
-  top: 10px;
-  left: -10px;
+  top: 5px;
+  left: -5px;
   border-radius: var(--card-radius);
   background-color: var(--bg-color);
   border: solid 1px var(--clr-black);

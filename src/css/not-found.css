@@ -9,4 +9,14 @@
   & h1 {
     font-size: 8rem;
   }
+
+  & > p a {
+    text-decoration: underline;
+    transition: var(--transition-1);
+  }
+
+  & > p a:hover {
+    color: var(--clr-orange);
+    transition: var(--transition-1);
+  }
 }

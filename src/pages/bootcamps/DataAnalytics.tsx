@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
+import CallToAction from "../../components/CallToAction";
 
 function LearnMethod({
   heading,
@@ -163,12 +164,12 @@ export default function DataAnalytics() {
             <div className="payment__option">
               <i className="icon nf nf-fa-user_circle"></i>
               <div className="option__plan">
-                <p className="plan__name">Nysc Plan</p>
+                <p className="plan__name">NYSC Plan</p>
                 <p className="plan__price">₦ 150,000</p>
                 <p className="plan__old-price">₦ 300,000</p>
+                <hr />
               </div>
-              <hr />
-              <p>
+              <p className="option__pitch">
                 <i className="nf nf-md-check_circle_outline"></i>
                 Save 16.67% when you pay in full today.
               </p>
@@ -177,15 +178,51 @@ export default function DataAnalytics() {
           </Card>
           <Card>
             <div className="payment__option">
-              <h1>test</h1>
+              <i className="icon nf nf-fa-user_circle"></i>
+              <div className="option__plan">
+                <p className="plan__name">One time payment</p>
+                <p className="plan__price">₦ 250,000</p>
+                <p className="plan__old-price">₦ 300,000</p>
+                <hr />
+              </div>
+              <p className="option__pitch">
+                <i className="nf nf-md-check_circle_outline"></i>
+                Save 16.67% when you pay in full today.
+              </p>
+              <button className="btn">Enroll now</button>
             </div>
           </Card>
           <Card>
             <div className="payment__option">
-              <h1>test</h1>
+              <i className="icon nf nf-fa-user_circle"></i>
+              <div className="option__plan">
+                <p className="plan__name">Installment Payment</p>
+                <p className="plan__price">₦ 300,000</p>
+                <hr />
+              </div>
+              <p className="option__pitch">
+                <i className="nf nf-md-check_circle_outline"></i>
+                Save 16.67% when you pay in full today.
+              </p>
+              <button className="btn">Enroll now</button>
             </div>
           </Card>
         </div>
+      </div>
+      <div className="call-to-action__wrapper">
+        <CallToAction>
+          <div className="call-to-action__content">
+            <h2>“Embark on Your Data Analytics Journey”</h2>
+            <p>
+              An Immersive and Engaging Learning Experience That Will Transform
+              Your Data Skills.
+            </p>
+            <div className="btns">
+              <button className="btn btn-transparent">Download Brochure</button>
+              <button className="btn">Enrol now</button>
+            </div>
+          </div>
+        </CallToAction>
       </div>
     </div>
   );
