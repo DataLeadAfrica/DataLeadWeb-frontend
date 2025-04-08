@@ -1,30 +1,29 @@
-import { Link, To } from "react-router";
+import { Link } from "react-router";
 
 import "./header.css";
 
 export default function Header() {
   function DropDown({
     title,
-    self_link,
     links,
   }: {
     title: string;
-    self_link: To;
     links: Record<string, string>;
   }) {
     return (
       <div className="nav__dropdown-container">
-        <Link to={self_link} className="nav__link">
+        <p className="nav__link">
           {title}
           <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
-        </Link>
+        </p>
         <div className="drop-down">
           <div className="drop-down__sep"></div>
-          <div className="drop-down__curve"></div>
+          <div className="drop-down__top"></div>
           <ul className="drop-down__links">
             {Object.keys(links).map((key) => (
               <li className="drop-down__link" key={key}>
                 <Link to={links[key]}>{key}</Link>
+                <i className="nf nf-md-arrow_top_right"></i>
               </li>
             ))}
           </ul>
@@ -61,25 +60,59 @@ export default function Header() {
           />
         </Link>
         <nav className="header__nav">
-          <DropDown title="About Us" self_link="/about-us" links={aboutLinks} />
+          <DropDown title="About Us" links={aboutLinks} />
           <Link className="nav__link" to="/blog">
             Blog
           </Link>
           <Link className="nav__link" to="/research">
             Research
           </Link>
-          <DropDown
-            title="Programs"
-            self_link="/programs"
-            links={programmesLinks}
-          />
+          <DropDown title="Programs" links={programmesLinks} />
         </nav>
-        <Link to="/contact-us" className="btn contact-us">
+        <Link to="/contact-us" className="btn nav__contact-us">
           Contact Us
         </Link>
-        <button className="header__menu">
-          <img src="assets/header/menu.svg" alt="" />
-        </button>
+        <details className="nav__menu">
+          <summary>
+            <i className="nf nf-oct-three_bars burger"></i>
+            <i className="nf nf-fae-thin_close x"></i>
+          </summary>
+          <div className="menu__wrapper">
+            <div className="menu__content">
+              <details className="menu__dropdown">
+                <summary>
+                  <p>
+                    About Us
+                    <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
+                  </p>
+                </summary>
+                <div className="dropdown__content">
+                  <h2>About us</h2>
+                </div>
+              </details>
+              <Link className="menu__link" to="/blog">
+                Blog
+              </Link>
+              <Link className="menu__link" to="/research">
+                Research
+              </Link>
+              <details className="menu__dropdown">
+                <summary>
+                  <p>
+                    Programs
+                    <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
+                  </p>
+                </summary>
+                <div className="dropdown__content">
+                  <h2>Programs</h2>
+                </div>
+              </details>
+              <Link to="/contact-us" className="btn menu__contact-us">
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </details>
       </header>
       <div className="header__spacer"></div>
     </>

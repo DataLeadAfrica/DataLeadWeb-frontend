@@ -15,9 +15,14 @@
   margin-top: 4rem;
   gap: var(--gap-1);
 
+  & h1 {
+    font-family: "ClashDisplay-Medium";
+    font-size: var(--font-lg);
+  }
   & h2 {
     text-align: center;
     font-weight: 400;
+    font-size: var(--font-md);
     color: var(--clr-gray);
   }
 }
@@ -27,15 +32,20 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-5);
+
   & > * {
-    display: grid;
+    display: flex;
     gap: var(--gap-4);
-    grid-template-columns: repeat(3, 1fr);
     padding-inline: var(--padding-5);
+    flex-wrap: wrap;
+
+    & > * {
+      flex: 1;
+    }
   }
 }
 
-& .our-team__member {
+.our-team__member {
   display: flex;
   flex-direction: column;
   align-items: center;

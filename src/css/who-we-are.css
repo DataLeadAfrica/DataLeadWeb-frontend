@@ -7,14 +7,16 @@
 
 .who-we-are__hero {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   background-color: var(--clr-orange-light);
   gap: var(--gap-2);
 
   & > * {
-    width: 50%;
+    width: 100%;
+    flex: 1 1 48%;
   }
   & h2 {
+    font-family: "ClashDisplay-Medium";
     font-size: var(--font-lg);
     font-weight: 500;
   }
@@ -27,22 +29,20 @@
 .who-we-are__mission {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: var(--gap-4);
-  background-color: var(--clr-orange-light);
+  gap: var(--gap-2);
   min-height: 80vh;
   min-height: 80svh;
 
   & h2 {
+    font-family: "ClashDisplay-Medium";
     font-size: var(--font-xxl);
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke: 1px;
   }
 
   & p {
-    font-size: 1.6rem;
-    text-align: center;
+    font-size: var(--font-md);
     width: 80%;
   }
 
@@ -55,23 +55,22 @@
 .who-we-are__vision {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: var(--gap-4);
+  gap: var(--gap-2);
   color: var(--clr-orange-light);
   background-color: var(--clr-black);
   min-height: 80vh;
   min-height: 80svh;
 
   & h2 {
-    font-size: 6rem;
+    font-family: "ClashDisplay-Medium";
+    font-size: var(--font-xxl);
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke: 1px;
   }
 
   & p {
-    font-size: 1.6rem;
-    text-align: center;
+    font-size: var(--font-md);
     width: 80%;
   }
 

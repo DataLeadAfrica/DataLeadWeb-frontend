@@ -11,9 +11,12 @@
     max-width: 5rem;
   }
 
-  & > p a {
-    text-decoration: underline;
-    transition: var(--transition-1);
+  & > p {
+    text-align: center;
+    & a {
+      text-decoration: underline;
+      transition: var(--transition-1);
+    }
   }
   & > p a:hover {
     color: var(--clr-orange);

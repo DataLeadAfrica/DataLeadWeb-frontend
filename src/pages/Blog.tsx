@@ -1,50 +1,22 @@
-import { Link, To } from "react-router";
+import { Link } from "react-router";
 import "../css/blog.css";
 import Card from "../components/Card";
 
-function TopPost() {
+function Post() {
   return (
-    <li>
-      <Link to={""}>
-        <h3>Lorem ipsum dolor</h3>
-      </Link>
-      <p>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim quos
-        atque ratione vel nisi nesciunt dicta! Cumque dolore labore possimus
-        asperiores natus consequatur corporis et, suscipit, iure fugit ex
-        dolores.
-      </p>
-      <p>Nov. 2024</p>
-    </li>
-  );
-}
-
-function BlogPost({
-  img_src,
-  title,
-  body,
-  date,
-  link,
-}: {
-  img_src: string;
-  title: string;
-  body: string;
-  date: string;
-  link: To;
-}) {
-  return (
-    <Card>
-      <div className="blog-post">
-        <div className="blog-post__image">
-          <img src={img_src} alt="" />
-        </div>
-        <div className="blog-post__content">
-          <div className="blog-post__body">
-            <h4 className="blog-post__title">{title}</h4>
-            <p>{body}</p>
-            <p>{date}</p>
-          </div>
-          <Link to={link} className="btn">
+    <Card extraClasses="post__card">
+      <div className="post">
+        <img src="/assets/blog/temp.svg" alt="" />
+        <div className="post__content">
+          <p className="post__title">Lorem ipsum dolor</p>
+          <p className="post__summary">
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quas
+            dolorum magnam velit consequuntur, recusandae, impedit architecto
+            porro quod doloremque mollitia ut praesentium vel nulla pariatur.
+            Tempore numquam explicabo facere aliquid?
+            <p className="post__date">Jun 2025</p>
+          </p>
+          <Link className="btn" to="">
             Read
           </Link>
         </div>
@@ -52,36 +24,29 @@ function BlogPost({
     </Card>
   );
 }
+
 export default function Blog() {
   return (
     <div className="blog-page">
-      <div className="look-up">
-        <Card>
-          <input className="search" type="text" placeholder="Search" />
-        </Card>
-        <Card>
-          <div className="top-posts">
-            <h2>Top Posts</h2>
-            <ol>
-              <TopPost />
-              <TopPost />
-              <TopPost />
-            </ol>
-          </div>
-        </Card>
+      <div className="hero">
+        <h1>Stay Ahead in Tech, Data & Research</h1>
+        <p>
+          Discover expert perspectives, practical guides, and the latest
+          findings shaping the future of technology, data analysis, and
+          research.
+        </p>
       </div>
-      <div className="blog-posts">
-        <BlogPost
-          img_src="assets/blog/temp.svg"
-          title="Lorem ipsum dolor"
-          body="Lörem ipsum digital-tv bepresk, planådade, läling. Readelig ikise om eukask äsm trädmord. Makrogyv kangen. Åsygt pase. Bessade hemigybel. Tide tresamma. "
-          date=""
-          link={""}
-        />
-        <BlogPost img_src="" title="" body="" date="" link={""} />
-        <BlogPost img_src="" title="" body="" date="" link={""} />
-        <BlogPost img_src="" title="" body="" date="" link={""} />
-        <BlogPost img_src="" title="" body="" date="" link={""} />
+      <div className="posts__wrapper">
+        <Card extraClasses="search__card">
+          <input type="text" className="search" placeholder="Search..." />
+        </Card>
+        <div className="posts">
+          <Post />
+          <Post />
+          <Post />
+          <Post />
+          <Post />
+        </div>
       </div>
     </div>
   );

@@ -31,9 +31,11 @@
 }
 
 .landing .hero__text h1 {
+  font-family: "ClashDisplay-Medium";
   width: 80%;
   font-size: var(--font-xl);
   & span {
+    font-family: "ClashDisplay-Medium";
     color: var(--clr-orange);
   }
 }
@@ -201,7 +203,8 @@
 }
 
 .landing .offerings-section__subtitle {
-  max-width: 50%;
+  font-family: "ClashDisplay-Medium";
+  max-width: 70%;
   font-weight: 500;
   text-align: center;
   font-size: var(--font-lg);
@@ -259,6 +262,7 @@
 .landing .programs-section__title {
   gap: var(--gap-1);
   & h2 {
+    font-family: "ClashDisplay-Medium";
     font-size: var(--font-lg);
   }
   & p {
@@ -345,7 +349,8 @@
 }
 
 .landing .deliver__title {
-  font-size: var(--font-md);
+  font-family: "ClashDisplay-Medium";
+  font-size: var(--font-lg);
   color: var(--clr-orange-light);
 }
 
@@ -381,6 +386,7 @@
     justify-content: center;
     gap: var(--gap-1);
     & h2 {
+      font-family: "ClashDisplay-Medium";
       font-size: var(--font-lg);
       width: 75%;
       text-align: center;
@@ -394,8 +400,6 @@
 
       & > * {
         width: 50%;
-        display: flex;
-        justify-content: center;
       }
     }
   }
@@ -403,6 +407,7 @@
 
 .landing .testimonials {
   display: flex;
+  display: none; /* temp */
   flex-direction: column;
   gap: var(--gap-2);
   overflow: hidden;
@@ -426,6 +431,7 @@
 }
 
 .landing .testimonials__subtitle {
+  font-family: "ClashDisplay-Medium";
   display: grid;
   font-size: var(--font-lg);
   font-weight: 500;

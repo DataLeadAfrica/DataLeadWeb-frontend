@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
-import "./reset.css";
+import "./global.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Index from "./Index";
@@ -26,9 +26,8 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/who-we-are" element={<WhoWeAre />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/our-team" element={<OurTeam />} />
+        <Route path="/data-analytics-bootcamp" element={<DataAnalytics />} />
         // Not finished pages
-        <Route path="/about-us" element={<ComingSoon />} />
-        <Route path="/programs" element={<ComingSoon />} />
         <Route path="/business-analytics-bootcamp" element={<ComingSoon />} />
         <Route path="/data-science-bootcamp" element={<ComingSoon />} />
         <Route path="/human-resource-analytics" element={<ComingSoon />} />
@@ -38,7 +37,6 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/digits-and-signs" element={<ComingSoon />} />
         <Route path="/digits-and-signs" element={<ComingSoon />} />
         <Route path="/bioinformatics" element={<ComingSoon />} />
-        <Route path="/data-analytics-bootcamp" element={<DataAnalytics />} />
       </Routes>
       <Footer />
     </BrowserRouter>
