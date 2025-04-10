@@ -12,7 +12,7 @@ function ResearchesPost({
   imgSrc: string;
 }) {
   return (
-    <Card>
+    <Card extraClasses="post__card">
       <div className="researches__post">
         <img src={imgSrc} alt="" />
         <div className="post__text">
@@ -38,9 +38,7 @@ export default function Research() {
           Our research page showcases a collection of in-depth studies, reports,
           and analyses that delve into a wide range of critical issues,
           including agriculture, food security, humanitarian assistance, and
-          economic development. Our goal is to provide evidence-based insights
-          that inform policy decisions, drive innovation, and improve lives
-          across the continent.
+          economic development.
         </p>
       </div>
       <div className="research__researches">

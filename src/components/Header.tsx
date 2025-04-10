@@ -49,6 +49,11 @@ export default function Header() {
     Bioinformatics: "/bioinformatics",
   };
 
+  const handleClick = () => {
+    document.getElementById("nav-menu")?.removeAttribute("open");
+    console.log("done");
+  };
+
   return (
     <>
       <header className="header">
@@ -72,7 +77,7 @@ export default function Header() {
         <Link to="/contact-us" className="btn nav__contact-us">
           Contact Us
         </Link>
-        <details className="nav__menu">
+        <details id="nav-menu" className="nav__menu">
           <summary>
             <i className="nf nf-oct-three_bars burger"></i>
             <i className="nf nf-fae-thin_close x"></i>
@@ -90,10 +95,10 @@ export default function Header() {
                   <h2>About us</h2>
                 </div>
               </details>
-              <Link className="menu__link" to="/blog">
+              <Link className="menu__link" to="/blog" onClick={handleClick}>
                 Blog
               </Link>
-              <Link className="menu__link" to="/research">
+              <Link className="menu__link" to="/research" onClick={handleClick}>
                 Research
               </Link>
               <details className="menu__dropdown">
@@ -107,7 +112,11 @@ export default function Header() {
                   <h2>Programs</h2>
                 </div>
               </details>
-              <Link to="/contact-us" className="btn menu__contact-us">
+              <Link
+                to="/contact-us"
+                className="btn menu__contact-us"
+                onClick={handleClick}
+              >
                 Contact Us
               </Link>
             </div>

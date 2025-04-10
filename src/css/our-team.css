@@ -7,12 +7,12 @@
 }
 
 .our-team__heading {
-  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 4rem;
+  background-color: var(--clr-orange-light);
+  padding: var(--padding-4);
   gap: var(--gap-1);
 
   & h1 {
@@ -22,25 +22,34 @@
   & h2 {
     text-align: center;
     font-weight: 400;
+    width: 60%;
     font-size: var(--font-md);
     color: var(--clr-gray);
   }
 }
 
 .our-team__members {
-  width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--gap-5);
 
-  & > * {
+  & .members__wrapper {
     display: flex;
-    gap: var(--gap-4);
-    padding-inline: var(--padding-5);
-    flex-wrap: wrap;
+    flex-direction: column;
+    padding-inline: var(--padding-4);
+    gap: var(--gap-2);
 
-    & > * {
-      flex: 1;
+    & h3 {
+      align-self: center;
+      display: flex;
+      gap: var(--gap-1);
+      align-items: center;
+    }
+
+    & .members {
+      gap: var(--gap-4);
+      display: flex;
     }
   }
 }
@@ -52,6 +61,8 @@
   justify-content: center;
   gap: var(--gap-1);
   overflow: hidden;
+  width: 100%;
+  max-width: 30rem;
 
   & .member__image {
     background-color: var(--clr-orange-light);
@@ -59,6 +70,7 @@
   }
 
   & .member__info {
+    height: 20%;
     display: flex;
     flex-direction: column;
     align-items: center;

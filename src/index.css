@@ -356,7 +356,7 @@
 
 .landing .deliver__text {
   font-size: var(--font-md);
-  color: var(--clr-light-gray);
+  color: var(--clr-gray-light);
 }
 
 /* NOTE: deliver media query*/

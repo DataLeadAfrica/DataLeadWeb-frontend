@@ -46,6 +46,8 @@ export default function Blog() {
           <Post />
           <Post />
           <Post />
+          <Post />
+          <Post />
         </div>
       </div>
     </div>

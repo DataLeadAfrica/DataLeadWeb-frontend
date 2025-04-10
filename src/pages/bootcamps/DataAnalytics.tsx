@@ -121,7 +121,7 @@ export default function DataAnalytics() {
       <div className="data-analytics__join">
         <Card>
           <div className="card__content">
-            <h2>who can join?</h2>
+            <h2 className="underline-header">Who Can Join?</h2>
             <p>
               At Data-Lead Africa, we believe that everyone should have the
               opportunity to thrive in the field of data analytics. Our unique
@@ -134,7 +134,7 @@ export default function DataAnalytics() {
         </Card>
       </div>
       <div className="data-analytics__learn">
-        <h2>How will you learn?</h2>
+        <h2 className="underline-header">How will you learn?</h2>
         <div className="learn__methods">
           <LearnMethod
             heading="Onsite & Online"
@@ -159,6 +159,7 @@ export default function DataAnalytics() {
         </div>
       </div>
       <div className="data-analytics__payment">
+        <h2 className="underline-header">Payment Plans</h2>
         <div className="payment__options">
           <Card>
             <div className="payment__option">

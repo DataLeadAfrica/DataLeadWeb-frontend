@@ -7,7 +7,7 @@
   justify-content: space-between;
   padding-inline: var(--padding-4);
   background-color: var(--bg-color);
-  z-index: 2;
+  z-index: 3;
   box-shadow: var(--shadow);
 }
 

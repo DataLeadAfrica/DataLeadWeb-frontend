@@ -9,14 +9,12 @@
   --bg-color-light: white;
   --bg-color-dark: #1c1b22;
 
-  --clr-light-gray: #fbfbfb;
   --clr-gray: #878787;
-  --clr-light-gray: #f5f5f5;
+  --clr-gray-light: #f5f5f5;
   --clr-black: #2c2b2d;
   --clr-orange: #f56e0f;
   --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
-  /* --clr-orange-light: color-mix(in srgb, var(--clr-orange) 20%, transparent); */
   --padding-1: 1rem;
   --padding-2: 2rem;
   --padding-3: 3rem;
@@ -194,7 +192,7 @@ address {
   border: solid 1px var(--clr-orange);
   background-color: var(--clr-orange);
   height: 3px;
-  width: 4rem;
+  width: 6rem;
 }
 
 .title-bar--inverse {

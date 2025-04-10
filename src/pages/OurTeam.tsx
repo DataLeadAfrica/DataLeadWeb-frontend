@@ -30,6 +30,7 @@ function TeamMember({
     </Card>
   );
 }
+
 // NOTE: Ask about image sizes
 export default function OurTeam() {
   return (
@@ -43,45 +44,107 @@ export default function OurTeam() {
         </h2>
       </div>
       <div className="our-team__members">
-        <div className="our-team__management">
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
+        <div className="members__wrapper">
+          <h3>
+            <div className="title-bar" />
+            Management
+            <div className="title-bar" />
+          </h3>
+          <div className="members">
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+          </div>
         </div>
-        <div className="our-team__programmes">
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
-          <TeamMember
-            imgLink="/assets/our-team/OJ.png"
-            name="Ojone Akor"
-            title="Chief Operating Officer"
-            bioLink=""
-          />
+        <div className="members__wrapper">
+          <h3>
+            <div className="title-bar" />
+            Programmes
+            <div className="title-bar" />
+          </h3>
+          <div className="members">
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+          </div>
+        </div>
+        <div className="members__wrapper">
+          <h3>
+            <div className="title-bar" />
+            Communications
+            <div className="title-bar" />
+          </h3>
+          <div className="members">
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+          </div>
+        </div>
+        <div className="members__wrapper">
+          <h3>
+            <div className="title-bar" />
+            Facility management
+            <div className="title-bar" />
+          </h3>
+          <div className="members">
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/OJ.png"
+              name="Ojone Akor"
+              title="Chief Operating Officer"
+              bioLink=""
+            />
+          </div>
         </div>
       </div>
     </div>
