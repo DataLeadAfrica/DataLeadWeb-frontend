@@ -4,6 +4,65 @@
   flex-direction: column;
   gap: var(--gap-4);
 }
+.flex {
+  display: flex;
+}
+.contact-us__page .popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+
+  & .blur {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  & .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    gap: var(--gap-1);
+    background-color: var(--clr-orange-light);
+    padding: var(--padding-4);
+    border-radius: 0.75rem;
+    border: solid 2px var(--clr-orange);
+    width: 40%;
+    min-width: 20rem;
+    z-index: 1;
+
+    & .inner__head {
+      border-radius: 9999rem;
+      border: solid 2px black;
+      padding: 0.5rem;
+    }
+    & .inner__head--success {
+      background-color: rgba(0, 255, 0, 0.3);
+      border-color: rgba(0, 255, 0, 1);
+    }
+    & .inner__head--failure {
+      background-color: rgba(255, 0, 0, 0.3);
+      border-color: rgba(255, 0, 0, 1);
+    }
+
+    & .inner__message {
+      text-align: center;
+    }
+
+    & .btn {
+      width: 50%;
+      min-width: 10rem;
+    }
+  }
+}
 .contact-us__head {
   display: flex;
   gap: var(--gap-1);

@@ -41,6 +41,7 @@
     gap: var(--gap-2);
 
     & h3 {
+      font-family: "ClashDisplay-Medium";
       align-self: center;
       display: flex;
       gap: var(--gap-1);
@@ -49,7 +50,9 @@
 
     & .members {
       gap: var(--gap-4);
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: var(--padding-4);
     }
   }
 }
@@ -85,5 +88,15 @@
     & p {
       font-size: 1.25rem;
     }
+  }
+}
+@media (max-width: 1200px) {
+  .our-team__members .members__wrapper .members {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .our-team__members .members__wrapper .members {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

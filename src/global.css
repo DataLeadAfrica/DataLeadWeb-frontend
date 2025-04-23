@@ -38,6 +38,7 @@
   --font-lg: 2.5rem;
   --font-xl: 4rem;
   --font-xxl: 6rem;
+  --font-xxxl: 8rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -153,6 +154,14 @@ input,
 textarea,
 address {
   font-size: var(--font-sm);
+}
+
+h1 {
+  font-size: var(--font-xl);
+}
+
+h2 {
+  font-size: var(--font-lg);
 }
 
 .btn {

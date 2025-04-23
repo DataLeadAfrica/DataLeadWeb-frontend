@@ -1,36 +1,83 @@
-import { FormEventHandler } from "react";
+import { FormEventHandler, useState } from "react";
 import "../css/contact-us.css";
 
-const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-  event.preventDefault();
-  const form = event.target as HTMLFormElement;
-  const formData = new FormData(form);
-
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const message = formData.get("message");
-  fetch("https://formsubmit.co/ajax/info@dataleadafrica.com", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      message: message,
-    }),
-  }).then((response) => {
-    if (!response.ok) {
-      console.log("Error while sending response");
-    } else {
-    }
-  });
-};
-
 export default function ContactUs() {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const message = formData.get("message");
+    fetch("https://formsubmit.co/ajax/da1f4391d4119597412aae0932a6b544", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        message: message,
+      }),
+    }).then((response) => {
+      if (response.ok) {
+        setIsSuccessVisible(true);
+        console.log("Email sent succsfully");
+      } else {
+        setIsFailureVisible(true);
+        console.log("Error while sending response");
+      }
+    });
+  };
+
+  const PopUpSucces = () => {
+    return (
+      <div className="popup">
+        <div className="blur" onClick={() => setIsSuccessVisible(false)}></div>
+        <div className="inner">
+          <p className="inner__head inner__head--success">Thank You</p>
+          <p className="inner__message">
+            Your message has been received. We appreciate you reaching out and
+            will respond to your inquiry shortly.
+          </p>
+          <button className="btn" onClick={() => setIsSuccessVisible(false)}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const PopUpFailure = () => {
+    return (
+      <div className="popup">
+        <div className="blur" onClick={() => setIsFailureVisible(false)}></div>
+        <div className="inner">
+          <p className="inner__head inner__head--failure">
+            Sorry, something went wrong.
+          </p>
+          <p className="inner__message">
+            Your message could not be sent at this time. Please refresh the page
+            and try again
+          </p>
+          <button className="btn" onClick={() => setIsFailureVisible(false)}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  // @ts-ignore
+  const [isFailureVisible, setIsFailureVisible] = useState(false);
+
   return (
     <div className="contact-us__page">
+      {isSuccessVisible && <PopUpSucces />}
+      {isFailureVisible && <PopUpFailure />}
       <div className="contact-us__head">
         <h1>Contact Us</h1>
         <p>
@@ -90,15 +137,17 @@ export default function ContactUs() {
               type="text"
               name="name"
               id="name"
+              required
               placeholder="Enter your name"
             />
           </div>
           <div className="input-wrapper">
             <label htmlFor="email">Email</label>
             <input
-              type="text"
+              type="email"
               name="email"
               id="email"
+              required
               placeholder="Enter your email"
             />
           </div>
@@ -108,6 +157,7 @@ export default function ContactUs() {
               type="text"
               name="subject"
               id="subject"
+              required
               placeholder="Enter the subject"
             />
           </div>
@@ -116,6 +166,7 @@ export default function ContactUs() {
             <textarea
               name="message"
               id="message"
+              required
               placeholder="Enter the message"
             />
           </div>

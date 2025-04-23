@@ -52,9 +52,9 @@ export default function OurTeam() {
           </h3>
           <div className="members">
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Doc.png"
+              name="Dr. Arowolo Ayoola"
+              title="Lead Partner"
               bioLink=""
             />
             <TeamMember
@@ -74,26 +74,32 @@ export default function OurTeam() {
         <div className="members__wrapper">
           <h3>
             <div className="title-bar" />
-            Programmes
+            Programs
             <div className="title-bar" />
           </h3>
           <div className="members">
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Loveth.png"
+              name="Oche Loveth"
+              title="Head of Programs"
               bioLink=""
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Eniola.png"
+              name="Eniola"
+              title="Knowledge Management officer"
               bioLink=""
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Isaac.png"
+              name="Isaac Joshua"
+              title="Program Assistant/Grant Writer"
+              bioLink=""
+            />
+            <TeamMember
+              imgLink="/assets/our-team/Adaora.png"
+              name="Adaora Okona"
+              title="Programs Branding Offricer"
               bioLink=""
             />
           </div>
@@ -106,20 +112,20 @@ export default function OurTeam() {
           </h3>
           <div className="members">
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Felicia.png"
+              name="Felicia Ayodele"
+              title="Head of Communications"
               bioLink=""
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Maranatha.png"
+              name="Maranatha Emmaogboji"
+              title="Communications Officer"
               bioLink=""
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
+              imgLink="/assets/our-team/Matthew.png"
+              name="Gabriel"
               title="Chief Operating Officer"
               bioLink=""
             />

@@ -232,7 +232,7 @@ function App() {
               Discover Training and Consultation That Delivers Real Value.
             </h2>
             <div className="btns">
-              <button className="btn btn-transparent">Download Brochure</button>
+              <button className="btn btn-transparent">Explore Courses</button>
               <button className="btn">Enrol now</button>
             </div>
           </div>

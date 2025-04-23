@@ -32,12 +32,30 @@ export default function Header() {
     );
   }
 
-  const aboutLinks = {
+  function MobileDropDown({ links }: { links: Record<string, string> }) {
+    return (
+      <ul className="content">
+        {Object.keys(links).map((key) => (
+          <li key={key}>
+            <Link
+              className="content__link"
+              to={links[key]}
+              onClick={handleClick}
+            >
+              {key}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  const aboutLinks: Record<string, string> = {
     "Who we are": "/who-we-are",
     "Our Team": "/our-team",
   };
 
-  const programmesLinks = {
+  const programsLinks: Record<string, string> = {
     "Business Analytics Bootcamp": "/business-analytics-bootcamp",
     "Data Science Bootcamp": "/data-science-bootcamp",
     "Data Analytics Bootcamp": "/data-analytics-bootcamp",
@@ -51,13 +69,17 @@ export default function Header() {
 
   const handleClick = () => {
     document.getElementById("nav-menu")?.removeAttribute("open");
+    const innerDropdowns = document.getElementsByClassName("menu__dropdown");
+    for (let i = 0; i < innerDropdowns.length; i++) {
+      innerDropdowns[i].removeAttribute("open");
+    }
     console.log("done");
   };
 
   return (
     <>
       <header className="header">
-        <Link to={"/"}>
+        <Link to={"/"} onClick={handleClick}>
           <img
             src="assets/logo-header.svg"
             alt="Data-Lead Africa"
@@ -72,7 +94,7 @@ export default function Header() {
           <Link className="nav__link" to="/research">
             Research
           </Link>
-          <DropDown title="Programs" links={programmesLinks} />
+          <DropDown title="Programs" links={programsLinks} />
         </nav>
         <Link to="/contact-us" className="btn nav__contact-us">
           Contact Us
@@ -91,9 +113,9 @@ export default function Header() {
                     <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
                   </p>
                 </summary>
-                <div className="dropdown__content">
-                  <h2>About us</h2>
-                </div>
+                <ul className="content">
+                  <MobileDropDown links={aboutLinks} />
+                </ul>
               </details>
               <Link className="menu__link" to="/blog" onClick={handleClick}>
                 Blog
@@ -108,9 +130,7 @@ export default function Header() {
                     <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
                   </p>
                 </summary>
-                <div className="dropdown__content">
-                  <h2>Programs</h2>
-                </div>
+                <MobileDropDown links={programsLinks} />
               </details>
               <Link
                 to="/contact-us"
