@@ -76,17 +76,20 @@
     height: 20%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: var(--gap-1);
     padding: var(--padding-1);
+    min-height: 12rem;
 
     & h3 {
-      font-size: 1.75rem;
+      font-size: var(--font-md);
       font-weight: 400;
     }
 
     & p {
-      font-size: 1.25rem;
+      font-size: var(--font-sm);
+      text-align: center;
     }
   }
 }

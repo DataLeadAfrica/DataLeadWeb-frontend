@@ -7,9 +7,9 @@
   justify-content: center;
   background-color: var(--clr-orange-light);
 
-  & h1 {
-    font-size: var(--font-xxxl);
-    font-family: "ClashDisplay-Bold";
+  img {
+    width: 40%;
+    min-width: 15rem;
   }
 
   & h2 {

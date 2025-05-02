@@ -35,25 +35,20 @@ function Program({
 
 function TestimonialCard({
   testimony,
-  imgSrc,
+  initials,
   name,
-  organisation,
 }: {
   testimony: string;
-  imgSrc: string;
+  initials: string;
   name: string;
-  organisation: string;
 }) {
   return (
-    <Card>
-      <div className="testimonials__card">
+    <Card extraClasses="testimonials__card">
+      <div className="card__content">
         <p>{testimony}</p>
         <div className="card__person">
-          <img src={imgSrc} alt="" />
-          <div className="person__info">
-            <p>{name}</p>
-            <p>{organisation}</p>
-          </div>
+          <p className="person__initials">{initials}</p>
+          <p className="person__name">{name}</p>
         </div>
       </div>
     </Card>
@@ -75,32 +70,35 @@ function App() {
               data science training, and strategic consulting services.
             </p>
             <div className="hero__buttons">
-              <Link to={""} className="btn">
+              <Link to={"/courses"} className="btn">
                 Explore our courses
               </Link>
-              <Link to={""} className="btn btn-transparent">
+              <a
+                href={"https://calendly.com/datalead-a-info/30min"}
+                className="btn btn-transparent"
+              >
                 Request for consultation
-              </Link>
+              </a>
             </div>
             <div className="hero__trained">
-              <img src="assets/index/trained.png" alt="" />
+              <img src="/assets/index/trained.png" alt="" />
               <p>5k+ Individuals Trained</p>
             </div>
           </div>
         </div>
         <div className="hero__image">
           <Card>
-            <img src="assets/index/hero.png" alt="" />
+            <img src="/assets/index/hero.png" alt="" />
           </Card>
-          <img src="assets/index/graph.png" alt="" className="hero__graph" />
+          <img src="/assets/index/graph.png" alt="" className="hero__graph" />
         </div>
       </div>
       <div className="companies__banner">
         <div className="track">
-          <img src="assets/worked-with.svg" alt="clients" />
+          <img src="/assets/worked-with.svg" alt="clients" />
         </div>
         <div aria-hidden className="track">
-          <img src="assets/worked-with.svg" alt="clients" />
+          <img src="/assets/worked-with.svg" alt="clients" />
         </div>
       </div>
       <div className="offerings-section">
@@ -121,7 +119,7 @@ function App() {
                 We delve deep into complex issues, analyze data, and provide
                 actionable recommendations to inform strategic decision-making.
               </p>
-              <Link to={""} className="btn">
+              <Link to={"/research"} className="btn">
                 Discover
               </Link>
             </div>
@@ -134,7 +132,7 @@ function App() {
                 of data-related topics, equipping individuals with the expertise
                 to harness the power of data effectively.
               </p>
-              <Link to={""} className="btn">
+              <Link to={"/training"} className="btn">
                 Discover
               </Link>
             </div>
@@ -147,7 +145,7 @@ function App() {
                 unique challenges and develop effective strategies to achieve
                 your data-driven goals.
               </p>
-              <Link to={""} className="btn">
+              <Link to={"/consultancy"} className="btn">
                 Discover
               </Link>
             </div>
@@ -166,44 +164,26 @@ function App() {
         </div>
         <div className="programs">
           <Program
-            image_src=""
-            title="Data Analysis"
-            body="Data analysis services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
+            image_src="/assets/index/data-analytics.png"
+            title="Data Analytics"
+            body="Data analytics services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
 "
             link={""}
           />
           <Program
-            image_src=""
+            image_src="/assets/index/research.png"
             title="Research"
             body='Research is "creative and systematic work undertaken to increase the stock of knowledge". It involves the collection, organization and analysis of information to increase understanding of a topic or issue.'
             link={""}
           />
           <Program
-            image_src=""
+            image_src="/assets/index/training.png"
             title="Training"
             body="Increasingly, companies value data analysis as a way to stay ahead. This has lead to a huge demand for qualified data analysts. Whether you’re interested in subjects like R, Python, or Excel and SQL."
             link={""}
           />
           <Program
-            image_src=""
-            title="Bioinformatics"
-            body="Bioinformatics is the science of collecting and analysing complex biological data such as genetic codes."
-            link={""}
-          />
-          <Program
-            image_src=""
-            title="Portfolio Analysis"
-            body="Portfolio analysis is a quantitative method for selecting an optimal portfolio that can strike a balance between maximizing the return and minimizing the risk in various uncertain environments."
-            link={""}
-          />
-          <Program
-            image_src=""
-            title="Market analysis"
-            body="Every ad and commercial should be tested for effectiveness. Products should be tested and optimized. Promotions should be tested. Package designs should be tested. Brand names should be evaluated."
-            link={""}
-          />
-          <Program
-            image_src=""
+            image_src="/assets/index/data-science.png"
             title="Data science"
             body="Data analysis services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
 "
@@ -212,17 +192,59 @@ function App() {
         </div>
       </div>
       <div className="deliver">
-        <div className="deliver__content">
-          <h2 className="deliver__title">What we deliver</h2>
-          <p className="deliver__text">
-            Becoming data-driven starts with defining what really matters to the
-            business and an organisation in the short and long term and then
-            creating the data systems and data culture that empower your whole
-            system to achieve value, faster.
+        <div className="deliver__head">
+          <h2 className="head__title">
+            Driven by Expertise, Guided by Collaboration
+          </h2>
+          <p className="head__text">
+            We bring deep knowledge and experience to every engagement. By
+            working closely with you, we ensure our approach is tailored to your
+            unique needs and goals, fostering a true partnership for success.
           </p>
         </div>
-        <div className="deliver__video">
-          <video src=""></video>
+        <div className="deliver__content">
+          <Card extraClasses="deliver__card">
+            <div className="card__content">
+              <p className="card__number">1</p>
+              <div className="card__text">
+                <p className="card__head">
+                  A Structured Path to Meaningful Results
+                </p>
+                <p className="card__paragraph">
+                  We follow a clear and effective process, whether it's in-depth
+                  investigation, skill-building programs, or strategic guidance.
+                </p>
+              </div>
+            </div>
+          </Card>
+          <Card extraClasses="deliver__card">
+            <div className="card__content">
+              <p className="card__number">2</p>
+              <div className="card__text">
+                <p className="card__head">
+                  Committed to Your Growth and Achievement
+                </p>
+                <p className="card__paragraph">
+                  We are dedicated to empowering you with the insights, skills,
+                  and strategies you need to thrive.
+                </p>
+              </div>
+            </div>
+          </Card>
+          <Card extraClasses="deliver__card">
+            <div className="card__content">
+              <p className="card__number">3</p>
+              <div className="card__text">
+                <p className="card__head">
+                  Your Goals, Our Focus: Personalized Solutions
+                </p>
+                <p className="card__paragraph">
+                  We listen to your unique goals and create customized solutions
+                  to help you achieve your desired results.
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
       <div className="call-to-action__wrapper">
@@ -232,8 +254,15 @@ function App() {
               Discover Training and Consultation That Delivers Real Value.
             </h2>
             <div className="btns">
-              <button className="btn btn-transparent">Explore Courses</button>
-              <button className="btn">Enrol now</button>
+              <Link to={"/courses"} className="btn btn-transparent">
+                Explore Courses
+              </Link>
+              <a
+                href="https://calendly.com/datalead-a-info/30min"
+                className="btn"
+              >
+                Book Consultation
+              </a>
             </div>
           </div>
         </CallToAction>
@@ -250,16 +279,25 @@ function App() {
         </div>
         <div className="testimonials__cards">
           <TestimonialCard
-            testimony="Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum culpa veniam vero distinctio nesciunt, enim quisquam accusamus impedit quibusdam aut magnam quidem hic praesentium repellat possimus laborum odit sed eveniet."
-            imgSrc=""
-            name="Person name"
-            organisation="Organisation"
+            testimony="My experience with Data Lead Africa was a worthy one and it has help improve my knowledge and capacity as well as enhance my skills with data analysis which will increase efficiency and effectiveness I need to ease my work.t"
+            initials="BS"
+            name="Blinda Stephen"
           />
           <TestimonialCard
-            testimony="Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum culpa veniam vero distinctio nesciunt, enim quisquam accusamus impedit quibusdam aut magnam quidem hic praesentium repellat possimus laborum odit sed eveniet."
-            imgSrc=""
-            name="Person name"
-            organisation="Organisation"
+            testimony="Very robust data analytics programme. The teachers are patient and well experienced. With DLA even a English Language student can become a Data Analyst."
+            initials="SJ"
+            name="Shunom Jock"
+          />
+          <TestimonialCard
+            testimony="I absolutely loved every moment of the time I spent at Data lead Africa. I learned so much about data analysis and for an absolute beginner, it is the right step to take into the world of data and tech. "
+            initials="OJ"
+            name="Oluwatomi Gisanrin"
+          />
+          <TestimonialCard
+            testimony="Even though, I participated in the virtual classes I had a great experience with the team and tutors at DataLead Africa. It is really a place to learn for any category of learner. Thank you DataLead Africa for quality knowledge and time we shared.
+"
+            initials="AA"
+            name="Ahmed Abidolu"
           />
         </div>
       </div>

@@ -2,21 +2,30 @@ import { Link } from "react-router";
 import "../css/blog.css";
 import Card from "../components/Card";
 
-function Post() {
+function Post({
+  imgSrc,
+  title,
+  summary,
+  date,
+  link,
+}: {
+  imgSrc: string;
+  title: string;
+  summary: string;
+  date: string;
+  link: string;
+}) {
   return (
     <Card extraClasses="post__card">
       <div className="post">
-        <img src="/assets/blog/temp.svg" alt="" />
+        <img src={imgSrc} alt="" />
         <div className="post__content">
-          <p className="post__title">Lorem ipsum dolor</p>
+          <p className="post__title">{title}</p>
           <p className="post__summary">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quas
-            dolorum magnam velit consequuntur, recusandae, impedit architecto
-            porro quod doloremque mollitia ut praesentium vel nulla pariatur.
-            Tempore numquam explicabo facere aliquid?
-            <p className="post__date">Jun 2025</p>
+            {summary}
+            <p className="post__date">{date}</p>
           </p>
-          <Link className="btn" to="">
+          <Link className="btn" to={link}>
             Read
           </Link>
         </div>
@@ -36,19 +45,14 @@ export default function Blog() {
           research.
         </p>
       </div>
-      <div className="posts__wrapper">
-        <Card extraClasses="search__card">
-          <input type="text" className="search" placeholder="Search..." />
-        </Card>
-        <div className="posts">
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-        </div>
+      <div className="posts">
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="WHY SHOULD I REGISTER FOR A COURSE WHEN I CAN SELF LEARN?"
+          summary="“Get into tech, that is one of the ways to make money” I am sure you’ve heard this a..."
+          date="May 2022"
+          link="/blog/why-should-i-register-for-a-course-when-i-can-self-learn"
+        />
       </div>
     </div>
   );

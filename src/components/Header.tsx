@@ -55,18 +55,6 @@ export default function Header() {
     "Our Team": "/our-team",
   };
 
-  const programsLinks: Record<string, string> = {
-    "Business Analytics Bootcamp": "/business-analytics-bootcamp",
-    "Data Science Bootcamp": "/data-science-bootcamp",
-    "Data Analytics Bootcamp": "/data-analytics-bootcamp",
-    "Human Resource Analytics": "/human-resource-analytics",
-    "Short Courses": "/short-courses",
-    "Deaf-in-Tech": "/deaf-in-tech",
-    "Python for Kids": "/python-for-kids",
-    "Digits and Signs": "/digits-and-signs",
-    Bioinformatics: "/bioinformatics",
-  };
-
   const handleClick = () => {
     document.getElementById("nav-menu")?.removeAttribute("open");
     const innerDropdowns = document.getElementsByClassName("menu__dropdown");
@@ -81,7 +69,7 @@ export default function Header() {
       <header className="header">
         <Link to={"/"} onClick={handleClick}>
           <img
-            src="assets/logo-header.svg"
+            src="/assets/logo-header.svg"
             alt="Data-Lead Africa"
             className="header__logo"
           />
@@ -94,7 +82,9 @@ export default function Header() {
           <Link className="nav__link" to="/research">
             Research
           </Link>
-          <DropDown title="Programs" links={programsLinks} />
+          <Link className="menu__link" to="/courses">
+            Courses
+          </Link>
         </nav>
         <Link to="/contact-us" className="btn nav__contact-us">
           Contact Us
@@ -123,15 +113,9 @@ export default function Header() {
               <Link className="menu__link" to="/research" onClick={handleClick}>
                 Research
               </Link>
-              <details className="menu__dropdown">
-                <summary>
-                  <p>
-                    Programs
-                    <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
-                  </p>
-                </summary>
-                <MobileDropDown links={programsLinks} />
-              </details>
+              <Link className="menu__link" to="/courses" onClick={handleClick}>
+                Courses
+              </Link>
               <Link
                 to="/contact-us"
                 className="btn menu__contact-us"

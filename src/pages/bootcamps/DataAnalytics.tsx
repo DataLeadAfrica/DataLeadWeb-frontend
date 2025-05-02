@@ -38,6 +38,9 @@ export default function DataAnalytics() {
             </p>
           </div>
           <div>
+            <p className="overlay__desc">
+              Start Date: <span>14th Jul. 2025</span>
+            </p>
             <Link to="" className="btn">
               Enroll now
             </Link>
@@ -51,12 +54,10 @@ export default function DataAnalytics() {
             <div className="title-bar"></div>
           </h2>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium
-            dolores optio necessitatibus repudiandae illum repellat quas
-            architecto, itaque facilis rerum deleniti perspiciatis quos mollitia
-            temporibus omnis eius ducimus corporis saepe aut iure? Ipsum magni
-            quo quos vero, natus ipsa, porro ea nesciunt facere, sint nemo optio
-            earum adipisci cupiditate voluptatem!
+            Learn to collect, clean, analyze, and visualize data to uncover
+            meaningful insights. Our expert-led program provides you with the
+            practical experience and portfolio needed to succeed as a data
+            analyst in today's data-driven world.
           </p>
         </div>
         <div></div>
@@ -119,9 +120,9 @@ export default function DataAnalytics() {
         </ol>
       </div>
       <div className="data-analytics__join">
+        <h2 className="underline-header">Who Can Join?</h2>
         <Card>
           <div className="card__content">
-            <h2 className="underline-header">Who Can Join?</h2>
             <p>
               At Data-Lead Africa, we believe that everyone should have the
               opportunity to thrive in the field of data analytics. Our unique
@@ -139,29 +140,29 @@ export default function DataAnalytics() {
           <LearnMethod
             heading="Onsite & Online"
             paragraph="Join and collaborate with other interns online and onsite."
-            img="assets/bootcamps/data-analytics/online.svg"
+            img="/assets/bootcamps/data-analytics/online.svg"
           />
           <LearnMethod
             heading="Video Content"
             paragraph="High-quality easy-to-comprehend recorded video lessons."
-            img="assets/bootcamps/data-analytics/video.svg"
+            img="/assets/bootcamps/data-analytics/video.svg"
           />
           <LearnMethod
             heading="Peer to peer review sessions"
             paragraph="Share knowledge with other interns and gain multidimensional perspectives of problem solving."
-            img="assets/bootcamps/data-analytics/review.svg"
+            img="/assets/bootcamps/data-analytics/review.svg"
           />
           <LearnMethod
             heading="Case Studies"
             paragraph="Work on real-life projects by applying what you learn to solve related business problems."
-            img="assets/bootcamps/data-analytics/case.svg"
+            img="/assets/bootcamps/data-analytics/case.svg"
           />
         </div>
       </div>
       <div className="data-analytics__payment">
         <h2 className="underline-header">Payment Plans</h2>
         <div className="payment__options">
-          <Card>
+          <Card extraClasses="payment__option-card">
             <div className="payment__option">
               <i className="icon nf nf-fa-user_circle"></i>
               <div className="option__plan">
@@ -174,12 +175,11 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Save 16.67% when you pay in full today.
               </p>
-              <button className="btn">Enroll now</button>
             </div>
           </Card>
-          <Card>
-            <div className="payment__option">
-              <i className="icon nf nf-fa-user_circle"></i>
+          <Card extraClasses="payment__option-card payment__option-card--popular">
+            <div className="payment__option payment__option--popular">
+              <i className="icon nf nf-fa-bolt"></i>
               <div className="option__plan">
                 <p className="plan__name">One time payment</p>
                 <p className="plan__price">₦ 250,000</p>
@@ -190,12 +190,11 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Save 16.67% when you pay in full today.
               </p>
-              <button className="btn">Enroll now</button>
             </div>
           </Card>
-          <Card>
+          <Card extraClasses="payment__option-card">
             <div className="payment__option">
-              <i className="icon nf nf-fa-user_circle"></i>
+              <i className="icon nf nf-fa-trophy"></i>
               <div className="option__plan">
                 <p className="plan__name">Installment Payment</p>
                 <p className="plan__price">₦ 300,000</p>
@@ -205,7 +204,6 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Save 16.67% when you pay in full today.
               </p>
-              <button className="btn">Enroll now</button>
             </div>
           </Card>
         </div>

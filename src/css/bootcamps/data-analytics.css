@@ -18,9 +18,9 @@
     content: "";
     display: block;
     position: absolute;
-    top: 1rem;
+    bottom: -0.25rem;
     background-color: var(--clr-orange);
-    height: 1rem;
+    height: 1.25rem;
     width: 125%;
     z-index: -1;
   }
@@ -28,37 +28,49 @@
 
 .data-analytics__head {
   color: var(--font-color-inverse);
-  background-image: url("assets/bootcamps/data-analytics/banner.png");
-  background-size: 1500px;
+  background-image: url("/assets/bootcamps/data-analytics/banner.png");
+  background-size: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 30rem;
+  height: 35vh;
+  position: relative;
 
   & h1 {
-    font-size: 3rem;
+    font-size: var(--font-lg);
   }
+}
+@media (max-width: 1200px) {
+  .data-analytics__head h1 {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
 }
 
 .data-analytics__overlay {
   color: var(--font-color);
   position: absolute;
-  top: 20rem;
-  height: 40vh;
-  height: 40svh;
+  bottom: -12rem;
+  height: 20vw;
+  height: 20svw;
+  min-height: 15rem;
   width: 90vw;
   width: 90svw;
   background-color: white;
-  padding: var(--padding-2);
+  padding: var(--padding-3);
   display: flex;
 
   & > * {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     width: 50%;
   }
 
   & .overlay__desc {
-    font-size: 1.25rem;
+    font-size: var(--font-sm);
     color: var(--clr-orange);
 
     & span {
@@ -67,32 +79,51 @@
   }
 }
 
+@media (max-width: 1200px) {
+  .data-analytics__overlay {
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--gap-1);
+
+    & > * {
+      gap: var(--gap-1);
+      width: 100%;
+    }
+  }
+}
+@media (max-width: 768px) {
+}
+
 .data-analytics__about {
   height: 100vh;
   height: 100svh;
   background-color: var(--clr-orange-light);
-  padding: var(--padding-5);
+  padding: var(--padding-4);
   padding-top: 15rem;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--gap-2);
 
   & > * {
+    flex: 1 1 40%;
     width: 50%;
   }
 
   & .about__text {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-1);
+    gap: var(--gap-2);
 
     & h2 {
       display: flex;
       align-items: center;
       gap: var(--gap-1);
+      font-family: "ClashDisplay-Medium";
     }
 
     & p {
-      font-size: 1.2rem;
+      font-size: var(--font-md);
+      color: var(--clr-gray);
     }
   }
 }
@@ -100,7 +131,7 @@
 .data-analytics__modules {
   background-color: var(--clr-black);
   color: var(--font-color-inverse);
-  padding: var(--padding-5);
+  padding: var(--padding-4);
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
@@ -119,10 +150,10 @@
     padding-inline: var(--padding-1);
 
     & > li {
-      font-size: 1.25rem;
+      font-size: var(--font-md);
       font-weight: bold;
       & > * {
-        font-size: 1rem;
+        font-size: var(--font-sm);
         font-weight: normal;
       }
     }
@@ -131,10 +162,17 @@
 
 .data-analytics__join {
   background-color: var(--clr-orange-light);
-  padding: var(--padding-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-2);
+  padding: var(--padding-4);
+
+  & .underline-header {
+    align-self: center;
+  }
 
   & .card .card__content {
-    padding: var(--padding-4);
+    padding: var(--padding-2);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -142,14 +180,14 @@
     gap: var(--gap-2);
 
     & p {
-      width: 80%;
-      font-size: 1.2rem;
+      width: 100%;
+      font-size: var(--font-md);
     }
   }
 }
 
 .data-analytics__learn {
-  padding: var(--padding-5);
+  padding: var(--padding-4);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -185,6 +223,8 @@
         width: 90%;
 
         & h3 {
+          padding: var(--padding-0_5);
+          font-size: var(--font-sm);
           align-self: flex-start;
         }
 
@@ -202,6 +242,11 @@
     }
   }
 }
+@media (max-width: 768px) {
+  .data-analytics__learn .learn__methods {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 
 .data-analytics__payment {
   padding: var(--padding-4);
@@ -214,6 +259,8 @@
 
 .data-analytics__payment .payment__options {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--gap-2);
 }
 
@@ -235,7 +282,7 @@
   & .icon {
     border-radius: 9999rem;
     font-size: 1.5rem;
-    padding: 0.5rem;
+    padding: var(--padding-0_5);
     border: solid 1px black;
     align-self: flex-start;
   }
@@ -246,6 +293,9 @@
   }
 }
 
+.data-analytics__payment .payment__option-card::after {
+  min-height: 20rem;
+}
 .data-analytics__payment .payment__option .option__plan {
   display: flex;
   flex-direction: column;
@@ -253,7 +303,7 @@
   justify-content: center;
   gap: var(--gap-1);
   padding-inline: var(--padding-2);
-  min-height: 15rem;
+  min-height: 20rem;
   & hr {
     width: 100%;
   }
@@ -278,9 +328,9 @@
     display: block;
     position: absolute;
     border-left: solid 2px var(--clr-orange);
-    top: -4rem;
-    right: 4rem;
-    height: 10rem;
+    top: -170%;
+    right: 50%;
+    height: 450%;
     rotate: 80deg;
   }
   & .plan__old-price::after {
@@ -288,15 +338,30 @@
     display: block;
     position: absolute;
     border-left: solid 2px var(--clr-orange);
-    top: -4rem;
-    right: 4rem;
-    height: 10rem;
+    top: -170%;
+    right: 50%;
+    height: 450%;
     rotate: -80deg;
   }
 }
 
+.data-analytics__payment .payment__option-card--popular::after {
+  background-color: transparent;
+  border: solid 1px var(--clr-orange);
+}
+
+.data-analytics__payment .payment__option--popular {
+  background: var(--clr-black);
+  color: var(--font-color-inverse);
+
+  & .icon {
+    border: solid 1px var(--font-color-inverse);
+    color: yellow;
+  }
+}
+
 .data-analytics__page .call-to-action__wrapper {
-  padding: var(--padding-5);
+  padding: var(--padding-4);
   background-color: var(--clr-black);
   & .call-to-action__content {
     display: flex;
@@ -329,5 +394,10 @@
         justify-content: center;
       }
     }
+  }
+}
+@media (max-width: 768px) {
+  .data-analytics__page .call-to-action__wrapper {
+    padding: 0;
   }
 }

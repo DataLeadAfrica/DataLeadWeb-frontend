@@ -16,26 +16,10 @@
   }
 }
 
-.blog-page .posts__wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-5);
-  padding: var(--padding-4);
-}
-
-.blog-page .search__card {
-  width: 50%;
-  min-width: 19rem;
-}
-
-.blog-page .search {
-  padding: var(--padding-1);
-  width: 100%;
-}
-
 .blog-page .posts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  padding: var(--padding-4);
   gap: var(--gap-2);
 }
 

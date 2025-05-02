@@ -22,9 +22,11 @@ function TeamMember({
         <div className="member__info">
           <h3>{name}</h3>
           <p>{title}</p>
-          <Link to={bioLink} className="btn btn-transparent">
-            Read Bio
-          </Link>
+          {bioLink != "" && (
+            <Link to={bioLink} className="btn btn-transparent">
+              Read Bio
+            </Link>
+          )}
         </div>
       </div>
     </Card>
@@ -55,19 +57,19 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Doc.png"
               name="Dr. Arowolo Ayoola"
               title="Lead Partner"
-              bioLink=""
+              bioLink="/our-team/dr-arowolo-ayoola"
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
-              bioLink=""
+              imgLink="/assets/our-team/Abdulsalam.png"
+              name="Abdulsalam Oluwatosin"
+              title="Senior Partner and Co-Founder, Data-Lead Africa"
+              bioLink="/our-team/abdulsalam-oluwatosin"
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
-              bioLink=""
+              imgLink="/assets/our-team/Sefunmi.png"
+              name="Sefunmi Oluwole"
+              title="DEI Partnerships, Advocacy, Policy Strengthening, & Program Dev. Manager"
+              bioLink="/our-team/sefunmi-oluwole"
             />
           </div>
         </div>
@@ -82,7 +84,7 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Loveth.png"
               name="Oche Loveth"
               title="Head of Programs"
-              bioLink=""
+              bioLink="/our-team/oche-loveth"
             />
             <TeamMember
               imgLink="/assets/our-team/Eniola.png"
@@ -115,18 +117,18 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Felicia.png"
               name="Felicia Ayodele"
               title="Head of Communications"
-              bioLink=""
+              bioLink="/our-team/felicia-ayodele"
             />
             <TeamMember
               imgLink="/assets/our-team/Maranatha.png"
               name="Maranatha Emmaogboji"
               title="Communications Officer"
-              bioLink=""
+              bioLink="/our-team/maranatha-emmaogboji"
             />
             <TeamMember
               imgLink="/assets/our-team/Matthew.png"
               name="Gabriel"
-              title="Chief Operating Officer"
+              title="Communications Officer"
               bioLink=""
             />
           </div>
@@ -139,15 +141,15 @@ export default function OurTeam() {
           </h3>
           <div className="members">
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Blessing.png"
+              name="Blessing Adem"
+              title="Facility Manager I"
               bioLink=""
             />
             <TeamMember
-              imgLink="/assets/our-team/OJ.png"
-              name="Ojone Akor"
-              title="Chief Operating Officer"
+              imgLink="/assets/our-team/Musa.png"
+              name="Musa"
+              title="Facility Manager II"
               bioLink=""
             />
           </div>

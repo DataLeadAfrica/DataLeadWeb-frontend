@@ -1,94 +1,39 @@
 .research {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-2);
-}
-
-.research__hero {
-  background-color: var(--clr-orange-light);
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: var(--padding-4);
-  gap: var(--gap-2);
-}
-
-.research__hero h1 {
-  font-family: "ClashDisplay-Medium";
-  font-size: var(--font-lg);
-  text-align: center;
-  width: 70%;
-}
-
-.research__hero p {
-  text-align: center;
-  width: 60%;
-}
-
-.research__researches {
-  padding-inline: var(--padding-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-1);
-}
-
-.researches__title {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-1);
-}
-
-.researches__content {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--gap-2);
-  justify-content: space-between;
-}
-
-.research .post__card {
-  min-width: 10rem;
-  width: 100%;
-  max-width: 20rem;
-  height: 25rem;
-}
-
-.researches__post {
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-
   & > * {
-    height: 50%;
-  }
-
-  & .post__text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: var(--padding-1);
-    background-color: var(--clr-gray-light);
-
-    & :last-child {
-      margin-top: auto;
-    }
+    padding: var(--padding-4);
   }
 }
-@media (max-width: 1200px) {
-  .research__hero h1 {
-    text-align: left;
-    width: 100%;
-  }
-  .research__hero p {
-    text-align: left;
-    width: 100%;
-  }
-  .researches__content {
-    grid-template-columns: repeat(2, 1fr);
+
+.research__head {
+  display: flex;
+  justify-content: start;
+  min-height: 20rem;
+  position: relative;
+}
+
+.research__card {
+  position: absolute;
+  bottom: -7rem;
+  left: var(--padding-4);
+  max-height: 20rem;
+  width: 60%;
+  max-width: 20rem;
+}
+
+.research__content {
+  padding-block-start: 10rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+  background-color: var(--clr-orange-light);
+
+  & h1 {
+    font-family: "ClashDisplay-Regular";
+    font-size: var(--font-lg);
   }
 }
-@media (max-width: 768px) {
-  .researches__content {
-    grid-template-columns: repeat(1, 1fr);
-  }
+
+.research__text span {
+  color: var(--clr-orange);
+  font-weight: 700;
 }

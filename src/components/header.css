@@ -26,10 +26,6 @@
 .nav__menu {
   display: none;
 
-  & ::marker {
-    content: "";
-  }
-
   & .x,
   & .burger {
     display: flex;
@@ -75,6 +71,21 @@
       font-size: 1rem;
     }
   }
+}
+
+.nav__menu::marker {
+  content: "";
+}
+
+.nav__menu ul {
+  list-style: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+details > summary:first-of-type {
+  list-style-type: none;
 }
 
 .nav__menu .menu__dropdown {
