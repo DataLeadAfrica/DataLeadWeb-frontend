@@ -60,7 +60,11 @@ export default function DataAnalytics() {
             analyst in today's data-driven world.
           </p>
         </div>
-        <div></div>
+        <div>
+          <Card>
+            <img src="/assets/bootcamps/data-analytics/highlight.png" alt="" />
+          </Card>
+        </div>
       </div>
       <div className="data-analytics__modules">
         <h2>

@@ -1,4 +1,4 @@
-import { Link, To } from "react-router";
+import { Link } from "react-router";
 
 import "./index.css";
 import Card from "./components/Card";
@@ -8,12 +8,10 @@ function Program({
   image_src,
   title,
   body,
-  link,
 }: {
   image_src: string;
   title: string;
   body: string;
-  link: To;
 }) {
   return (
     <Card>
@@ -25,9 +23,6 @@ function Program({
           <h3 className="program__title">{title}</h3>
           <p>{body}</p>
         </div>
-        <Link to={link} className="btn">
-          Discover
-        </Link>
       </div>
     </Card>
   );
@@ -168,26 +163,22 @@ function App() {
             title="Data Analytics"
             body="Data analytics services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
 "
-            link={""}
           />
           <Program
             image_src="/assets/index/research.png"
             title="Research"
             body='Research is "creative and systematic work undertaken to increase the stock of knowledge". It involves the collection, organization and analysis of information to increase understanding of a topic or issue.'
-            link={""}
           />
           <Program
             image_src="/assets/index/training.png"
             title="Training"
             body="Increasingly, companies value data analysis as a way to stay ahead. This has lead to a huge demand for qualified data analysts. Whether you’re interested in subjects like R, Python, or Excel and SQL."
-            link={""}
           />
           <Program
             image_src="/assets/index/data-science.png"
             title="Data science"
             body="Data analysis services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
 "
-            link={""}
           />
         </div>
       </div>

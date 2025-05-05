@@ -80,6 +80,9 @@
 }
 
 @media (max-width: 1200px) {
+  .data-analytics__head {
+    background-image: url("/assets/bootcamps/data-analytics/banner-small.png");
+  }
   .data-analytics__overlay {
     flex-direction: column;
     justify-content: center;
@@ -95,8 +98,6 @@
 }
 
 .data-analytics__about {
-  height: 100vh;
-  height: 100svh;
   background-color: var(--clr-orange-light);
   padding: var(--padding-4);
   padding-top: 15rem;
@@ -182,7 +183,13 @@
     & p {
       width: 100%;
       font-size: var(--font-md);
+      padding: var(--padding-4);
     }
+  }
+}
+@media (max-width: 1200px) {
+  .data-analytics__join .card .card__content p {
+    padding: 0;
   }
 }
 
@@ -261,6 +268,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--gap-2);
 }
 
@@ -294,7 +302,7 @@
 }
 
 .data-analytics__payment .payment__option-card::after {
-  min-height: 20rem;
+  min-height: 15rem;
 }
 .data-analytics__payment .payment__option .option__plan {
   display: flex;
@@ -303,7 +311,7 @@
   justify-content: center;
   gap: var(--gap-1);
   padding-inline: var(--padding-2);
-  min-height: 20rem;
+  min-height: 15rem;
   & hr {
     width: 100%;
   }

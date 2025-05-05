@@ -144,7 +144,7 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Blessing.png"
               name="Blessing Adem"
               title="Facility Manager I"
-              bioLink=""
+              bioLink="/our-team/blessing-adem"
             />
             <TeamMember
               imgLink="/assets/our-team/Musa.png"

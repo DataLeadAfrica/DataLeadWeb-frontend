@@ -196,6 +196,17 @@ Felicia’s warm and engaging approach has built her a reputation as a trusted b
             />
           }
         />
+        {/* Facility */}
+        <Route
+          path="/our-team/blessing-adem"
+          element={
+            <Bio
+              imgSrc="/assets/our-team/Blessing.png"
+              name="Blessing Adem"
+              text="Blessing Adem is the Client Response Officer at Data-Lead Africa, bringing over two years of experience to the role. She is adept at multitasking and problem-solving, ensuring that the office runs seamlessly. Blessing’s commitment to excellence and proactive approach make her an invaluable asset to the team, consistently contributing to the smooth operation and success of Data-Lead Africa."
+            />
+          }
+        />
         // Not finished pages
         <Route
           path="/courses/short-courses"
