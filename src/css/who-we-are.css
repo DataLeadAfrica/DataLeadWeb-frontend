@@ -43,7 +43,6 @@
 
   & p {
     font-size: var(--font-md);
-    width: 80%;
   }
 
   & .quote {
@@ -71,7 +70,6 @@
 
   & p {
     font-size: var(--font-md);
-    width: 80%;
   }
 
   & .quote {

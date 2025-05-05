@@ -37,7 +37,6 @@
   & .members__wrapper {
     display: flex;
     flex-direction: column;
-    padding-inline: var(--padding-4);
     gap: var(--gap-2);
 
     & h3 {
@@ -45,6 +44,7 @@
       align-self: center;
       display: flex;
       gap: var(--gap-1);
+      text-align: center;
       align-items: center;
     }
 
@@ -73,7 +73,6 @@
   }
 
   & .member__info {
-    height: 20%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -96,6 +95,15 @@
 @media (max-width: 1200px) {
   .our-team__members .members__wrapper .members {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .our-team__heading h2 {
+    text-align: left;
+    width: 100%;
+  }
+
+  .our-team__member .member__info {
+    min-height: 10rem;
   }
 }
 @media (max-width: 768px) {

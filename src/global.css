@@ -202,14 +202,12 @@ h2 {
   border: solid 1px var(--clr-orange);
   background-color: var(--clr-orange);
   height: 3px;
-  width: 6rem;
+  width: 4rem;
 }
 
 .title-bar--inverse {
-  border: solid 1px var(--clr-light-900);
+  border-color: var(--clr-light-900);
   background-color: var(--clr-light-900);
-  height: 3px;
-  width: 4rem;
 }
 
 @media (max-width: 768px) {
@@ -220,12 +218,11 @@ h2 {
     --padding-4: calc(3 / 5 * 4rem);
     --padding-5: calc(3 / 5 * 5rem);
 
-    --font-xs: calc(4 / 5 * 0.75rem);
-    --font-sm: calc(4 / 5 * 1rem);
-    /* NOTE: Change by different margin because of how small text gets */
-    --font-md: calc(3 / 5 * 1.5rem);
-    --font-lg: calc(3 / 5 * 2.5rem);
-    --font-xl: calc(3 / 5 * 4rem);
-    --font-xxl: calc(3 / 5 * 6rem);
+    --font-xs: calc(4 / 6 * 0.75rem);
+    --font-sm: calc(4 / 6 * 1rem);
+    --font-md: calc(4 / 6 * 1.5rem);
+    --font-lg: calc(4 / 6 * 2.5rem);
+    --font-xl: calc(4 / 6 * 4rem);
+    --font-xxl: calc(4 / 6 * 6rem);
   }
 }
