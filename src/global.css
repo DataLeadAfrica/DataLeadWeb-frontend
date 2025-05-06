@@ -212,11 +212,12 @@ h2 {
 
 @media (max-width: 768px) {
   :root {
-    --padding-1: calc(3 / 5 * 1rem);
-    --padding-2: calc(3 / 5 * 2rem);
-    --padding-3: calc(3 / 5 * 3rem);
-    --padding-4: calc(3 / 5 * 4rem);
-    --padding-5: calc(3 / 5 * 5rem);
+    --padding-0_5: calc(3 / 6 * 0.5rem);
+    --padding-1: calc(3 / 6 * 1rem);
+    --padding-2: calc(3 / 6 * 2rem);
+    --padding-3: calc(3 / 6 * 3rem);
+    --padding-4: calc(3 / 6 * 4rem);
+    --padding-5: calc(3 / 6 * 5rem);
 
     --font-xs: calc(4 / 6 * 0.75rem);
     --font-sm: calc(4 / 6 * 1rem);

@@ -37,8 +37,12 @@
   & h2 {
     font-family: "ClashDisplay-Medium";
     font-size: var(--font-xxl);
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1px;
+    color: white;
+    text-shadow:
+      1px 1px 0 black,
+      -1px 1px 0 black,
+      1px -1px 0 black,
+      -1px -1px 0 black;
   }
 
   & p {
@@ -64,8 +68,12 @@
   & h2 {
     font-family: "ClashDisplay-Medium";
     font-size: var(--font-xxl);
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1px;
+    color: var(--clr-black);
+    text-shadow:
+      1px 1px 0 var(--clr-orange-light),
+      -1px 1px 0 var(--clr-orange-light),
+      1px -1px 0 var(--clr-orange-light),
+      -1px -1px 0 var(--clr-orange-light);
   }
 
   & p {
