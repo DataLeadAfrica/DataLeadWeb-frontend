@@ -102,13 +102,7 @@
   padding: var(--padding-4);
   padding-top: 15rem;
   display: flex;
-  flex-wrap: wrap;
   gap: var(--gap-2);
-
-  & > * {
-    flex: 1 1 40%;
-    width: 50%;
-  }
 
   & .about__text {
     display: flex;
@@ -126,6 +120,12 @@
       font-size: var(--font-md);
       color: var(--clr-gray);
     }
+  }
+}
+
+@media (max-width: 1200px) {
+  .data-analytics__about {
+    flex-direction: column;
   }
 }
 
@@ -194,11 +194,16 @@
 }
 
 .data-analytics__learn {
+  background-color: var(--clr-black);
   padding: var(--padding-4);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--gap-2);
+
+  & .underline-header {
+    color: var(--bg-color);
+  }
 
   & .learn__methods {
     display: grid;
@@ -249,7 +254,7 @@
     }
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .data-analytics__learn .learn__methods {
     grid-template-columns: repeat(1, 1fr);
   }
@@ -261,15 +266,14 @@
   flex-direction: column;
   gap: var(--gap-2);
   align-items: center;
-  background-color: var(--clr-orange-light);
 }
 
 .data-analytics__payment .payment__options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   align-items: center;
   justify-content: center;
   gap: var(--gap-2);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .data-analytics__payment .payment__option {
@@ -316,13 +320,12 @@
     width: 100%;
   }
   & .plan__name {
-    display: flex;
-    justify-content: center;
-    width: fit-content;
-    padding-inline: var(--padding-2);
+    padding-block: var(--padding-0_5);
+    padding-inline: var(--padding-1);
     border-radius: 99rem;
     background-color: var(--clr-orange-light);
     color: var(--clr-orange);
+    text-align: center;
   }
   & .plan__price {
     font-size: var(--font-lg);
@@ -368,9 +371,19 @@
   }
 }
 
+@media (max-width: 1200px) {
+  .data-analytics__payment .payment__options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .data-analytics__payment .payment__options {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
 .data-analytics__page .call-to-action__wrapper {
-  padding: var(--padding-4);
-  background-color: var(--clr-black);
+  background-color: var(--clr-orange-light);
   & .call-to-action__content {
     display: flex;
     flex-direction: column;
@@ -402,10 +415,5 @@
         justify-content: center;
       }
     }
-  }
-}
-@media (max-width: 768px) {
-  .data-analytics__page .call-to-action__wrapper {
-    padding: 0;
   }
 }

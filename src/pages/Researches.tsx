@@ -1,6 +1,7 @@
 import { Link, To } from "react-router";
 import Card from "../components/Card";
 import "../css/researches.css";
+import { routes } from "../routes";
 
 function ResearchesPost({
   link,
@@ -48,9 +49,29 @@ export default function Researches() {
         </div>
         <div className="posts__content">
           <ResearchesPost
+            title="NIGERIA JOINT RESPONSE/DUTCH MINISTRY OF FOREIGN AFFAIRS (Oct – Nov 2020)"
+            imgSrc="/assets/researches/NJR.png"
+            link={routes.researchNigeriaJointResponse}
+          />
+          <ResearchesPost
             title="USAID/NIGERIA (Dec 2020 – Jan 2021)"
             imgSrc="/assets/researches/USAID.png"
-            link={"/research/usaid-nigeria-dec-2020-jan-2021"}
+            link={routes.researchUsaidNigeria}
+          />
+          <ResearchesPost
+            title="MERCY CORPS (Mar – Apr 2021)"
+            imgSrc="/assets/researches/Mercy-corps.png"
+            link={routes.researchMercyCorps}
+          />
+          <ResearchesPost
+            title="Japan International Cooperation Agency (Oct – Nov 2021)"
+            imgSrc="/assets/researches/JICA.jpg"
+            link={routes.researchJapanInternational}
+          />
+          <ResearchesPost
+            title="SOCIAL IMPACT/USAID NIGERIA (Dec 2021 – Feb 2022)"
+            imgSrc="/assets/researches/social-impact-usaid.jpg"
+            link={routes.researchSocialImpactUsaid}
           />
         </div>
       </div>

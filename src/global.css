@@ -169,10 +169,10 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem;
+  padding: var(--padding-0_5);
   border: 1px solid transparent;
   display: flex;
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   background-color: var(--clr-orange);
   color: var(--font-color-inverse);
   align-items: center;

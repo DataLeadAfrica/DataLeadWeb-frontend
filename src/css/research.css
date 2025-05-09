@@ -33,7 +33,17 @@
   }
 }
 
+.research__text {
+  max-width: 70%;
+}
 .research__text span {
   color: var(--clr-orange);
   font-weight: 700;
+}
+@media (max-width: 1200px) {
+  .research__text {
+    max-width: 100%;
+  }
+}
+@media (max-width: 768px) {
 }

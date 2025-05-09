@@ -1,10 +1,18 @@
+.blog-page {
+  background-color: var(--clr-orange-light);
+  padding-bottom: var(--padding-4);
+
+  & > * {
+    padding-inline: var(--padding-4);
+  }
+}
+
 .blog-page .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr-orange-light);
-  padding: var(--padding-5);
+  padding: var(--padding-4);
 
   & h1 {
     font-family: "ClashDisplay-Medium";
@@ -19,7 +27,6 @@
 .blog-page .posts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: var(--padding-4);
   gap: var(--gap-2);
 }
 

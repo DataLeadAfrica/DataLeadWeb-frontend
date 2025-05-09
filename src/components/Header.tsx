@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import "./header.css";
+import { routes } from "../routes";
 
 export default function Header() {
   function DropDown({
@@ -76,17 +77,17 @@ export default function Header() {
         </Link>
         <nav className="header__nav">
           <DropDown title="About Us" links={aboutLinks} />
-          <Link className="nav__link" to="/blog">
+          <Link className="nav__link" to={routes.blog}>
             Blog
           </Link>
-          <Link className="nav__link" to="/research">
+          <Link className="nav__link" to={routes.research}>
             Research
           </Link>
-          <Link className="menu__link" to="/courses">
+          <Link className="menu__link" to={routes.courses}>
             Courses
           </Link>
         </nav>
-        <Link to="/contact-us" className="btn nav__contact-us">
+        <Link to={routes.contactUs} className="btn nav__contact-us">
           Contact Us
         </Link>
         <details id="nav-menu" className="nav__menu">
@@ -107,17 +108,29 @@ export default function Header() {
                   <MobileDropDown links={aboutLinks} />
                 </ul>
               </details>
-              <Link className="menu__link" to="/blog" onClick={handleClick}>
+              <Link
+                className="menu__link"
+                to={routes.blog}
+                onClick={handleClick}
+              >
                 Blog
               </Link>
-              <Link className="menu__link" to="/research" onClick={handleClick}>
+              <Link
+                className="menu__link"
+                to={routes.research}
+                onClick={handleClick}
+              >
                 Research
               </Link>
-              <Link className="menu__link" to="/courses" onClick={handleClick}>
+              <Link
+                className="menu__link"
+                to={routes.courses}
+                onClick={handleClick}
+              >
                 Courses
               </Link>
               <Link
-                to="/contact-us"
+                to={routes.contactUs}
                 className="btn menu__contact-us"
                 onClick={handleClick}
               >

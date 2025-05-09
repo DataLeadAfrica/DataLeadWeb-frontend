@@ -107,7 +107,7 @@ function App() {
         <Card>
           <div className="offerings-section__card">
             <div className="card-section">
-              <i className="nf nf-md-file_search" />
+              <img src="/assets/index/research-icon.svg" alt="" />
               <h4>Research</h4>
               <p>
                 Uncover valuable insights with our rigorous research services.
@@ -119,26 +119,26 @@ function App() {
               </Link>
             </div>
             <div className="card-section">
-              <i className="nf nf-cod-pie_chart" />
-              <h4>Training</h4>
-              <p>
-                Empower your team with the skills and knowledge they need to
-                succeed. Our comprehensive training programs cover a wide range
-                of data-related topics, equipping individuals with the expertise
-                to harness the power of data effectively.
-              </p>
-              <Link to={"/training"} className="btn">
-                Discover
-              </Link>
-            </div>
-            <div className="card-section">
-              <i className="nf nf-md-chat" />
+              <img src="/assets/index/training-icon.svg" alt="" />
               <h4>Consultancy</h4>
               <p>
                 Partner with us for expert guidance and tailored solutions. Our
                 experienced consultants work closely with you to understand your
                 unique challenges and develop effective strategies to achieve
                 your data-driven goals.
+              </p>
+              <Link to={"/training"} className="btn">
+                Discover
+              </Link>
+            </div>
+            <div className="card-section">
+              <img src="/assets/index/consultancy-icon.svg" alt="" />
+              <h4>Training</h4>
+              <p>
+                Empower your team with the skills and knowledge they need to
+                succeed. Our comprehensive training programs cover a wide range
+                of data-related topics, equipping individuals with the expertise
+                to harness the power of data effectively.
               </p>
               <Link to={"/consultancy"} className="btn">
                 Discover
@@ -261,7 +261,7 @@ function App() {
       <div className="testimonials">
         <div className="testimonials__header">
           <h2 className="testimonials__title">Testimonials</h2>
-          <h3 className="testimonials__subtitle">Voices of Partnership</h3>
+          <h3 className="testimonials__subtitle">Voices of Learners</h3>
           <p className="testimonials__summary">
             The little stories of each person that has gone through Data-Lead
             Africa really counts for something more. And that is why we are

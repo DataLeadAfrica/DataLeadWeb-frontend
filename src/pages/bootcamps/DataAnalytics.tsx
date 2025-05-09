@@ -68,7 +68,8 @@ export default function DataAnalytics() {
       </div>
       <div className="data-analytics__modules">
         <h2>
-          Data Analytics Modules <div className="title-bar--inverse"></div>
+          Data Analytics Modules{" "}
+          <div className="title-bar title-bar--inverse"></div>
         </h2>
         <ol>
           <li>
@@ -124,9 +125,9 @@ export default function DataAnalytics() {
         </ol>
       </div>
       <div className="data-analytics__join">
-        <h2 className="underline-header">Who Can Join?</h2>
         <Card>
           <div className="card__content">
+            <h2 className="underline-header">Who Can Join?</h2>
             <p>
               At Data-Lead Africa, we believe that everyone should have the
               opportunity to thrive in the field of data analytics. Our unique
@@ -215,13 +216,18 @@ export default function DataAnalytics() {
       <div className="call-to-action__wrapper">
         <CallToAction>
           <div className="call-to-action__content">
-            <h2>“Embark on Your Data Analytics Journey”</h2>
+            <h2>Embark on Your Data Analytics Journey</h2>
             <p>
               An Immersive and Engaging Learning Experience That Will Transform
               Your Data Skills.
             </p>
             <div className="btns">
-              <button className="btn btn-transparent">Download Brochure</button>
+              <a
+                href="https://drive.google.com/uc?export=download&id=1t_5SAl_9LZV33dqJyjMxlkV9F7f3wxgn"
+                className="btn btn-transparent"
+              >
+                Download Brochure
+              </a>
               <button className="btn">Enrol now</button>
             </div>
           </div>

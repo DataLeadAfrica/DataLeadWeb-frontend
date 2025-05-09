@@ -2,10 +2,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
+  background-color: var(--clr-orange-light);
+  padding-bottom: var(--padding-4);
 }
 
 .researches__hero {
-  background-color: var(--clr-orange-light);
   display: flex;
   align-items: center;
   flex-direction: column;

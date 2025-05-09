@@ -47,11 +47,8 @@
 
   & p {
     font-size: var(--font-md);
-  }
-
-  & .quote {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 7rem;
+    font-weight: 600;
+    width: 80%;
   }
 }
 
@@ -78,10 +75,17 @@
 
   & p {
     font-size: var(--font-md);
+    font-weight: 600;
+    width: 80%;
   }
-
-  & .quote {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 7rem;
+}
+@media (max-width: 1200px) {
+  .who-we-are__mission p {
+    width: 100%;
   }
+  .who-we-are__vision p {
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
 }

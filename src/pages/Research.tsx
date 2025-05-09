@@ -4,12 +4,12 @@ import "../css/research.css";
 export default function Research({
   imgSrc,
   title,
-  category,
+  projTitle,
   desc,
 }: {
   imgSrc: string;
   title: string;
-  category: string;
+  projTitle: string;
   desc: string;
 }) {
   return (
@@ -22,7 +22,7 @@ export default function Research({
       <div className="research__content">
         <h1>{title}</h1>
         <p className="research__text">
-          <span>Category:</span> {category}
+          <span>Project title:</span> {projTitle}
         </p>
         <p className="research__text">
           <span>Description:</span> {desc}

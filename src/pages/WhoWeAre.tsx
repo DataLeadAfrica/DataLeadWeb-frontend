@@ -23,7 +23,6 @@ export default function WhoWeAre() {
           partnerships, and champion data-driven decision-making to propel
           Africa's socio-economic growth and development.
         </p>
-        <p className="quote">&rdquo;</p>
       </div>
       <div className="who-we-are__vision">
         <h2>Our vision</h2>
@@ -31,7 +30,6 @@ export default function WhoWeAre() {
           Empowering a data-driven Africa, where informed decisions spark
           transformative growth, innovation, and prosperity for all.
         </p>
-        <p className="quote">&rdquo;</p>
       </div>
     </div>
   );

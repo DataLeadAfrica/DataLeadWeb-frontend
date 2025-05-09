@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import "/src/components/footer.css";
+import { routes } from "../routes";
 
 export default function Footer() {
   return (
@@ -32,10 +33,10 @@ export default function Footer() {
       </div>
       <div className="footer__col">
         <h3 className="col__header">Company</h3>
-        <Link to="/contact-us">Contact Us</Link>
-        <Link to="/research">Research</Link>
-        <Link to="/careers">Careers</Link>
-        <Link to="/blog">Blog</Link>
+        <Link to={routes.contactUs}>Contact Us</Link>
+        <Link to={routes.research}>Research</Link>
+        <Link to="">Careers</Link>
+        <Link to={routes.blog}>Blog</Link>
       </div>
       <div className="footer__col">
         <h3 className="col__header">Products</h3>

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import Card from "../components/Card";
 import "../css/courses.css";
+import { routes } from "../routes";
 
 export default function Courses() {
   return (
@@ -27,7 +28,7 @@ export default function Courses() {
                   Master essential tools and techniques through real-world
                   projects. Start your data journey with our immersive bootcamp.
                 </p>
-                <Link to="/courses/data-analytics-bootcamp" className="btn">
+                <Link to={routes.dataAnalytics} className="btn">
                   Read
                 </Link>
               </div>

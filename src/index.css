@@ -1,4 +1,4 @@
-.landing {
+title-bar .landing {
   display: grid;
 }
 
@@ -79,7 +79,7 @@
   display: flex;
   align-items: center;
   & .card {
-    width: 70%;
+    width: 60%;
     min-width: 20rem;
   }
 }
@@ -137,6 +137,9 @@
   }
   .landing .hero__text h1 {
     text-align: left;
+  }
+  .hero__graph {
+    bottom: -2rem;
   }
 }
 
@@ -199,6 +202,7 @@
 }
 .landing .offerings-section__title {
   font-size: var(--font-sm);
+  font-weight: 400;
   border: solid 1px var(--font-color-inverse);
   padding-inline: var(--padding-2);
   border-radius: 0.5rem;
@@ -228,8 +232,9 @@
   gap: var(--gap-1);
 }
 
-.landing .offerings-section__card > * > i {
-  font-size: var(--font-xl);
+.landing .offerings-section__card > * > img {
+  width: var(--font-xl);
+  height: var(--font-xl);
 }
 
 .landing .offerings-section__card > * > h4 {
@@ -370,12 +375,16 @@
   border: solid 1px var(--clr-orange);
   padding-inline: var(--padding-2);
   padding-block: var(--padding-3);
-  min-height: 30rem;
+  min-height: 25rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: var(--gap-4);
 }
 
+.landing .deliver__card .card__text {
+  display: grid;
+  gap: var(--gap-1);
+}
 .landing .deliver__card .card__number {
   font-size: var(--font-xl);
   color: var(--clr-orange);
@@ -413,9 +422,7 @@
 }
 
 .landing .call-to-action__wrapper {
-  display: flex;
-  justify-content: center;
-
+  padding: 0;
   & .call-to-action__content {
     display: flex;
     flex-direction: column;
@@ -461,6 +468,7 @@
 
 .landing .testimonials__title {
   font-size: var(--font-sm);
+  font-weight: 400;
   border: solid 1px var(--font-color-inverse);
   padding-inline: var(--padding-1);
   border-radius: 0.5rem;
