@@ -40,8 +40,7 @@ export default function Footer() {
       </div>
       <div className="footer__col">
         <h3 className="col__header">Products</h3>
-        <Link to="">Deaf learn Academy</Link>
-        <Link to="">Data lead foundation</Link>
+        <Link to={routes.deafInTech}>Deaf in Tech</Link>
       </div>
       <div className="footer__col">
         <h3 className="col__header">Get in touch</h3>

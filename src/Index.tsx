@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import "./index.css";
 import Card from "./components/Card";
 import CallToAction from "./components/CallToAction";
+import { routes } from "./routes";
 
 function Program({
   image_src,
@@ -65,19 +66,19 @@ function App() {
               data science training, and strategic consulting services.
             </p>
             <div className="hero__buttons">
-              <Link to={"/courses"} className="btn">
-                Explore our courses
+              <Link to={routes.courses} className="btn">
+                Explore courses
               </Link>
               <a
-                href={"https://calendly.com/datalead-a-info/30min"}
-                className="btn btn-transparent"
+                href="https://calendly.com/datalead-a-info/30min"
+                className="btn btn--transparent"
               >
-                Request for consultation
+                Book Consultancy
               </a>
             </div>
             <div className="hero__trained">
               <img src="/assets/index/trained.png" alt="" />
-              <p>5k+ Individuals Trained</p>
+              <p>10k+ Individuals Trained</p>
             </div>
           </div>
         </div>
@@ -114,12 +115,12 @@ function App() {
                 We delve deep into complex issues, analyze data, and provide
                 actionable recommendations to inform strategic decision-making.
               </p>
-              <Link to={"/research"} className="btn">
+              <Link to={routes.research} className="btn">
                 Discover
               </Link>
             </div>
             <div className="card-section">
-              <img src="/assets/index/training-icon.svg" alt="" />
+              <img src="/assets/index/consultancy-icon.svg" alt="" />
               <h4>Consultancy</h4>
               <p>
                 Partner with us for expert guidance and tailored solutions. Our
@@ -127,12 +128,12 @@ function App() {
                 unique challenges and develop effective strategies to achieve
                 your data-driven goals.
               </p>
-              <Link to={"/training"} className="btn">
+              <Link to={routes.consultancy} className="btn">
                 Discover
               </Link>
             </div>
             <div className="card-section">
-              <img src="/assets/index/consultancy-icon.svg" alt="" />
+              <img src="/assets/index/training-icon.svg" alt="" />
               <h4>Training</h4>
               <p>
                 Empower your team with the skills and knowledge they need to
@@ -140,7 +141,7 @@ function App() {
                 of data-related topics, equipping individuals with the expertise
                 to harness the power of data effectively.
               </p>
-              <Link to={"/consultancy"} className="btn">
+              <Link to={routes.training} className="btn">
                 Discover
               </Link>
             </div>
@@ -245,7 +246,7 @@ function App() {
               Discover Training and Consultation That Delivers Real Value.
             </h2>
             <div className="btns">
-              <Link to={"/courses"} className="btn btn-transparent">
+              <Link to={routes.courses} className="btn btn--transparent">
                 Explore Courses
               </Link>
               <a

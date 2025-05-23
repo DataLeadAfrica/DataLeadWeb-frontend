@@ -62,13 +62,16 @@
     height: 50%;
   }
 
+  & img {
+    border-bottom: solid 1px var(--clr-black);
+  }
+
   & .post__text {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
     padding: var(--padding-1);
-    background-color: var(--clr-gray-light);
 
     & :last-child {
       margin-top: auto;

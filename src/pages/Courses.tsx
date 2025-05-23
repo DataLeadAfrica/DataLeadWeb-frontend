@@ -3,6 +3,33 @@ import Card from "../components/Card";
 import "../css/courses.css";
 import { routes } from "../routes";
 
+function CourseCard({
+  imgLink,
+  name,
+  desc,
+  link,
+}: {
+  imgLink: string;
+  name: string;
+  desc: string;
+  link: string;
+}) {
+  return (
+    <Card extraClasses="course__card">
+      <div className="course">
+        <img src={imgLink} alt="" />
+        <div className="course__content">
+          <p className="course__name">{name}</p>
+          <p className="course__desc">{desc}</p>
+          <Link to={link} className="btn">
+            Read
+          </Link>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export default function Courses() {
   return (
     <div className="courses-page">
@@ -18,22 +45,49 @@ export default function Courses() {
           <h3>Available Courses</h3>
           <div className="title-bar"></div>
         </div>
-        <div className="courses__content">
-          <Card extraClasses="course__card">
-            <div className="course">
-              <img src="/assets/courses/data-analytics.png" alt="" />
-              <div className="course__content">
-                <h3>Data Analytics</h3>
-                <p>
-                  Master essential tools and techniques through real-world
-                  projects. Start your data journey with our immersive bootcamp.
-                </p>
-                <Link to={routes.dataAnalytics} className="btn">
-                  Read
-                </Link>
-              </div>
-            </div>
-          </Card>
+        <div className="course__cards">
+          <CourseCard
+            imgLink="/assets/bootcamps/data-analytics/highlight.png"
+            name="Data Analytics"
+            desc="Learn to collect, clean, analyze, and visualize data to uncover meaningful insights..."
+            link={routes.CoursesDataAnalytics}
+          />
+          <CourseCard
+            imgLink="/assets/course/data-science.png"
+            name="Data Science"
+            desc="Our Data Science Training is a comprehensive 3-month program designed to equip..."
+            link={routes.CoursesDataScience}
+          />
+          <CourseCard
+            imgLink="/assets/course/bioinformatics.png"
+            name="Bioinformatics"
+            desc="Our Bioinformatics Training program is tailored for students, researchers..."
+            link={routes.CoursesBioInformatics}
+          />
+          <CourseCard
+            imgLink="/assets/course/hr-analytics.png"
+            name="HR Analytics"
+            desc="The HR Analytics is designed to empower Human Resources professionals with..."
+            link={routes.CoursesHrAnalytcis}
+          />
+          <CourseCard
+            imgLink="/assets/course/business-analytics.png"
+            name="Business Analytics"
+            desc="Our Business Analytics bootcamp is designed for professionals, entrepreneurs..."
+            link={routes.CoursesBusinessAnalytics}
+          />
+          <CourseCard
+            imgLink="/assets/course/research.png"
+            name="Research Methodology and Manuscript Writing"
+            desc="This intensive program is designed to equip you with essential skills in research..."
+            link={routes.CoursesResearch}
+          />
+          <CourseCard
+            imgLink="/assets/course/employability.png"
+            name="Employability & Entrepreneurship"
+            desc="The Employability and Entrepreneurship Training at Data-Lead Africa is designed to..."
+            link={routes.CoursesEmployability}
+          />
         </div>
       </div>
     </div>

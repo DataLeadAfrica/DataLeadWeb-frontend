@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
 import CallToAction from "../../components/CallToAction";
@@ -39,11 +38,11 @@ export default function DataAnalytics() {
           </div>
           <div>
             <p className="overlay__desc">
-              Start Date: <span>14th Jul. 2025</span>
+              Certification: <span>Yes</span>
             </p>
-            <Link to="" className="btn">
-              Enroll now
-            </Link>
+            <a href="#" className="btn">
+              Enrol now
+            </a>
           </div>
         </div>
       </div>
@@ -68,7 +67,7 @@ export default function DataAnalytics() {
       </div>
       <div className="data-analytics__modules">
         <h2>
-          Data Analytics Modules{" "}
+          Modules
           <div className="title-bar title-bar--inverse"></div>
         </h2>
         <ol>
@@ -224,11 +223,13 @@ export default function DataAnalytics() {
             <div className="btns">
               <a
                 href="https://drive.google.com/uc?export=download&id=1t_5SAl_9LZV33dqJyjMxlkV9F7f3wxgn"
-                className="btn btn-transparent"
+                className="btn btn--transparent"
               >
                 Download Brochure
               </a>
-              <button className="btn">Enrol now</button>
+              <a href="#" className="btn">
+                Enrol now
+              </a>
             </div>
           </div>
         </CallToAction>

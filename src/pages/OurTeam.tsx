@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import "../css/our-team.css";
 import Card from "../components/Card";
+import { routes } from "../routes";
 
 function TeamMember({
   imgLink,
@@ -23,7 +24,7 @@ function TeamMember({
           <h3>{name}</h3>
           <p>{title}</p>
           {bioLink != "" && (
-            <Link to={bioLink} className="btn btn-transparent">
+            <Link to={bioLink} className="btn btn--transparent">
               Read Bio
             </Link>
           )}
@@ -57,19 +58,25 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Doc.png"
               name="Dr. Arowolo Ayoola"
               title="Lead Partner"
-              bioLink="/our-team/dr-arowolo-ayoola"
+              bioLink={routes.ourTeamDrAyo}
             />
             <TeamMember
               imgLink="/assets/our-team/Abdulsalam.png"
               name="Abdulsalam Oluwatosin"
               title="Senior Partner and Co-Founder, Data-Lead Africa"
-              bioLink="/our-team/abdulsalam-oluwatosin"
+              bioLink={routes.ourTeamAbdul}
+            />
+            <TeamMember
+              imgLink="/assets/our-team/Felicia.png"
+              name="Felicia Ayodele"
+              title="Head of Communications"
+              bioLink={routes.ourTeamFelicia}
             />
             <TeamMember
               imgLink="/assets/our-team/Sefunmi.png"
               name="Sefunmi Oluwole"
               title="DEI Partnerships, Advocacy, Policy Strengthening, & Program Dev. Manager"
-              bioLink="/our-team/sefunmi-oluwole"
+              bioLink={routes.ourTeamSefunmi}
             />
           </div>
         </div>
@@ -84,13 +91,13 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Loveth.png"
               name="Oche Loveth"
               title="Head of Programs"
-              bioLink="/our-team/oche-loveth"
+              bioLink={routes.ourTeamLoveth}
             />
             <TeamMember
               imgLink="/assets/our-team/Eniola.png"
-              name="Eniola"
+              name="Oyekale Eniola Yetunde"
               title="Knowledge Management officer"
-              bioLink=""
+              bioLink={routes.ourTeamEniola}
             />
             <TeamMember
               imgLink="/assets/our-team/Isaac.png"
@@ -100,9 +107,9 @@ export default function OurTeam() {
             />
             <TeamMember
               imgLink="/assets/our-team/Adaora.png"
-              name="Adaora Okona"
+              name="Okona Adaora Stephanie"
               title="Programs Branding Offricer"
-              bioLink=""
+              bioLink={routes.ourTeamAdaora}
             />
           </div>
         </div>
@@ -114,22 +121,22 @@ export default function OurTeam() {
           </h3>
           <div className="members">
             <TeamMember
-              imgLink="/assets/our-team/Felicia.png"
-              name="Felicia Ayodele"
-              title="Head of Communications"
-              bioLink="/our-team/felicia-ayodele"
-            />
-            <TeamMember
               imgLink="/assets/our-team/Maranatha.png"
               name="Maranatha Emmaogboji"
               title="Communications Officer"
-              bioLink="/our-team/maranatha-emmaogboji"
+              bioLink={routes.ourTeamMaranatha}
             />
             <TeamMember
               imgLink="/assets/our-team/Matthew.png"
-              name="Gabriel"
+              name="Gabriel Matthew"
               title="Communications Officer"
-              bioLink=""
+              bioLink={routes.ourTeamMatthew}
+            />
+            <TeamMember
+              imgLink="/assets/our-team/Stephen.png"
+              name="Mogaji Adekale Stephen"
+              title="Communications Intern"
+              bioLink={routes.ourTeamStephen}
             />
           </div>
         </div>
@@ -144,13 +151,13 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Blessing.png"
               name="Blessing Adem"
               title="Facility Manager I"
-              bioLink="/our-team/blessing-adem"
+              bioLink={routes.ourTeamBlessing}
             />
             <TeamMember
               imgLink="/assets/our-team/Musa.png"
-              name="Musa"
+              name="Musa Maimusa"
               title="Facility Manager II"
-              bioLink=""
+              bioLink={routes.ourTeamMusa}
             />
           </div>
         </div>

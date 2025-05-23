@@ -10,6 +10,9 @@ title-bar .landing {
   display: flex;
   gap: var(--gap-2);
   background-image: url("/assets/index/bg.png");
+  align-items: center;
+  justify-content: center;
+  padding-bottom: var(--padding-5);
 }
 
 .landing__hero > * {
@@ -49,27 +52,25 @@ title-bar .landing {
   width: 100%;
   display: flex;
   padding-inline-end: 25%;
-  justify-content: space-between;
+  gap: var(--gap-1);
 }
 
 .landing .hero__trained {
   background-color: var(--clr-orange-light);
   padding-inline: var(--padding-2);
   padding-block: 0.5rem;
-  width: 60%;
-  min-width: 20rem;
+  width: fit-content;
   display: flex;
   align-items: center;
   height: 3rem;
   gap: var(--gap-1);
   & img {
-    width: 30%;
     min-width: 4rem;
+    max-width: 5rem;
   }
   & p {
     font-size: var(--font-sm);
     font-weight: 600;
-    width: 100%;
   }
   border-radius: 999rem;
 }
@@ -138,7 +139,17 @@ title-bar .landing {
   .landing .hero__text h1 {
     text-align: left;
   }
-  .hero__graph {
+  .landing .hero__image {
+    display: none;
+  }
+  .landing .hero__buttons {
+    justify-content: start;
+    gap: var(--gap-1);
+  }
+  .landing .hero__trained {
+    align-self: start;
+  }
+  .landing .hero__graph {
     bottom: -2rem;
   }
 }
@@ -182,6 +193,11 @@ title-bar .landing {
   }
 }
 
+@media (max-width: 768px) {
+  .landing .companies__banner .track img {
+    min-width: 40rem;
+  }
+}
 .landing .offerings-section {
   background-color: var(--clr-black);
   display: flex;
@@ -289,7 +305,7 @@ title-bar .landing {
   display: flex;
   flex-direction: column;
   padding-block-end: var(--padding-1);
-  height: 35rem;
+  height: min(100%, 33rem);
   gap: var(--gap-1);
   background-color: var(--bg-color);
   overflow: hidden;
@@ -322,9 +338,6 @@ title-bar .landing {
 @media (max-width: 768px) {
   .landing .programs {
     grid-template-columns: initial;
-  }
-  .landing .program {
-    height: 25rem;
   }
   .landing .program .btn {
     margin-inline: var(--padding-2);
@@ -398,7 +411,7 @@ title-bar .landing {
 }
 
 .landing .deliver__card .card__paragraph {
-  color: var(--clr-gray);
+  color: var(--clr-gray-light);
 }
 
 /* NOTE: deliver media query*/
@@ -537,7 +550,7 @@ title-bar .landing {
     }
 
     & .person__name {
-      color: var(--clr-gray);
+      color: var(--clr-gray-light);
     }
   }
 }

@@ -86,6 +86,26 @@ Born and raised in Nigeria, Loveth is fluent in English and brings a deep unders
           />
         }
       />
+      <Route
+        path={routes.ourTeamEniola}
+        element={
+          <Bio
+            imgSrc="/assets/our-team/Eniola.png"
+            name="Oyekale Eniola Yetunde"
+            text="Eniola manages the communication of bootcamps, training, ensuring high standards of execution across all levels."
+          />
+        }
+      />
+      <Route
+        path={routes.ourTeamAdaora}
+        element={
+          <Bio
+            imgSrc="/assets/our-team/Adaora.png"
+            name="Okona Adaora Stephanie"
+            text="I am really passionate about making a difference, and I'm always excited to contribute to a positive team. I'm driven to achieve goals and I'm eager to grow!"
+          />
+        }
+      />
       {/* Communications */}
       <Route
         path={routes.ourTeamFelicia}
@@ -113,6 +133,26 @@ Felicia’s warm and engaging approach has built her a reputation as a trusted b
           />
         }
       />
+      <Route
+        path={routes.ourTeamMatthew}
+        element={
+          <Bio
+            imgSrc="/assets/our-team/Matthew.png"
+            name="Gabriel Matthew"
+            text="I'm Gabriel Mathew, a multidisciplinary creative and Visual Storyteller. I currently serve as the Graphics Manager at Data-Lead Africa, where I lead the visual strategy within the Communications Department.  I wear many hats, as a Director, Graphic Designer, Visual Content Curator, and Photographer — and I’m passionate about turning ideas into compelling visuals. Whether I’m behind the lens or designing behind the screen, I focus on creating content that connects, inspires, and drives impact."
+          />
+        }
+      />
+      <Route
+        path={routes.ourTeamStephen}
+        element={
+          <Bio
+            imgSrc="/assets/our-team/Stephen.png"
+            name="Mogaji Adekale Stephen"
+            text="Mogaji Adekale Stephen is a dynamic Datographer and Creative Strategist, seamlessly blending expertise in data analysis and graphic design to craft compelling, data-driven narratives. With over a year of experience, he specialize in transforming complex datasets into actionable insights and visually captivating designs that tell impactful stories. As a skilled facilitator, Mogaji Adekale Stephen also leads engaging trainings to empower teams with analytical and creative skills. Proficient in advanced data analysis tools such as Excel, SQL, and basic Python, Mogaji Adekale Stephen excels in data collection, processing, and visualization, delivering solutions that drive decision-making. His graphic design expertise shines through in creating storytelling fliers, designs, and photography that resonate with audiences, utilizing tools like Adobe Creative Suite (Photoshop, Lightroom Classic,), Canva, and more. Mogaji Adekale Stephen has a proven track record of collaborating with organizations to deliver high-impact projects, combining analytical rigor with creative innovation. His multifaceted skill set includes proficiency in Microsoft Office Suite,  and virtual collaboration tools such as Zoom and Google Meet. Passionate about sustainable development and storytelling through data and design, Mogaji Adekale Stephen is committed to advancing organizational goals and fostering growth through creativity, precision, and insight-driven strategies."
+          />
+        }
+      />
       {/* Facility */}
       <Route
         path={routes.ourTeamBlessing}
@@ -121,6 +161,16 @@ Felicia’s warm and engaging approach has built her a reputation as a trusted b
             imgSrc="/assets/our-team/Blessing.png"
             name="Blessing Adem"
             text="Blessing Adem is the Client Response Officer at Data-Lead Africa, bringing over two years of experience to the role. She is adept at multitasking and problem-solving, ensuring that the office runs seamlessly. Blessing’s commitment to excellence and proactive approach make her an invaluable asset to the team, consistently contributing to the smooth operation and success of Data-Lead Africa."
+          />
+        }
+      />
+      <Route
+        path={routes.ourTeamMusa}
+        element={
+          <Bio
+            imgSrc="/assets/our-team/Musa.png"
+            name="Musa Maimusa"
+            text="Musa Maimusa, is a dedicated Security Officer at Data-Lead Africa, where he supports data-driven initiatives while ensuring operational safety and integrity across all organizational activities. Musa MAIMUSA unique role blends security operations with analytical thinking, making me a vital link between data protection and insight generation. In addition to Musa MAIMUSA security responsibilities, He possess strong data analytics skills, with hands-on experience using tools such as Microsoft Excel, Power BI, Stata, R, NVivo, MySQL, Arc GIS, M&E and Data collection. He is passionate about using data to enhance strategic decision-making and drive social impact, especially in environments where both safety and information accuracy are critical."
           />
         }
       />

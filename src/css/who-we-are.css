@@ -31,8 +31,8 @@
   flex-direction: column;
   justify-content: center;
   gap: var(--gap-2);
-  min-height: 80vh;
-  min-height: 80svh;
+  min-height: 50vh;
+  min-height: 50svh;
 
   & h2 {
     font-family: "ClashDisplay-Medium";
@@ -59,8 +59,8 @@
   gap: var(--gap-2);
   color: var(--clr-orange-light);
   background-color: var(--clr-black);
-  min-height: 80vh;
-  min-height: 80svh;
+  min-height: 50vh;
+  min-height: 50svh;
 
   & h2 {
     font-family: "ClashDisplay-Medium";

@@ -12,6 +12,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--gap-2);
   padding: var(--padding-4);
 
   & h1 {
@@ -36,7 +37,6 @@
   gap: var(--gap-1);
   overflow: hidden;
   padding-bottom: var(--padding-1);
-  background-color: var(--clr-gray-light);
 
   & img {
     max-height: 15rem;
@@ -73,7 +73,6 @@
 .blog-page .post .btn {
   padding-inline: var(--padding-2);
   font-size: var(--font-xs);
-  align-self: flex-start;
 }
 
 @media (max-width: 1200px) {
