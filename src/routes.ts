@@ -29,7 +29,7 @@ export const routes = {
   ourTeamStephen: "/our-team/mogaji-adekale-stephen",
   ourTeamMusa: "/our-team/musa-maimusa",
   courses: "/courses",
-  CoursesDataAnalytics: "/courses/data-analytics-bootcamp",
+  CoursesDataAnalytics: "/courses/data-analytics",
   CoursesDataScience: "/courses/data-science",
   CoursesBioInformatics: "/courses/bioinformatics",
   CoursesHrAnalytcis: "/courses/hr-analysis",

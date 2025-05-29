@@ -150,13 +150,13 @@ export default function OurTeam() {
             <TeamMember
               imgLink="/assets/our-team/Blessing.png"
               name="Blessing Adem"
-              title="Facility Manager I"
+              title="Client Response Officer"
               bioLink={routes.ourTeamBlessing}
             />
             <TeamMember
               imgLink="/assets/our-team/Musa.png"
               name="Musa Maimusa"
-              title="Facility Manager II"
+              title="Security Officer"
               bioLink={routes.ourTeamMusa}
             />
           </div>

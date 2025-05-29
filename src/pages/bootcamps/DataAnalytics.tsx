@@ -40,7 +40,7 @@ export default function DataAnalytics() {
             <p className="overlay__desc">
               Certification: <span>Yes</span>
             </p>
-            <a href="#" className="btn">
+            <a href="http://eepurl.com/i4OC1Y" className="btn">
               Enrol now
             </a>
           </div>
@@ -227,7 +227,7 @@ export default function DataAnalytics() {
               >
                 Download Brochure
               </a>
-              <a href="#" className="btn">
+              <a href="http://eepurl.com/i4OC1Y" className="btn">
                 Enrol now
               </a>
             </div>

@@ -66,7 +66,6 @@
   overflow: hidden;
   width: 100%;
   max-width: 30rem;
-  min-height: 35rem;
 
   & .member__image {
     background-color: var(--clr-orange-light);
@@ -80,7 +79,7 @@
     align-items: center;
     gap: var(--gap-1);
     padding: var(--padding-1);
-    min-height: 12rem;
+    min-height: min(100vw, 14rem);
 
     & h3 {
       font-size: var(--font-md);
@@ -101,10 +100,6 @@
   .our-team__heading h2 {
     text-align: left;
     width: 100%;
-  }
-
-  .our-team__member .member__info {
-    min-height: 10rem;
   }
 }
 @media (max-width: 768px) {
