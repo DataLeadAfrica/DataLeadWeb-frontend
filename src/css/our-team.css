@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--gap-5);
+  background-color: var(--clr-orange-light);
 }
 
 .our-team__heading {
@@ -11,7 +12,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr-orange-light);
   padding: var(--padding-4);
   gap: var(--gap-1);
 
