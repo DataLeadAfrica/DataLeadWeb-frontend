@@ -47,7 +47,7 @@ export default function Courses() {
         </div>
         <div className="course__cards">
           <CourseCard
-            imgLink="/assets/bootcamps/data-analytics/highlight.png"
+            imgLink="/assets/bootcamps/data-analytics/highlight.jpg"
             name="Data Analytics"
             desc="Learn to collect, clean, analyze, and visualize data to uncover meaningful insights..."
             link={routes.CoursesDataAnalytics}

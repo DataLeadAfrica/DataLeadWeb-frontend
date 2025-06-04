@@ -131,6 +131,9 @@
 @media (max-width: 1200px) {
   .data-analytics__about {
     flex-direction: column;
+    & > * {
+      width: 100%;
+    }
   }
 }
 
@@ -289,6 +292,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
+  min-height: min(100vw, 25rem);
 
   & .option__pitch {
     display: flex;

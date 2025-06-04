@@ -61,7 +61,7 @@ export default function DataAnalytics() {
         </div>
         <div>
           <Card>
-            <img src="/assets/bootcamps/data-analytics/highlight.png" alt="" />
+            <img src="/assets/bootcamps/data-analytics/highlight.jpg" alt="" />
           </Card>
         </div>
       </div>
@@ -177,7 +177,7 @@ export default function DataAnalytics() {
               </div>
               <p className="option__pitch">
                 <i className="nf nf-md-check_circle_outline"></i>
-                Save 16.67% when you pay in full today.
+                Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
             </div>
           </Card>
@@ -192,7 +192,7 @@ export default function DataAnalytics() {
               </div>
               <p className="option__pitch">
                 <i className="nf nf-md-check_circle_outline"></i>
-                Save 16.67% when you pay in full today.
+                Pay Once, Gain Full Access & Save Instantly
               </p>
             </div>
           </Card>
@@ -206,7 +206,7 @@ export default function DataAnalytics() {
               </div>
               <p className="option__pitch">
                 <i className="nf nf-md-check_circle_outline"></i>
-                Save 16.67% when you pay in full today.
+                Pay at Your Pace: Flexible Three Instalment Payment
               </p>
             </div>
           </Card>

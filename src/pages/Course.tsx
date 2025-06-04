@@ -13,24 +13,20 @@ function isModulesWithTracks(
 
 export default function Course({
   name,
-  enrolLink,
   length,
   desc,
   highlightImg,
   modules,
   price,
-  oldPrice,
   benefit,
   priceImg,
 }: {
   name: string;
-  enrolLink: string;
   length: string;
   desc: string;
   highlightImg: string;
   modules: Modules | ModulesWithTracks;
   price: string;
-  oldPrice?: string;
   benefit?: boolean;
   priceImg: string;
 }) {
@@ -51,7 +47,7 @@ export default function Course({
             <p className="overlay__desc">
               Certification: <span>Yes</span>
             </p>
-            <a href={enrolLink} className="btn">
+            <a href={"http://eepurl.com/jfVbCQ"} className="btn">
               Enrol now
             </a>
           </div>
@@ -127,12 +123,7 @@ export default function Course({
         <Card extraClasses="payment__card">
           <div>
             <div className="payment__details">
-              <p className="payment__price">
-                {`₦${price}`}
-                {oldPrice && (
-                  <span className="payment__old-price">{oldPrice}</span>
-                )}
-              </p>
+              <p className="payment__price">{`₦${price}`}</p>
               <hr />
               {benefit && (
                 <p className="payment__benefit">
@@ -153,7 +144,7 @@ export default function Course({
               An Immersive and Engaging Learning Experience That Will Transform
               Your {name} Skills.
             </p>
-            <a href={enrolLink} className="btn">
+            <a href={"http://eepurl.com/jfVbCQ"} className="btn">
               Enrol now
             </a>
           </div>

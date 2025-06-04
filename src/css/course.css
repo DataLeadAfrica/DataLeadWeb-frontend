@@ -255,32 +255,6 @@
 
   & .payment__price {
     font-size: var(--font-xl);
-
-    & > .payment__old-price {
-      margin-left: var(--gap-1);
-      font-size: var(--font-sm);
-      position: relative;
-    }
-    & .payment__old-price::before {
-      content: "";
-      display: block;
-      position: absolute;
-      border-left: solid 2px var(--clr-orange);
-      top: -130%;
-      right: 50%;
-      height: 350%;
-      rotate: 80deg;
-    }
-    & .payment__old-price::after {
-      content: "";
-      display: block;
-      position: absolute;
-      border-left: solid 2px var(--clr-orange);
-      top: -130%;
-      right: 50%;
-      height: 350%;
-      rotate: -80deg;
-    }
   }
   & .payment__img {
     max-width: 15rem;
