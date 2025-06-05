@@ -28,6 +28,7 @@ export const routes = {
   ourTeamAdaora: "/our-team/okona-adaora-stephanie",
   ourTeamStephen: "/our-team/mogaji-adekale-stephen",
   ourTeamMusa: "/our-team/musa-maimusa",
+  careers: "/careers",
   courses: "/courses",
   CoursesDataAnalytics: "/courses/data-analytics",
   CoursesDataScience: "/courses/data-science",

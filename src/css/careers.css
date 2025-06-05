@@ -1,0 +1,28 @@
+.careers__page {
+  background-color: var(--clr-orange-light);
+  height: 90vh;
+  height: 90svh;
+  display: flex;
+  gap: var(--gap-1);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  & > img {
+    max-width: 5rem;
+  }
+  & h1,
+  & h2 {
+    font-family: "ClashDisplay-Bold";
+  }
+
+  & a {
+    text-decoration: underline;
+    transition: var(--transition-2);
+  }
+
+  & a:hover {
+    color: var(--clr-orange);
+    transition: var(--transition-2);
+  }
+}

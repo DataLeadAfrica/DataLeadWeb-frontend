@@ -22,6 +22,7 @@ import { routes } from "./routes";
 import BlogPost from "./pages/BlogPost.tsx";
 import courseRoutes from "./routes/courseRoutes.tsx";
 import consultancyRoutes from "./routes/consultancyRoutes.tsx";
+import Careers from "./pages/Careers.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -39,6 +40,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path={routes.contactUs} element={<ContactUs />} />
         <Route path={routes.ourTeam} element={<OurTeam />} />
         <Route path={routes.courses} element={<Courses />} />
+        <Route path={routes.careers} element={<Careers />} />
         <Route path={routes.CoursesDataAnalytics} element={<DataAnalytics />} />
 
         {courseRoutes()}
