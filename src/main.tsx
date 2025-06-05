@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import "./global.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -81,6 +81,32 @@ We hope to build a future where we do not just focus on overcoming barriers with
           }
         />
         {consultancyRoutes()}
+        {/* Reroutes */}
+        <Route path="/about-us" element={<Navigate to={routes.whoWeAre} />} />
+        <Route
+          path="/abdulsalam-oluwatosin"
+          element={<Navigate to={routes.ourTeamAbdul} />}
+        />
+        <Route
+          path="/sefunmi-oluwole"
+          element={<Navigate to={routes.ourTeamSefunmi} />}
+        />
+        <Route
+          path="/dr-arowolo-ayoola"
+          element={<Navigate to={routes.ourTeamDrAyo} />}
+        />
+        <Route
+          path="/felicia-ayodele"
+          element={<Navigate to={routes.ourTeamFelicia} />}
+        />
+        <Route
+          path="/oche-loveth"
+          element={<Navigate to={routes.ourTeamLoveth} />}
+        />
+        <Route
+          path="/blessing-adem"
+          element={<Navigate to={routes.ourTeamBlessing} />}
+        />
       </Routes>
       <Footer />
     </BrowserRouter>
