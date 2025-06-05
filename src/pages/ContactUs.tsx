@@ -116,16 +116,22 @@ export default function ContactUs() {
             </div>
           </div>
           <div className="social-contacts">
-            <a href="" className="">
+            <a href="https://www.facebook.com/DataLead.Africa/" className="">
               <i className="nf nf-dev-facebook"></i>
             </a>
-            <a href="" className="">
+            <a href="https://x.com/datalead_africa?lang=en" className="">
               <i className="nf nf-dev-twitter"></i>
             </a>
-            <a href="" className="">
+            <a
+              href="https://www.instagram.com/datalead_africa/?hl=en"
+              className=""
+            >
               <i className="nf nf-fa-instagram"></i>
             </a>
-            <a href="" className="">
+            <a
+              href="https://ng.linkedin.com/company/data-leadafrica"
+              className=""
+            >
               <i className="nf nf-dev-linkedin"></i>
             </a>
           </div>

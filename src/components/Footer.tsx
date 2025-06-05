@@ -16,16 +16,28 @@ export default function Footer() {
         <div className="footer__follow">
           <h3 className="col__header">Follow us</h3>
           <div className="follow-links">
-            <a href="" className="follow-link">
+            <a
+              href="https://www.instagram.com/datalead_africa/?hl=en"
+              className="follow-link"
+            >
               <i className="nf nf-fa-instagram"></i>
             </a>
-            <a href="" className="follow-link">
+            <a
+              href="https://ng.linkedin.com/company/data-leadafrica"
+              className="follow-link"
+            >
               <i className="nf nf-dev-linkedin"></i>
             </a>
-            <a href="" className="follow-link">
+            <a
+              href="https://x.com/datalead_africa?lang=en"
+              className="follow-link"
+            >
               <i className="nf nf-dev-twitter"></i>
             </a>
-            <a href="" className="follow-link">
+            <a
+              href="https://www.youtube.com/@data-leadafrica3321"
+              className="follow-link"
+            >
               <i className="nf nf-fa-youtube"></i>
             </a>
           </div>
