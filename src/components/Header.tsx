@@ -62,7 +62,6 @@ export default function Header() {
     for (let i = 0; i < innerDropdowns.length; i++) {
       innerDropdowns[i].removeAttribute("open");
     }
-    console.log("done");
   };
 
   return (

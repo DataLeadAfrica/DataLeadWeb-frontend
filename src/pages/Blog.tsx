@@ -23,7 +23,7 @@ function Post({
           <p className="post__title">{title}</p>
           <p className="post__summary">
             {summary}
-            <p className="post__date">{date}</p>
+            <span className="post__date">{date}</span>
           </p>
           <Link className="btn" to={link}>
             Read

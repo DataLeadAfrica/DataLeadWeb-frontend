@@ -47,7 +47,7 @@ export default function Footer() {
         <h3 className="col__header">Company</h3>
         <Link to={routes.contactUs}>Contact Us</Link>
         <Link to={routes.research}>Research</Link>
-        <Link to="">Careers</Link>
+        <Link to={routes.careers}>Careers</Link>
         <Link to={routes.blog}>Blog</Link>
       </div>
       <div className="footer__col">
