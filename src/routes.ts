@@ -37,6 +37,7 @@ export const routes = {
   CoursesBusinessAnalytics: "/courses/business-analytics",
   CoursesResearch: "/courses/research-methodology-manuscript-writing",
   CoursesEmployability: "/courses/employability-entrepreneurship",
+  CoursesDigitalCreation: "/courses/digital-creation",
   deafInTech: "/deaf-in-tech",
   consultancy: "/consultancy",
   training: "/training",

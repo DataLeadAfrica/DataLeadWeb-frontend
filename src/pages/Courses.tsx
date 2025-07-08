@@ -88,6 +88,12 @@ export default function Courses() {
             desc="The Employability and Entrepreneurship Training at Data-Lead Africa is designed to..."
             link={routes.CoursesEmployability}
           />
+          <CourseCard
+            imgLink="/assets/course/digital-creation.png"
+            name="Digital Creation"
+            desc="Unleash your creativity in this hands-on bootcamp designed especially for teens! Whet..."
+            link={routes.CoursesDigitalCreation}
+          />
         </div>
       </div>
     </div>

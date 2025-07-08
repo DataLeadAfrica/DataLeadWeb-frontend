@@ -162,6 +162,33 @@ Whether you're an HR officer, manager, or aspiring data-driven professional, thi
           />
         }
       />
+      <Route
+        path={routes.CoursesDigitalCreation}
+        element={
+          <Course
+            name="Digital Creation"
+            length="4 weeks"
+            desc="Unleash your creativity in this hands-on bootcamp designed especially for teens! Whether you're into vlogging, photography, or building your social media presence, this program teaches you how to plan, shoot, edit, and share content like a pro. Learn how to use popular digital tools and apps to create stunning videos, eye-catching photos, and engaging posts. Perfect for beginners and aspiring creators alike, this bootcamp helps you build practical skills that are fun, creative, and future-ready"
+            highlightImg="/assets/course/digital-creation.png"
+            modules={{
+              "INTRODUCTION TO DIGITAL PLATFORMS": "",
+              "MOBILE PHOTOGRAPHY BASICS": "",
+              "INTRODUCTION TO PHOTOSHOP": "",
+              "GRAPHIC DESIGN BASICS": "",
+              "PERSONAL BRANDING BASICS": "",
+              "SOCIAL MEDIA ETHICS & SAFETY": "",
+              "INTRODUCTION TO MOBILE VIDEOGRAPHY & CONTENT CREATION": "",
+              "STORYTELLING FOR DIGITAL CONTENT": "",
+              "INTRODUCTION TO CAPCUT": "",
+              "BASIC VIDEO EDITING (HANDS-ON)": "",
+              "CREATIVE EFFECTS & FILTERS": "",
+            }}
+            price="60,000"
+            benefit={false}
+            priceImg="/assets/course/train.svg"
+          />
+        }
+      />
     </>
   );
 }
