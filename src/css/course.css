@@ -40,6 +40,9 @@
   & h1 {
     font-family: "ClashDisplay-Medium";
     font-size: var(--font-lg);
+    font-weight: 700;
+    max-width: 50rem;
+    text-align: center;
   }
 }
 @media (max-width: 1200px) {
@@ -230,6 +233,15 @@
   gap: var(--gap-2);
   align-items: center;
 
+  & .payment__group {
+    display: flex;
+    gap: var(--gap-2);
+  }
+
+  & .payment__title {
+    color: var(--clr-orange);
+  }
+
   & .payment__card::after {
     background-color: transparent;
     border: solid 1px var(--clr-orange);
@@ -261,7 +273,6 @@
     max-height: 15rem;
   }
 }
-
 @media (max-width: 768px) {
   .course__payment .payment__details {
     width: 60%;
@@ -280,6 +291,12 @@
     font-size: var(--font-xs);
   }
 }
+@media (max-width: 1200px) {
+  & .course__payment .payment__group {
+    flex-direction: column;
+  }
+}
+
 .course__page .call-to-action__wrapper {
   background-color: var(--clr-orange-light);
   & .call-to-action__content {
