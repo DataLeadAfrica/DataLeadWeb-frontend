@@ -103,7 +103,7 @@ export default function OurTeam() {
               imgLink="/assets/our-team/Isaac.png"
               name="Isaac Joshua"
               title="Program Assistant/Grant Writer"
-              bioLink=""
+              bioLink={routes.ourTeamIsaac}
             />
             <TeamMember
               imgLink="/assets/our-team/Adaora.png"

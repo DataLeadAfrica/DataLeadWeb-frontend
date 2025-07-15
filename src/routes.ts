@@ -24,6 +24,7 @@ export const routes = {
   ourTeamMaranatha: "/our-team/maranatha-emmaogboji",
   ourTeamBlessing: "/our-team/blessing-adem",
   ourTeamMatthew: "/our-team/gabriel-matthew",
+  ourTeamIsaac: "/our-team/isaac-joshua",
   ourTeamEniola: "/our-team/oyekale-eniola-yetunde",
   ourTeamAdaora: "/our-team/okona-adaora-stephanie",
   ourTeamStephen: "/our-team/mogaji-adekale-stephen",
