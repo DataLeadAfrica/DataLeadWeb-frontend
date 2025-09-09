@@ -40,7 +40,7 @@ export default function DataAnalytics() {
             <p className="overlay__desc">
               Certification: <span>Yes</span>
             </p>
-            <a href="http://eepurl.com/i4OC1Y" className="btn">
+            <a href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share" className="btn">
               Enrol now
             </a>
           </div>
@@ -227,7 +227,7 @@ export default function DataAnalytics() {
               >
                 Download Brochure
               </a>
-              <a href="http://eepurl.com/i4OC1Y" className="btn">
+              <a href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share" className="btn">
                 Enrol now
               </a>
             </div>
