@@ -49,49 +49,9 @@
 @media (max-width: 768px) {
 }
 
-.data-analytics__overlay {
-  color: var(--font-color);
-  position: absolute;
-  bottom: -10rem;
-  height: 15vw;
-  height: 15svw;
-  min-height: 15rem;
-  width: 90vw;
-  width: 90svw;
-  background-color: white;
-  padding: var(--padding-3);
-  display: flex;
-
-  & > * {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 50%;
-  }
-
-  & .overlay__desc {
-    font-size: var(--font-sm);
-    color: var(--clr-orange);
-
-    & span {
-      color: var(--font-color);
-    }
-  }
-}
-
 @media (max-width: 1200px) {
   .data-analytics__head {
     background-image: url("/assets/bootcamps/data-analytics/banner-small.png");
-  }
-  .data-analytics__overlay {
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--gap-1);
-
-    & > * {
-      gap: var(--gap-1);
-      width: 100%;
-    }
   }
 }
 @media (max-width: 768px) {
@@ -100,7 +60,6 @@
 .data-analytics__about {
   background-color: var(--clr-orange-light);
   padding: var(--padding-4);
-  padding-top: 15rem;
   display: flex;
   gap: var(--gap-2);
 
@@ -280,7 +239,7 @@
 
 .data-analytics__payment .payment__options {
   display: grid;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   gap: var(--gap-2);
   width: 100%;
@@ -292,11 +251,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
-  min-height: min(100vw, 25rem);
+  min-height: min(100vw, 30rem);
 
   & .option__pitch {
     display: flex;
     align-items: center;
+    align-self: center;
     gap: var(--gap-1);
     & i {
       font-size: var(--font-md);
@@ -368,21 +328,6 @@
   }
 }
 
-.data-analytics__payment .payment__option-card--popular::after {
-  background-color: transparent;
-  border: solid 1px var(--clr-orange);
-}
-
-.data-analytics__payment .payment__option--popular {
-  background: var(--clr-black);
-  color: var(--font-color-inverse);
-
-  & .icon {
-    border: solid 1px var(--font-color-inverse);
-    color: yellow;
-  }
-}
-
 .data-analytics__page .call-to-action__wrapper {
   background-color: var(--clr-orange-light);
   & .call-to-action__content {
@@ -404,17 +349,8 @@
       text-align: center;
     }
 
-    & .btns {
-      display: flex;
-      padding-inline: var(--padding-5);
-      width: 100%;
-      gap: var(--gap-1);
-
-      & > * {
-        width: 50%;
-        display: flex;
-        justify-content: center;
-      }
+    & .btn {
+      margin-top: 1rem;
     }
   }
 }

@@ -1,6 +1,7 @@
 import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
 import CallToAction from "../../components/CallToAction";
+import { routes } from "../../routes";
 
 function LearnMethod({
   heading,
@@ -27,24 +28,6 @@ export default function DataAnalytics() {
     <div className="data-analytics__page">
       <div className="data-analytics__head">
         <h1>Data Analytics Bootcamp</h1>
-        <div className="data-analytics__overlay">
-          <div>
-            <p className="overlay__desc">
-              Program Duration: <span>3 months</span>
-            </p>
-            <p className="overlay__desc">
-              Location: <span> Online or onsite</span>
-            </p>
-          </div>
-          <div>
-            <p className="overlay__desc">
-              Certification: <span>Yes</span>
-            </p>
-            <a href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share" className="btn">
-              Enrol now
-            </a>
-          </div>
-        </div>
       </div>
       <div className="data-analytics__about">
         <div className="about__text">
@@ -53,10 +36,10 @@ export default function DataAnalytics() {
             <div className="title-bar"></div>
           </h2>
           <p>
-            Learn to collect, clean, analyze, and visualize data to uncover
-            meaningful insights. Our expert-led program provides you with the
-            practical experience and portfolio needed to succeed as a data
-            analyst in today's data-driven world.
+            Become a data analyst in 3 months by learning hands-on tools like
+            Excel, SQL, Power BI, R, Stata, Nvivo, and KoboToolbox while
+            building a powerful professional portfolio of real-world projects to
+            land your dream job in today's data-driven world{" "}
           </p>
         </div>
         <div>
@@ -179,35 +162,26 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
-            </div>
-          </Card>
-          <Card extraClasses="payment__option-card payment__option-card--popular">
-            <div className="payment__option payment__option--popular">
-              <i className="icon nf nf-fa-bolt"></i>
-              <div className="option__plan">
-                <p className="plan__name">One time payment</p>
-                <p className="plan__price">₦ 250,000</p>
-                <p className="plan__old-price">₦ 300,000</p>
-                <hr />
-              </div>
-              <p className="option__pitch">
-                <i className="nf nf-md-check_circle_outline"></i>
-                Pay Once, Gain Full Access & Save Instantly
-              </p>
+              <a href={routes.CoursesDataAnalyticsNyscPlan} className="btn">
+                Enrol now
+              </a>
             </div>
           </Card>
           <Card extraClasses="payment__option-card">
             <div className="payment__option">
               <i className="icon nf nf-fa-trophy"></i>
               <div className="option__plan">
-                <p className="plan__name">Installment Payment</p>
-                <p className="plan__price">₦ 300,000</p>
+                <p className="plan__name">Standard Plan</p>
+                <p className="plan__price">₦ 250,000</p>
                 <hr />
               </div>
               <p className="option__pitch">
                 <i className="nf nf-md-check_circle_outline"></i>
-                Pay at Your Pace: Flexible Three Instalment Payment
+                Pay Once & Gain Full Access
               </p>
+              <a href={routes.CoursesDataAnalyticsRegularPlans} className="btn">
+                Enrol now
+              </a>
             </div>
           </Card>
         </div>
@@ -220,17 +194,12 @@ export default function DataAnalytics() {
               An Immersive and Engaging Learning Experience That Will Transform
               Your Data Skills.
             </p>
-            <div className="btns">
-              <a
-                href="https://drive.google.com/uc?export=download&id=1t_5SAl_9LZV33dqJyjMxlkV9F7f3wxgn"
-                className="btn btn--transparent"
-              >
-                Download Brochure
-              </a>
-              <a href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share" className="btn">
-                Enrol now
-              </a>
-            </div>
+            <a
+              href="https://drive.google.com/uc?export=download&id=1t_5SAl_9LZV33dqJyjMxlkV9F7f3wxgn"
+              className="btn"
+            >
+              Download Brochure
+            </a>
           </div>
         </CallToAction>
       </div>

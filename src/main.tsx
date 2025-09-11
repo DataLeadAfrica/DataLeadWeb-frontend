@@ -15,6 +15,7 @@ import DataAnalytics from "./pages/bootcamps/DataAnalytics";
 import NotFound from "./pages/NotFound";
 // import ComingSoon from "./pages/ComingSoon";
 import ScrollToTop from "./components/ScrollToTop";
+import Helmet from "react-helmet";
 import ourTeamRoutes from "./routes/ourTeamRoutes.tsx";
 import blogRoutes from "./routes/blogRoutes";
 import researchRoutes from "./routes/researchRoutes";
@@ -23,11 +24,25 @@ import BlogPost from "./pages/BlogPost.tsx";
 import courseRoutes from "./routes/courseRoutes.tsx";
 import consultancyRoutes from "./routes/consultancyRoutes.tsx";
 import Careers from "./pages/Careers.tsx";
+import NyscPlan from "./pages/NyscPlan.tsx";
+import RegularPlans from "./pages/RegularPlans.tsx";
+import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ScrollToTop />
+      <Helmet>
+        <script>
+          {`
+            (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+            .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+            n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+            (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+            ml('account', '1758808');
+          `}
+        </script>
+      </Helmet>
       <Header />
       <Routes>
         <Route path="*" element={<NotFound />} />
@@ -42,6 +57,18 @@ createRoot(document.getElementById("root")!).render(
         <Route path={routes.courses} element={<Courses />} />
         <Route path={routes.careers} element={<Careers />} />
         <Route path={routes.CoursesDataAnalytics} element={<DataAnalytics />} />
+        <Route
+          path={routes.CoursesDataAnalyticsNyscPlan}
+          element={<NyscPlan />}
+        />
+        <Route
+          path={routes.CoursesDataAnalyticsRegularPlans}
+          element={<RegularPlans />}
+        />
+        <Route
+          path={routes.CoursesDataAnalyticsPaymentSuccess}
+          element={<PaymentSuccess />}
+        />
 
         {courseRoutes()}
         {ourTeamRoutes()}

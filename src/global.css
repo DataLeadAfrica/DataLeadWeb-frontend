@@ -15,6 +15,7 @@
   --clr-orange: #f56e0f;
   --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
+
   --padding-0_5: 0.5rem;
   --padding-1: 1rem;
   --padding-2: 2rem;
@@ -213,6 +214,18 @@ li {
   background-color: transparent;
   color: var(--font-color);
   border: 1px solid black;
+}
+
+.btn--transparent-inverse {
+  background-color: transparent;
+  color: var(--font-color-inverse);
+  border: 1px solid white;
+}
+
+.btn--transparent-inverse:hover {
+  background-color: white;
+  color: var(--font-color);
+  border: 1px solid white;
 }
 
 .title-bar {
