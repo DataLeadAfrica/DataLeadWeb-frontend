@@ -1,6 +1,6 @@
 import "../css/plan.css";
 
-export default function RegularPlans() {
+export default function StandardPlan() {
   return (
     <div className="plan">
       <div className="plan__card">

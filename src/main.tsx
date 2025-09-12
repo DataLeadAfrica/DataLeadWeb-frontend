@@ -25,7 +25,7 @@ import courseRoutes from "./routes/courseRoutes.tsx";
 import consultancyRoutes from "./routes/consultancyRoutes.tsx";
 import Careers from "./pages/Careers.tsx";
 import NyscPlan from "./pages/NyscPlan.tsx";
-import RegularPlans from "./pages/RegularPlans.tsx";
+import StandardPlan from "./pages/StandardPlan.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 
@@ -63,8 +63,8 @@ createRoot(document.getElementById("root")!).render(
           element={<NyscPlan />}
         />
         <Route
-          path={routes.coursesDataAnalyticsRegularPlans}
-          element={<RegularPlans />}
+          path={routes.coursesDataAnalyticsStandardPlan}
+          element={<StandardPlan />}
         />
         <Route
           path={routes.coursesDataAnalyticsPaymentSuccess}

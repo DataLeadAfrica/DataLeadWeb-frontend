@@ -179,7 +179,7 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Pay Once & Gain Full Access
               </p>
-              <a href={routes.coursesDataAnalyticsRegularPlans} className="btn">
+              <a href={routes.coursesDataAnalyticsStandardPlan} className="btn">
                 Enrol now
               </a>
             </div>

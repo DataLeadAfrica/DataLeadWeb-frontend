@@ -33,7 +33,7 @@ export const routes = {
   courses: "/courses",
   coursesDataAnalytics: "/courses/data-analytics",
   coursesDataAnalyticsNyscPlan: "/courses/data-analytics/nysc-plan",
-  coursesDataAnalyticsRegularPlans: "/courses/data-analytics/regular-plans",
+  coursesDataAnalyticsStandardPlan: "/courses/data-analytics/standard-plan",
   coursesDataAnalyticsPaymentSuccess: "/courses/data-analytics/payment-success",
   coursesDataScience: "/courses/data-science",
   coursesBioInformatics: "/courses/bioinformatics",
