@@ -7,7 +7,7 @@ export default function courseRoutes() {
   return (
     <>
       <Route
-        path={routes.CoursesDataScience}
+        path={routes.coursesDataScience}
         element={
           <Course
             name="Data Science"
@@ -33,7 +33,7 @@ export default function courseRoutes() {
         }
       />
       <Route
-        path={routes.CoursesBioInformatics}
+        path={routes.coursesBioInformatics}
         element={
           <Course
             name="Bioinformatics"
@@ -57,7 +57,7 @@ export default function courseRoutes() {
         }
       />
       <Route
-        path={routes.CoursesHrAnalytcis}
+        path={routes.coursesHrAnalytcis}
         element={
           <Course
             name="HR Analytics"
@@ -83,7 +83,7 @@ Whether you're an HR officer, manager, or aspiring data-driven professional, thi
         }
       />
       <Route
-        path={routes.CoursesBusinessAnalytics}
+        path={routes.coursesBusinessAnalytics}
         element={
           <Course
             name="Business Analytics"
@@ -105,7 +105,7 @@ Whether you're an HR officer, manager, or aspiring data-driven professional, thi
         }
       />
       <Route
-        path={routes.CoursesResearch}
+        path={routes.coursesResearch}
         element={
           <Course
             name="Research Methodology and Manuscript Writing"
@@ -133,7 +133,7 @@ Whether you're an HR officer, manager, or aspiring data-driven professional, thi
         }
       />
       <Route
-        path={routes.CoursesEmployability}
+        path={routes.coursesEmployability}
         element={
           <Course
             name="Employability & Entrepreneurship"
@@ -163,7 +163,7 @@ Whether you're an HR officer, manager, or aspiring data-driven professional, thi
           />
         }
       />
-      <Route path={routes.CoursesDigitalCreation} element=<DigitalCreation /> />
+      <Route path={routes.coursesDigitalCreation} element=<DigitalCreation /> />
     </>
   );
 }

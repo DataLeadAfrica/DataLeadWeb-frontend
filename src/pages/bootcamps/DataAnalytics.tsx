@@ -162,7 +162,7 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
-              <a href={routes.CoursesDataAnalyticsNyscPlan} className="btn">
+              <a href={routes.coursesDataAnalyticsNyscPlan} className="btn">
                 Enrol now
               </a>
             </div>
@@ -179,7 +179,7 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Pay Once & Gain Full Access
               </p>
-              <a href={routes.CoursesDataAnalyticsRegularPlans} className="btn">
+              <a href={routes.coursesDataAnalyticsRegularPlans} className="btn">
                 Enrol now
               </a>
             </div>

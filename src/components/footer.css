@@ -1,6 +1,7 @@
 .footer {
   padding: var(--padding-4);
   display: grid;
+  position: relative;
   grid-template-columns: repeat(4, 1fr);
   justify-content: space-between;
   gap: var(--gap-2);
@@ -58,4 +59,10 @@
   .footer {
     grid-template-columns: repeat(1, 1fr);
   }
+}
+
+.footer__copyright{
+  grid-column: 1/4;
+  color: gray;
+
 }

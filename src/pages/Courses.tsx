@@ -50,49 +50,49 @@ export default function Courses() {
             imgLink="/assets/bootcamps/data-analytics/highlight.jpg"
             name="Data Analytics"
             desc="Learn to collect, clean, analyze, and visualize data to uncover meaningful insights..."
-            link={routes.CoursesDataAnalytics}
+            link={routes.coursesDataAnalytics}
           />
           <CourseCard
             imgLink="/assets/course/data-science.png"
             name="Data Science"
             desc="Our Data Science Training is a comprehensive 3-month program designed to equip..."
-            link={routes.CoursesDataScience}
+            link={routes.coursesDataScience}
           />
           <CourseCard
             imgLink="/assets/course/bioinformatics.png"
             name="Bioinformatics"
             desc="Our Bioinformatics Training program is tailored for students, researchers..."
-            link={routes.CoursesBioInformatics}
+            link={routes.coursesBioInformatics}
           />
           <CourseCard
             imgLink="/assets/course/hr-analytics.png"
             name="HR Analytics"
             desc="The HR Analytics is designed to empower Human Resources professionals with..."
-            link={routes.CoursesHrAnalytcis}
+            link={routes.coursesHrAnalytcis}
           />
           <CourseCard
             imgLink="/assets/course/business-analytics.png"
             name="Business Analytics"
             desc="Our Business Analytics bootcamp is designed for professionals, entrepreneurs..."
-            link={routes.CoursesBusinessAnalytics}
+            link={routes.coursesBusinessAnalytics}
           />
           <CourseCard
             imgLink="/assets/course/research.png"
             name="Research Methodology and Manuscript Writing"
             desc="This intensive program is designed to equip you with essential skills in research..."
-            link={routes.CoursesResearch}
+            link={routes.coursesResearch}
           />
           <CourseCard
             imgLink="/assets/course/employability.png"
             name="Employability & Entrepreneurship"
             desc="The Employability and Entrepreneurship Training at Data-Lead Africa is designed to..."
-            link={routes.CoursesEmployability}
+            link={routes.coursesEmployability}
           />
           <CourseCard
             imgLink="/assets/course/digital-creation.png"
             name="Digital Creation"
             desc="Unleash your creativity in this hands-on bootcamp designed especially for teens! Whet..."
-            link={routes.CoursesDigitalCreation}
+            link={routes.coursesDigitalCreation}
           />
         </div>
       </div>

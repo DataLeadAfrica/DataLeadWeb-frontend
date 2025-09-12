@@ -27,6 +27,7 @@ import Careers from "./pages/Careers.tsx";
 import NyscPlan from "./pages/NyscPlan.tsx";
 import RegularPlans from "./pages/RegularPlans.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -56,17 +57,17 @@ createRoot(document.getElementById("root")!).render(
         <Route path={routes.ourTeam} element={<OurTeam />} />
         <Route path={routes.courses} element={<Courses />} />
         <Route path={routes.careers} element={<Careers />} />
-        <Route path={routes.CoursesDataAnalytics} element={<DataAnalytics />} />
+        <Route path={routes.coursesDataAnalytics} element={<DataAnalytics />} />
         <Route
-          path={routes.CoursesDataAnalyticsNyscPlan}
+          path={routes.coursesDataAnalyticsNyscPlan}
           element={<NyscPlan />}
         />
         <Route
-          path={routes.CoursesDataAnalyticsRegularPlans}
+          path={routes.coursesDataAnalyticsRegularPlans}
           element={<RegularPlans />}
         />
         <Route
-          path={routes.CoursesDataAnalyticsPaymentSuccess}
+          path={routes.coursesDataAnalyticsPaymentSuccess}
           element={<PaymentSuccess />}
         />
 
@@ -136,6 +137,7 @@ We hope to build a future where we do not just focus on overcoming barriers with
           path="/blessing-adem"
           element={<Navigate to={routes.ourTeamBlessing} />}
         />
+        <Route path={routes.privacyPolicy} element={<PrivacyPolicy />} />
       </Routes>
       <Footer />
     </BrowserRouter>

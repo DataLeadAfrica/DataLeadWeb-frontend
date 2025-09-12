@@ -1,0 +1,22 @@
+.privacy-policy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+  background-color: var(--clr-orange-light);
+  padding: var(--padding-4);
+
+  & h1 {
+    font-size: var(--font-lg);
+    font-weight: 400;
+  }
+
+  & > ol {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2);
+
+    & ul li {
+      padding-left: var(--padding-1);
+    }
+  }
+}

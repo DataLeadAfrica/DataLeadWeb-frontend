@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import "/src/components/footer.css";
+import "./footer.css";
 import { routes } from "../routes";
 
 export default function Footer() {
@@ -73,6 +73,10 @@ export default function Footer() {
           <Link to="tel:+2347030500741">+234-703-0500-741</Link>
         </div>
       </div>
+      <p className="footer__copyright">
+        © 2025 Data-Lead Africa. All Rights Reserved |{" "}
+        <a href={routes.privacyPolicy}>Privacy Policy</a>
+      </p>
     </footer>
   );
 }
