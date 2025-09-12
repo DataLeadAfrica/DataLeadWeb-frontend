@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
-import { HashRouter, Navigate, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import "./global.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -32,7 +32,7 @@ import RegistrationSuccess from "./pages/RegistrationSuccess.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <Helmet>
         <script>
@@ -145,6 +145,6 @@ We hope to build a future where we do not just focus on overcoming barriers with
         <Route path={routes.privacyPolicy} element={<PrivacyPolicy />} />
       </Routes>
       <Footer />
-    </HashRouter>
+    </BrowserRouter>
   </StrictMode>,
 );
