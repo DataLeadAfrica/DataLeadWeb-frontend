@@ -36,10 +36,12 @@ export default function DataAnalytics() {
             <div className="title-bar"></div>
           </h2>
           <p>
-            Become a data analyst in 3 months by learning hands-on tools like
-            Excel, SQL, Power BI, R, Stata, Nvivo, and KoboToolbox while
-            building a powerful professional portfolio of real-world projects to
-            land your dream job in today's data-driven world{" "}
+            The Data-Lead Africa Data Analytics Bootcamp is more than a
+            training, it is a launchpad for your career in to research and
+            analytics. Over three months of immersive, expert-led learning,
+            you’ll gain the skills to manage data end-to-end, while also
+            learning how to apply analytics to real-world challenges across
+            sectors and policy domains.
           </p>
         </div>
         <div>

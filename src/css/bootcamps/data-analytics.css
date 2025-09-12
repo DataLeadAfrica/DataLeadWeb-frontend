@@ -238,12 +238,11 @@
 }
 
 .data-analytics__payment .payment__options {
-  display: grid;
+  display: flex;
   align-items: start;
   justify-content: center;
   gap: var(--gap-2);
   width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .data-analytics__payment .payment__option {
@@ -252,6 +251,7 @@
   flex-direction: column;
   gap: var(--gap-1);
   min-height: min(100vw, 30rem);
+  width: 20rem;
 
   & .option__pitch {
     display: flex;
@@ -279,6 +279,7 @@
 
 .data-analytics__payment .payment__option-card::after {
   min-height: 15rem;
+  width: 20rem;
 }
 .data-analytics__payment .payment__option .option__plan {
   display: flex;
@@ -325,6 +326,11 @@
     right: 50%;
     height: 450%;
     rotate: -80deg;
+  }
+}
+@media (max-width: 1200px) {
+.data-analytics__payment .payment__options {
+  flex-direction: column;
   }
 }
 

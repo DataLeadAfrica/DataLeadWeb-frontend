@@ -49,7 +49,8 @@ export default function Courses() {
           <CourseCard
             imgLink="/assets/bootcamps/data-analytics/highlight.jpg"
             name="Data Analytics"
-            desc="Learn to collect, clean, analyze, and visualize data to uncover meaningful insights..."
+            desc="The Data-Lead Africa Data Analytics Bootcamp is more than a
+            training..."
             link={routes.coursesDataAnalytics}
           />
           <CourseCard
