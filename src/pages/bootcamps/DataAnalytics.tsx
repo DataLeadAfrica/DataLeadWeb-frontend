@@ -181,6 +181,10 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Pay Once & Gain Full Access
               </p>
+              <p className="option__pitch">
+                <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
+                installment payment
+              </p>
               <a href={routes.coursesDataAnalyticsStandardPlan} className="btn">
                 Enrol now
               </a>
