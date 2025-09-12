@@ -2,6 +2,7 @@ import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
 import CallToAction from "../../components/CallToAction";
 import { routes } from "../../routes";
+import { Link } from "react-router";
 
 function LearnMethod({
   heading,
@@ -164,9 +165,9 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
-              <a href={routes.coursesDataAnalyticsNyscPlan} className="btn">
+              <Link to={routes.coursesDataAnalyticsNyscPlan} className="btn">
                 Enrol now
-              </a>
+              </Link>
             </div>
           </Card>
           <Card extraClasses="payment__option-card">
@@ -185,9 +186,12 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
                 installment payment
               </p>
-              <a href={routes.coursesDataAnalyticsStandardPlan} className="btn">
+              <Link
+                to={routes.coursesDataAnalyticsStandardPlan}
+                className="btn"
+              >
                 Enrol now
-              </a>
+              </Link>
             </div>
           </Card>
         </div>
