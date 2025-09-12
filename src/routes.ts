@@ -35,6 +35,8 @@ export const routes = {
   coursesDataAnalyticsNyscPlan: "/courses/data-analytics/nysc-plan",
   coursesDataAnalyticsStandardPlan: "/courses/data-analytics/standard-plan",
   coursesDataAnalyticsPaymentSuccess: "/courses/data-analytics/payment-success",
+  coursesDataAnalyticsRegistrationSuccess:
+    "/courses/data-analytics/registration-success",
   coursesDataScience: "/courses/data-science",
   coursesBioInformatics: "/courses/bioinformatics",
   coursesHrAnalytcis: "/courses/hr-analysis",

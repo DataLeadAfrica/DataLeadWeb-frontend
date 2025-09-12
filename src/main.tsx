@@ -28,6 +28,7 @@ import NyscPlan from "./pages/NyscPlan.tsx";
 import StandardPlan from "./pages/StandardPlan.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import RegistrationSuccess from "./pages/RegistrationSuccess.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -69,6 +70,10 @@ createRoot(document.getElementById("root")!).render(
         <Route
           path={routes.coursesDataAnalyticsPaymentSuccess}
           element={<PaymentSuccess />}
+        />
+        <Route
+          path={routes.coursesDataAnalyticsRegistrationSuccess}
+          element={<RegistrationSuccess />}
         />
 
         {courseRoutes()}
