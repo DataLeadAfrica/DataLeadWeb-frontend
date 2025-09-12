@@ -9,26 +9,65 @@
 
 .payment-success__card {
   background-color: white;
-  border-radius: 0.5rem;
-  padding: var(--padding-4);
   display: flex;
   flex-direction: column;
-  gap: var(--gap-4);
   align-items: center;
+}
 
-  & > p {
-    text-align: center;
-    background-color: #C7FFD0;
-    border: solid 1px #4DC55F;
-    width: fit-content;
-    padding: var(--padding-0_5);
-    border-radius: 2rem;
+.payment-success__header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--padding-2);
+  background-color: #ceffd5;
+
+  & > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+  }
+
+  & img {
+    max-width: 8rem;
+  }
+
+  & h1 {
+    font-family: "ClashDisplay-Regular";
+    font-size: var(--font-lg);
+    font-weight: 400;
+  }
+}
+
+.payment-success__body {
+  width: 100%;
+  display: flex;
+
+  & > * {
+    width: 50%;
   }
 }
 
 .payment-success__text {
-  text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding-2);
   gap: var(--gap-2);
+}
+
+@media (max-width: 768px) {
+  .payment-success__text {
+    width: 100%;
+  }
+  .payment-success__img {
+    display: none;
+  }
+  .payment-success__header img {
+    max-width: 4rem;
+  }
+  .payment-success__header h1 {
+    font-size: var(--font-md);
+  }
 }

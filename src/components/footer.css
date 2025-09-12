@@ -61,8 +61,7 @@
   }
 }
 
-.footer__copyright{
+.footer__copyright {
   grid-column: 1/4;
   color: gray;
-
 }
