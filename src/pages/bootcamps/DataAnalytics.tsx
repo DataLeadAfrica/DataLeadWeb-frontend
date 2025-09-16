@@ -205,7 +205,7 @@ export default function DataAnalytics() {
               Your Data Skills.
             </p>
             <a
-              href="https://drive.google.com/uc?export=download&id=1t_5SAl_9LZV33dqJyjMxlkV9F7f3wxgn"
+              href="https://drive.google.com/file/d/1Y_jiAI4rH_1V47b7787TP9PiqovORyEO/view?usp=sharing"
               className="btn"
             >
               Download Brochure
