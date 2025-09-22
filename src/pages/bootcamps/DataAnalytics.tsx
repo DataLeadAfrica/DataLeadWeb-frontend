@@ -165,7 +165,9 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
-              <Link to={routes.coursesDataAnalyticsNyscPlan} className="btn">
+              <Link
+                href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+              >
                 Enrol now
               </Link>
             </div>
@@ -186,8 +188,8 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
                 installment payment
               </p>
-              <Link
-                to={routes.coursesDataAnalyticsStandardPlan}
+                <Link
+                  href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
                 className="btn"
               >
                 Enrol now
