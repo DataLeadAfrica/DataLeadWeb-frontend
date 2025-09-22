@@ -166,7 +166,6 @@ export default function DataAnalytics() {
               <a
                 href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
                 className="btn"
-                target="_blank"
                 rel="noopener noreferrer"
               >
                 Enrol now
@@ -192,7 +191,6 @@ export default function DataAnalytics() {
                 <a
                   href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
                   className="btn"
-                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   Enrol now
