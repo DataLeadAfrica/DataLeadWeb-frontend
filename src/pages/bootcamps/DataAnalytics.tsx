@@ -1,8 +1,7 @@
+import React from "react";
 import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
 import CallToAction from "../../components/CallToAction";
-import { routes } from "../../routes";
-import { Link } from "react-router";
 
 function LearnMethod({
   heading,
@@ -165,11 +164,14 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>
                 Your Tech Career Starts Here: Exclusive NYSC Rate
               </p>
-              <Link
+              <a
                 href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+                className="btn"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Enrol now
-              </Link>
+              </a>
             </div>
           </Card>
           <Card extraClasses="payment__option-card">
@@ -188,12 +190,14 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
                 installment payment
               </p>
-                <Link
+                <a
                   href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
-                className="btn"
-              >
-                Enrol now
-              </Link>
+                  className="btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Enrol now
+                </a>
             </div>
           </Card>
         </div>
