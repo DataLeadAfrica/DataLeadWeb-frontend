@@ -1,4 +1,3 @@
-import React from "react";
 import "../../css/bootcamps/data-analytics.css";
 import Card from "../../components/Card";
 import CallToAction from "../../components/CallToAction";
