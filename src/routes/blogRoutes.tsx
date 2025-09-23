@@ -1,6 +1,8 @@
 import { Route } from "react-router";
 import BlogPost from "../pages/BlogPost";
 import { routes } from "../routes";
+import Top7DataAnalytics from "../pages/blogs/Top7DataAnalytics";
+import HowNYSCMembersCan from "../pages/blogs/HowNYSCMembersCan";
 
 export default function blogRoutes() {
   return (
@@ -43,6 +45,18 @@ There are a lot of readily available resources on the internet which can be over
 Mistakes are inevitable and also part of the learning process, however, mistakes can be limited when you are in a class where the facilitator is easily accessible to guide you and effectively correct mistakes that will be made during the cause of learning which makes learning faster and easier.
 Here at Data-Lead Africa, we have a range of services such as the Applied Data Analytics Bootcamp which is designed to make learning how to work with data easier. Get in touch with us today to find out more"
           />
+        }
+      />
+      <Route
+        path={routes.blogTop7DataAnalytics}
+        element={
+        <Top7DataAnalytics/>
+        }
+      />
+      <Route
+        path={routes.blogHowNYSCMembersCan}
+        element={
+        <HowNYSCMembersCan/>
         }
       />
     </>

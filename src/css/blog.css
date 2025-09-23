@@ -37,6 +37,7 @@
   gap: var(--gap-1);
   overflow: hidden;
   padding-bottom: var(--padding-1);
+  height: 100%;
 
   & img {
     max-height: 15rem;
@@ -52,7 +53,9 @@
 .blog-page .post__content {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: var(--gap-1);
+  height: 100%;
   padding-inline: var(--padding-2);
 }
 

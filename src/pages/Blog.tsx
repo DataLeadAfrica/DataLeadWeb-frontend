@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import "../css/blog.css";
 import Card from "../components/Card";
+import { routes } from "../routes";
 
 function Post({
   imgSrc,
@@ -51,7 +52,21 @@ export default function Blog() {
           title="WHY SHOULD I REGISTER FOR A COURSE WHEN I CAN SELF LEARN?"
           summary="“Get into tech, that is one of the ways to make money” I am sure you’ve heard this a..."
           date="May 2022"
-          link="/blog/why-should-i-register-for-a-course-when-i-can-self-learn"
+          link={routes.blogWhyRegisterCourse}
+        />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="TOP 7 DATA ANALYTICS SKILLS EMPLOYERS WANT IN NIGERIA (2025)"
+          summary="The demand for data analysts in Nigeria has never been higher. From banks and tech startups..."
+          date="September 2025"
+          link={routes.blogTop7DataAnalytics}
+        />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="HOW NYSC MEMBERS CAN LAUNCH A CAREER IN DATA ANALYTICS DURING SERVICE YEAR"
+          summary="Every year, thousands of Nigerian graduates begin the National Youth Service Corps (NYSC)..."
+          date="September 2025"
+          link={routes.blogHowNYSCMembersCan}
         />
       </div>
     </div>

@@ -19,6 +19,7 @@
 .blog-post__content {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: var(--gap-3);
 }
 
@@ -26,4 +27,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
+}
+
+.blog-post__register {
+  & a {
+    color: var(--clr-orange);
+    transition: var(--transition-1);
+
+    &:hover {
+      color: #000;
+      transition: var(--transition-1);
+    }
+  }
 }

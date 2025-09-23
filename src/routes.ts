@@ -3,6 +3,9 @@ export const routes = {
   blog: "/blog",
   blogWhyRegisterCourse:
     "/blog/why-should-i-register-for-a-course-when-i-can-self-learn",
+  blogTop7DataAnalytics:
+    "/blog/top-7-data-analytics-skills-employers-want-in-nigeria-2025",
+blogHowNYSCMembersCan:"/blog/how-nysc-members-can-launch-a-career-in-data-analytics-during-service-year",
   research: "/research",
   researchNigeriaJointResponse:
     "/research/nigeria-joint-response-dutch-ministry-of-foreign-affairs-oct-nov-2020",

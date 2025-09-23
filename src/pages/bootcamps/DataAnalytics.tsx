@@ -188,13 +188,13 @@ export default function DataAnalytics() {
                 <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
                 installment payment
               </p>
-                <a
-                  href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
-                  className="btn"
-                  rel="noopener noreferrer"
-                >
-                  Enrol now
-                </a>
+              <a
+                href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+                className="btn"
+                rel="noopener noreferrer"
+              >
+                Enrol now
+              </a>
             </div>
           </Card>
         </div>
