@@ -2,12 +2,12 @@ import "../../css/blog-post.css";
 
 export default function Top7DataAnalytics() {
   return (
-    <div className="blog-post">
+    <article className="blog-post">
       <div className="blog-post__head">
         <h1 className="blog-post__title">
           TOP 7 DATA ANALYTICS SKILLS EMPLOYERS WANT IN NIGERIA (2025)
         </h1>
-        <p className="blog-post__date">Date posted: September 9th 2025</p>
+        <p className="blog-post__date">Date posted: September 23rd 2025</p>
       </div>
       <div className="blog-post__content">
         <img className="blog-post__image" src="/assets/blog/temp.svg" alt="" />
@@ -125,6 +125,6 @@ export default function Top7DataAnalytics() {
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

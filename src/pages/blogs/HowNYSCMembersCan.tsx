@@ -2,13 +2,13 @@ import "../../css/blog-post.css";
 
 export default function HowNYSCMembersCan() {
   return (
-    <div className="blog-post">
+    <article className="blog-post">
       <div className="blog-post__head">
         <h1 className="blog-post__title">
           HOW NYSC MEMBERS CAN LAUNCH A CAREER IN DATA ANALYTICS DURING SERVICE
           YEAR
         </h1>
-        <p className="blog-post__date">Date posted: September 9th 2025</p>
+        <p className="blog-post__date">Date posted: September 23rd 2025</p>
       </div>
       <div className="blog-post__content">
         <img className="blog-post__image" src="/assets/blog/temp.svg" alt="" />
@@ -123,7 +123,9 @@ export default function HowNYSCMembersCan() {
           <div className="blog-post__register">
             <p> Next Cohort: October 20, 2025</p>
             <p> Location: Abuja (hybrid learning option available)</p>
-              <a href="#">Register here</a>
+            <a href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share">
+              Register here
+            </a>
           </div>
           <p>Final Word</p>
           <p>
@@ -134,6 +136,6 @@ export default function HowNYSCMembersCan() {
           </p>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -12,7 +12,7 @@ export default function BlogPost({
   content: string;
 }) {
   return (
-    <div className="blog-post">
+    <article className="blog-post">
       <div className="blog-post__head">
         <h1 className="blog-post__title">{title}</h1>
         {date != "" && <p className="blog-post__date">Date posted: {date}</p>}
@@ -25,6 +25,6 @@ export default function BlogPost({
           ))}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

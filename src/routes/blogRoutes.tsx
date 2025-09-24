@@ -3,6 +3,9 @@ import BlogPost from "../pages/BlogPost";
 import { routes } from "../routes";
 import Top7DataAnalytics from "../pages/blogs/Top7DataAnalytics";
 import HowNYSCMembersCan from "../pages/blogs/HowNYSCMembersCan";
+import FromBeginnerToAnalyst from "../pages/blogs/FromBeginnerToAnalyst";
+import ExcelVsPowerBI from "../pages/blogs/ExcelVsPowerBI";
+import SQLForBeginners from "../pages/blogs/SQLForBeginners";
 
 export default function blogRoutes() {
   return (
@@ -57,6 +60,24 @@ Here at Data-Lead Africa, we have a range of services such as the Applied Data 
         path={routes.blogHowNYSCMembersCan}
         element={
         <HowNYSCMembersCan/>
+        }
+      />
+      <Route
+        path={routes.blogFromBeginnerToAnalyst}
+        element={
+        <FromBeginnerToAnalyst/>
+        }
+      />
+      <Route
+        path={routes.blogExcelVsPowerBI}
+        element={
+        <ExcelVsPowerBI/>
+        }
+      />
+      <Route
+        path={routes.blogSQLForBeginners}
+        element={
+        <SQLForBeginners/>
         }
       />
     </>

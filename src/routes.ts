@@ -5,7 +5,14 @@ export const routes = {
     "/blog/why-should-i-register-for-a-course-when-i-can-self-learn",
   blogTop7DataAnalytics:
     "/blog/top-7-data-analytics-skills-employers-want-in-nigeria-2025",
-blogHowNYSCMembersCan:"/blog/how-nysc-members-can-launch-a-career-in-data-analytics-during-service-year",
+  blogHowNYSCMembersCan:
+    "/blog/how-nysc-members-can-launch-a-career-in-data-analytics-during-service-year",
+  blogFromBeginnerToAnalyst:
+    "/blog/from-beginner-to-analyst-12-weeks-to-a-data-career-in-abuja",
+  blogExcelVsPowerBI:
+    "/blog/excel-vs-power-bi-vs-python-which-tool-should-you-learn-first",
+  blogSQLForBeginners:
+    "/blog/sql-for-beginners-why-every-nigerian-graduate-should-learn-it",
   research: "/research",
   researchNigeriaJointResponse:
     "/research/nigeria-joint-response-dutch-ministry-of-foreign-affairs-oct-nov-2020",

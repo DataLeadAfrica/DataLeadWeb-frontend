@@ -68,6 +68,27 @@ export default function Blog() {
           date="September 2025"
           link={routes.blogHowNYSCMembersCan}
         />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="FROM BEGINNER TO ANALYST: 12 WEEKS TO A DATA CAREER IN ABUJA"
+          summary="Do you dream of working in tech but worry you don’t have the right background? The..."
+          date="September 2025"
+          link={routes.blogFromBeginnerToAnalyst}
+        />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="EXCEL VS POWER BI VS PYTHON: WHICH TOOL SHOULD YOU LEARN FIRST?"
+          summary="If you are thinking about starting a career in data analytics, you’ve probably heard..."
+          date="September 2025"
+          link={routes.blogExcelVsPowerBI}
+        />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="SQL FOR BEGINNERS: WHY EVERY NIGERIAN GRADUATE SHOULD LEARN IT"
+          summary="In today’s digital economy, data is everywhere, from your bank transactions to the..."
+          date="September 2025"
+          link={routes.blogSQLForBeginners}
+        />
       </div>
     </div>
   );
