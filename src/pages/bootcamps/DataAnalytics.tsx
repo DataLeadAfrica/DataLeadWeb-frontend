@@ -42,6 +42,13 @@ export default function DataAnalytics() {
             learning how to apply analytics to real-world challenges across
             sectors and policy domains.
           </p>
+            <a
+              href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+              className="btn"
+              rel="noopener noreferrer"
+            >
+              Enrol now
+            </a>
         </div>
         <div>
           <Card>
@@ -147,58 +154,6 @@ export default function DataAnalytics() {
           />
         </div>
       </div>
-      <div className="data-analytics__payment">
-        <h2 className="underline-header">Payment Plans</h2>
-        <div className="payment__options">
-          <Card extraClasses="payment__option-card">
-            <div className="payment__option">
-              <i className="icon nf nf-fa-user_circle"></i>
-              <div className="option__plan">
-                <p className="plan__name">NYSC Plan</p>
-                <p className="plan__price">₦ 150,000</p>
-                <p className="plan__old-price">₦ 300,000</p>
-                <hr />
-              </div>
-              <p className="option__pitch">
-                <i className="nf nf-md-check_circle_outline"></i>
-                Your Tech Career Starts Here: Exclusive NYSC Rate
-              </p>
-              <a
-                href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
-                className="btn"
-                rel="noopener noreferrer"
-              >
-                Enrol now
-              </a>
-            </div>
-          </Card>
-          <Card extraClasses="payment__option-card">
-            <div className="payment__option">
-              <i className="icon nf nf-fa-trophy"></i>
-              <div className="option__plan">
-                <p className="plan__name">Standard Plan</p>
-                <p className="plan__price">₦ 250,000</p>
-                <hr />
-              </div>
-              <p className="option__pitch">
-                <i className="nf nf-md-check_circle_outline"></i>
-                Pay Once & Gain Full Access
-              </p>
-              <p className="option__pitch">
-                <i className="nf nf-md-check_circle_outline"></i>₦ 300,000
-                installment payment
-              </p>
-              <a
-                href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
-                className="btn"
-                rel="noopener noreferrer"
-              >
-                Enrol now
-              </a>
-            </div>
-          </Card>
-        </div>
-      </div>
       <div className="call-to-action__wrapper">
         <CallToAction>
           <div className="call-to-action__content">
@@ -207,12 +162,21 @@ export default function DataAnalytics() {
               An Immersive and Engaging Learning Experience That Will Transform
               Your Data Skills.
             </p>
-            <a
-              href="https://drive.google.com/file/d/1Y_jiAI4rH_1V47b7787TP9PiqovORyEO/view?usp=sharing"
-              className="btn"
-            >
-              Download Brochure
-            </a>
+            <div style={{ display: "flex", gap: "var(--gap-2)" }}>
+              <a
+                href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+                className="btn"
+                rel="noopener noreferrer"
+              >
+                Enrol now
+              </a>
+              <a
+                href="https://drive.google.com/file/d/1Y_jiAI4rH_1V47b7787TP9PiqovORyEO/view?usp=sharing"
+                className="btn"
+              >
+                Download Brochure
+              </a>
+            </div>
           </div>
         </CallToAction>
       </div>
