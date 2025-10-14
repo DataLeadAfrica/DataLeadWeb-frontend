@@ -82,7 +82,7 @@ export default function Header() {
           <Link className="nav__link" to={routes.research}>
             Research
           </Link>
-          <Link className="menu__link" to={routes.courses}>
+          <Link className="nav__link" to={routes.courses}>
             Courses
           </Link>
         </nav>
