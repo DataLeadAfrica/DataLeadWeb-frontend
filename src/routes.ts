@@ -22,6 +22,8 @@ export const routes = {
     "/research/japan-international-cooperation-agency-oct-nov-2021",
   researchSocialImpactUsaid:
     "/research/social-impact-usaid-nigeria-dec-2021-feb-2022",
+  researchNigeriaViolenceUsaid:
+    "/research/final-assessment-report-usaid-nigeria-violence-and-conflict-assessment-vca",
 
   whoWeAre: "/who-we-are",
   contactUs: "/contact-us",

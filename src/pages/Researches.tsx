@@ -73,6 +73,11 @@ export default function Researches() {
             imgSrc="/assets/researches/social-impact-usaid.jpg"
             link={routes.researchSocialImpactUsaid}
           />
+          <ResearchesPost
+            title="FINAL ASSESSMENT REPORT USAID/NIGERIA VIOLENCE AND CONFLICT ASSESSMENT (VCA)"
+            imgSrc="/assets/researches/nigeria-violence-usaid.png"
+            link={routes.researchNigeriaViolenceUsaid}
+          />
         </div>
       </div>
     </div>

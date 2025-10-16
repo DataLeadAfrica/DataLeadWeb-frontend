@@ -6,11 +6,13 @@ export default function Research({
   title,
   projTitle,
   desc,
+  report,
 }: {
   imgSrc: string;
   title: string;
   projTitle: string;
   desc: string;
+  report?: string;
 }) {
   return (
     <div className="research">
@@ -27,6 +29,7 @@ export default function Research({
         <p className="research__text">
           <span>Description:</span> {desc}
         </p>
+        {report && <a className="btn" href={report}>Download the report</a>}
       </div>
     </div>
   );
