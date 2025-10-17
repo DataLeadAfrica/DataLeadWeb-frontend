@@ -4,13 +4,13 @@ import "../css/research.css";
 export default function Research({
   imgSrc,
   title,
-  projTitle,
+  projTimeline,
   desc,
   report,
 }: {
   imgSrc: string;
   title: string;
-  projTitle: string;
+  projTimeline: string;
   desc: string;
   report?: string;
 }) {
@@ -24,12 +24,16 @@ export default function Research({
       <div className="research__content">
         <h1>{title}</h1>
         <p className="research__text">
-          <span>Project title:</span> {projTitle}
+          <span>Project timeline:</span> {projTimeline}
         </p>
         <p className="research__text">
           <span>Description:</span> {desc}
         </p>
-        {report && <a className="btn" href={report}>Download the report</a>}
+        {report && (
+          <a className="btn" href={report}>
+            Download the report
+          </a>
+        )}
       </div>
     </div>
   );

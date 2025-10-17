@@ -49,27 +49,27 @@ export default function Researches() {
         </div>
         <div className="posts__content">
           <ResearchesPost
-            title="NIGERIA JOINT RESPONSE/DUTCH MINISTRY OF FOREIGN AFFAIRS (Oct – Nov 2020)"
+            title="ACCOUNTABILITY PILOT SURVEY IN BORNO STATE"
             imgSrc="/assets/researches/NJR.png"
             link={routes.researchNigeriaJointResponse}
           />
           <ResearchesPost
-            title="USAID/NIGERIA (Dec 2020 – Jan 2021)"
+            title="NORTHERN EDUCATION INITIATIVE PLUS (NEI+)"
             imgSrc="/assets/researches/USAID.png"
             link={routes.researchUsaidNigeria}
           />
           <ResearchesPost
-            title="MERCY CORPS (Mar – Apr 2021)"
+            title="HUMANITARIAN ASSISTANCE, LIVELIHOOD, FOOD SECURITY"
             imgSrc="/assets/researches/Mercy-corps.png"
             link={routes.researchMercyCorps}
           />
           <ResearchesPost
-            title="Japan International Cooperation Agency (Oct – Nov 2021)"
+            title="PROMOTION OF MARKET-ORIENTED AGRICULTURAL EXTENSION SYSTEM FOR LIVELIHOOD IMPROVEMENT IN NIGERIA (SHEP NIGERIA)"
             imgSrc="/assets/researches/JICA.jpg"
             link={routes.researchJapanInternational}
           />
           <ResearchesPost
-            title="SOCIAL IMPACT/USAID NIGERIA (Dec 2021 – Feb 2022)"
+            title="USAID Agribusiness Investment Midterm Performance Evaluation"
             imgSrc="/assets/researches/social-impact-usaid.jpg"
             link={routes.researchSocialImpactUsaid}
           />
