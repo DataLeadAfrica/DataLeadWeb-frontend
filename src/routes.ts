@@ -13,6 +13,8 @@ export const routes = {
     "/blog/excel-vs-power-bi-vs-python-which-tool-should-you-learn-first",
   blogSQLForBeginners:
     "/blog/sql-for-beginners-why-every-nigerian-graduate-should-learn-it",
+  blogDrivingInclusionWithData:
+    "/blog/driving-inclusion-with-data-when-quality-statistics-meet-accessibility",
   research: "/research",
   researchNigeriaJointResponse:
     "/research/nigeria-joint-response-dutch-ministry-of-foreign-affairs-oct-nov-2020",

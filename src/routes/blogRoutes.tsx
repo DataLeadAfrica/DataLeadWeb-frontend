@@ -6,6 +6,7 @@ import HowNYSCMembersCan from "../pages/blogs/HowNYSCMembersCan";
 import FromBeginnerToAnalyst from "../pages/blogs/FromBeginnerToAnalyst";
 import ExcelVsPowerBI from "../pages/blogs/ExcelVsPowerBI";
 import SQLForBeginners from "../pages/blogs/SQLForBeginners";
+import DrivingInclusionWithData from "../pages/blogs/DrivingInclusionWithData";
 
 export default function blogRoutes() {
   return (
@@ -52,33 +53,21 @@ Here at Data-Lead Africa, we have a range of services such as the Applied Data 
       />
       <Route
         path={routes.blogTop7DataAnalytics}
-        element={
-        <Top7DataAnalytics/>
-        }
+        element={<Top7DataAnalytics />}
       />
       <Route
         path={routes.blogHowNYSCMembersCan}
-        element={
-        <HowNYSCMembersCan/>
-        }
+        element={<HowNYSCMembersCan />}
       />
       <Route
         path={routes.blogFromBeginnerToAnalyst}
-        element={
-        <FromBeginnerToAnalyst/>
-        }
+        element={<FromBeginnerToAnalyst />}
       />
+      <Route path={routes.blogExcelVsPowerBI} element={<ExcelVsPowerBI />} />
+      <Route path={routes.blogSQLForBeginners} element={<SQLForBeginners />} />
       <Route
-        path={routes.blogExcelVsPowerBI}
-        element={
-        <ExcelVsPowerBI/>
-        }
-      />
-      <Route
-        path={routes.blogSQLForBeginners}
-        element={
-        <SQLForBeginners/>
-        }
+        path={routes.blogDrivingInclusionWithData}
+        element={<DrivingInclusionWithData />}
       />
     </>
   );

@@ -89,6 +89,13 @@ export default function Blog() {
           date="September 2025"
           link={routes.blogSQLForBeginners}
         />
+        <Post
+          imgSrc="/assets/blog/temp.svg"
+          title="DRIVING INCLUSION WITH DATA: WHEN QUALITY STATISTICS MEET ACCESSIBILITY"
+          summary="Driving Inclusion with Data: When Quality Statistics Meet Accessibility..."
+          date="September 2025"
+          link={routes.blogDrivingInclusionWithData}
+        />
       </div>
     </div>
   );
