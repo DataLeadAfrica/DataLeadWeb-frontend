@@ -78,6 +78,11 @@ export default function Researches() {
             imgSrc="/assets/researches/nigeria-violence-usaid.png"
             link={routes.researchNigeriaViolenceUsaid}
           />
+          <ResearchesPost
+            title="DEVELOPMENT OF BUSINESS CASE FOR REUSABLE MENSTRUAL PRODUCTS"
+            imgSrc="/assets/researches/water-aid.png"
+            link={routes.researchDevelopmentOfBusiness}
+          />
         </div>
       </div>
     </div>

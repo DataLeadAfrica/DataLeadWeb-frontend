@@ -27,7 +27,10 @@ export default function Research({
           <span>Project timeline:</span> {projTimeline}
         </p>
         <p className="research__text">
-          <span>Description:</span> {desc}
+          <span>Description:</span>
+          {desc.split("\n\n").map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
         </p>
         {report && (
           <a className="btn" href={report}>

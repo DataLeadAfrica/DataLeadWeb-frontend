@@ -26,6 +26,8 @@ export const routes = {
     "/research/social-impact-usaid-nigeria-dec-2021-feb-2022",
   researchNigeriaViolenceUsaid:
     "/research/final-assessment-report-usaid-nigeria-violence-and-conflict-assessment-vca",
+  researchDevelopmentOfBusiness:
+    "/research/development-of-business-case-for-reusable-menstrual-products",
 
   whoWeAre: "/who-we-are",
   contactUs: "/contact-us",
