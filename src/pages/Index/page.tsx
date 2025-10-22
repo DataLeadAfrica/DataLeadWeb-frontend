@@ -51,7 +51,7 @@ function TestimonialCard({
   );
 }
 
-function App() {
+function Index() {
   return (
     <div className="landing">
       <div className="landing__hero">
@@ -297,4 +297,4 @@ function App() {
   );
 }
 
-export default App;
+export default Index;
