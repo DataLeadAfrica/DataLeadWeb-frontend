@@ -21,7 +21,7 @@ import blogRoutes from "./routes/blogRoutes";
 import researchRoutes from "./routes/researchRoutes";
 import { routes } from "./routes";
 import BlogPost from "./pages/BlogPost.tsx";
-import courseRoutes from "./routes/courseRoutes.tsx";
+// import courseRoutes from "./routes/courseRoutes.tsx";
 import consultancyRoutes from "./routes/consultancyRoutes.tsx";
 import Careers from "./pages/Careers.tsx";
 import NyscPlan from "./pages/NyscPlan.tsx";
@@ -29,6 +29,7 @@ import StandardPlan from "./pages/StandardPlan.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import RegistrationSuccess from "./pages/RegistrationSuccess.tsx";
+import courseRoutes from "./routes/courseRoutes.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -85,6 +86,7 @@ createRoot(document.getElementById("root")!).render(
               title="Deaf-In-Tech: Inclusion in tech, higher education, and employment."
               date=""
               imgSrc="/assets/deaf-in-tech.jpg"
+              author="Deaf-in-tech"
               content="
 
 The Deaf-In-Tech project is an Edtech inclusion program of Data-Lead Africa, focused on strengthening diversity, equity, and inclusion (DEI) in STEM, data analytics, higher education, and employment. It seeks to close the existing skill gap among ordinarily marginalized people. The key marginalized groups in low- and middle-income countries are Persons with Disabilities (PWDs), women, and girls. Through the SDGs agenda to create prosperous, peaceful, and equitable societies, much work is being done to improve equity, diversity, and inclusion. However, initiatives working to improve the inclusion of PWDs need to be higher.
