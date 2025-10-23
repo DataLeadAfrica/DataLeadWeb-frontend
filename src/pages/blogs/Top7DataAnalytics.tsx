@@ -7,10 +7,11 @@ export default function Top7DataAnalytics() {
         <h1 className="blog-post__title">
           TOP 7 DATA ANALYTICS SKILLS EMPLOYERS WANT IN NIGERIA (2025)
         </h1>
-        <p className="blog-post__date">Date posted: September 23rd 2025</p>
+        <p className="blog-post__subtitle">
+          <span>Arowolo Ayoola PhD.</span> <span>September 23rd 2025</span>
+        </p>
       </div>
       <div className="blog-post__content">
-        <img className="blog-post__image" src="/assets/blog/temp.svg" alt="" />
         <div className="blog-post__text">
           <p>
             The demand for data analysts in Nigeria has never been higher. From

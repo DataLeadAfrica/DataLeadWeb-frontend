@@ -8,10 +8,11 @@ export default function HowNYSCMembersCan() {
           HOW NYSC MEMBERS CAN LAUNCH A CAREER IN DATA ANALYTICS DURING SERVICE
           YEAR
         </h1>
-        <p className="blog-post__date">Date posted: September 23rd 2025</p>
+        <p className="blog-post__subtitle">
+          <span>Arowolo Ayoola PhD.</span> <span>September 23rd 2025</span>
+        </p>
       </div>
       <div className="blog-post__content">
-        <img className="blog-post__image" src="/assets/blog/temp.svg" alt="" />
         <div className="blog-post__text">
           <p>
             Every year, thousands of Nigerian graduates begin the National Youth

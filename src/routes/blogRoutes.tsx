@@ -16,6 +16,7 @@ export default function blogRoutes() {
         element={
           <BlogPost
             title="WHY SHOULD I REGISTER FOR A COURSE WHEN I CAN SELF LEARN?"
+            author="Arowolo Ayoola PhD."
             date="May 16th 2022"
             imgSrc="/assets/blog/temp.svg"
             content="“Get into tech, that is one of the ways to make money” I am sure you’ve heard this a lot of times especially on social media and with everyone wanting to update their bios with the tag “tech bro”.

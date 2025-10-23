@@ -1,12 +1,10 @@
 import { Link } from "react-router";
 import "../css/blog.css";
-import Card from "../components/Card";
 import { routes } from "../routes";
 
 function Post({
   imgSrc,
   title,
-  summary,
   date,
   link,
 }: {
@@ -17,21 +15,13 @@ function Post({
   link: string;
 }) {
   return (
-    <Card extraClasses="post__card">
-      <div className="post">
-        <img src={imgSrc} alt="" />
-        <div className="post__content">
-          <p className="post__title">{title}</p>
-          <p className="post__summary">
-            {summary}
-            <span className="post__date">{date}</span>
-          </p>
-          <Link className="btn" to={link}>
-            Read
-          </Link>
-        </div>
+    <Link className="post" to={link}>
+      <img src={imgSrc} alt="" />
+      <div className="post__content">
+        <p className="post__title">{title}</p>
+        <span className="post__date">{date}</span>
       </div>
-    </Card>
+    </Link>
   );
 }
 
@@ -39,7 +29,7 @@ export default function Blog() {
   return (
     <div className="blog-page">
       <div className="hero">
-        <h1>Stay Ahead in Tech, Data & Research</h1>
+        <h1>Data-Lead Africa Blog</h1>
         <p>
           Discover expert perspectives, practical guides, and the latest
           findings shaping the future of technology, data analysis, and

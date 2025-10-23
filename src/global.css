@@ -29,6 +29,9 @@
   --gap-4: 4rem;
   --gap-5: 5rem;
 
+  --radius-1: 4px;
+  --radius-2: 8px;
+
   --transition-1: 0.1s;
   --transition-2: 0.2s;
 
@@ -38,7 +41,7 @@
   --font-sm: 1rem;
   --font-md: 1.5rem;
   --font-lg: 2.5rem;
-  --font-xl: 4rem;
+  --font-xl: 3.61rem;
   --font-xxl: 6rem;
   --font-xxxl: 8rem;
 }
@@ -86,7 +89,7 @@
     --font-sm: calc(6 / 7 * 1rem);
     --font-md: calc(6 / 7 * 1.5rem);
     --font-lg: calc(5 / 7 * 2.5rem);
-    --font-xl: calc(4 / 7 * 4rem);
+    --font-xl: calc(4 / 7 * 3.61rem);
     --font-xxl: calc(4 / 7 * 6rem);
   }
 }

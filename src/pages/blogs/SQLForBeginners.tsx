@@ -7,10 +7,11 @@ export default function SQLForBeginners() {
         <h1 className="blog-post__title">
           SQL FOR BEGINNERS: WHY EVERY NIGERIAN GRADUATE SHOULD LEARN IT
         </h1>
-        <p className="blog-post__date">Date posted: September 24th 2025</p>
+        <p className="blog-post__subtitle">
+          <span>Arowolo Ayoola PhD.</span> <span>September 23rd 2025</span>
+        </p>
       </div>
       <div className="blog-post__content">
-        <img className="blog-post__image" src="/assets/blog/temp.svg" alt="" />
         <div className="blog-post__text">
           <p>
             In today’s digital economy, data is everywhere, from your bank
