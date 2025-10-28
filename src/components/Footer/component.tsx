@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import "./footer.css";
-import { routes } from "../routes";
+import "./component.css";
+import { routes } from "../../pages/routes";
 
 export default function Footer() {
   return (

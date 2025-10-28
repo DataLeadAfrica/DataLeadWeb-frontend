@@ -61,6 +61,7 @@
     }
 
     & p,
+    & a,
     & .menu__link {
       font-family: "ClashDisplay-Regular";
       font-weight: 700;
@@ -89,6 +90,16 @@ details > summary:first-of-type {
 }
 
 .nav__menu .menu__dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-0_5);
+
+  & .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-0_5);
+  }
+
   & .content__link {
     padding-inline: var(--padding-1);
     font-size: var(--font-md);
@@ -131,6 +142,7 @@ details > summary:first-of-type {
   position: relative;
 }
 
+.nav__dropdown-container:focus .drop-down,
 .nav__dropdown-container:hover .drop-down,
 .nav__dropdown-container .nav__link:focus + .drop-down {
   display: block;
@@ -155,12 +167,12 @@ details > summary:first-of-type {
   width: 50%;
   top: 2.05rem;
   position: absolute;
-  border: solid 1px var(--clr-black);
+  border: solid 1px var(--clr-gray);
   border-bottom: none;
 }
 
 .drop-down__links {
-  border: solid 1px var(--clr-black);
+  border: solid 1px var(--clr-gray);
   background-color: white;
   color: var(--font-color);
   padding-block: 1.5rem;

@@ -11,7 +11,6 @@
 
   --clr-gray: #2c2b2d;
   --clr-gray-light: #d7d7d7;
-  --clr-black: #2c2b2d;
   --clr-orange: #f56e0f;
   --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
@@ -23,24 +22,32 @@
   --padding-4: 4rem;
   --padding-5: 5rem;
 
+  --gap-0_5: 0.5rem;
   --gap-1: 1rem;
   --gap-2: 2rem;
   --gap-3: 3rem;
   --gap-4: 4rem;
   --gap-5: 5rem;
 
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-5: 20px;
+
   --transition-1: 0.1s;
   --transition-2: 0.2s;
 
   --shadow: -5px 5px 10px 0 var(--clr-gray);
 
-  --font-xs: 0.75rem;
-  --font-sm: 1rem;
-  --font-md: 1.5rem;
-  --font-lg: 2.5rem;
-  --font-xl: 4rem;
-  --font-xxl: 6rem;
-  --font-xxxl: 8rem;
+  --font-xxs: 0.812rem;
+  --font-xs: 1rem;
+  --font-sm: 1.25rem;
+  --font-md: 1.562rem;
+  --font-lg: 1.938rem;
+  --font-xl: 2.438rem;
+  --font-xxl: 3.062rem;
+  --font-xxxl: 3.812rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -82,12 +89,14 @@
     --padding-4: calc(3 / 6 * 4rem);
     --padding-5: calc(3 / 6 * 5rem);
 
-    --font-xs: calc(6 / 7 * 0.75rem);
-    --font-sm: calc(6 / 7 * 1rem);
-    --font-md: calc(6 / 7 * 1.5rem);
-    --font-lg: calc(5 / 7 * 2.5rem);
-    --font-xl: calc(4 / 7 * 4rem);
-    --font-xxl: calc(4 / 7 * 6rem);
+    --font-xxs: calc(6 / 7 0.812rem);
+    --font-xs: calc(6 / 7 * 1rem);
+    --font-sm: calc(6 / 7 * 1.25rem);
+    --font-md: calc(6 / 7 * 1.562rem);
+    --font-lg: calc(5 / 7 * 1.938rem);
+    --font-xl: calc(4 / 7 * 2.438rem);
+    --font-xxl: calc(4 / 7 * 3.062rem);
+    --font-xxxl: calc(4 / 7 * 3.812rem);
   }
 }
 
@@ -173,7 +182,7 @@ a,
 input,
 textarea,
 address {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
 }
 
 h1 {
@@ -196,16 +205,17 @@ li {
   padding-inline: var(--padding-1);
   border: 1px solid var(--clr-orange);
   display: flex;
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   background-color: var(--clr-orange);
   color: var(--font-color-inverse);
   align-items: center;
+  border-radius: var(--radius-1);
   transition: var(--transition-2);
 }
 .btn:hover,
 .btn:focus-visible {
-  background-color: var(--clr-black);
-  border: 1px solid var(--clr-black);
+  background-color: var(--clr-gray);
+  border: 1px solid var(--clr-gray);
   color: var(--font-color-inverse);
   transition: var(--transition-2);
 }

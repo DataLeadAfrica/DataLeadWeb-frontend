@@ -1,66 +1,24 @@
 import { Link } from "react-router";
 
-import "./index.css";
-import Card from "./components/Card";
-import CallToAction from "./components/CallToAction";
-import { routes } from "./routes";
+import "./page.css";
+import africa from "./assets/images/africa.svg";
+import card_1 from "./assets/images/card-1.svg";
+import card_2 from "./assets/images/card-2.svg";
+import card_3 from "./assets/images/card-3.svg";
+import split_card_1 from "./assets/images/split-card-1.svg";
+import split_card_2 from "./assets/images/split-card-2.svg";
+import split_card_3 from "./assets/images/split-card-3.svg";
 
-function Program({
-  image_src,
-  title,
-  body,
-}: {
-  image_src: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <Card>
-      <div className="program">
-        <div className="program__image">
-          <img src={image_src} alt="" />
-        </div>
-        <div className="program__body">
-          <h3 className="program__title">{title}</h3>
-          <p>{body}</p>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function TestimonialCard({
-  testimony,
-  initials,
-  name,
-}: {
-  testimony: string;
-  initials: string;
-  name: string;
-}) {
-  return (
-    <Card extraClasses="testimonials__card">
-      <div className="card__content">
-        <p>{testimony}</p>
-        <div className="card__person">
-          <p className="person__initials">{initials}</p>
-          <p className="person__name">{name}</p>
-        </div>
-      </div>
-    </Card>
-  );
-}
+import { routes } from "../routes";
 
 function Index() {
   return (
     <div className="landing">
       <div className="landing__hero">
         <div className="hero__text">
-          <h1>
-            Turning <span>Data</span> Into Decisions
-          </h1>
+          <h1>Empowering Africa's Next Generation of Data Leaders</h1>
           <div className="text__content">
-            <p>
+            <p className="hero__desc">
               Data-Lead Africa is a research and training consulting firm
               providing services in monitoring and evaluation, data analytics,
               data science training, and strategic consulting services.
@@ -72,8 +30,10 @@ function Index() {
               <a
                 href="https://calendly.com/datalead-a-info/30min"
                 className="btn btn--transparent"
+                style={{ display: "flex", gap: "var(--gap-1)" }}
               >
                 Book Consultancy
+                <i className="nf nf-fa-arrow_right"></i>
               </a>
             </div>
             <div className="hero__trained">
@@ -83,13 +43,10 @@ function Index() {
           </div>
         </div>
         <div className="hero__image">
-          <Card>
-            <img src="/assets/index/hero.png" alt="" />
-          </Card>
-          <img src="/assets/index/graph.png" alt="" className="hero__graph" />
+          <img src={africa} alt="" />
         </div>
       </div>
-      <div className="companies__banner">
+      <div className="landing__companies-banner">
         <div className="track">
           <img src="/assets/worked-with.svg" alt="clients" />
         </div>
@@ -97,200 +54,163 @@ function Index() {
           <img src="/assets/worked-with.svg" alt="clients" />
         </div>
       </div>
-      <div className="offerings-section">
-        <div className="offerings-section__header">
-          <h2 className="offerings-section__title">Our offerings</h2>
-          <h3 className="offerings-section__subtitle">
-            Empowering individuals and organizations through data-driven
-            solutions.
-          </h3>
-        </div>
-        <Card>
-          <div className="offerings-section__card">
-            <div className="card-section">
-              <img src="/assets/index/research-icon.svg" alt="" />
-              <h4>Research</h4>
-              <p>
-                Uncover valuable insights with our rigorous research services.
-                We delve deep into complex issues, analyze data, and provide
-                actionable recommendations to inform strategic decision-making.
-              </p>
-              <Link to={routes.research} className="btn">
-                Discover
-              </Link>
-            </div>
-            <div className="card-section">
-              <img src="/assets/index/consultancy-icon.svg" alt="" />
-              <h4>Consultancy</h4>
-              <p>
-                Partner with us for expert guidance and tailored solutions. Our
-                experienced consultants work closely with you to understand your
-                unique challenges and develop effective strategies to achieve
-                your data-driven goals.
-              </p>
-              <Link to={routes.consultancy} className="btn">
-                Discover
-              </Link>
-            </div>
-            <div className="card-section">
-              <img src="/assets/index/training-icon.svg" alt="" />
-              <h4>Training</h4>
-              <p>
-                Empower your team with the skills and knowledge they need to
-                succeed. Our comprehensive training programs cover a wide range
-                of data-related topics, equipping individuals with the expertise
-                to harness the power of data effectively.
-              </p>
-              <Link to={routes.training} className="btn">
-                Discover
-              </Link>
+      <div className="landing__our-services">
+        <p className="landing__heading">Our Services</p>
+        <h2 className="landing__sub-heading">
+          Empowering individuals and organizations through data-driven
+          solutions.
+        </h2>
+
+        <div className="our-services__cards">
+          <div className="our-services__card">
+            <p className="card-title">Consultancy</p>
+            <p className="card-desc">
+              Providing expert advice and tailored solutions to address your
+              specific challenges.
+            </p>
+            <div className="card-image">
+              <img src={card_1} alt="" />
             </div>
           </div>
-        </Card>
-      </div>
-      <div className="programs-section">
-        <div className="programs-section__title">
-          <h2>Building Data Literacy and Driving Impact</h2>
-          <p>
-            Data-Lead Africa is committed to making a lasting impact. Our
-            programs are designed to address critical development challenges in
-            Africa, from improving access to education and healthcare to
-            enhancing food security and promoting economic growth.
-          </p>
-        </div>
-        <div className="programs">
-          <Program
-            image_src="/assets/index/data-analytics.png"
-            title="Data Analytics"
-            body="Data analytics services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
-"
-          />
-          <Program
-            image_src="/assets/index/research.png"
-            title="Research"
-            body='Research is "creative and systematic work undertaken to increase the stock of knowledge". It involves the collection, organization and analysis of information to increase understanding of a topic or issue.'
-          />
-          <Program
-            image_src="/assets/index/training.png"
-            title="Training"
-            body="Increasingly, companies value data analysis as a way to stay ahead. This has lead to a huge demand for qualified data analysts. Whether you’re interested in subjects like R, Python, or Excel and SQL."
-          />
-          <Program
-            image_src="/assets/index/data-science.png"
-            title="Data science"
-            body="Data analysis services allow businesses to get their data collected, processed and presented to them in the form of actionable insights while avoiding investments in the development and administration of an analytics solution.
-"
-          />
-        </div>
-      </div>
-      <div className="deliver">
-        <div className="deliver__head">
-          <h2 className="head__title">
-            Driven by Expertise, Guided by Collaboration
-          </h2>
-          <p className="head__text">
-            We bring deep knowledge and experience to every engagement. By
-            working closely with you, we ensure our approach is tailored to your
-            unique needs and goals, fostering a true partnership for success.
-          </p>
-        </div>
-        <div className="deliver__content">
-          <Card extraClasses="deliver__card">
-            <div className="card__content">
-              <p className="card__number">1</p>
-              <div className="card__text">
-                <p className="card__head">
-                  A Structured Path to Meaningful Results
-                </p>
-                <p className="card__paragraph">
-                  We follow a clear and effective process, whether it's in-depth
-                  investigation, skill-building programs, or strategic guidance.
-                </p>
-              </div>
+          <div className="our-services__card">
+            <p className="card-title">Research</p>
+            <p className="card-desc">
+              We provide data-driven research and actionable insights to guide
+              your strategic decisions
+            </p>
+            <div className="card-image">
+              <img src={card_2} alt="" />
             </div>
-          </Card>
-          <Card extraClasses="deliver__card">
-            <div className="card__content">
-              <p className="card__number">2</p>
-              <div className="card__text">
-                <p className="card__head">
-                  Committed to Your Growth and Achievement
-                </p>
-                <p className="card__paragraph">
-                  We are dedicated to empowering you with the insights, skills,
-                  and strategies you need to thrive.
-                </p>
-              </div>
+          </div>
+          <div className="our-services__card">
+            <p className="card-title">Training</p>
+            <p className="card-desc">
+              Empower your team with the skills and knowledge needed to harness
+              the power of data through our comprehensive training programs
+            </p>
+            <div className="card-image">
+              <img src={card_3} alt="" />
             </div>
-          </Card>
-          <Card extraClasses="deliver__card">
-            <div className="card__content">
-              <p className="card__number">3</p>
-              <div className="card__text">
-                <p className="card__head">
-                  Your Goals, Our Focus: Personalized Solutions
-                </p>
-                <p className="card__paragraph">
-                  We listen to your unique goals and create customized solutions
-                  to help you achieve your desired results.
-                </p>
-              </div>
-            </div>
-          </Card>
+          </div>
         </div>
-      </div>
-      <div className="call-to-action__wrapper">
-        <CallToAction>
-          <div className="call-to-action__content">
-            <h2>
-              Discover Training and Consultation That Delivers Real Value.
-            </h2>
-            <div className="btns">
-              <Link to={routes.courses} className="btn btn--transparent">
-                Explore Courses
-              </Link>
+        <div className="our-services__split-cards">
+          <div className="our-services__split-card">
+            <div>
+              <h2>Ready to Move Your Mission Forward?</h2>
+              <p>
+                Let's discuss how our expert research, M&E, and strategic
+                planning can deliver measurable impact for your organization
+              </p>
               <a
                 href="https://calendly.com/datalead-a-info/30min"
-                className="btn"
+                className="btn btn--transparent"
+                style={{ display: "flex", gap: "var(--gap-1)" }}
               >
-                Book Consultation
+                Book Consultancy
+                <i className="nf nf-fa-arrow_right"></i>
               </a>
             </div>
+            <div>
+              <img src={split_card_1} alt="" />
+            </div>
           </div>
-        </CallToAction>
-      </div>
-      <div className="testimonials">
-        <div className="testimonials__header">
-          <h2 className="testimonials__title">Testimonials</h2>
-          <h3 className="testimonials__subtitle">Voices of Learners</h3>
-          <p className="testimonials__summary">
-            The little stories of each person that has gone through Data-Lead
-            Africa really counts for something more. And that is why we are
-            intentional about collecting this success story.
-          </p>
+          <div className="our-services__split-card">
+            <div>
+              <img src={split_card_2} alt="" />
+            </div>
+            <div>
+              <h2>See Our Proof of Impact</h2>
+              <p>
+                Explore our history of major research projects and discover the
+                depth of expertise we bring to complex M&E, assessment, and
+                strategic planning challenges
+              </p>
+              <Link
+                to={routes.research}
+                className="btn btn--transparent"
+                style={{ display: "flex", gap: "var(--gap-1)" }}
+              >
+                View Our Research
+                <i className="nf nf-fa-arrow_right"></i>
+              </Link>
+            </div>
+          </div>
+          <div className="our-services__split-card">
+            <div>
+              <h2>Upskill Your Team. Maximize Your Data</h2>
+              <p>
+                Explore our customized corporate training programs, including
+                analytics and M&E capacity building, designed to transform your
+                staff into data-driven decision-makers{" "}
+              </p>
+              <Link
+                to={routes.training}
+                className="btn btn--transparent"
+                style={{ display: "flex", gap: "var(--gap-1)" }}
+              >
+                Explore Corporate Training
+                <i className="nf nf-fa-arrow_right"></i>
+              </Link>
+            </div>
+            <div>
+              <img src={split_card_3} alt="" />
+            </div>
+          </div>
         </div>
-        <div className="testimonials__cards">
-          <TestimonialCard
-            testimony="My experience with Data Lead Africa was a worthy one and it has help improve my knowledge and capacity as well as enhance my skills with data analysis which will increase efficiency and effectiveness I need to ease my work.t"
-            initials="BS"
-            name="Blinda Stephen"
-          />
-          <TestimonialCard
-            testimony="Very robust data analytics programme. The teachers are patient and well experienced. With DLA even a English Language student can become a Data Analyst."
-            initials="SJ"
-            name="Shunom Jock"
-          />
-          <TestimonialCard
-            testimony="I absolutely loved every moment of the time I spent at Data lead Africa. I learned so much about data analysis and for an absolute beginner, it is the right step to take into the world of data and tech. "
-            initials="OJ"
-            name="Oluwatomi Gisanrin"
-          />
-          <TestimonialCard
-            testimony="Even though, I participated in the virtual classes I had a great experience with the team and tutors at DataLead Africa. It is really a place to learn for any category of learner. Thank you DataLead Africa for quality knowledge and time we shared.
-"
-            initials="AA"
-            name="Ahmed Abidolu"
-          />
+      </div>
+      <div className="landing__testimonials">
+        <p className="landing__heading">Testimonials</p>
+        <h2 className="landing__sub-heading">
+          We are intentional about collecting success stories
+        </h2>
+        <div className="testimonials-cards">
+          <div className="testimonials-card">
+            <div className="card-head">
+              <p className="card-initials">BS</p>
+              <p className="card-name">Blinda Stephen</p>
+            </div>
+            <p className="card-text">
+              “My experience with Data Lead Africa was a worthy one and it has
+              help improve my knowledge and capacity as well as enhance my
+              skills with data analysis which will increase efficiency and
+              effectiveness I need to ease my work.”
+            </p>
+          </div>
+          <div className="testimonials-card">
+            <div className="card-head">
+              <p className="card-initials">SJ</p>
+              <p className="card-name">Shunom Jock</p>
+            </div>
+            <p className="card-text">
+              "Very robust data analytics programme. The teachers are patient
+              and well experienced. With DLA even a English Language student can
+              become a Data Analyst. "
+            </p>
+          </div>
+          <div className="testimonials-card">
+            <div className="card-head">
+              <p className="card-initials">OJ</p>
+              <p className="card-name">Oluwatomi Gisanrin</p>
+            </div>
+            <p className="card-text">
+              "I absolutely loved every moment of the time I spent at Data lead
+              Africa. I learned so much about data analysis and for an absolute
+              beginner, it is the right step to take into the world of data and
+              tech."
+            </p>
+          </div>
+          <div className="testimonials-card">
+            <div className="card-head">
+              <p className="card-initials">AA</p>
+              <p className="card-name">Ahmed Abidolu</p>
+            </div>
+            <p className="card-text">
+              "Even though, I participated in the virtual classes I had a great
+              experience with the team and tutors at DataLead Africa. It is
+              really a place to learn for any category of learner. Thank you
+              DataLead Africa for quality knowledge and time we shared."
+            </p>
+          </div>
         </div>
       </div>
     </div>

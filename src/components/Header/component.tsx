@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
-import "./header.css";
-import { routes } from "../routes";
+import "./component.css";
+import { routes } from "../../pages/routes";
 
 export default function Header() {
   function DropDown({
@@ -12,7 +12,7 @@ export default function Header() {
     links: Record<string, string>;
   }) {
     return (
-      <div className="nav__dropdown-container">
+      <div className="nav__dropdown-container" tabIndex={0}>
         <p className="nav__link">
           {title}
           <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
@@ -24,7 +24,6 @@ export default function Header() {
             {Object.keys(links).map((key) => (
               <li className="drop-down__link" key={key}>
                 <Link to={links[key]}>{key}</Link>
-                <i className="nf nf-md-arrow_top_right"></i>
               </li>
             ))}
           </ul>
@@ -33,27 +32,47 @@ export default function Header() {
     );
   }
 
-  function MobileDropDown({ links }: { links: Record<string, string> }) {
+  function MobileDropDown({
+    title,
+    links,
+  }: {
+    title: string;
+    links: Record<string, string>;
+  }) {
     return (
-      <ul className="content">
-        {Object.keys(links).map((key) => (
-          <li key={key}>
-            <Link
-              className="content__link"
-              to={links[key]}
-              onClick={handleClick}
-            >
-              {key}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <details className="menu__dropdown">
+        <summary>
+          <p>
+            {title}
+            <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
+          </p>
+        </summary>
+        <ul className="content">
+          {Object.keys(links).map((key) => (
+            <li key={key}>
+              <Link
+                className="content__link"
+                to={links[key]}
+                onClick={handleClick}
+              >
+                {key}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </details>
     );
   }
 
   const aboutLinks: Record<string, string> = {
-    "Who we are": "/who-we-are",
-    "Our Team": "/our-team",
+    "Who we are": routes.whoWeAre,
+    "Our Team": routes.ourTeam,
+  };
+
+  const servicesLinks: Record<string, string> = {
+    Consultancy: routes.consultancy,
+    Research: routes.research,
+    Training: routes.training,
   };
 
   const handleClick = () => {
@@ -76,14 +95,12 @@ export default function Header() {
         </Link>
         <nav className="header__nav">
           <DropDown title="About Us" links={aboutLinks} />
-          <Link className="nav__link" to={routes.blog}>
-            Blog
-          </Link>
-          <Link className="nav__link" to={routes.research}>
-            Research
-          </Link>
+          <DropDown title="Services" links={servicesLinks} />
           <Link className="nav__link" to={routes.courses}>
             Courses
+          </Link>
+          <Link className="nav__link" to={routes.blog}>
+            Blog
           </Link>
         </nav>
         <Link to={routes.contactUs} className="btn nav__contact-us">
@@ -96,17 +113,8 @@ export default function Header() {
           </summary>
           <div className="menu__wrapper">
             <div className="menu__content">
-              <details className="menu__dropdown">
-                <summary>
-                  <p>
-                    About Us
-                    <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
-                  </p>
-                </summary>
-                <ul className="content">
-                  <MobileDropDown links={aboutLinks} />
-                </ul>
-              </details>
+              <MobileDropDown title="About us" links={aboutLinks} />
+              <MobileDropDown title="Services" links={servicesLinks} />
               <Link
                 className="menu__link"
                 to={routes.blog}
