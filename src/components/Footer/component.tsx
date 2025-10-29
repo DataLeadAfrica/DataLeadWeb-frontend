@@ -1,20 +1,19 @@
 import { Link } from "react-router";
-import "./component.css";
+
 import { routes } from "../../pages/routes";
+
+import "./component.css";
+
+import logo_bw from "./assets/logo-bw.svg";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer__col">
         <Link to={"/"}>
-          <img
-            src="/assets/logo-header.svg"
-            alt="Data-Lead Africa"
-            className="footer__logo"
-          />
+          <img src={logo_bw} alt="Data-Lead Africa" className="footer__logo" />
         </Link>
         <div className="footer__follow">
-          <h3 className="col__header">Follow us</h3>
           <div className="follow-links">
             <a
               href="https://www.instagram.com/datalead_africa/?hl=en"
@@ -44,18 +43,14 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer__col">
-        <h3 className="col__header">Company</h3>
-        <Link to={routes.contactUs}>Contact Us</Link>
+        <p className="col__header">Company</p>
+        <Link to={routes.whoWeAre}>About</Link>
+        <Link to={routes.training}>Training</Link>
         <Link to={routes.research}>Research</Link>
-        <Link to={routes.careers}>Careers</Link>
-        <Link to={routes.blog}>Blog</Link>
+        <Link to={routes.consultancy}>Consultancy</Link>
       </div>
       <div className="footer__col">
-        <h3 className="col__header">Products</h3>
-        <Link to={routes.deafInTech}>Deaf in Tech</Link>
-      </div>
-      <div className="footer__col">
-        <h3 className="col__header">Get in touch</h3>
+        <p className="col__header">Get in touch</p>
         <div className="get-in-touch">
           <i className="nf nf-oct-location"></i>
           <address>

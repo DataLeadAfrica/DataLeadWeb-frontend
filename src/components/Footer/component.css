@@ -1,10 +1,15 @@
 .footer {
-  padding: var(--padding-4);
-  display: grid;
   position: relative;
-  grid-template-columns: repeat(4, 1fr);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   justify-content: space-between;
   gap: var(--gap-2);
+
+  padding: var(--padding-4);
+
+  background-color: var(--clr-gray);
+  color: white;
 }
 
 .footer a:focus,
@@ -14,8 +19,7 @@
 }
 
 .footer__logo {
-  max-height: 100%;
-  width: fit-content;
+  max-width: 10rem;
 }
 
 .footer__col {
@@ -31,7 +35,7 @@
 }
 
 .footer__col .col__header {
-  font-weight: bold;
+  font-size: var(--font-md);
 }
 
 .footer__col .get-in-touch {
@@ -62,6 +66,5 @@
 }
 
 .footer__copyright {
-    grid-column: 1 / -1;
-  color: gray;
+  grid-column: 1 / -1;
 }
