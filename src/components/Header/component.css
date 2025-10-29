@@ -142,6 +142,11 @@ details > summary:first-of-type {
   position: relative;
 }
 
+.nav__dropdown-container:focus,
+.nav__dropdown-container:hover {
+  color: var(--clr-orange);
+  transition: var(--transition-1);
+}
 .nav__dropdown-container:focus .drop-down,
 .nav__dropdown-container:hover .drop-down,
 .nav__dropdown-container .nav__link:focus + .drop-down {
