@@ -2,13 +2,13 @@ import { Link } from "react-router";
 
 import "./page.css";
 
-import africa from "./assets/images/africa.svg";
-import card_1 from "./assets/images/card-1.svg";
-import card_2 from "./assets/images/card-2.svg";
-import card_3 from "./assets/images/card-3.svg";
-import split_card_1 from "./assets/images/split-card-1.svg";
-import split_card_2 from "./assets/images/split-card-2.svg";
-import split_card_3 from "./assets/images/split-card-3.svg";
+import africa from "./assets/africa.svg";
+import card_1 from "./assets/card-1.svg";
+import card_2 from "./assets/card-2.svg";
+import card_3 from "./assets/card-3.svg";
+import split_card_1 from "./assets/split-card-1.svg";
+import split_card_2 from "./assets/split-card-2.svg";
+import split_card_3 from "./assets/split-card-3.svg";
 
 import { routes } from "../routes";
 import CallToAction from "../../components/CallToAction/component";
