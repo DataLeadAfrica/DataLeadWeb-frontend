@@ -1,18 +1,32 @@
 .call-to-action {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 25rem;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
+  gap: var(--gap-2);
 
-  & img {
-    max-width: 30rem;
-    position: absolute;
-    bottom: -9rem;
-    right: -5rem;
-    z-index: -1;
-    opacity: 50%;
+  padding: var(--padding-5);
+  height: 30rem;
+
+  border-radius: var(--radius-5);
+
+  background: linear-gradient(
+    105.6deg,
+    #fde2cf -45.34%,
+    #e7f5fe 51.56%,
+    #fffbeb 87.94%,
+    #fef1e7 105.06%
+  );
+
+  & h2 {
+    font-weight: 400;
+    text-align: center;
+    font-family: "ClashDisplay-Regular";
+    font-size: var(--font-xxl);
+  }
+
+  & > div {
+    display: flex;
+    gap: var(--gap-2);
   }
 }

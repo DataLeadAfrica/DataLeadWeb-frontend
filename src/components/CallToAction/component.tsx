@@ -1,12 +1,20 @@
 import { ReactElement } from "react";
 
-import "./call-to-action.css";
+import "./component.css";
 
-export default function CallToAction({ children }: { children: ReactElement }) {
+export default function CallToAction({
+  heading,
+  btns,
+}: {
+  heading: string;
+  btns: Array<ReactElement>;
+}) {
   return (
-    <div className="call-to-action">
-      {children}
-      <img src="/assets/call-to-action.png" />
+    <div className="call-to-action__wrapper">
+      <div className="call-to-action">
+        <h2>{heading}</h2>
+        <div>{btns}</div>
+      </div>
     </div>
   );
 }
