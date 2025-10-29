@@ -4,7 +4,7 @@ title-bar .landing {
 
 .landing > * {
   max-width: 100vw;
-  padding: var(--padding-5);
+  padding: var(--padding-4);
 }
 
 .landing__hero {

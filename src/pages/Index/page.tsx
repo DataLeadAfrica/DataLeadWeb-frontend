@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import "./page.css";
+
 import africa from "./assets/images/africa.svg";
 import card_1 from "./assets/images/card-1.svg";
 import card_2 from "./assets/images/card-2.svg";
@@ -10,6 +11,7 @@ import split_card_2 from "./assets/images/split-card-2.svg";
 import split_card_3 from "./assets/images/split-card-3.svg";
 
 import { routes } from "../routes";
+import CallToAction from "../../components/CallToAction/component";
 
 function Index() {
   return (
@@ -213,6 +215,22 @@ function Index() {
           </div>
         </div>
       </div>
+      <CallToAction
+        heading="Discover Training and Consultation That Delivers Real Value"
+        btns={[
+          <Link to={routes.courses} className="btn">
+            Explore courses
+          </Link>,
+          <a
+            href="https://calendly.com/datalead-a-info/30min"
+            className="btn btn--transparent"
+            style={{ display: "flex", gap: "var(--gap-1)" }}
+          >
+            Book Consultancy
+            <i className="nf nf-fa-arrow_right"></i>
+          </a>,
+        ]}
+      />
     </div>
   );
 }
