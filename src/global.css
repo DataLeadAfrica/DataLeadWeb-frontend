@@ -34,6 +34,7 @@
   --radius-3: 12px;
   --radius-4: 16px;
   --radius-5: 20px;
+  --radius-10: 40px;
 
   --transition-1: 0.1s;
   --transition-2: 0.2s;
@@ -80,6 +81,7 @@
   }
 }
 
+/* Breakpoints are specified using bootstrap breakpoints but desktop first */
 @media (max-width: 768px) {
   :root {
     --padding-0_5: calc(4 / 6 * 0.5rem);

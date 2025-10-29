@@ -10,6 +10,7 @@ import Footer from "./components/Footer/component";
 import { routes } from "./pages/routes";
 import NotFound from "./pages/NotFound/page";
 import Index from "./pages/Index/page";
+import OurTeam from "./pages/OurTeam/page";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path={routes.index} element={<Index />} />
+        <Route path={routes.ourTeam} element={<OurTeam />} />
       </Routes>
       <Footer />
     </BrowserRouter>
