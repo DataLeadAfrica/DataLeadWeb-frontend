@@ -1,29 +1,31 @@
-import Card from "../components/Card";
-import "../css/bio.css";
+import "./page.css";
 
 export default function Bio({
   imgSrc,
   name,
+  title,
   text,
 }: {
   imgSrc: string;
   name: string;
+  title: string;
   text: string;
 }) {
   return (
-    <div className="bio-page">
-      <div className="top">
-        <Card>
+    <div className="bio">
+      <div className="bio__top">
+        <div className="bio__image">
           <img src={imgSrc} alt={name + " image"} />
-        </Card>
-      </div>
-      <div className="body">
-        <h1 className="bio__name">{name}</h1>
-        <div className="bio__text">
-          {text.split("\n\n").map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
         </div>
+        <div className="bio__details">
+          <p className="bio__name">{name}</p>
+          <p className="bio__title">{title}</p>
+        </div>
+      </div>
+      <div className="bio__body">
+        {text.split("\n\n").map((line, index) => (
+          <p key={index}>{line}</p>
+        ))}
       </div>
     </div>
   );

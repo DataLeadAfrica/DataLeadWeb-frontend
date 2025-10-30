@@ -39,7 +39,8 @@
 .our-team__member {
   display: flex;
   flex-direction: column;
-  max-width: 25rem;
+  width: 25rem;
+
   border: solid 1px var(--clr-gray-light);
   padding: var(--padding-1);
   border-radius: var(--radius-10);
@@ -49,7 +50,7 @@
     border: solid 1px var(--clr-orange);
   }
 
-  & .member-image {
+  & .member__image {
     display: flex;
     align-items: center;
 
@@ -65,7 +66,7 @@
     }
   }
 
-  & .member-info {
+  & .member__info {
     display: flex;
     flex-direction: column;
     padding: var(--padding-1);
@@ -75,7 +76,7 @@
       font-weight: 400;
     }
 
-    & .member-name {
+    & .member__name {
       font-size: var(--font-sm);
     }
   }
