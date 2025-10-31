@@ -10,6 +10,7 @@ import { routes } from "./pages/routes";
 import NotFound from "./pages/NotFound/page";
 import Index from "./pages/Index/page";
 import ourTeamRouter from "./pages/OurTeam/router";
+import blogRouter from "./pages/Blog/router";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="*" element={<NotFound />} />
         <Route path={routes.index} element={<Index />} />
         {ourTeamRouter()}
+        {blogRouter()}
       </Routes>
       <Footer />
     </BrowserRouter>

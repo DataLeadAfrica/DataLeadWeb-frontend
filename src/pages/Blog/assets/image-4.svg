@@ -1,0 +1,33 @@
+<svg width="417" height="240" viewBox="0 0 417 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2480_2552)">
+<path d="M0 8.00001C0 3.58173 3.58172 0 8 0H409C413.418 0 417 3.58172 417 8V232C417 236.418 413.418 240 409 240H8C3.58172 240 0 236.418 0 232V8.00001Z" fill="#4E5B9B"/>
+<rect y="1.31808" width="215.758" height="118.869" fill="#8E97C6"/>
+<rect x="215.758" y="120" width="215.758" height="118.869" fill="#8E97C6"/>
+<rect x="42.9434" y="33.2227" width="119.104" height="45.5701" fill="#4E5B9B"/>
+<path d="M158.491 86.4506L162.048 78.7488H154.934L158.491 86.4506Z" fill="#4E5B9B"/>
+<circle cx="52.046" cy="41.2153" r="3.59674" fill="#8E97C6"/>
+<rect x="62.8364" y="38.0682" width="35.9668" height="6.29425" fill="#8E97C6"/>
+<rect x="62.8364" y="54.0067" width="71.4844" height="4.00238" fill="#C1C5DD"/>
+<rect x="62.8364" y="60.7526" width="71.4844" height="4.00238" fill="#C1C5DD"/>
+<rect x="62.8364" y="67.4985" width="71.4844" height="4.00238" fill="#C1C5DD"/>
+<rect x="79.2334" y="167.339" width="55.0874" height="24.1917" rx="12.0959" fill="#8E97C6"/>
+<circle cx="91.475" cy="179.435" r="12.2416" fill="#3E4A82"/>
+<rect x="278.348" y="166.415" width="96.042" height="27.5983" fill="#4E5B9B"/>
+<rect x="287.557" y="173.729" width="55.1968" height="12.9712" fill="#8E97C6"/>
+<path d="M352.864 177.491L357.713 183.334L362.934 177.491" stroke="#8E97C6"/>
+<rect x="243.851" y="49.2314" width="142.609" height="17.5553" fill="#8E97C6"/>
+<rect x="249.787" y="53.1804" width="9.65723" height="9.65723" fill="#4E5B9B"/>
+<rect x="297.064" y="55.9009" width="9.65723" height="4.21625" fill="#4E5B9B"/>
+<rect x="314.026" y="55.9009" width="9.65723" height="4.21625" fill="#4E5B9B"/>
+<rect x="330.989" y="55.9009" width="9.65723" height="4.21625" fill="#4E5B9B"/>
+<rect x="367.175" y="55.4516" width="13.6128" height="5.11493" fill="#C1C5DD"/>
+<rect opacity="0.5" x="-8.92285" y="-2.63055" width="434.846" height="245.261" fill="#4E5B9B"/>
+<path d="M235.635 119.999L215.758 139.876L195.881 119.999L215.758 100.122L235.635 119.999Z" stroke="white" stroke-width="4"/>
+<circle cx="215.758" cy="120" r="4.54712" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_2480_2552">
+<path d="M0 8.00001C0 3.58173 3.58172 0 8 0H409C413.418 0 417 3.58172 417 8V232C417 236.418 413.418 240 409 240H8C3.58172 240 0 236.418 0 232V8.00001Z" fill="white"/>
+</clipPath>
+</defs>
+</svg>
