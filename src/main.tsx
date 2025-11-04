@@ -9,6 +9,7 @@ import Footer from "./components/Footer/component";
 import { routes } from "./pages/routes";
 import NotFound from "./pages/NotFound/page";
 import Index from "./pages/Index/page";
+import WhoWeAre from "./pages/WhoWeAre/page";
 import ourTeamRouter from "./pages/OurTeam/router";
 import blogRouter from "./pages/Blog/router";
 import researchRouter from "./pages/Research/router";
@@ -21,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path={routes.index} element={<Index />} />
+        <Route path={routes.whoWeAre} element={<WhoWeAre />} />
         {ourTeamRouter()}
         {blogRouter()}
         {researchRouter()}

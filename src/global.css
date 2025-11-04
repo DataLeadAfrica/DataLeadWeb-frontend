@@ -8,12 +8,20 @@
 
   --bg-color-light: white;
   --bg-color-dark: #1c1b22;
+  --bg-gradient: linear-gradient(
+    105.6deg,
+    #fde2cf -45.34%,
+    #e7f5fe 51.56%,
+    #fffbeb 87.94%,
+    #fef1e7 105.06%
+  );
 
   --clr-gray: #2c2b2d;
   --clr-gray-light: #dae2e7;
   --clr-orange: #f56e0f;
   --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
+  --clr-blue: #e7f5fe;
 
   --padding-0_5: 0.5rem;
   --padding-1: 1rem;

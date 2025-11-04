@@ -10,13 +10,7 @@
 
   border-radius: var(--radius-5);
 
-  background: linear-gradient(
-    105.6deg,
-    #fde2cf -45.34%,
-    #e7f5fe 51.56%,
-    #fffbeb 87.94%,
-    #fef1e7 105.06%
-  );
+  background: var(--bg-gradient);
 
   & h2 {
     font-weight: 400;
