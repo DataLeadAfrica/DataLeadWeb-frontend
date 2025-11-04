@@ -16,15 +16,15 @@ export const routes = {
   blogDrivingInclusionWithData:
     "/blog/driving-inclusion-with-data-when-quality-statistics-meet-accessibility",
   research: "/research",
-  researchNigeriaJointResponse:
+  researchAccountabilityPilot:
     "/research/nigeria-joint-response-dutch-ministry-of-foreign-affairs-oct-nov-2020",
-  researchUsaidNigeria: "/research/usaid-nigeria-dec-2020-jan-2021",
-  researchMercyCorps: "/research/mercy-corps-mar-apr-2021",
-  researchJapanInternational:
+  researchNothernEducation: "/research/usaid-nigeria-dec-2020-jan-2021",
+  researchHumanitarianAssistance: "/research/mercy-corps-mar-apr-2021",
+  researchPromotionOfMarketOriented:
     "/research/japan-international-cooperation-agency-oct-nov-2021",
-  researchSocialImpactUsaid:
+  researchUsaidAgribusiness:
     "/research/social-impact-usaid-nigeria-dec-2021-feb-2022",
-  researchNigeriaViolenceUsaid:
+  researchFinalAssessmentReport:
     "/research/final-assessment-report-usaid-nigeria-violence-and-conflict-assessment-vca",
   researchDevelopmentOfBusiness:
     "/research/development-of-business-case-for-reusable-menstrual-products",

@@ -36,7 +36,7 @@
 
 .blog__post:hover .post__image,
 .blog__post:focus .post__image {
-  box-shadow: 0 0 10px 0 var(--clr-gray);
+  box-shadow: var(--shadow-2);
 }
 
 .blog__post .post__image {

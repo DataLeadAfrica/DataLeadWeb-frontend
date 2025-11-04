@@ -70,9 +70,9 @@
 
   & i {
     font-size: var(--font-xl);
-      transition: var(--transition-2);
+    transition: var(--transition-2);
 
-    &:hover{
+    &:hover {
       color: var(--clr-orange);
       transition: var(--transition-2);
     }

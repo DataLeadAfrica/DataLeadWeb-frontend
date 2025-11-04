@@ -274,7 +274,6 @@ title-bar .landing {
 
         & .btn {
           align-self: flex-start;
-          width: fit-content;
         }
       }
 

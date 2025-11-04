@@ -8,7 +8,7 @@
   padding-inline: var(--padding-4);
   background-color: var(--bg-color);
   z-index: 3;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-1);
 }
 
 .header__logo {
@@ -63,9 +63,7 @@
     & p,
     & a,
     & .menu__link {
-      font-family: "ClashDisplay-Regular";
-      font-weight: 700;
-      font-size: var(--font-lg);
+      font-size: var(--font-md);
     }
 
     & i {
@@ -102,7 +100,7 @@ details > summary:first-of-type {
 
   & .content__link {
     padding-inline: var(--padding-1);
-    font-size: var(--font-md);
+    font-size: var(--font-sm);
   }
 
   & p {

@@ -40,7 +40,8 @@
   --transition-1: 0.1s;
   --transition-2: 0.2s;
 
-  --shadow: 0px 1px 3px 0px #00000040;
+  --shadow-1: 0px 1px 3px 0px #00000040;
+  --shadow-2: 0 0 10px 0 var(--clr-gray);
 
   --font-xxs: 0.812rem;
   --font-xs: 1rem;
@@ -205,15 +206,19 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
+
   padding-block: var(--padding-0_5);
   padding-inline: var(--padding-1);
+  width: fit-content;
+
   border: 1px solid var(--clr-orange);
-  display: flex;
-  font-size: var(--font-xs);
-  background-color: var(--clr-orange);
-  color: var(--font-color-inverse);
-  align-items: center;
   border-radius: var(--radius-1);
+
+  font-size: var(--font-xs);
+  color: var(--font-color-inverse);
+
+  background-color: var(--clr-orange);
+
   transition: var(--transition-2);
 }
 .btn:hover,
