@@ -1,5 +1,5 @@
 import { FormEventHandler, useState } from "react";
-import "../css/contact-us.css";
+import "./page.css";
 
 export default function ContactUs() {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
