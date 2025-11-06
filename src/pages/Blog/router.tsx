@@ -12,6 +12,7 @@ import FromBeginnerToAnalyst from "./Post/posts/FromBeginnerToAnalyst";
 import ExcelVsPowerBI from "./Post/posts/ExcelVsPowerBI";
 import SQLForBeginners from "./Post/posts/SQLForBeginners";
 import DrivingInclusionWithData from "./Post/posts/DrivingInclusionWithData";
+import DeafInTech from "./Post/posts/DeafInTech";
 
 export interface BlogInfo {
   title: string;
@@ -80,6 +81,14 @@ const blogInfos: Array<BlogInfo> = [
     date: "May 16th 2022",
     route: routes.blogWhyRegisterCourse,
     component: WhyShouldIRegister,
+  },
+  {
+    title: "DEAF-IN-TECH: INCLUSION IN TECH, HIGHER EDUCATION, AND EMPLOYMENT",
+    author: "Arowolo Ayoola PhD.",
+    authorImgSrc: "/assets/our-team/Doc.png",
+    date: "May 16th 2022",
+    route: routes.blogDeafInTech,
+    component: DeafInTech,
   },
 ];
 export default function blogRouter() {

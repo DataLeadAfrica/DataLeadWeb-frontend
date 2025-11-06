@@ -15,6 +15,7 @@ export const routes = {
     "/blog/sql-for-beginners-why-every-nigerian-graduate-should-learn-it",
   blogDrivingInclusionWithData:
     "/blog/driving-inclusion-with-data-when-quality-statistics-meet-accessibility",
+  blogDeafInTech: "/blog/deaf-in-tech",
   research: "/research",
   researchAccountabilityPilot:
     "/research/nigeria-joint-response-dutch-ministry-of-foreign-affairs-oct-nov-2020",
@@ -57,10 +58,10 @@ export const routes = {
   coursesBioInformatics: "/courses/bioinformatics",
   coursesHrAnalytcis: "/courses/hr-analysis",
   coursesBusinessAnalytics: "/courses/business-analytics",
-  coursesResearchMethodologies: "/courses/research-methodology-manuscript-writing",
+  coursesResearchMethodologies:
+    "/courses/research-methodology-manuscript-writing",
   coursesEmployability: "/courses/employability-entrepreneurship",
   coursesDigitalCreation: "/courses/digital-creation",
-  deafInTech: "/deaf-in-tech",
   consultancy: "/consultancy",
   training: "/training",
   privacyPolicy: "/privacy-policy",
