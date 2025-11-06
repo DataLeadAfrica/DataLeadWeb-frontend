@@ -1,155 +1,167 @@
-import "../css/course.css";
-import Card from "../components/Card";
-import CallToAction from "../components/CallToAction";
+import { Link } from "react-router";
 
-type Modules = { [head: string]: string };
-type ModulesWithTracks = { [key: string]: { [head: string]: string } };
+import "./page.css";
 
-function isModulesWithTracks(
-  modules: Modules | ModulesWithTracks,
-): modules is ModulesWithTracks {
-  return typeof Object.values(modules)[0] === "object";
-}
+import { Modules, ModulesWithTracks } from "../router";
+
+import case_img from "./assets/case.svg";
+import review_img from "./assets/review.svg";
+import video_img from "./assets/video.svg";
+import online_img from "./assets/online.svg";
+
+import circle from "./assets/circle.svg";
+import line from "./assets/line.svg";
+import CallToAction from "../../../components/CallToAction/component";
+
+const structure_infos = [
+  {
+    imgSrc: video_img,
+    title: "Video Content",
+    desc: "High-quality easy-to-comprehend recorded video lessons",
+  },
+  {
+    imgSrc: online_img,
+    title: "Onsite & Online",
+    desc: "Join and collaborate with other learners online and onsite",
+  },
+  {
+    imgSrc: review_img,
+    title: "Peer review sessions",
+    desc: "Share knowledge with other interns and gain multidimensional perspectives of problem solving",
+  },
+  {
+    imgSrc: case_img,
+    title: "Case Studies",
+    desc: "Work on real-life projects by applying what you learn to solve related business problems",
+  },
+];
 
 export default function Course({
   name,
-  length,
   desc,
-  highlightImg,
-  modules,
   price,
-  benefit,
-  priceImg,
+  modules,
 }: {
   name: string;
-  length: string;
   desc: string;
-  highlightImg: string;
   modules: Modules | ModulesWithTracks;
   price: string;
-  benefit?: boolean;
-  priceImg: string;
 }) {
   return (
-    <div className="course__page">
+    <div className="course">
       <div className="course__head">
-        <h1>{name}</h1>
-        <div className="course__overlay">
+        <div className="course__summary">
           <div>
-            <p className="overlay__desc">
-              Program Duration: <span>{length}</span>
-            </p>
-            <p className="overlay__desc">
-              Location: <span> Online or onsite (Abuja)</span>
-            </p>
+            <h1 className="course__title">{name} Bootcamp</h1>
+            <p className="course__desc">{desc}</p>
           </div>
+          <div className="course__status">
+            <i className="nf nf-fa-check_circle"></i> <p>Registration Open</p>
+          </div>
+        </div>
+        <div className="course__plan">
           <div>
-            <p className="overlay__desc">
-              Certification: <span>Yes</span>
-            </p>
-            <a href={"http://eepurl.com/jfVbCQ"} className="btn">
-              Enrol now
-            </a>
+            <p>One Time Payment</p>
+            <p className="plan__price">{price}</p>
           </div>
+          <a
+            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            className="btn btn--white"
+          >
+            Enrol Now
+            <i className="nf nf-fa-arrow_right"></i>
+          </a>
         </div>
       </div>
-      <div className="course__about">
-        <div className="about__text">
-          <h2>
-            About this program
-            <div className="title-bar"></div>
-          </h2>
-          <p>{desc}</p>
-        </div>
+      <div className="course__structure">
         <div>
-          <Card extraClasses="about__card">
-            <img src={highlightImg} alt="" />
-          </Card>
+          <h2>Success Through Structured, Hands-On Training</h2>
+        </div>
+        <div className="structure__infos">
+          {structure_infos.map((v) => {
+            return (
+              <div className="structure__info">
+                <div className="info__img">
+                  <img src={v.imgSrc} alt="" />
+                </div>
+                <div>
+                  <p className="info__title">{v.title}</p>
+                  <p>{v.desc}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="course__modules">
-        <h2>
-          Modules
-          <div className="title-bar title-bar--inverse"></div>
-        </h2>
-        <ol>
-          {isModulesWithTracks(modules)
-            ? Object.entries(modules).map(([groupKey, groupValue]) => (
-                <li className="module__track">
-                  <h3>{groupKey + ":"}</h3>
-                  <ol>
-                    {Object.entries(groupValue).map(([head, value]) => (
-                      <li key={head}>
-                        {head}
-                        {value !== "" && (
-                          <ul>
-                            <li>{value}</li>
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                </li>
-              ))
-            : Object.entries(modules).map(([head, value]) => (
-                <li>
-                  {head}
-                  {value !== "" && (
-                    <ul>
-                      <li>{value}</li>
-                    </ul>
+        <h2>Modules</h2>
+        <div className="modules__head">
+          <p className="modules__title">What you will master</p>
+          <p className="modules__desc">
+            A complete breakdown of the core skills and knowledge you'll gain at
+            every stage of the program
+          </p>
+        </div>
+        <div className="modules__infos">
+          {Object.entries(modules).map(([v, k], i) => {
+            return (
+              <div className="module__info">
+                <div className="info__sep">
+                  <img className="info__circle" src={circle} alt="" />
+                  {i + 1 < Object.entries(modules).length && k.length > 0 && (
+                    <img className="info__line" src={line} alt="" />
                   )}
-                </li>
-              ))}
-        </ol>
+                </div>
+                <div className="info__content">
+                  <p className="info__title">{v}</p>
+                  {k.length > 0 && <p className="info__desc">{k}</p>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="course__join">
-        <Card>
-          <div className="card__content">
-            <h2 className="underline-header">Who Can Join?</h2>
-            <p>
-              At Data-Lead Africa, we believe that everyone should have the
-              opportunity to thrive in the field of {name}. Our unique
-              facilitation method ensures that even if you come from a
-              non-computational background, our expert instructors will guide
-              you through the fundamentals. We start from scratch and make
-              complex concepts relatable.
-            </p>
-          </div>
-        </Card>
-      </div>
-      <div className="course__payment">
-        <h2 className="underline-header">Price</h2>
-        <Card extraClasses="payment__card">
+      <div className="course__testimonial">
+        <div className="testimonial__text">
           <div>
-            <div className="payment__details">
-              <p className="payment__price">{`₦${price}`}</p>
-              <hr />
-              {benefit && (
-                <p className="payment__benefit">
-                  <i className="nf nf-md-check_circle_outline"></i> Spread the
-                  cost with our 3-installment plan
-                </p>
-              )}
-            </div>
-            <img className="payment__img" src={priceImg} alt="" />
-          </div>
-        </Card>
-      </div>
-      <div className="call-to-action__wrapper">
-        <CallToAction>
-          <div className="call-to-action__content">
-            <h2>Embark on Your {name} Journey</h2>
+            <h2>Start This Course with an Expert by Your Side</h2>
             <p>
-              An Immersive and Engaging Learning Experience That Will Transform
-              Your {name} Skills.
+              This program is designed for your success. With our expert team
+              and quality-first delivery, you have everything you need
             </p>
-            <a href={"http://eepurl.com/jfVbCQ"} className="btn">
-              Enrol now
-            </a>
           </div>
-        </CallToAction>
+          <a
+            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            className="btn"
+          >
+            Enrol Now
+          </a>
+        </div>
+        <div className="testimonial__video"></div>
       </div>
+
+      <CallToAction
+        heading="Ready to Accelerate Your Career?"
+        btns={[
+          <a
+            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            className="btn"
+          >
+            Enrol Now
+          </a>,
+          name == "Data Analytics" ? (
+            <a
+              href="https://drive.google.com/file/d/1Y_jiAI4rH_1V47b7787TP9PiqovORyEO/view?usp=sharing"
+              className="btn btn--white"
+            >
+              Download Brochure
+              <i className="nf nf-fa-arrow_right"></i>
+            </a>
+          ) : (
+            <></>
+          ),
+        ]}
+      />
     </div>
   );
 }

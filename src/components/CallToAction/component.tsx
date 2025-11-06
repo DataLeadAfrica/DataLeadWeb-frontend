@@ -13,7 +13,7 @@ export default function CallToAction({
     <div className="call-to-action__wrapper">
       <div className="call-to-action">
         <h2>{heading}</h2>
-        <div>{btns}</div>
+        <div className="call-to-action__btns">{btns}</div>
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ function Index() {
               </Link>
               <a
                 href="https://calendly.com/datalead-a-info/30min"
-                className="btn btn--transparent"
+                className="btn btn--white"
                 style={{ display: "flex", gap: "var(--gap-1)" }}
               >
                 Book Consultancy
@@ -105,7 +105,7 @@ function Index() {
               </p>
               <a
                 href="https://calendly.com/datalead-a-info/30min"
-                className="btn btn--transparent"
+                className="btn btn--white"
                 style={{ display: "flex", gap: "var(--gap-1)" }}
               >
                 Book Consultancy
@@ -129,7 +129,7 @@ function Index() {
               </p>
               <Link
                 to={routes.research}
-                className="btn btn--transparent"
+                className="btn btn--white"
                 style={{ display: "flex", gap: "var(--gap-1)" }}
               >
                 View Our Research
@@ -147,7 +147,7 @@ function Index() {
               </p>
               <Link
                 to={routes.training}
-                className="btn btn--transparent"
+                className="btn btn--white"
                 style={{ display: "flex", gap: "var(--gap-1)" }}
               >
                 Explore Corporate Training
@@ -223,7 +223,7 @@ function Index() {
           </Link>,
           <a
             href="https://calendly.com/datalead-a-info/30min"
-            className="btn btn--transparent"
+            className="btn btn--white"
             style={{ display: "flex", gap: "var(--gap-1)" }}
           >
             Book Consultancy

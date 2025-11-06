@@ -18,9 +18,20 @@
     font-family: "ClashDisplay-Regular";
     font-size: var(--font-xxl);
   }
+}
+.call-to-action__btns {
+  display: flex;
+  gap: var(--gap-2);
+}
 
-  & > div {
-    display: flex;
-    gap: var(--gap-2);
+@media (max-width: 1200px) {
+  .call-to-action__btns {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--gap-1);
+
+    & .btn {
+      width: 100%;
+    }
   }
 }

@@ -57,7 +57,7 @@ export const routes = {
   coursesBioInformatics: "/courses/bioinformatics",
   coursesHrAnalytcis: "/courses/hr-analysis",
   coursesBusinessAnalytics: "/courses/business-analytics",
-  coursesResearch: "/courses/research-methodology-manuscript-writing",
+  coursesResearchMethodologies: "/courses/research-methodology-manuscript-writing",
   coursesEmployability: "/courses/employability-entrepreneurship",
   coursesDigitalCreation: "/courses/digital-creation",
   deafInTech: "/deaf-in-tech",
