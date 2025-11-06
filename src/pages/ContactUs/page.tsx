@@ -71,7 +71,6 @@ export default function ContactUs() {
   };
 
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-  // @ts-ignore
   const [isFailureVisible, setIsFailureVisible] = useState(false);
 
   return (

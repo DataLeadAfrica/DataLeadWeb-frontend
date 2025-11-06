@@ -2,11 +2,9 @@
   padding: var(--padding-4);
   display: flex;
   flex-direction: column;
-  gap: var(--gap-4);
+  gap: var(--gap-3);
 }
-.flex {
-  display: flex;
-}
+
 .contact-us__page .popup {
   position: fixed;
   top: 0;
@@ -63,6 +61,7 @@
     }
   }
 }
+
 .contact-us__head {
   display: flex;
   gap: var(--gap-1);
@@ -77,6 +76,16 @@
   & > p {
     text-align: center;
     width: 60%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .contact-us__head {
+    align-items: flex-start;
+    & > p {
+      text-align: start;
+      width: 100%;
+    }
   }
 }
 
