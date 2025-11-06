@@ -1,5 +1,3 @@
-import { Link } from "react-router";
-
 import "./page.css";
 
 import { Modules, ModulesWithTracks } from "../router";
