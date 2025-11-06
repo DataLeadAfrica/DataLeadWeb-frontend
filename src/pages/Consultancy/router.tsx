@@ -1,6 +1,6 @@
 import { Route } from "react-router";
 import { routes } from "../routes";
-import Consultancy from "../pages/Consultancy";
+import Consultancy from "./page.tsx";
 
 export default function consultancyRoutes() {
   return (

@@ -1,4 +1,4 @@
-import "../css/consultancy.css";
+import "./page.css";
 
 export default function Consultancy({
   firstTitle,
