@@ -1,7 +1,3 @@
-title-bar .landing {
-  display: grid;
-}
-
 .landing > * {
   max-width: 100vw;
   padding: var(--padding-4);
@@ -50,7 +46,6 @@ title-bar .landing {
 .landing .hero__buttons {
   width: 100%;
   display: flex;
-  padding-inline-end: 25%;
   gap: var(--gap-1);
 }
 
@@ -85,30 +80,23 @@ title-bar .landing {
   .landing > * {
     padding-inline: var(--padding-3);
   }
+
   .landing__hero {
     flex-direction: column;
-    align-items: center;
   }
 
   .landing__hero > * {
     width: 100%;
   }
 
-  .landing .hero__text {
-    align-items: center;
-    text-align: center;
-  }
-  .landing .hero__text h1 {
-    text-align: center;
-  }
-  .landing .hero__text > p {
-    padding-inline-end: 0;
-  }
   .landing .hero__buttons {
-    justify-content: center;
-    gap: var(--gap-3);
-    padding-inline-end: 0;
+    flex-direction: column;
+
+    & .btn {
+      width: 100%;
+    }
   }
+
   .landing .hero__trained {
     align-self: center;
   }
@@ -283,6 +271,45 @@ title-bar .landing {
     }
   }
 }
+@media (max-width: 1400px) {
+  .landing__our-services .our-services__cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  & .landing__sub-heading {
+    text-align: start;
+  }
+
+  .landing__our-services {
+    align-items: flex-start;
+
+    & .our-services__cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    & .our-services__split-cards .our-services__split-card {
+      flex-direction: column;
+
+      & > div {
+        width: 100%;
+
+        & .btn {
+          width: 100%;
+        }
+      }
+    }
+    & .our-services__split-cards .our-services__split-card:nth-child(2) {
+      flex-direction: column-reverse;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .landing__our-services .our-services__cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 
 .landing__testimonials {
   display: flex;
@@ -344,6 +371,15 @@ title-bar .landing {
           font-weight: 600;
         }
       }
+    }
+  }
+}
+@media (max-width: 1200px) {
+  .landing__testimonials {
+    align-items: flex-start;
+
+    & .testimonials-cards {
+      grid-template-columns: repeat(1, 1fr);
     }
   }
 }
