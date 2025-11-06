@@ -1,34 +1,39 @@
 import "./page.css";
 
+import circle from "./assets/circle.svg";
+
+import CallToAction from "../../components/CallToAction/component";
+import Partners from "../../components/Partners/component";
+
 export default function Consultancy({
-  firstTitle,
-  firstDesc,
-  firstImg,
+  headTitle,
+  headDesc,
+  headImg,
   secondTitle,
   secondDesc,
-  thirdTitle,
-  thirdDesc,
-  thirdEntries,
-  fifthTitle,
+  offeringsTitle,
+  offeringsDesc,
+  offeringsEntries,
+  ctaHead,
 }: {
-  firstTitle: string;
-  firstDesc: string;
-  firstImg: string;
+  headTitle: string;
+  headDesc: string;
+  headImg: string;
   secondTitle: string;
   secondDesc: string;
-  thirdTitle: string;
-  thirdDesc: string;
-  thirdEntries: Array<string>;
-  fifthTitle: string;
+  offeringsTitle: string;
+  offeringsDesc: string;
+  offeringsEntries: Array<string>;
+  ctaHead: string;
 }) {
   return (
     <div className="consultancy__page">
-      <div className="consultancy__first">
+      <div className="consultancy__head">
         <div>
-          <h1>{firstTitle}</h1>
-          <p>{firstDesc}</p>
+          <h1>{headTitle}</h1>
+          <p>{headDesc}</p>
         </div>
-        <img src={firstImg} alt="" />
+        <img src={headImg} alt="" />
       </div>
       <div className="consultancy__second">
         <div>
@@ -39,51 +44,36 @@ export default function Consultancy({
           Book Consultation
         </a>
       </div>
-      <div className="consultancy__third">
-        <div>
-          <h2>{thirdTitle}</h2>
-          <p>{thirdDesc}</p>
+      <Partners />
+      <div className="consultancy__offerings">
+        <h2>Our Solutions</h2>
+        <div className="offerings__head">
+          <p className="offerings__title">{offeringsTitle}</p>
+          <p className="offerings__desc">{offeringsDesc}</p>
         </div>
-        <ol>
-          {thirdEntries.map((entry) => {
+        <div className="offerings__infos">
+          {offeringsEntries.map((entry) => {
             return (
-              <li>
-                <img src="/assets/consultancy/check.svg" />
-                <p>{entry}</p>
-              </li>
+              <div className="offerings__info">
+                <div className="info__sep">
+                  <img className="info__circle" src={circle} alt="" />
+                </div>
+                <div className="info__content">
+                  <p className="info__title">{entry}</p>
+                </div>
+              </div>
             );
           })}
-        </ol>
-      </div>
-      <div className="consultancy__fourth">
-        <h2>Partners in change</h2>
-        <div className="consultancy__partners">
-          <img id="wbnk" src="/assets/consultancy/world-bank.png" alt="" />
-          <img id="usaid" src="/assets/consultancy/usaid.png" alt="" />
-          <img id="mcart" src="/assets/consultancy/macarthur.png" alt="" />
-          <img id="giz" src="/assets/consultancy/giz.png" alt="" />
-          <img
-            id="stc"
-            src="/assets/consultancy/save-the-children.png"
-            alt=""
-          />
-          <img id="caid" src="/assets/consultancy/christian-aid.png" alt="" />
-          <img id="r4d" src="/assets/consultancy/r4d.png" alt="" />
-          <img id="jhp" src="/assets/consultancy/jhpiego.png" alt="" />
         </div>
       </div>
-      <div className="consultancy__fifth">
-        <h2>{fifthTitle}</h2>
-        <div>
-          <p>For consultancy inquiries, contact us at:</p>
-          <a href="mailto:programs@dataleadafrica.com">
-            programs@dataleadafrica.com
-          </a>
-        </div>
-        <a href="https://calendly.com/datalead-a-info/30min" className="btn">
-          Book Consultation
-        </a>
-      </div>
+      <CallToAction
+        heading={ctaHead}
+        btns={[
+          <a href="https://calendly.com/datalead-a-info/30min" className="btn">
+            Book Consultation
+          </a>,
+        ]}
+      />
     </div>
   );
 }

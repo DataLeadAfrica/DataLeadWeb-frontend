@@ -15,6 +15,7 @@ import ourTeamRouter from "./pages/OurTeam/router";
 import blogRouter from "./pages/Blog/router";
 import researchRouter from "./pages/Research/router";
 import courseRouter from "./pages/Courses/router";
+import consultancyRouter from "./pages/Consultancy/router";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
         {blogRouter()}
         {researchRouter()}
         {courseRouter()}
+        {consultancyRouter()}
       </Routes>
       <Footer />
     </BrowserRouter>
