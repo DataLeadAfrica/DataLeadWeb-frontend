@@ -1,4 +1,4 @@
-.payment-success {
+.success {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,14 +7,14 @@
   padding: var(--padding-4);
 }
 
-.payment-success__card {
+.success__card {
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.payment-success__header {
+.success__header {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -39,7 +39,7 @@
   }
 }
 
-.payment-success__body {
+.success__body {
   width: 100%;
   display: flex;
 
@@ -48,7 +48,7 @@
   }
 }
 
-.payment-success__text {
+.success__text {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -61,21 +61,21 @@
     gap: var(--gap-2);
   }
 }
-.payment-success__img {
+.success__img {
   align-self: center;
 }
 
 @media (max-width: 768px) {
-  .payment-success__text {
+  .success__text {
     width: 100%;
   }
-  .payment-success__img {
+  .success__img {
     display: none;
   }
-  .payment-success__header img {
+  .success__header img {
     max-width: 4rem;
   }
-  .payment-success__header h1 {
+  .success__header h1 {
     font-size: var(--font-md);
   }
 }

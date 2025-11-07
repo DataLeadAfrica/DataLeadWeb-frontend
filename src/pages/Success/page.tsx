@@ -1,37 +1,23 @@
-import "../css/payment-success.css";
+import { ReactNode } from "react";
 
-export default function PaymentSuccess() {
+import "./page.css";
+
+import check from "./assets/check.png";
+import cheerful from "./assets/cheerful.png";
+
+export default function Success({ children }: { children: ReactNode }) {
   return (
-    <div className="payment-success">
-      <div className="payment-success__card">
-        <div className="payment-success__header">
+    <div className="success">
+      <div className="success__card">
+        <div className="success__header">
           <h1>Payment Succesful</h1>
           <div>
-            <img src="/assets/payment-success/check.png" alt="" />
+            <img src={check} alt="" />
           </div>
         </div>
-        <div className="payment-success__body">
-          <div className="payment-success__text">
-            <p>
-              Thank you for your payment. Your transaction was successful, and a
-              receipt has been sent to your email by Paystack. You will also
-              receive a confirmation email from Data-Lead Africa with details
-              about your Bootcamp enrolment and the next steps.
-            </p>
-            <p>
-              If you experience any difficulty registering or have accessibility
-              concerns, kindly contact us via WhatsApp at{" "}
-              <a href="tel:+2349166661234">+234 916 666 1234</a> or email{" "}
-              <a href="mailto:info@dataleadafrica.com">
-                info@dataleadafrica.com
-              </a>
-            </p>
-          </div>
-          <img
-            className="payment-success__img"
-            src="/assets/payment-success/cheerful.png"
-            alt=""
-          />
+        <div className="success__body">
+          <div className="success__text">{children}</div>
+          <img className="success__img" src={cheerful} alt="" />
         </div>
       </div>
     </div>
