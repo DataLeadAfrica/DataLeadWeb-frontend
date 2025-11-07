@@ -27,7 +27,7 @@
   border: solid 1px var(--clr-gray-light);
   border-radius: var(--radius-2);
   overflow: hidden;
-  max-height: 40rem;
+  max-height: 45rem;
 
   & img {
     max-width: 100%;

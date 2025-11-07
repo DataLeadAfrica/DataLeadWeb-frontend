@@ -12,8 +12,7 @@
 }
 
 .header__logo {
-  max-height: 100%;
-  width: fit-content;
+  width: 120%;
 }
 
 .header__nav {

@@ -33,9 +33,9 @@ export default function BlogPost({
           <p>Author</p>
         </div>
         {/*<a href="#" target="_blank">*/}
-        <a href="#">
+        {/*<a href="#">
           <i className="nf nf-dev-linkedin"></i>
-        </a>
+        </a>*/}
       </div>
     </article>
   );
