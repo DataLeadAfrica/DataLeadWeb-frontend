@@ -10,6 +10,7 @@ import online_img from "./assets/online.svg";
 import circle from "./assets/circle.svg";
 import line from "./assets/line.svg";
 import CallToAction from "../../../components/CallToAction/component";
+import { ReactNode } from "react";
 
 const structure_infos = [
   {
@@ -39,11 +40,13 @@ export default function Course({
   desc,
   price,
   modules,
+  videoEmbed,
 }: {
   name: string;
   desc: string;
   modules: Modules | ModulesWithTracks;
   price: string;
+  videoEmbed?: ReactNode;
 }) {
   return (
     <div className="course">
@@ -135,7 +138,7 @@ export default function Course({
             Enrol Now
           </a>
         </div>
-        <div className="testimonial__video"></div>
+        <div className="testimonial__video">{videoEmbed}</div>
       </div>
 
       <CallToAction

@@ -13,6 +13,7 @@ import business_analytics from "./assets/business-analytics.svg";
 
 import Courses from "./page";
 import Course from "./Course/page";
+import { ReactNode } from "react";
 
 export type Modules = { [head: string]: string };
 export type ModulesWithTracks = { [key: string]: { [head: string]: string } };
@@ -24,7 +25,7 @@ export interface CourseInfo {
   desc: string;
   price: string;
   modules: Modules | ModulesWithTracks;
-  videoSrc?: string;
+  videoEmbed?: ReactNode;
 }
 
 const courseInfos: Array<CourseInfo> = [
@@ -46,6 +47,15 @@ const courseInfos: Array<CourseInfo> = [
       "Advanced Data Collection":
         "Elevate your data collection techniques with Kobo Toolbox, a powerful tool for comprehensive data collection, management, and complex analytics.",
     },
+    videoEmbed: (
+      <iframe
+        src="https://www.youtube.com/embed/KvoT544sX70?si=9z_CvoeypYo-NVJt"
+        title="YouTube video player"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      ></iframe>
+    ),
   },
   {
     imgSrc: data_science,
@@ -73,17 +83,16 @@ const courseInfos: Array<CourseInfo> = [
     desc: "The Employability and Entrepreneurship Training at Data-Lead Africa is designed to equip young professionals, recent graduates, and aspiring entrepreneurs with the skills, mindset, and tools needed to either thrive in the workforce or build successful businesses. For those entering the job market or launching a startup, 2-week hands-on program offers practical, real-world knowledge that sets you apart.",
     price: "100,000",
     modules: {
-        "CV Writing, Job Applications & Personal Branding": "",
-        "Communication & Interview Skills": "",
-        "Work Ethics, Emotional Intelligence & Professionalism": "",
-        "Digital Literacy & Workplace Tools (Google Suite, MS Office, etc.)":
-          "",
-        "Career Planning & LinkedIn Optimization": "",
-        "Business Idea Generation & Validation": "",
-        "Business Model Canvas & Lean Startup Methods": "",
-        "Financial Planning & Budgeting": "",
-        "Pitching & Fundraising Basics": "",
-        "Marketing & Branding for Small Businesses": "",
+      "CV Writing, Job Applications & Personal Branding": "",
+      "Communication & Interview Skills": "",
+      "Work Ethics, Emotional Intelligence & Professionalism": "",
+      "Digital Literacy & Workplace Tools (Google Suite, MS Office, etc.)": "",
+      "Career Planning & LinkedIn Optimization": "",
+      "Business Idea Generation & Validation": "",
+      "Business Model Canvas & Lean Startup Methods": "",
+      "Financial Planning & Budgeting": "",
+      "Pitching & Fundraising Basics": "",
+      "Marketing & Branding for Small Businesses": "",
     },
   },
   {
@@ -187,6 +196,7 @@ export default function courseRouter() {
                 desc={v.desc}
                 modules={v.modules}
                 price={v.price}
+                videoEmbed={v.videoEmbed}
               />
             }
           />
