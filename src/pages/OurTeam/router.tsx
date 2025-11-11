@@ -130,14 +130,6 @@ Born and raised in Nigeria, Loveth is fluent in English and brings a deep unders
     bioText:
       "Eniola manages the communication of bootcamps, training, ensuring high standards of execution across all levels.",
   },
-  Isaac: {
-    imgSrc: "/assets/our-team/Isaac.png",
-    name: "Isaac Joshua",
-    title: "Program Assistant/Grant Writer",
-    bioRoute: routes.ourTeamIsaac,
-    bioText:
-      "Isaac Joshua is a seasoned Programs Assistant and Grant Writer with over five years of experience in data analysis, monitoring, evaluation, and learning (MEL), as well as grant proposal development. He has collaborated with both local and international non-profit organizations to advance the Sustainable Development Goals (SDGs) in Nigeria. Isaac is deeply committed to professionalism and specializes in crafting high-quality, research-driven and donor-focused proposals that support organizational growth and impact.",
-  },
   Blessing: {
     title: "Client Response Officer",
     name: "Blessing Adem",
