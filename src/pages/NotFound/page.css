@@ -1,0 +1,25 @@
+.not-found {
+  height: 90svh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-1);
+
+  background-image: url("./assets/404.svg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+
+  & h1 {
+    font-family: "ClashDisplay-Regular";
+    font-size: var(--font-xs);
+  }
+
+  & .btn{
+    display: flex;
+    align-items: center;
+    gap: var(--gap-0_5);
+  }
+}

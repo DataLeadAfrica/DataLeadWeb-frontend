@@ -8,13 +8,20 @@
 
   --bg-color-light: white;
   --bg-color-dark: #1c1b22;
+  --bg-gradient: linear-gradient(
+    105.6deg,
+    #fde2cf -45.34%,
+    #e7f5fe 51.56%,
+    #fffbeb 87.94%,
+    #fef1e7 105.06%
+  );
 
   --clr-gray: #2c2b2d;
-  --clr-gray-light: #d7d7d7;
-  --clr-black: #2c2b2d;
+  --clr-gray-light: #dae2e7;
   --clr-orange: #f56e0f;
   --clr-orange-medium: #f9a971;
   --clr-orange-light: #fde9da;
+  --clr-blue: #e7f5fe;
 
   --padding-0_5: 0.5rem;
   --padding-1: 1rem;
@@ -22,7 +29,9 @@
   --padding-3: 3rem;
   --padding-4: 4rem;
   --padding-5: 5rem;
+  --padding-10: 10rem;
 
+  --gap-0_5: 0.5rem;
   --gap-1: 1rem;
   --gap-2: 2rem;
   --gap-3: 3rem;
@@ -31,19 +40,25 @@
 
   --radius-1: 4px;
   --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-5: 20px;
+  --radius-10: 40px;
 
   --transition-1: 0.1s;
   --transition-2: 0.2s;
 
-  --shadow: -5px 5px 10px 0 var(--clr-gray);
+  --shadow-1: 0px 1px 3px 0px #00000040;
+  --shadow-2: 0 0 10px 0 var(--clr-gray);
 
-  --font-xs: 0.75rem;
-  --font-sm: 1rem;
-  --font-md: 1.5rem;
-  --font-lg: 2.5rem;
-  --font-xl: 3.61rem;
-  --font-xxl: 6rem;
-  --font-xxxl: 8rem;
+  --font-xxs: 0.812rem;
+  --font-xs: 1rem;
+  --font-sm: 1.25rem;
+  --font-md: 1.562rem;
+  --font-lg: 1.938rem;
+  --font-xl: 2.438rem;
+  --font-xxl: 3.062rem;
+  --font-xxxl: 3.812rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -76,6 +91,7 @@
   }
 }
 
+/* Breakpoints are specified using bootstrap breakpoints but desktop first */
 @media (max-width: 768px) {
   :root {
     --padding-0_5: calc(4 / 6 * 0.5rem);
@@ -84,13 +100,16 @@
     --padding-3: calc(4 / 6 * 3rem);
     --padding-4: calc(3 / 6 * 4rem);
     --padding-5: calc(3 / 6 * 5rem);
+    --padding-10: calc(3 / 6 * 10rem);
 
-    --font-xs: calc(6 / 7 * 0.75rem);
-    --font-sm: calc(6 / 7 * 1rem);
-    --font-md: calc(6 / 7 * 1.5rem);
-    --font-lg: calc(5 / 7 * 2.5rem);
-    --font-xl: calc(4 / 7 * 3.61rem);
-    --font-xxl: calc(4 / 7 * 6rem);
+    --font-xxs: calc(6 / 7 0.812rem);
+    --font-xs: calc(6 / 7 * 1rem);
+    --font-sm: calc(6 / 7 * 1.25rem);
+    --font-md: calc(6 / 7 * 1.562rem);
+    --font-lg: calc(5 / 7 * 1.938rem);
+    --font-xl: calc(4 / 7 * 2.438rem);
+    --font-xxl: calc(4 / 7 * 3.062rem);
+    --font-xxxl: calc(4 / 7 * 3.812rem);
   }
 }
 
@@ -176,7 +195,7 @@ a,
 input,
 textarea,
 address {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
 }
 
 h1 {
@@ -195,50 +214,31 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
+
   padding-block: var(--padding-0_5);
   padding-inline: var(--padding-1);
+  width: fit-content;
+
   border: 1px solid var(--clr-orange);
-  display: flex;
-  font-size: var(--font-sm);
-  background-color: var(--clr-orange);
+  border-radius: var(--radius-1);
+
+  font-size: var(--font-xs);
   color: var(--font-color-inverse);
-  align-items: center;
+
+  background-color: var(--clr-orange);
+
   transition: var(--transition-2);
 }
 .btn:hover,
 .btn:focus-visible {
-  background-color: var(--clr-black);
-  border: 1px solid var(--clr-black);
+  background-color: var(--clr-gray);
+  border: 1px solid var(--clr-gray);
   color: var(--font-color-inverse);
   transition: var(--transition-2);
 }
 
-.btn--transparent {
-  background-color: transparent;
-  color: var(--font-color);
-  border: 1px solid black;
-}
-
-.btn--transparent-inverse {
-  background-color: transparent;
-  color: var(--font-color-inverse);
-  border: 1px solid white;
-}
-
-.btn--transparent-inverse:hover {
+.btn--white {
   background-color: white;
   color: var(--font-color);
-  border: 1px solid white;
-}
-
-.title-bar {
-  border: solid 1px var(--clr-orange);
-  background-color: var(--clr-orange);
-  height: 3px;
-  width: 4rem;
-}
-
-.title-bar--inverse {
-  border-color: var(--clr-light-900);
-  background-color: var(--clr-light-900);
+  border: 1px solid black;
 }
