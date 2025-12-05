@@ -28,7 +28,7 @@ export default function Partners() {
         {images.map((v) => {
           return (
             <div>
-              <img src={v} />{" "}
+              <img className="partners__partner" src={v} />{" "}
             </div>
           );
         })}

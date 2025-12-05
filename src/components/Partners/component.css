@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    width: 80%;
+    width: 90%;
     gap: var(--gap-2);
 
     & > * {
@@ -25,4 +25,7 @@
       align-items: center;
     }
   }
+}
+.partners__partner {
+  width: 70%;
 }
