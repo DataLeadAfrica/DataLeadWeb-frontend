@@ -26,6 +26,7 @@ export interface CourseInfo {
   price: string;
   modules: Modules | ModulesWithTracks;
   videoEmbed?: ReactNode;
+  formLink?: string;
 }
 
 const courseInfos: Array<CourseInfo> = [
@@ -33,6 +34,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: data_analytics,
     link: routes.coursesDataAnalytics,
     name: "Data Analytics",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "The Data-Lead Africa Data Analytics Bootcamp is more than a training, it is a launchpad for your career in to research and analytics. Over three months of immersive, expert-led learning, you’ll gain the skills to manage data end-to-end, while also learning how to apply analytics to real-world challenges across sectors and policy domains.",
     price: "250,000",
     modules: {
@@ -61,6 +64,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: data_science,
     link: routes.coursesDataScience,
     name: "Data Science",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/176414535908853525/share",
     desc: "Our Data Science Training is a comprehensive 3-month program designed to equip participants with the foundational and practical skills required to launch a career in data science. Whether you're new to the field or looking to expand your analytical capabilities, this program provides hands-on experience in the tools and techniques used by data professionals worldwide.",
     price: "250,000",
     modules: {
@@ -80,6 +85,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: employability_entrepreneurship,
     link: routes.coursesEmployability,
     name: "Employability & Entrepreneurship",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "The Employability and Entrepreneurship Training at Data-Lead Africa is designed to equip young professionals, recent graduates, and aspiring entrepreneurs with the skills, mindset, and tools needed to either thrive in the workforce or build successful businesses. For those entering the job market or launching a startup, 2-week hands-on program offers practical, real-world knowledge that sets you apart.",
     price: "100,000",
     modules: {
@@ -99,6 +106,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: business_analytics,
     link: routes.coursesBusinessAnalytics,
     name: "Business Analytics",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "Our Business Analytics bootcamp is designed for professionals, entrepreneurs, and managers to gain practical skills to analyze business data and make smarter decisions. Whether you're looking to improve operations, understand customer behavior, or track performance, this course gives you the tools to turn business data into clear, actionable insights. This course introduces the core concepts and tools of business analytics, equipping participants to optimize operational outcomes.",
     price: "195,000",
     modules: {
@@ -114,6 +123,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: bioinformatics,
     link: routes.coursesBioInformatics,
     name: "Bioinformatics",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "Our Bioinformatics Training program is tailored for students, researchers, and professionals in the biological sciences who want to harness the power of data in modern biological research. This 3-month course introduces participants to the tools and techniques used to analyze biological data, with a strong focus on computational biology, genomics, and data-driven health research.",
     price: "300,000",
     modules: {
@@ -131,6 +142,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: digital_creation,
     link: routes.coursesDigitalCreation,
     name: "Digital Creators",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "Give your child a fun and productive summer! This exciting hands-on summer bootcamp is designed for kids and teens (ages 12–17) who want to explore the world of digital content creation. From vlogging and photography to social media storytelling, they will learn how to plan, film, edit, and share amazing content using popular tools and apps. It’s the perfect blend of creativity, tech skills, and summer fun, setting them up to be confident, future ready creators!",
     price: "100,000",
     modules: {
@@ -146,6 +159,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: research_methodologies,
     link: routes.coursesResearchMethodologies,
     name: "Research Methodology and Manuscript Writing",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "This intensive program is designed to equip you with essential skills in research methodology and academic writing. Whether you’re a postgraduate student preparing your thesis, a researcher aiming to publish, an NGO staff member evaluating projects, or an early-career professional building research skills, this course provides a comprehensive, hands-on learning experience.",
     price: "100,000",
     modules: {
@@ -165,6 +180,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: hr_analytics,
     link: routes.coursesHrAnalytcis,
     name: "HR Analytics",
+    formLink:
+      "https://preview.mailerlite.io/forms/1758808/163980287251842919/share",
     desc: "The HR Analytics is designed to empower Human Resources professionals with the data skills needed to make informed workforce decisions. This 1-month course bridges HR and data analysis, equipping participants to interpret people-related data, uncover workforce trends, and make evidence-based HR decisions.Whether you're an HR officer, manager, or aspiring data-driven professional, this program will give you the tools to align HR strategies with organizational goals using data.",
     price: "195,000",
     modules: {
@@ -197,6 +214,7 @@ export default function courseRouter() {
                 modules={v.modules}
                 price={v.price}
                 videoEmbed={v.videoEmbed}
+                formLink={v.formLink}
               />
             }
           />

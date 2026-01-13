@@ -41,12 +41,14 @@ export default function Course({
   price,
   modules,
   videoEmbed,
+  formLink,
 }: {
   name: string;
   desc: string;
   modules: Modules | ModulesWithTracks;
   price: string;
   videoEmbed?: ReactNode;
+  formLink?: string;
 }) {
   return (
     <div className="course">
@@ -66,7 +68,7 @@ export default function Course({
             <p className="plan__price">{price}</p>
           </div>
           <a
-            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            href={formLink}
             className="btn btn--white"
           >
             Enrol Now
@@ -132,7 +134,7 @@ export default function Course({
             </p>
           </div>
           <a
-            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            href={formLink}
             className="btn"
           >
             Enrol Now
@@ -145,7 +147,7 @@ export default function Course({
         heading="Ready to Accelerate Your Career?"
         btns={[
           <a
-            href="https://preview.mailerlite.io/forms/1758808/163980287251842919/share"
+            href={formLink}
             className="btn"
           >
             Enrol Now
