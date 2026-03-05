@@ -154,7 +154,7 @@ export default function Course({
           </a>,
           name == "Data Analytics" ? (
             <a
-              href="https://drive.google.com/file/d/1Y_jiAI4rH_1V47b7787TP9PiqovORyEO/view?usp=sharing"
+              href="https://drive.google.com/file/d/1jHZvPz1fvEXb9sh_KsJ94y-_1oZUpTpt/view?usp=sharing"
               className="btn btn--white"
             >
               Download Brochure

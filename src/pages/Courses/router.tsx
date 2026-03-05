@@ -35,7 +35,7 @@ const courseInfos: Array<CourseInfo> = [
     link: routes.coursesDataAnalytics,
     name: "Data Analytics",
     formLink:
-      "https://preview.mailerlite.io/forms/1758808/177646638686275419/share",
+      "https://tally.so/r/lbNEBp",
     desc: "The Data-Lead Africa Data Analytics Bootcamp is more than a training, it is a launchpad for your career in to research and analytics. Over three months of immersive, expert-led learning, you’ll gain the skills to manage data end-to-end, while also learning how to apply analytics to real-world challenges across sectors and policy domains.",
     price: "250,000",
     modules: {
@@ -63,10 +63,10 @@ const courseInfos: Array<CourseInfo> = [
   {
     imgSrc: data_science,
     link: routes.coursesDataScience,
-    name: "Data Science",
+    name: "AI & Machine Learning",
     formLink:
-      "https://preview.mailerlite.io/forms/1758808/176414535908853525/share",
-    desc: "Our Data Science Training is a comprehensive 3-month program designed to equip participants with the foundational and practical skills required to launch a career in data science. Whether you're new to the field or looking to expand your analytical capabilities, this program provides hands-on experience in the tools and techniques used by data professionals worldwide.",
+      "https://tally.so/r/0QEWM9",
+    desc: "Our AI & Machine Learning Training is a comprehensive 3-month program designed to equip participants with the foundational and practical skills required to launch a career in AI & Machine Learning. Whether you're new to the field or looking to expand your analytical capabilities, this program provides hands-on experience in the tools and techniques used by data professionals worldwide.",
     price: "250,000",
     modules: {
       "Python Programming":
