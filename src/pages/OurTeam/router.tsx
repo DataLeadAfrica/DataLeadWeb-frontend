@@ -73,7 +73,7 @@ Sefunmi’s dedication to public health and her commitment to bridging economic 
   /* Communications */
   Felicia: {
     name: "Felicia Ayodele",
-    title: "Head of Communications",
+    title: "Chief Operating Officer",
     imgSrc: "/assets/our-team/Felicia.png",
     bioRoute: routes.ourTeamFelicia,
     bioText: `Felicia Oborotomu Ayodele leads the communications department at Data-Lead Africa, bringing over a decade of progressive experience in branding and communications. As a creative and strategic brand storyteller, she crafts compelling narratives that captivate audiences and drive results.
@@ -85,26 +85,24 @@ In addition to her professional achievements, Felicia is committed to giving bac
 Felicia’s warm and engaging approach has built her a reputation as a trusted brand advisor, creative content genius, and passionate advocate for innovation and growth. Before joining Data-Lead Africa, she worked as a field journalist with the Nigerian Television Authority in Zaria.`,
   },
   Maranatha: {
-    name: "Maranatha Emmaogboji",
-    title: "Communications Intern",
+    name: "Ekwukwu Maranatha Emmaogobji",
+    title: "Head of Media and Creative Production",
     imgSrc: "/assets/our-team/Maranatha.png",
     bioRoute: routes.ourTeamMaranatha,
-    bioText:
-      "Maranatha is a storyteller and data analyst working as an expert in media, education, and interdisciplinary research. At Data-Lead Africa, he leads strategic communications while designing and delivering data analytics training focused on education and technology. His work also incorporates visual storytelling, writing, and design that creates impactful social discourse.",
+    bioText: `Ekwukwu Maranatha Emmaogobji is the Head of Media and Creative Production at Data-Lead Africa, where he leads the organization's media, branding, digital communications, and creative content strategy. With over ten years of experience in media production and communications, he has developed expertise in video production, photography, graphic design, digital storytelling, social media management, content development, and audience engagement. He oversees the planning and execution of creative campaigns and multimedia projects within the organization.
+
+He holds a Bachelor's Degree in English Language from Benue State University. His professional journey into media began during his undergraduate years, where he served as a Production Manager for several theatre productions on campus. Through these productions, he gained practical experience in production planning, stage management, team coordination, storytelling, effectively laying the foundation for his career into the broader media and communications industry.
+
+Beyond creative media production, Ekwukwu is also a creative writer and literary enthusiast. He has written stage plays, contributed to literary projects, and published poetry works exploring themes of identity, society, culture, and human experience. His background in literature and storytelling continues to influence his approach to content creation.
+
+At Data-Lead Africa, he remains committed to using creative media to support sustainable development outcomes across Africa.`,
   },
   Matthew: {
     bioRoute: routes.ourTeamMatthew,
-    title: "Communications Officer",
+    title: "Head of Communications",
     imgSrc: "/assets/our-team/Matthew.png",
     name: "Gabriel Matthew",
     bioText: `I'm Gabriel Mathew, a multidisciplinary creative and Visual Storyteller. I currently serve as the Graphics Manager at Data-Lead Africa, where I lead the visual strategy within the Communications Department.I wear many hats, as a Director, Graphic Designer, Visual Content Curator, and Photographer — and I’m passionate about turning ideas into compelling visuals. Whether I’m behind the lens or designing behind the screen, I focus on creating content that connects, inspires, and drives impact.`,
-  },
-  Stephen: {
-    name: "Mogaji Adekale Stephen",
-    title: "Communications Intern",
-    imgSrc: "/assets/our-team/Stephen.png",
-    bioRoute: routes.ourTeamStephen,
-    bioText: `Mogaji Adekale Stephen is a dynamic Datographer and Creative Strategist, seamlessly blending expertise in data analysis and graphic design to craft compelling, data-driven narratives. With over a year of experience, he specialize in transforming complex datasets into actionable insights and visually captivating designs that tell impactful stories. As a skilled facilitator, Mogaji Adekale Stephen also leads engaging trainings to empower teams with analytical and creative skills. Proficient in advanced data analysis tools such as Excel, SQL, and basic Python, Mogaji Adekale Stephen excels in data collection, processing, and visualization, delivering solutions that drive decision-making. His graphic design expertise shines through in creating storytelling fliers, designs, and photography that resonate with audiences, utilizing tools like Adobe Creative Suite (Photoshop, Lightroom Classic,), Canva, and more. Mogaji Adekale Stephen has a proven track record of collaborating with organizations to deliver high-impact projects, combining analytical rigor with creative innovation. His multifaceted skill set includes proficiency in Microsoft Office Suite, and virtual collaboration tools such as Zoom and Google Meet. Passionate about sustainable development and storytelling through data and design, Mogaji Adekale Stephen is committed to advancing organizational goals and fostering growth through creativity, precision, and insight-driven strategies.`,
   },
   Loveth: {
     name: "Oche Loveth",
@@ -137,15 +135,7 @@ Born and raised in Nigeria, Loveth is fluent in English and brings a deep unders
     bioRoute: routes.ourTeamBlessing,
     bioText:
       "Blessing Adem is the Client Response Officer at Data-Lead Africa, bringing over two years of experience to the role. She is adept at multitasking and problem-solving, ensuring that the office runs seamlessly. Blessing’s commitment to excellence and proactive approach make her an invaluable asset to the team, consistently contributing to the smooth operation and success of Data-Lead Africa.",
-  },
-  Musa: {
-    name: "Musa Maimusa",
-    title: "Security Officer",
-    imgSrc: "/assets/our-team/Musa.png",
-    bioRoute: routes.ourTeamMusa,
-    bioText:
-      "Musa Maimusa, is a dedicated Security Officer at Data-Lead Africa, where he supports data-driven initiatives while ensuring operational safety and integrity across all organizational activities. Musa MAIMUSA unique role blends security operations with analytical thinking, making me a vital link between data protection and insight generation. In addition to Musa MAIMUSA security responsibilities, He possess strong data analytics skills, with hands-on experience using tools such as Microsoft Excel, Power BI, Stata, R, NVivo, MySQL, Arc GIS, M&E and Data collection. He is passionate about using data to enhance strategic decision-making and drive social impact, especially in environments where both safety and information accuracy are critical.",
-  },
+  }
 };
 
 export default function ourTeamRouter() {
