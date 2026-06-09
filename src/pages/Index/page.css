@@ -26,7 +26,7 @@
 .landing .hero__text {
   align-items: start;
   gap: var(--gap-1);
-
+  margin-top: 8rem;
   & .text__content {
     display: flex;
     flex-direction: column;
@@ -50,6 +50,7 @@
 .landing .hero__buttons {
   width: 100%;
   display: flex;
+  margin-bottom: 8rem;
   gap: var(--gap-1);
 }
 
@@ -252,6 +253,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-5);
+    margin-top: 6rem;
 
     & .our-services__split-card {
       display: flex;

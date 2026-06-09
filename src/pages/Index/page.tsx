@@ -38,10 +38,6 @@ function Index() {
                 <i className="nf nf-fa-arrow_right"></i>
               </a>
             </div>
-            <div className="hero__trained">
-              <img src="/assets/index/trained.png" alt="" />
-              <p>10k+ Individuals Trained</p>
-            </div>
           </div>
         </div>
         <div className="hero__image">
@@ -62,39 +58,6 @@ function Index() {
           Empowering individuals and organizations through data-driven
           solutions.
         </h2>
-
-        <div className="our-services__cards">
-          <div className="our-services__card">
-            <p className="card-title">Consultancy</p>
-            <p className="card-desc">
-              Providing expert advice and tailored solutions to address your
-              specific challenges.
-            </p>
-            <div className="card-image">
-              <img src={card_1} alt="" />
-            </div>
-          </div>
-          <div className="our-services__card">
-            <p className="card-title">Research</p>
-            <p className="card-desc">
-              We provide data-driven research and actionable insights to guide
-              your strategic decisions
-            </p>
-            <div className="card-image">
-              <img src={card_2} alt="" />
-            </div>
-          </div>
-          <div className="our-services__card">
-            <p className="card-title">Training</p>
-            <p className="card-desc">
-              Empower your team with the skills and knowledge needed to harness
-              the power of data through our comprehensive training programs
-            </p>
-            <div className="card-image">
-              <img src={card_3} alt="" />
-            </div>
-          </div>
-        </div>
         <div className="our-services__split-cards">
           <div className="our-services__split-card">
             <div>

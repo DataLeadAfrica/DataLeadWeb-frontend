@@ -57,8 +57,8 @@
   --font-md: 1.562rem;
   --font-lg: 1.938rem;
   --font-xl: 2.438rem;
-  --font-xxl: 3.062rem;
-  --font-xxxl: 3.812rem;
+  --font-xxl: 2.562rem;
+  --font-xxxl: 3.612rem;
 }
 
 @media (prefers-color-scheme: light) {

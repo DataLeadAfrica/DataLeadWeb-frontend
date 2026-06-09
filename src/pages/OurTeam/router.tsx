@@ -76,7 +76,7 @@ Sefunmi’s dedication to public health and her commitment to bridging economic 
     title: "Chief Operating Officer",
     imgSrc: "/assets/our-team/Felicia.png",
     bioRoute: routes.ourTeamFelicia,
-    bioText: `Felicia Oborotomu Ayodele leads the communications department at Data-Lead Africa, bringing over a decade of progressive experience in branding and communications. As a creative and strategic brand storyteller, she crafts compelling narratives that captivate audiences and drive results.
+    bioText: `Felicia Oborotomu Ayodele is the Chief Operating Officer of Data-Lead Africa, where she oversees the organization's daily operations and supports the successful delivery of projects and organizational goals. With over a decade of experience in communications, management, and team leadership, she has played an important role in the growth and development of the organization.
 
 Felicia began her career as a content creator at Data-Lead Africa, rising through the ranks to become the head of communications. Her unique blend of creativity, strategic thinking, and analytical insight has earned her a proven track record of leading teams, collaborating with multicultural stakeholders, and delivering impactful results.
 
@@ -97,13 +97,6 @@ Beyond creative media production, Ekwukwu is also a creative writer and literary
 
 At Data-Lead Africa, he remains committed to using creative media to support sustainable development outcomes across Africa.`,
   },
-  Matthew: {
-    bioRoute: routes.ourTeamMatthew,
-    title: "Head of Communications",
-    imgSrc: "/assets/our-team/Matthew.png",
-    name: "Gabriel Matthew",
-    bioText: `I'm Gabriel Mathew, a multidisciplinary creative and Visual Storyteller. I currently serve as the Graphics Manager at Data-Lead Africa, where I lead the visual strategy within the Communications Department.I wear many hats, as a Director, Graphic Designer, Visual Content Curator, and Photographer — and I’m passionate about turning ideas into compelling visuals. Whether I’m behind the lens or designing behind the screen, I focus on creating content that connects, inspires, and drives impact.`,
-  },
   Loveth: {
     name: "Oche Loveth",
     title: "Head of Programs",
@@ -119,6 +112,13 @@ Before joining Data-Lead Africa, Loveth worked with the Nigerian Christian Pilgr
 Loveth holds a Bachelor of Science in Anatomy from Bingham University and a Master of Public Health from Nile University, Abuja. Her academic background and commitment to continuous professional development are evident in her pursuit of advanced training and certifications in project management and data analysis.
 
 Born and raised in Nigeria, Loveth is fluent in English and brings a deep understanding of the local context to her work. Her dedication to improving community health and promoting inclusion through data-driven approaches makes her an invaluable asset to Data-Lead Africa.`,
+  },
+  Matthew: {
+    bioRoute: routes.ourTeamMatthew,
+    title: "Communications Officer",
+    imgSrc: "/assets/our-team/Matthew.png",
+    name: "Gabriel Matthew",
+    bioText: `I'm Gabriel Mathew, a multidisciplinary creative and Visual Storyteller. I currently serve as the Graphics Manager at Data-Lead Africa, where I lead the visual strategy within the Communications Department.I wear many hats, as a Director, Graphic Designer, Visual Content Curator, and Photographer — and I’m passionate about turning ideas into compelling visuals. Whether I’m behind the lens or designing behind the screen, I focus on creating content that connects, inspires, and drives impact.`,
   },
   Eniola: {
     name: "Oyekale Eniola Yetunde",
