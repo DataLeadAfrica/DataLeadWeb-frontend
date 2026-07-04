@@ -141,7 +141,7 @@ export default function Header() {
                 Courses
               </Link>
               {/* World Cup 2026 — TEMPORARY promo. Remove this <a> after the tournament. */}
-              
+              <a
                 className="menu__predict"
                 href="/world-cup-2026/index.html"
                 onClick={handleClick}
