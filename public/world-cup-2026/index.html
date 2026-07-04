@@ -352,6 +352,7 @@ h2.title{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,46p
 }
 @media (prefers-reduced-motion:reduce){.track{transition:none}.btrack>i{transition:none}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <div class="site-bar">
@@ -886,11 +887,16 @@ function updateYour(){
 
 /* ---------- Predict & Win entry ---------- */
 var ENTRY_URL="https://script.google.com/macros/s/AKfycbzJRS2XxpQqjENpgKZhQKzC2O1dZklxGgngRjsC6tLypNgj7iT6KFUyvrlkKYVKKuMw3w/exec";
+var EMAILJS_SERVICE="service_ortl1vg", EMAILJS_TEMPLATE="template_eyzk0dg", EMAILJS_PUBLIC="6svlOkrevGHII2V8s";
+try{ if(window.emailjs) emailjs.init({publicKey:EMAILJS_PUBLIC}); }catch(e){}
 function entryComplete(){return !!picks.f;}
+function alreadyEntered(){try{return !!localStorage.getItem('dla_wc_entered');}catch(e){return false;}}
 function updateEntryLock(){
   var form=document.getElementById('entryForm'),sub=document.getElementById('entrySub'),btn=document.getElementById('efSubmit');
   if(!form)return;
   if(form.classList.contains('submitted'))return;
+  if(alreadyEntered()){form.classList.add('submitted');if(btn)btn.disabled=true;
+    if(sub)sub.innerHTML="You&#39;ve already entered on this device &mdash; check your email for your confirmation.";return;}
   if(entryComplete()){form.classList.add('unlocked');if(btn)btn.disabled=false;
     if(sub)sub.innerHTML='Your predicted champion: <b>'+picks.f+'</b>. Fill in your details below to enter.';}
   else{form.classList.remove('unlocked');if(btn)btn.disabled=true;
@@ -902,17 +908,31 @@ function updateEntryLock(){
     if(!entryComplete())return;
     var g=function(id){return (document.getElementById(id).value||'').trim();};
     var name=g('efName'),email=g('efEmail'),country=g('efCountry'),phone=g('efPhone');
-    var msg=document.getElementById('efMsg');
+    var msg=document.getElementById('efMsg'),form=document.getElementById('entryForm');
     if(!name||!email||!country||!phone){msg.className='ef-msg err';msg.textContent='Please fill in all four fields.';return;}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className='ef-msg err';msg.textContent='Please enter a valid email address.';return;}
-    var payload={name:name,email:email,country:country,phone:phone,champion:picks.f,
-      finalists:[picks.s1,picks.s2],
-      semifinalists:[picks.q1,picks.q2,picks.q3,picks.q4],
-      quarterfinalists:[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8]};
+    var finalStr=[picks.s1,picks.s2].filter(Boolean).join(', ');
+    var semiStr=[picks.q1,picks.q2,picks.q3,picks.q4].filter(Boolean).join(', ');
+    var quarterStr=[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8].filter(Boolean).join(', ');
+    // 1) save to the Google Sheet (fire-and-forget; the Sheet is the record of entries)
+    try{fetch(ENTRY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({name:name,email:email,country:country,phone:phone,champion:picks.f,
+        finalists:[picks.s1,picks.s2],semifinalists:[picks.q1,picks.q2,picks.q3,picks.q4],
+        quarterfinalists:[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8]})}).catch(function(){});}catch(e){}
+    // 2) send the confirmation email via EmailJS; only confirm success when it actually sends
     btn.disabled=true;msg.className='ef-msg';msg.textContent='Submitting\u2026';
-    fetch(ENTRY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-      .then(function(){msg.className='ef-msg ok';msg.textContent="You're in! We've emailed you a confirmation with your full prediction. \ud83c\udf89";document.getElementById('entryForm').classList.add('submitted');})
-      .catch(function(){msg.className='ef-msg err';msg.textContent='Sorry, something went wrong \u2014 please try again.';btn.disabled=false;});
+    if(!window.emailjs){msg.className='ef-msg err';msg.textContent='Email service didn\u2019t load \u2014 please refresh and try again.';btn.disabled=false;return;}
+    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:email,to_name:name,country:country,phone:phone,
+      champion:picks.f,finalists:finalStr,semifinalists:semiStr,quarterfinalists:quarterStr
+    }).then(function(){
+      try{localStorage.setItem('dla_wc_entered','1');}catch(e){}
+      msg.className='ef-msg ok';msg.textContent="You're in! Check your email for your confirmation. \ud83c\udf89";
+      form.classList.add('submitted');
+    }).catch(function(err){
+      msg.className='ef-msg err';msg.textContent='Your entry was saved, but the confirmation email didn\u2019t send \u2014 please check your email address and try again.';
+      btn.disabled=false;
+    });
   });
 })();
 
