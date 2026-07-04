@@ -1,4 +1,6 @@
 import { Link } from "react-router";
+
+import AfricaMap from "./AfricaMap";
 import { useEffect, useState } from "react";
 
 import "./page.css";
@@ -127,36 +129,20 @@ export default function Courses({
               >
                 Download brochure ↓
               </a>
+              {featured && (
+                <Link className="lc-btn" to={featured.link}>
+                  Enrol now →
+                </Link>
+              )}
             </div>
           </div>
-          <div className="lc-hero__art" aria-hidden="true">
-            <span className="lc-ring lc-ring--1" />
-            <span className="lc-ring lc-ring--2" />
-            <span className="lc-ring lc-ring--3" />
+          <div className="lc-hero__art">
+            <AfricaMap />
             <span className="lc-chip lc-chip--1">🇳🇬 Abuja · HQ</span>
-            <span className="lc-chip lc-chip--2">🌍 5 countries</span>
+            <span className="lc-chip lc-chip--2">🌍 Footprint &amp; reach</span>
           </div>
         </div>
       </section>
-
-      {/* FOOTPRINT TICKER */}
-      <div className="lc-ticker" aria-hidden="true">
-        <div className="lc-ticker__track">
-          {[0, 1].map((k) => (
-            <div className="lc-ticker__group" key={k}>
-              {COUNTRIES.map((c) => (
-                <span key={c.name}>
-                  {c.flag} <b>{c.name}</b>
-                  {c.hq ? <i> · Abuja HQ</i> : null}
-                </span>
-              ))}
-              <span className="lc-ticker__o">
-                High-level impact research, evaluations &amp; training across Africa
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* TOOLS */}
       <div className="lc-tools">
@@ -341,6 +327,25 @@ export default function Courses({
           </div>
         </div>
       </section>
+
+      {/* FOOTPRINT TICKER (bottom) */}
+      <div className="lc-ticker" aria-hidden="true">
+        <div className="lc-ticker__track">
+          {[0, 1].map((k) => (
+            <div className="lc-ticker__group" key={k}>
+              {COUNTRIES.map((c) => (
+                <span key={c.name}>
+                  {c.flag} <b>{c.name}</b>
+                  {c.hq ? <i> · Abuja HQ</i> : null}
+                </span>
+              ))}
+              <span className="lc-ticker__o">
+                High-level impact research, evaluations &amp; training across Africa
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
