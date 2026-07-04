@@ -30,9 +30,50 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column}
 body{background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
 
-.app{display:flex;height:100%;min-height:640px;overflow:hidden;position:relative}
+.app{display:flex;flex:1 1 auto;min-height:0;overflow:hidden;position:relative}
+/* ===== site top bar (links back to main site) ===== */
+.site-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 20px;background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto;position:relative;z-index:60}
+.site-bar .sb-logo{display:flex;align-items:center}
+.site-bar .sb-logo img{height:30px;display:block}
+.site-bar .sb-nav{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.site-bar .sb-link{color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:none;border:0;font-family:var(--body)}
+.site-bar .sb-link:hover{color:var(--acc)}
+.site-bar .sb-link i{font-style:normal;font-size:10px;color:var(--muted)}
+.site-bar .sb-cta{background:var(--acc);color:#fff;padding:8px 14px;border-radius:9px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.site-bar .sb-cta:hover{background:var(--acc-2);color:#fff}
+.sb-drop{position:relative}
+.sb-drop .sb-menu{position:absolute;top:100%;left:0;margin-top:6px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.12);padding:8px;display:none;flex-direction:column;min-width:172px;z-index:70}
+.sb-drop:hover .sb-menu,.sb-drop:focus-within .sb-menu{display:flex}
+.sb-menu a{padding:8px 10px;border-radius:7px;font-size:13.5px;color:var(--ink);text-decoration:none;white-space:nowrap;font-weight:500}
+.sb-menu a:hover{background:var(--acc-soft);color:var(--acc-2)}
+.combo{position:relative}
+.combo-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:220px;overflow-y:auto;background:var(--card);border:1px solid var(--line-2);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.14);z-index:80;display:none}
+.combo-menu.open{display:block}
+.combo-item{padding:9px 13px;font-size:14px;cursor:pointer}
+.combo-item:hover{background:var(--acc-soft);color:var(--acc-2)}
+.combo-empty{padding:9px 13px;font-size:13px;color:var(--muted)}
+.ef-deadline{display:inline-flex;align-items:center;gap:6px;margin:10px 0 2px;font-size:12.5px;color:#A9611A;background:var(--acc-soft);border:1px solid rgba(242,106,36,.35);border-radius:999px;padding:6px 12px;font-weight:500}
+.ef-deadline b{color:var(--acc-2)}
+@media(max-width:700px){.site-bar{padding:7px 12px}.site-bar .sb-nav{gap:12px}.site-bar .sb-link{font-size:13px}.site-bar .sb-hide{display:none}}
+/* ===== Predict & Win entry form ===== */
+.entry{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.entry .ctak{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--acc);margin-bottom:6px}
+.entry-title{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
+.entry-sub{color:var(--muted);font-size:13.5px;margin:0}
+.entry-form{margin-top:14px;opacity:.45;pointer-events:none;transition:opacity .2s}
+.entry-form.unlocked{opacity:1;pointer-events:auto}
+.ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ef-grid input{padding:11px 13px;border:1px solid var(--line-2);border-radius:10px;font-size:14px;font-family:var(--body);background:var(--card-2);color:var(--ink)}
+.ef-grid input:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:var(--acc)}
+.ef-actions{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
+.ef-msg{font-size:13px;font-weight:600}
+.ef-msg.ok{color:#12A150}
+.ef-msg.err{color:#D5384A}
+.ef-fine{font-size:11.5px;color:var(--muted);margin-top:10px}
+@media(max-width:820px){.ef-grid{grid-template-columns:1fr}}
 
 /* ================= SIDEBAR ================= */
 .sidebar{
@@ -313,6 +354,22 @@ h2.title{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,46p
 </style>
 </head>
 <body>
+<div class="site-bar">
+  <a class="sb-logo" href="/" aria-label="Data-Lead Africa home"><img src="/assets/logo-header.svg" alt="Data-Lead Africa"></a>
+  <nav class="sb-nav">
+    <div class="sb-drop sb-hide">
+      <span class="sb-link" tabindex="0">About Us <i>&#9662;</i></span>
+      <div class="sb-menu"><a href="/who-we-are">Who we are</a><a href="/our-team">Our Team</a></div>
+    </div>
+    <div class="sb-drop sb-hide">
+      <span class="sb-link" tabindex="0">Services <i>&#9662;</i></span>
+      <div class="sb-menu"><a href="/consultancy">Consultancy</a><a href="/research">Research</a><a href="/training">Training</a></div>
+    </div>
+    <a class="sb-link" href="/courses">Courses</a>
+    <a class="sb-link sb-hide" href="/blog">Blog</a>
+    <a class="sb-cta" href="/contact-us">Contact Us</a>
+  </nav>
+</div>
 <div class="app" id="app">
 
   <!-- SIDEBAR -->
@@ -472,9 +529,27 @@ h2.title{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,46p
                 <div style="margin-top:10px" id="yourFF"></div>
               </div>
             </div>
-            <div class="cta">
-              <div><div class="ctak">Predict &amp; Win</div><div class="ctatext">Think you can call it better than the model? Build your bracket, <b>screenshot it and share it with us</b>. A correct <b>World Champion</b> pick could win you a <span class="amt">&#8358;250,000</span> Data Analytics scholarship from Data-Lead Africa.</div></div>
-              <a class="ctabtn" href="https://www.dataleadafrica.com/courses/data-analytics" target="_blank" rel="noopener">Enter &amp; learn more &rsaquo;</a>
+            <div class="entry" id="entry">
+              <div class="ctak">Predict &amp; Win &middot; &#8358;250,000 Data Analytics Scholarship</div>
+              <h3 class="entry-title">Enter your prediction</h3>
+              <p class="entry-sub" id="entrySub">Complete your bracket above (pick a champion) to unlock your entry.</p>
+              <div class="entry-form" id="entryForm">
+                <div class="ef-grid">
+                  <input id="efName" type="text" placeholder="Full name" autocomplete="name" />
+                  <input id="efEmail" type="email" placeholder="Email address" autocomplete="email" />
+                  <div class="combo" id="countryCombo">
+                    <input id="efCountry" type="text" placeholder="Country (type to search)" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" />
+                    <div class="combo-menu" id="countryMenu" role="listbox"></div>
+                  </div>
+                  <input id="efPhone" type="tel" placeholder="Phone number" autocomplete="tel" />
+                </div>
+                <div class="ef-actions">
+                  <button class="btn primary" id="efSubmit" type="button" disabled>Submit my prediction</button>
+                  <span class="ef-msg" id="efMsg"></span>
+                </div>
+                <div class="ef-deadline">&#9203; Entries close at the first quarter-final kick-off &mdash; <b>Thu 9 July 2026, 20:00 GMT</b> (4:00 PM ET &middot; 9:00 PM WAT) &middot; one entry per person</div>
+                <p class="ef-fine">We&#39;ll email you a confirmation listing your full prediction (every stage).</p>
+              </div>
             </div>
           </div>
         </section>
@@ -806,7 +881,61 @@ function updateYour(){
     var h='<div style="font-size:11px;color:var(--muted);margin-bottom:6px">Your semifinalists so far ('+ff.length+'/4)</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
     ff.forEach(function(t){h+='<span class="chip" style="--c:'+HEX[CONT16[t]]+'">'+t+'</span>';});h+='</div>';$('#yourFF').innerHTML=h;}
   else $('#yourFF').innerHTML='';
+  updateEntryLock();
 }
+
+/* ---------- Predict & Win entry ---------- */
+var ENTRY_URL="https://script.google.com/macros/s/AKfycbzJRS2XxpQqjENpgKZhQKzC2O1dZklxGgngRjsC6tLypNgj7iT6KFUyvrlkKYVKKuMw3w/exec";
+function entryComplete(){return !!picks.f;}
+function updateEntryLock(){
+  var form=document.getElementById('entryForm'),sub=document.getElementById('entrySub'),btn=document.getElementById('efSubmit');
+  if(!form)return;
+  if(form.classList.contains('submitted'))return;
+  if(entryComplete()){form.classList.add('unlocked');if(btn)btn.disabled=false;
+    if(sub)sub.innerHTML='Your predicted champion: <b>'+picks.f+'</b>. Fill in your details below to enter.';}
+  else{form.classList.remove('unlocked');if(btn)btn.disabled=true;
+    if(sub)sub.textContent='Complete your bracket above (pick a champion) to unlock your entry.';}
+}
+(function(){
+  var btn=document.getElementById('efSubmit');if(!btn)return;
+  btn.addEventListener('click',function(){
+    if(!entryComplete())return;
+    var g=function(id){return (document.getElementById(id).value||'').trim();};
+    var name=g('efName'),email=g('efEmail'),country=g('efCountry'),phone=g('efPhone');
+    var msg=document.getElementById('efMsg');
+    if(!name||!email||!country||!phone){msg.className='ef-msg err';msg.textContent='Please fill in all four fields.';return;}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className='ef-msg err';msg.textContent='Please enter a valid email address.';return;}
+    var payload={name:name,email:email,country:country,phone:phone,champion:picks.f,
+      finalists:[picks.s1,picks.s2],
+      semifinalists:[picks.q1,picks.q2,picks.q3,picks.q4],
+      quarterfinalists:[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8]};
+    btn.disabled=true;msg.className='ef-msg';msg.textContent='Submitting\u2026';
+    fetch(ENTRY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+      .then(function(){msg.className='ef-msg ok';msg.textContent="You're in! We've emailed you a confirmation with your full prediction. \ud83c\udf89";document.getElementById('entryForm').classList.add('submitted');})
+      .catch(function(){msg.className='ef-msg err';msg.textContent='Sorry, something went wrong \u2014 please try again.';btn.disabled=false;});
+  });
+})();
+
+
+/* ---------- searchable country dropdown ---------- */
+var COUNTRIES=["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Brazzaville)", "Congo (Kinshasa)", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czechia", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"];
+(function(){
+  var wrap=document.getElementById('countryCombo'),input=document.getElementById('efCountry'),menu=document.getElementById('countryMenu');
+  if(!wrap||!input||!menu)return;
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function render(f){f=(f||'').toLowerCase();
+    var list=COUNTRIES.filter(function(c){return c.toLowerCase().indexOf(f)>-1;});
+    if(!list.length){menu.innerHTML='<div class="combo-empty">No match</div>';return;}
+    menu.innerHTML=list.slice(0,80).map(function(c){return '<div class="combo-item" role="option">'+esc(c)+'</div>';}).join('');
+  }
+  function open(){render(input.value);menu.classList.add('open');input.setAttribute('aria-expanded','true');}
+  function close(){menu.classList.remove('open');input.setAttribute('aria-expanded','false');}
+  input.addEventListener('focus',open);
+  input.addEventListener('input',function(){render(input.value);menu.classList.add('open');});
+  menu.addEventListener('mousedown',function(e){var it=e.target.closest('.combo-item');if(!it)return;e.preventDefault();input.value=it.textContent;close();});
+  document.addEventListener('mousedown',function(e){if(!wrap.contains(e.target))close();});
+})();
+
 $('#kgrid').addEventListener('click',function(e){var b=e.target.closest('.kslot');if(!b||b.classList.contains('tbd'))return;
   picks[b.getAttribute('data-mid')]=b.getAttribute('data-team');renderBracket();});
 $('#brkReset').addEventListener('click',function(){picks={};renderBracket();});
