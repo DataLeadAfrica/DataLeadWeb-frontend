@@ -221,3 +221,36 @@ details > summary:first-of-type {
     border: none;
   }
 }
+
+
+/* ===== World Cup 2026 promo pill — TEMPORARY. Delete this whole block after the tournament. ===== */
+.nav__predict {
+  border-radius: var(--radius-10);
+  font-weight: 700;
+  gap: var(--gap-0_5);
+  box-shadow: 0 4px 12px rgba(245, 110, 15, 0.35);
+  white-space: nowrap;
+}
+.nav__predict:hover {
+  background-color: var(--clr-orange-medium);
+  transform: translateY(-1px);
+}
+
+.menu__predict {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-0_5);
+  width: fit-content;
+  padding-block: var(--padding-0_5);
+  padding-inline: var(--padding-1);
+  border-radius: var(--radius-10);
+  background-color: var(--clr-orange);
+  color: var(--font-color-inverse);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: var(--transition-1);
+}
+.menu__predict:hover {
+  background-color: var(--clr-orange-medium);
+}
+/* ===== end World Cup 2026 promo pill ===== */

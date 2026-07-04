@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FIFA World Cup 2026 — My Prediction · Data-Lead Africa</title>
+  <meta name="description" content="A statistical read of the FIFA World Cup 2026 knockout run by Data-Lead Africa. Build your own bracket, predict the champion, and stand a chance to win a NGN250,000 Data Analytics scholarship." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FIFA World Cup 2026 — My Prediction | Data-Lead Africa" />
+  <meta property="og:description" content="Build your own path to the World Cup champion. Call it right and win a NGN250,000 Data Analytics scholarship." />
+  <meta property="og:image" content="https://www.dataleadafrica.com/world-cup-2026/DLA-model-prediction-France.png" />
+  <meta property="og:url" content="https://www.dataleadafrica.com/world-cup-2026/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="FIFA World Cup 2026 — My Prediction | Data-Lead Africa" />
+  <meta name="twitter:description" content="Build your own path to the World Cup champion. Call it right and win a NGN250,000 Data Analytics scholarship." />
+  <meta name="twitter:image" content="https://www.dataleadafrica.com/world-cup-2026/DLA-model-prediction-France.png" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink:#15181D; --ink-2:#2A2F38; --muted:#5C6675; --faint:#8A94A3;
+  --canvas:#EFF0F2; --card:#FFFFFF; --card-2:#F6F7F9;
+  --line:#E4E6EB; --line-2:#D3D7DE;
+  --side:#181510; --side-2:#211C15; --side-line:rgba(255,255,255,.10); --side-text:#EDE7DD; --side-muted:#A79E8F;
+  --acc:#F26A24; --acc-2:#D2570F; --acc-soft:#FDEEE3;
+  --c-eu:#2F6BE0; --c-sa:#E0A100; --c-na:#D5384A; --c-af:#12A150; --c-as:#7C5CE0; --c-oc:#64748B;
+  --win:#12A150; --mid:#E0A100; --out:#9AA3AF;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column}
+body{background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+
+.app{display:flex;flex:1 1 auto;min-height:0;overflow:hidden;position:relative}
+/* ===== site top bar (links back to main site) ===== */
+.site-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 20px;background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto;position:relative;z-index:60}
+.site-bar .sb-logo{display:flex;align-items:center}
+.site-bar .sb-logo img{height:30px;display:block}
+.site-bar .sb-nav{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.site-bar .sb-link{color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:none;border:0;font-family:var(--body)}
+.site-bar .sb-link:hover{color:var(--acc)}
+.site-bar .sb-link i{font-style:normal;font-size:10px;color:var(--muted)}
+.site-bar .sb-cta{background:var(--acc);color:#fff;padding:8px 14px;border-radius:9px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.site-bar .sb-cta:hover{background:var(--acc-2);color:#fff}
+.sb-drop{position:relative}
+.sb-drop .sb-menu{position:absolute;top:100%;left:0;margin-top:6px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.12);padding:8px;display:none;flex-direction:column;min-width:172px;z-index:70}
+.sb-drop:hover .sb-menu,.sb-drop:focus-within .sb-menu{display:flex}
+.sb-menu a{padding:8px 10px;border-radius:7px;font-size:13.5px;color:var(--ink);text-decoration:none;white-space:nowrap;font-weight:500}
+.sb-menu a:hover{background:var(--acc-soft);color:var(--acc-2)}
+.combo{position:relative}
+.combo-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:220px;overflow-y:auto;background:var(--card);border:1px solid var(--line-2);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.14);z-index:80;display:none}
+.combo-menu.open{display:block}
+.combo-item{padding:9px 13px;font-size:14px;cursor:pointer}
+.combo-item:hover{background:var(--acc-soft);color:var(--acc-2)}
+.combo-empty{padding:9px 13px;font-size:13px;color:var(--muted)}
+.ef-deadline{display:inline-flex;align-items:center;gap:6px;margin:10px 0 2px;font-size:12.5px;color:#A9611A;background:var(--acc-soft);border:1px solid rgba(242,106,36,.35);border-radius:999px;padding:6px 12px;font-weight:500}
+.ef-deadline b{color:var(--acc-2)}
+@media(max-width:700px){.site-bar{padding:7px 12px}.site-bar .sb-nav{gap:12px}.site-bar .sb-link{font-size:13px}.site-bar .sb-hide{display:none}}
+/* ===== Predict & Win entry form ===== */
+.entry{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.entry .ctak{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--acc);margin-bottom:6px}
+.entry-title{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
+.entry-sub{color:var(--muted);font-size:13.5px;margin:0}
+.entry-form{margin-top:14px;opacity:.45;pointer-events:none;transition:opacity .2s}
+.entry-form.unlocked{opacity:1;pointer-events:auto}
+.ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ef-grid input{padding:11px 13px;border:1px solid var(--line-2);border-radius:10px;font-size:14px;font-family:var(--body);background:var(--card-2);color:var(--ink)}
+.ef-grid input:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:var(--acc)}
+.ef-actions{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
+.ef-msg{font-size:13px;font-weight:600}
+.ef-msg.ok{color:#12A150}
+.ef-msg.err{color:#D5384A}
+.ef-fine{font-size:11.5px;color:var(--muted);margin-top:10px}
+@media(max-width:820px){.ef-grid{grid-template-columns:1fr}}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+  flex:0 0 264px;width:264px;background:var(--side);color:var(--side-text);
+  display:flex;flex-direction:column;padding:22px 20px;gap:18px;position:relative;z-index:40;
+}
+.logo-chip{background:#fff;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:center}
+.logo-chip img{width:100%;max-width:180px;height:auto;display:block}
+.brandline{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--side-muted);line-height:1.5}
+.brandline b{color:var(--acc)}
+.menu{display:flex;flex-direction:column;gap:2px;margin-top:2px;overflow-y:auto;flex:1 1 auto;margin-right:-8px;padding-right:8px}
+.menu::-webkit-scrollbar{width:6px}.menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:6px}
+.mitem{
+  display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:9px;border:0;background:transparent;
+  color:var(--side-muted);cursor:pointer;text-align:left;font-family:var(--body);font-size:13px;width:100%;transition:.15s;
+}
+.mitem:hover{background:rgba(255,255,255,.05);color:var(--side-text)}
+.mitem.active{background:var(--acc);color:#fff}
+.mitem .mnum{font-family:var(--display);font-weight:600;font-size:11px;opacity:.7;width:18px;flex:0 0 auto}
+.mitem.active .mnum{opacity:.9}
+.mitem .mlabel{font-weight:500;line-height:1.2}
+.side-foot{border-top:1px solid var(--side-line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.model-tag{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--side-muted);line-height:1.6}
+.model-tag b{color:var(--acc-soft);color:#F3B183}
+.timerbar{height:3px;background:rgba(255,255,255,.10);border-radius:3px;overflow:hidden}
+.timerbar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),#F8A05E)}
+@keyframes grow{from{width:0}to{width:100%}}
+.playrow{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--side-muted);letter-spacing:.06em}
+.playrow button{background:transparent;border:1px solid var(--side-line);color:var(--side-text);border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;font-family:var(--body)}
+
+/* mobile top bar */
+.mobilebar{display:none}
+
+/* ================= MAIN ================= */
+.main{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}
+.viewport{position:relative;flex:1 1 auto;overflow:hidden}
+.track{display:flex;height:100%;transition:transform .6s cubic-bezier(.6,.02,.15,1)}
+.slide{min-width:100%;height:100%;overflow-y:auto;padding:34px 44px 40px;display:flex;flex-direction:column}
+.slide::-webkit-scrollbar{width:9px}.slide::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:9px}
+
+.eyebrow{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:var(--acc);display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--acc)}
+h2.title{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,46px);line-height:1.02;letter-spacing:-.01em;margin:0 0 10px}
+.dek{color:var(--muted);font-size:clamp(14px,1.4vw,16px);line-height:1.55;max-width:74ch;margin:0 0 8px}
+.dek strong{color:var(--ink);font-weight:600}
+.clickhint{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--acc-2);font-weight:500;margin:8px 0 18px}
+.clickhint::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--acc);flex:0 0 auto}
+
+.viz{flex:1 1 auto;min-height:0}
+.note{margin-top:18px;padding:14px 18px;border-left:3px solid var(--acc);background:var(--acc-soft);border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.6;color:#5A3B28;max-width:94ch}
+.note b{color:var(--ink)}
+.method-line{margin-top:12px;font-size:11.5px;color:var(--faint)}
+
+/* section grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.panel-h{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted);margin:0 0 14px}
+
+/* ============ BARS ============ */
+.bars{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:14px;border-radius:8px;padding:2px 4px;margin:0 -4px}
+.brow.click{cursor:pointer;transition:background .15s}
+.brow.click:hover{background:var(--card-2)}
+.brow.click:hover .blabel{color:var(--acc-2)}
+.blabel{font-size:13.5px;font-weight:500;display:flex;flex-direction:column;line-height:1.15;gap:2px}
+.blabel .lead{display:flex;align-items:center;gap:8px}
+.blabel .bsub{font-size:11px;color:var(--muted);font-weight:400}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.btrack{height:22px;background:var(--card-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.btrack>i{display:block;height:100%;width:0;border-radius:5px;transition:width .9s cubic-bezier(.3,.9,.3,1)}
+.bval{font-family:var(--display);font-weight:700;font-size:18px;min-width:54px;text-align:right}
+.bval small{font-size:12px;color:var(--muted);font-weight:500}
+.chev{color:var(--faint);font-size:14px;margin-left:2px}
+.avgline{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.avgline i{width:26px;border-top:2px dashed var(--muted);display:inline-block}
+
+/* chips */
+.chipgroups{display:flex;flex-direction:column;gap:13px}
+.chiprow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.chiprow .grp{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;color:var(--muted);min-width:104px;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:500;background:var(--card);border:1px solid var(--line)}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+
+/* ============ TABLE ============ */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--muted);padding:0 12px 10px;border-bottom:2px solid var(--line-2)}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--line)}
+.tbl tr:hover td{background:var(--card-2)}
+.rank{font-family:var(--display);color:var(--muted);width:22px;display:inline-block}
+.tcell{display:flex;align-items:center;gap:10px;font-weight:600}
+.fifa{font-family:var(--display);color:var(--muted)}
+.rat{font-family:var(--display);font-size:15px}
+.win{font-family:var(--display);font-size:16px;color:var(--acc-2);font-weight:700}
+.odds{color:var(--muted);font-variant-numeric:tabular-nums}
+.mini{height:6px;border-radius:4px;background:var(--card-2);overflow:hidden;margin-top:5px;border:1px solid var(--line)}
+.mini i{display:block;height:100%}
+
+/* ============ TIES ============ */
+.ties{display:grid;grid-template-columns:1fr;gap:11px}
+.tie{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tie.flip{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+.tie-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tie-fav{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+.tie-pct{font-family:var(--display);font-weight:700;font-size:19px}
+.tie-bar{height:8px;border-radius:5px;overflow:hidden;display:flex;background:var(--card-2)}
+.tie-dog{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:var(--muted)}
+.tag{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc-2);border:1px solid var(--acc);border-radius:5px;padding:2px 6px;font-weight:700}
+
+/* ============ METHOD ============ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step .sn{font-family:var(--display);font-weight:700;font-size:13px;color:#fff;background:var(--acc);width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.step h4{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 6px}
+.step p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.calc{background:var(--ink);color:#EDF0F4;border-radius:16px;padding:20px 22px}
+.calc h4{font-family:var(--display);font-weight:600;margin:0 0 4px;font-size:15px;color:#fff}
+.calc .csub{font-size:12px;color:#9AA3B2;margin-bottom:16px}
+.calc-row{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-bottom:16px}
+.calc select{width:100%;background:#242A33;color:#fff;border:1px solid #333B47;border-radius:9px;padding:10px 12px;font-family:var(--body);font-size:14px;font-weight:600}
+.calc .vs{font-family:var(--display);color:var(--acc);font-weight:700;font-size:16px}
+.formula{font-family:var(--display);font-size:13px;color:#B7C0CE;text-align:center;background:#1E242C;border-radius:8px;padding:9px;margin-bottom:16px;letter-spacing:.02em}
+.calc-out{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.co{background:#1E242C;border-radius:12px;padding:14px;text-align:center}
+.co .cn{font-size:12px;color:#9AA3B2;margin-bottom:4px}
+.co .cp{font-family:var(--display);font-weight:700;font-size:30px}
+.co .cr{font-size:11px;color:#7C8695;margin-top:2px}
+.calc-side{display:flex;flex-direction:column;gap:6px}
+.calc-lab{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9AA3B2;font-weight:600}
+.calc-hint{font-size:11px;color:#7C8695;margin:10px 0 14px;text-align:center}
+.calc-final{margin-top:16px;text-align:center;font-size:13px;color:#B7C0CE;border-top:1px solid #2A313B;padding-top:14px}
+.calc-final b{color:#F3B183;font-family:var(--display);font-size:20px;margin:0 4px}
+.cf-sub{color:#7C8695;font-size:12px;display:block;margin-top:4px}
+
+/* ============ FLOW ============ */
+.flow{display:grid;grid-template-columns:1fr 66px 280px;gap:0;align-items:stretch}
+.paths{display:flex;flex-direction:column;gap:16px;justify-content:center}
+.pathcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.pathcard .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pathcard .pname{font-family:var(--display);font-weight:700;letter-spacing:.04em;font-size:16px;text-transform:uppercase}
+.pathcard .pdest{font-size:11px;color:var(--muted)}
+.ptie{font-size:11.5px;background:var(--card-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px;display:inline-block;margin:0 5px 5px 0}
+.mix{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 10px}
+.mixdot{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.mixdot b{color:var(--ink);font-family:var(--display);font-size:14px}
+.plikely{font-size:12.5px}.plikely b{font-family:var(--display);font-size:15px}
+.connector svg{width:100%;height:100%;display:block}
+.finalnode{background:var(--ink);color:#EDF0F4;border-radius:16px;padding:18px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.finalnode .fk{font-family:var(--display);letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--acc)}
+.finalnode .ft{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.1}
+.finalnode .fmeta{font-size:12px;color:#AEB6C2;line-height:1.5}
+.finalnode .fmeta b{color:#fff}
+
+/* pairing rows */
+.pairrow{display:grid;grid-template-columns:180px 1fr auto;gap:14px;align-items:center;margin-bottom:9px}
+.pairlabel{font-size:13px;display:flex;align-items:center;gap:8px}
+.duo{display:flex;gap:4px}
+.same{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);border-radius:5px;padding:1px 5px}
+
+/* ============ COVER ============ */
+.cover{justify-content:center}
+.cover .kick{font-family:var(--display);letter-spacing:.22em;text-transform:uppercase;color:var(--acc);font-size:14px;margin-bottom:18px}
+.cover h1{font-family:var(--display);font-weight:700;line-height:.98;letter-spacing:-.02em;font-size:clamp(40px,6.4vw,82px);margin:0}
+.cover .sub{color:var(--muted);font-size:clamp(15px,1.7vw,19px);line-height:1.5;max-width:60ch;margin:18px 0 26px}
+.cover .sub b{color:var(--ink)}
+.ribbon{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-bottom:26px}
+.ribbon .st{font-family:var(--display);font-weight:700;font-size:19px;padding:7px 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--card)}
+.ribbon .st.one{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+.ribbon .aw{color:var(--faint);padding:0 6px}
+.statchips{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
+.sc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+.sc .scn{font-family:var(--display);font-weight:700;font-size:26px;color:var(--acc-2);line-height:1}
+.sc .scl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.cover .hint{font-size:12.5px;color:var(--muted)}
+
+/* ============ INTERACTIVE BRACKET ============ */
+.bracket-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.btn{font-family:var(--body);font-size:13px;font-weight:600;border-radius:9px;padding:9px 14px;cursor:pointer;border:1px solid var(--line-2);background:var(--card);color:var(--ink)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:hover{border-color:var(--acc)}
+.btns-hint{font-size:12px;color:var(--muted)}
+
+.kwrap{overflow-x:auto;overflow-y:hidden;padding:22px 2px 10px}
+.kheads{display:grid;grid-template-columns:repeat(7,1fr);gap:0 14px;min-width:1080px;margin-bottom:6px;padding:0 18px}
+.kheads span{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:10px;color:var(--muted);text-align:center}
+.kbracket{position:relative;min-width:1080px;padding:0 18px}
+.klines{position:absolute;left:0;top:0;pointer-events:none;z-index:1;overflow:visible}
+.kgrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(7,1fr);gap:0 14px;align-items:stretch}
+.kcol{display:flex;flex-direction:column;justify-content:space-around}
+.kcol.center{justify-content:center;gap:20px}
+.kmatch{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(20,22,26,.04)}
+.kslot{display:flex;align-items:center;gap:7px;padding:7px 9px;cursor:pointer;font-size:12px;font-weight:500;border:0;background:transparent;width:100%;text-align:left;font-family:var(--body);transition:.12s}
+.kslot+.kslot{border-top:1px solid var(--line)}
+.kslot:hover:not(.tbd){background:var(--acc-soft)}
+.kslot.pick{background:var(--acc-soft);font-weight:700}
+.kslot.pick .kdot{box-shadow:0 0 0 3px rgba(242,106,36,.28)}
+.kslot.tbd{color:var(--faint);cursor:default;font-style:italic}
+.kflag{font-size:14px;line-height:1;flex:0 0 auto}
+.kdot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.kname{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpct{font-family:var(--display);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kslot.pick .kpct{color:var(--acc-2)}
+.kup{font-size:8px;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--acc);border-radius:4px;padding:1px 4px;font-weight:700}
+.kchamp{background:var(--ink);color:#fff;border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 10px 30px rgba(20,22,26,.22)}
+.kchamp .cl{font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:var(--acc)}
+.kchamp .cn{font-family:var(--display);font-weight:700;font-size:20px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px}
+.kchamp .cn small{color:#8A94A3;font-style:italic;font-weight:400;font-size:13px}
+.kchamp .cmeta{font-size:11px;color:#8A94A3;margin-top:6px}
+.kbronze{text-align:center;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+.cta{margin-top:20px;background:linear-gradient(100deg,#181510,#251b12);border:1px solid rgba(242,106,36,.45);border-radius:16px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.cta .ctak{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:10px;color:var(--acc);margin-bottom:7px}
+.cta .ctatext{color:#E7E1D6;font-size:13.5px;line-height:1.55;max-width:64ch}
+.cta .ctatext b{color:#fff}
+.cta .ctatext .amt{color:#F6B57C;font-family:var(--display);font-weight:700;font-size:16px;white-space:nowrap}
+.cta a.ctabtn{background:var(--acc);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 20px;border-radius:10px;white-space:nowrap;flex:0 0 auto;box-shadow:0 6px 18px rgba(242,106,36,.3)}
+.cta a.ctabtn:hover{background:var(--acc-2)}
+.yourout{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.callout{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;line-height:1.5}
+.callout .k{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;color:var(--muted);margin-bottom:6px}
+.callout .big{font-family:var(--display);font-weight:700;font-size:18px}
+.callout .big small{font-size:12px;color:var(--muted);font-weight:500}
+
+/* ============ MODAL ============ */
+.scrim{position:absolute;inset:0;background:rgba(20,22,26,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:80;padding:24px}
+.scrim.open{display:flex}
+.modal{background:var(--card);border-radius:18px;max-width:520px;width:100%;max-height:88%;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal-head{padding:20px 22px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--card)}
+.modal-head .mc{width:14px;height:14px;border-radius:4px;flex:0 0 auto}
+.modal-head h3{font-family:var(--display);font-weight:700;font-size:20px;margin:0;flex:1}
+.modal-head .msub{font-size:12px;color:var(--muted)}
+.modal-close{border:0;background:var(--card-2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;color:var(--muted)}
+.modal-body{padding:8px 12px 18px}
+.mteam{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:9px 10px;border-radius:8px}
+.mteam:hover{background:var(--card-2)}
+.mrank{font-family:var(--display);font-weight:700;font-size:15px;color:var(--muted);text-align:center}
+.mname{font-weight:600;font-size:14px}
+.mname .host{font-size:10px;color:var(--acc-2);font-weight:700;letter-spacing:.05em;margin-left:6px}
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.badge.b16{background:rgba(18,161,80,.12);color:var(--win)}
+.badge.b32{background:rgba(224,161,0,.14);color:#A97C00}
+.badge.bg{background:#EEF0F3;color:var(--out)}
+.modal-foot{padding:12px 22px 18px;font-size:11.5px;color:var(--faint);border-top:1px solid var(--line)}
+
+/* ============ BOTTOM CONTROLS ============ */
+.bottombar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 44px;border-top:1px solid var(--line);background:var(--card)}
+.dots{display:flex;gap:7px;flex-wrap:wrap}
+.dotb{width:8px;height:8px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--line-2);transition:.25s}
+.dotb.active{background:var(--acc);width:24px;border-radius:5px}
+.arrows{display:flex;gap:9px}
+.arrow{width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:.15s}
+.arrow:hover{border-color:var(--acc);color:var(--acc)}
+.arrow:focus-visible,.dotb:focus-visible,.mitem:focus-visible,.slot:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:960px){
+  .sidebar{display:none}
+  .mobilebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--side);color:#fff;flex:0 0 auto;position:relative;z-index:50}
+  .mobilebar .mlogo{background:#fff;border-radius:8px;padding:5px 9px;display:flex}
+  .mobilebar .mlogo img{height:26px;width:auto}
+  .mobilebar .mbtitle{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--side-muted);flex:1}
+  .menubtn{background:var(--acc);border:0;color:#fff;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body)}
+  .drawer{position:absolute;top:100%;left:0;right:0;background:var(--side);border-top:1px solid var(--side-line);padding:10px;display:none;z-index:60;max-height:70vh;overflow-y:auto}
+  .drawer.open{display:block}
+  .drawer .mitem{color:var(--side-muted)}
+  .drawer .mtimer{height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin:6px 8px}
+  .drawer .mtimer>i{display:block;height:100%;width:0;background:var(--acc)}
+  .slide{padding:22px 18px 30px}
+  .grid2{grid-template-columns:1fr;gap:24px}
+  .steps{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}.connector{display:none}
+  .calc-row{grid-template-columns:1fr}.calc .vs{text-align:center}
+  .brow{grid-template-columns:96px 1fr auto;gap:10px}
+  .pairrow{grid-template-columns:128px 1fr auto;gap:10px}
+  .yourout{grid-template-columns:1fr}
+  .bottombar{padding:10px 16px}
+  .tbl .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){.track{transition:none}.btrack>i{transition:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+<div class="site-bar">
+  <a class="sb-logo" href="/" aria-label="Data-Lead Africa home"><img src="/assets/logo-header.svg" alt="Data-Lead Africa"></a>
+  <nav class="sb-nav">
+    <div class="sb-drop sb-hide">
+      <span class="sb-link" tabindex="0">About Us <i>&#9662;</i></span>
+      <div class="sb-menu"><a href="/who-we-are">Who we are</a><a href="/our-team">Our Team</a></div>
+    </div>
+    <div class="sb-drop sb-hide">
+      <span class="sb-link" tabindex="0">Services <i>&#9662;</i></span>
+      <div class="sb-menu"><a href="/consultancy">Consultancy</a><a href="/research">Research</a><a href="/training">Training</a></div>
+    </div>
+    <a class="sb-link" href="/courses">Courses</a>
+    <a class="sb-link sb-hide" href="/blog">Blog</a>
+    <a class="sb-cta" href="/contact-us">Contact Us</a>
+  </nav>
+</div>
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-chip"><img src="data:image/webp;base64,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" alt="Data-Lead Africa"/></div>
+    <div class="brandline">FIFA World Cup 2026<br><b>My Prediction</b> &middot; Analysis</div>
+    <nav class="menu" id="menu" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <div class="model-tag">Model: <b>Elo ratings + 400,000 simulations</b></div>
+      <div class="timerbar"><i id="timer"></i></div>
+      <div class="playrow"><span id="playstate">Auto &middot; 20s</span><button id="pausebtn">Pause</button></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="mobilebar">
+      <span class="mlogo"><img src="data:image/webp;base64,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" alt="Data-Lead Africa"/></span>
+      <span class="mbtitle">World Cup 2026 &middot; My Prediction</span>
+      <button class="menubtn" id="menubtn">Menu</button>
+      <div class="drawer" id="drawer"><nav id="menu-m"></nav><div class="mtimer"><i id="timer-m"></i></div></div>
+    </div>
+
+    <div class="viewport" id="viewport">
+      <div class="track" id="track">
+
+        <!-- 0 COVER -->
+        <section class="slide cover" data-menu="Overview">
+          <div class="kick">Data-Lead Africa &middot; Predictive Analysis</div>
+          <h1>48 teams.<br>One trophy.<br>Zero guesswork.</h1>
+          <p class="sub">A statistical read of the <b>FIFA World Cup 2026</b> knockout run &mdash; continent by continent, match by match, to the final at MetLife Stadium, New Jersey, on 19 July.</p>
+          <div class="ribbon" id="ribbon"></div>
+          <div class="statchips">
+            <div class="sc"><div class="scn">104</div><div class="scl">Matches</div></div>
+            <div class="sc"><div class="scn">400k</div><div class="scl">Simulations</div></div>
+            <div class="sc"><div class="scn">6</div><div class="scl">Confederations</div></div>
+            <div class="sc"><div class="scn">16</div><div class="scl">Teams remaining</div></div>
+          </div>
+          <p class="hint">Advances every 20s &middot; use the menu, arrows or dots to explore &middot; click any continent bar for its teams &amp; FIFA ranks.</p>
+        </section>
+
+        <!-- 1 GROUP -->
+        <section class="slide" data-menu="The Field">
+          <div class="eyebrow">The Group Stage</div>
+          <h2 class="title">The field: 48 nations, six confederations</h2>
+          <p class="dek">The largest World Cup ever. Europe sent a third of the field; Africa's <strong>10</strong> was its biggest contingent in history; all three co-hosts entered under North America.</p>
+          <span class="clickhint">Click a continent to see its teams and current FIFA ranking</span>
+          <div class="viz"><div class="bars" id="viz-field"></div></div>
+          <div class="note"><b>The premise:</b> starting numbers say little about who lasts. Over the next sections we track how each confederation actually converts &mdash; group stage, Round of 32, Round of 16 &mdash; and then model the rest.</div>
+        </section>
+
+        <!-- 2 R32 -->
+        <section class="slide" data-menu="Round of 32">
+          <div class="eyebrow">Round of 32 &middot; Success Rate</div>
+          <h2 class="title">Who survived the groups</h2>
+          <p class="dek">Two-thirds of the field advanced (32 of 48). But the <strong>rate</strong> of survival split the continents sharply.</p>
+          <span class="clickhint">Click a continent to see which teams advanced or fell</span>
+          <div class="viz grid2">
+            <div><p class="panel-h">Teams advanced to R32</p><div class="bars" id="viz-r32count"></div></div>
+            <div><p class="panel-h">Success rate by continent</p><div class="bars" id="viz-r32rate"></div><div class="avgline"><i></i> Tournament average: 67%</div></div>
+          </div>
+          <div class="note"><b>Africa led everyone at 90%</b> &mdash; nine of ten through, only Tunisia missing out. Asia collapsed to 22% (Japan and Australia only). At this point, African football was overperforming the entire field.</div>
+        </section>
+
+        <!-- 3 R16 -->
+        <section class="slide" data-menu="Round of 16">
+          <div class="eyebrow">Round of 16 &middot; Success Rate</div>
+          <h2 class="title">The last 16 &mdash; and the great reversal</h2>
+          <p class="dek">The first knockout round rewrote the table. The continents that survived the groups most comfortably were not the ones that survived the knockouts.</p>
+          <span class="clickhint">Click a continent for its Round-of-16 teams and FIFA ranks</span>
+          <div class="viz grid2">
+            <div><p class="panel-h">R32 &rarr; R16 survival rate</p><div class="bars" id="viz-r16rate"></div></div>
+            <div><p class="panel-h">The surviving 16</p><div class="chipgroups" id="viz-r16teams"></div></div>
+          </div>
+          <div class="note"><b>Africa fell from first to last:</b> 90% in the groups, then 22% here &mdash; seven of nine gone, several on penalties. <b>Morocco</b> (FIFA #7) was the exception, edging the Netherlands from the spot. All three hosts came through (100%). Morocco and Egypt now carry the continent.</div>
+        </section>
+
+        <!-- 4 MODEL -->
+        <section class="slide no-auto" data-menu="The Model">
+          <div class="eyebrow">Methodology &middot; How We Got Here</div>
+          <h2 class="title">No guesswork. A model.</h2>
+          <p class="dek">Every prediction that follows comes from the same transparent pipeline. Nothing is hand-picked.</p>
+          <div class="steps">
+            <div class="step"><div class="sn">1</div><h4>Rate</h4><p>Each team gets a strength rating anchored to its FIFA ranking, then adjusted for observed 2026 form (goal margins, opponent quality).</p></div>
+            <div class="step"><div class="sn">2</div><h4>Simulate</h4><p>Every knockout match is resolved by an Elo win-probability formula. The full bracket is played out 400,000 times.</p></div>
+            <div class="step"><div class="sn">3</div><h4>Aggregate</h4><p>A team's odds are simply the share of simulations in which it reaches each stage. Probabilities, not opinions.</p></div>
+          </div>
+          <div class="calc">
+            <h4>Try the engine &middot; the two paths to the final</h4>
+            <div class="csub">The two halves of the draw never cross until the final itself. Pick a Path A team and a Path B team to see the final they would contest &mdash; and how likely it is to actually happen.</div>
+            <div class="calc-row">
+              <div class="calc-side"><span class="calc-lab" style="color:#F3B183">Path A &middot; top half</span><select id="calcA"></select></div>
+              <span class="vs">vs</span>
+              <div class="calc-side"><span class="calc-lab" style="color:#F3B183">Path B &middot; bottom half</span><select id="calcB"></select></div>
+            </div>
+            <div class="calc-hint">Path B defaults to the likeliest opponent from the other half &mdash; change it to test any final.</div>
+            <div class="formula">P(win) = 1 &divide; ( 1 + 10<sup>(R<sub>opp</sub> &minus; R<sub>team</sub>) &divide; 400</sup> )</div>
+            <div class="calc-out">
+              <div class="co"><div class="cn" id="coAn">Team A</div><div class="cp" id="coAp">&mdash;</div><div class="cr" id="coAr"></div></div>
+              <div class="co"><div class="cn" id="coBn">Team B</div><div class="cp" id="coBp">&mdash;</div><div class="cr" id="coBr"></div></div>
+            </div>
+            <div class="calc-final" id="calcFinal"></div>
+          </div>
+          <p class="method-line">Ratings blend the official FIFA ranking (11 June 2026) with tournament form. The Elo formula is the same one FIFA-style systems use to turn a rating gap into a probability.</p>
+        </section>
+
+        <!-- 5 RATINGS -->
+        <section class="slide" data-menu="Team Ratings">
+          <div class="eyebrow">The Model &middot; Team Ratings</div>
+          <h2 class="title">The sixteen, ranked</h2>
+          <p class="dek">FIFA ranking is the anchor; the model rating adds current form; the simulation turns it into title probability and fair odds.</p>
+          <div class="viz"><table class="tbl" id="viz-ratings"></table></div>
+          <p class="method-line">Fair odds = 1 &divide; win probability. France leads the model despite Argentina's FIFA #1, on the strength of its group and Round-of-32 form &mdash; a form adjustment the method makes explicit.</p>
+        </section>
+
+        <!-- 6 R8 -->
+        <section class="slide" data-menu="Round of 8">
+          <div class="eyebrow">Prediction &middot; Round of 8</div>
+          <h2 class="title">Into the quarterfinals</h2>
+          <p class="dek">Eight Round-of-16 ties decide the last eight. Here are the model's odds for each, and how the quarterfinal is likely to divide by continent.</p>
+          <span class="clickhint">Click a continent to inspect its Round-of-16 survivors</span>
+          <div class="viz grid2">
+            <div><p class="panel-h">Expected quarterfinalists</p><div class="bars" id="viz-qfexp"></div></div>
+            <div><p class="panel-h">The eight ties &middot; favourite's win probability</p><div class="ties" id="viz-ties"></div></div>
+          </div>
+          <div class="note"><b>Upset watch:</b> Colombia&ndash;Switzerland is a near coin-flip (56&ndash;44); Portugal (37%) toppling Spain would be the marquee shock; Haaland's Norway are live at 24% vs Brazil. <b>Morocco is favoured (69%)</b> to reach the last eight &mdash; Africa's likeliest quarterfinalist.</div>
+        </section>
+
+        <!-- 7 YOUR BRACKET -->
+        <section class="slide no-auto" data-menu="Your Bracket">
+          <div class="eyebrow">Interactive &middot; Make Your Call</div>
+          <h2 class="title">Build your bracket</h2>
+          <p class="dek">From the Round of 16 to the trophy, pick every winner. The model reacts live &mdash; flagging when you back an underdog and showing how likely your final really is.</p>
+          <div class="bracket-tools">
+            <button class="btn primary" id="brkFill">Auto-fill: model favourites</button>
+            <button class="btn" id="brkReset">Clear</button>
+            <span class="btns-hint">Dark brackets pair the Round-of-16 matchups &middot; click a team to send it through &middot; % = model's win chance &middot; connector lines light up as your picks advance</span>
+          </div>
+          <div class="viz">
+            <div class="kwrap">
+              <div class="kheads" id="kheads"></div>
+              <div class="kbracket" id="kbracket">
+                <svg class="klines" id="klines" aria-hidden="true"></svg>
+                <div class="kgrid" id="kgrid"></div>
+              </div>
+            </div>
+            <div class="yourout">
+              <div class="callout">
+                <div class="k">Your predicted champion</div>
+                <div class="big" id="yourChamp">Pick a final winner &hellip;</div>
+                <div style="margin-top:8px;font-size:12.5px;color:var(--muted)" id="yourChampMeta"></div>
+              </div>
+              <div class="callout">
+                <div class="k">Your final &middot; model's take</div>
+                <div class="big" id="yourFinal">Complete both halves &hellip;</div>
+                <div style="margin-top:8px;font-size:12.5px;color:var(--muted)" id="yourFinalMeta"></div>
+                <div style="margin-top:10px" id="yourFF"></div>
+              </div>
+            </div>
+            <div class="entry" id="entry">
+              <div class="ctak">Predict &amp; Win &middot; &#8358;250,000 Data Analytics Scholarship</div>
+              <h3 class="entry-title">Enter your prediction</h3>
+              <p class="entry-sub" id="entrySub">Complete your bracket above (pick a champion) to unlock your entry.</p>
+              <div class="entry-form" id="entryForm">
+                <div class="ef-grid">
+                  <input id="efName" type="text" placeholder="Full name" autocomplete="name" />
+                  <input id="efEmail" type="email" placeholder="Email address" autocomplete="email" />
+                  <div class="combo" id="countryCombo">
+                    <input id="efCountry" type="text" placeholder="Country (type to search)" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" />
+                    <div class="combo-menu" id="countryMenu" role="listbox"></div>
+                  </div>
+                  <input id="efPhone" type="tel" placeholder="Phone number" autocomplete="tel" />
+                </div>
+                <div class="ef-actions">
+                  <button class="btn primary" id="efSubmit" type="button" disabled>Submit my prediction</button>
+                  <span class="ef-msg" id="efMsg"></span>
+                </div>
+                <div class="ef-deadline">&#9203; Entries close at the first quarter-final kick-off &mdash; <b>Thu 9 July 2026, 20:00 GMT</b> (4:00 PM ET &middot; 9:00 PM WAT) &middot; one entry per person</div>
+                <p class="ef-fine">We&#39;ll email you a confirmation listing your full prediction (every stage).</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="slide" data-menu="The Split">
+          <div class="eyebrow">The Bracket &middot; Two Paths</div>
+          <h2 class="title">One finalist from each half</h2>
+          <p class="dek">The draw quietly cut the tournament in two. Each half sends exactly one team to the final &mdash; and the two halves look nothing alike.</p>
+          <div class="viz">
+            <div class="flow">
+              <div class="paths" id="viz-paths"></div>
+              <div class="connector"><svg viewBox="0 0 66 260" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0,70 C34,70 32,130 66,130" fill="none" stroke="#F26A24" stroke-width="2"/>
+                <path d="M0,190 C34,190 32,130 66,130" fill="none" stroke="#F26A24" stroke-width="2"/>
+                <circle cx="66" cy="130" r="4" fill="#F26A24"/></svg></div>
+              <div class="finalnode"><div class="fk">The Final</div><div class="ft">Path A winner<br>vs Path B winner</div>
+                <div class="fmeta">MetLife Stadium, New Jersey &middot; 19 July. <b>Brazil and Argentina share Path B</b>, so they can only meet before the final &mdash; never in it.</div></div>
+            </div>
+          </div>
+          <div class="note"><b>Why it matters:</b> Europe's heavyweights (France, Spain, Portugal, Belgium) are stacked in Path A; South America's giants sit together in Path B. That single structural fact drives every prediction that follows.</div>
+        </section>
+
+        <!-- 9 R4 -->
+        <section class="slide" data-menu="Round of 4">
+          <div class="eyebrow">Prediction &middot; Round of 4</div>
+          <h2 class="title">The final four</h2>
+          <p class="dek">Two semifinals &mdash; Dallas (from Path A) and Atlanta (from Path B). The model expects roughly two Europeans and one South American, with one seat genuinely open.</p>
+          <span class="clickhint">Click a continent to revisit its remaining teams</span>
+          <div class="viz grid2">
+            <div><p class="panel-h">Expected semifinalists by continent</p><div class="bars" id="viz-sfexp"></div></div>
+            <div><p class="panel-h">Most likely semifinalists</p><div class="bars" id="viz-sfnames"></div></div>
+          </div>
+          <div class="note"><b>The open chair:</b> after the front-runners, Africa (25% chance of a semifinalist) and North America (22%) are near-even for the fourth slot &mdash; and <b>Morocco is the single most likely non-European, non-South-American team to reach the last four.</b> A run there would echo its historic 2022 campaign.</div>
+        </section>
+
+        <!-- 10 FINAL CONT -->
+        <section class="slide" data-menu="The Final">
+          <div class="eyebrow">The Final &middot; Continents</div>
+          <h2 class="title">Who meets in New Jersey</h2>
+          <p class="dek">Combining both halves, here is how likely each continental pairing is to contest the final &mdash; cross-continent and same-continent alike.</p>
+          <div class="viz"><div class="bars" id="viz-paircont"></div></div>
+          <div class="note"><b>The headline final is Europe vs South America (62%)</b> &mdash; a true heavyweight bout. An all-European final (23%) is the likeliest same-continent decider; an all-South-American final is nearly impossible (0.6%) because Brazil and Argentina share a path. Any African route runs through Morocco.</div>
+        </section>
+
+        <!-- 11 VERDICT -->
+        <section class="slide" data-menu="The Verdict">
+          <div class="eyebrow">The Verdict &middot; Champion</div>
+          <h2 class="title">The most likely final &mdash; and the pick</h2>
+          <p class="dek">Down to specific countries, these are the most probable finals and the model's four genuine title contenders.</p>
+          <div class="viz grid2">
+            <div><p class="panel-h">Most likely final matchups</p><div class="bars" id="viz-paircountry"></div></div>
+            <div><p class="panel-h">Title contenders</p><div class="bars" id="viz-champ"></div>
+              <div class="note" style="margin-top:16px"><b>The pick:</b> France (28%), narrowly ahead of defending champions Argentina (18%), Spain (16%) and Brazil (13%). The best African hope, <b>Morocco at ~38 : 1</b>, is small but real &mdash; and 2026 has already delivered Paraguay over Germany and Morocco over the Netherlands. One upset redraws the whole map.</div>
+            </div>
+          </div>
+          <div class="cta">
+            <div><div class="ctak">Data-Lead Africa &middot; Predict &amp; Win</div><div class="ctatext">The model's champion is <b>&#127467;&#127479; France</b>. Disagree? Make your own call in <b>Build your bracket</b>, screenshot it, and share it &mdash; a correct champion could win a <span class="amt">&#8358;250,000</span> Data Analytics scholarship.</div></div>
+            <a class="ctabtn" href="https://www.dataleadafrica.com/courses/data-analytics" target="_blank" rel="noopener">Claim your scholarship &rsaquo;</a>
+          </div>
+          <p class="method-line">Data-Lead Africa &middot; Elo ratings + 400,000 Monte-Carlo simulations of the live bracket &middot; figures are estimates, updated as results land.</p>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="bottombar">
+      <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+      <div class="arrows"><button class="arrow" id="prev" aria-label="Previous">&#8249;</button><button class="arrow" id="next" aria-label="Next">&#8250;</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="scrim" id="scrim">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><span class="mc" id="modalDot"></span><div style="flex:1"><h3 id="modalTitle"></h3><div class="msub" id="modalSub"></div></div><button class="modal-close" id="modalClose" aria-label="Close">&times;</button></div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot">FIFA/Coca-Cola World Ranking, 11 June 2026 &middot; badge shows how far each team went.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+var HEX={Europe:'#2F6BE0','S. America':'#E0A100','N. America':'#D5384A',Africa:'#12A150',Asia:'#7C5CE0',Oceania:'#64748B'};
+var $=function(s,e){return (e||document).querySelector(s)};
+
+/* ---------- FIFA-ranked 48 by continent ---------- */
+// [name, continent, fifaRank, fate ('R16'|'R32'|'GROUP'), isHost]
+var WC=[
+ ['Spain','Europe',2,'R16'],['France','Europe',3,'R16'],['England','Europe',4,'R16'],['Portugal','Europe',5,'R16'],
+ ['Netherlands','Europe',8,'R32'],['Belgium','Europe',9,'R16'],['Germany','Europe',10,'R32'],['Croatia','Europe',11,'R32'],
+ ['Switzerland','Europe',19,'R16'],['Türkiye','Europe',22,'GROUP'],['Austria','Europe',24,'R32'],['Norway','Europe',31,'R16'],
+ ['Sweden','Europe',38,'R32'],['Czechia','Europe',40,'GROUP'],['Scotland','Europe',42,'GROUP'],['Bosnia & Herz.','Europe',64,'R32'],
+ ['Morocco','Africa',7,'R16'],['Senegal','Africa',15,'R32'],['Algeria','Africa',28,'R32'],['Egypt','Africa',29,'R16'],
+ ["Côte d'Ivoire",'Africa',33,'R32'],['Tunisia','Africa',45,'GROUP'],['DR Congo','Africa',46,'R32'],['South Africa','Africa',60,'R32'],
+ ['Cape Verde','Africa',67,'R32'],['Ghana','Africa',73,'R32'],
+ ['Japan','Asia',18,'R32'],['Iran','Asia',20,'GROUP'],['South Korea','Asia',25,'GROUP'],['Australia','Asia',27,'R32'],
+ ['Uzbekistan','Asia',50,'GROUP'],['Qatar','Asia',56,'GROUP'],['Iraq','Asia',57,'GROUP'],['Saudi Arabia','Asia',61,'GROUP'],['Jordan','Asia',63,'GROUP'],
+ ['Argentina','S. America',1,'R16'],['Brazil','S. America',6,'R16'],['Colombia','S. America',13,'R16'],['Uruguay','S. America',16,'GROUP'],
+ ['Ecuador','S. America',23,'R32'],['Paraguay','S. America',41,'R16'],
+ ['Mexico','N. America',14,'R16',true],['United States','N. America',17,'R16',true],['Canada','N. America',30,'R16',true],
+ ['Panama','N. America',34,'GROUP'],['Curaçao','N. America',82,'GROUP'],['Haiti','N. America',83,'GROUP'],
+ ['New Zealand','Oceania',85,'GROUP']
+];
+var fifaOf={};WC.forEach(function(t){fifaOf[t[0]]=t[2]});
+
+/* ---------- model data (16 knockout teams) ---------- */
+var ELO={France:2040,Spain:2020,Argentina:1995,Brazil:1975,England:1945,Portugal:1925,Belgium:1875,Colombia:1845,
+  Morocco:1840,Switzerland:1800,Mexico:1795,'United States':1780,Norway:1775,Egypt:1715,Canada:1700,Paraguay:1690};
+var CONT16={France:'Europe',Spain:'Europe',Portugal:'Europe',Belgium:'Europe',Switzerland:'Europe',England:'Europe',Norway:'Europe',
+  Argentina:'S. America',Brazil:'S. America',Colombia:'S. America',Paraguay:'S. America',
+  Mexico:'N. America','United States':'N. America',Canada:'N. America',Morocco:'Africa',Egypt:'Africa'};
+// team: [fifa, elo, win%, oddsStr]
+var RAT=[['France',3,2040,27.7,'3.6'],['Argentina',1,1995,18.2,'5.5'],['Spain',2,2020,15.8,'6.3'],['Brazil',6,1975,12.6,'7.9'],
+ ['England',4,1945,8.6,'11.6'],['Portugal',5,1925,4.7,'21'],['Belgium',9,1875,3.4,'29'],['Morocco',7,1840,2.6,'38'],
+ ['Colombia',13,1845,2.5,'40'],['Switzerland',19,1800,1.2,'83'],['Mexico',14,1795,0.9,'111'],['United States',17,1780,0.7,'143'],
+ ['Norway',31,1775,0.6,'167'],['Egypt',29,1715,0.2,'500'],['Canada',30,1700,0.2,'500'],['Paraguay',41,1690,0.2,'500']];
+var WINP={},FINP={};RAT.forEach(function(r){WINP[r[0]]=r[3]});
+// final-reach % from sim
+[['France',44.0],['Argentina',35.5],['Spain',26.1],['Brazil',26.0],['England',19.3],['Portugal',10.0],['Belgium',8.4],
+ ['Colombia',7.8],['Morocco',7.3],['Switzerland',4.4],['Mexico',3.3],['United States',2.4],['Norway',2.5],['Egypt',1.3],
+ ['Canada',1.1],['Paraguay',0.8]].forEach(function(r){FINP[r[0]]=r[1]});
+
+var field=[['Europe',16],['Africa',10],['Asia',9],['S. America',6],['N. America',6],['Oceania',1]];
+var r32count=[['Europe',13],['Africa',9],['S. America',5],['N. America',3],['Asia',2],['Oceania',0]];
+var r32rate=[['Africa',90,'9 / 10'],['S. America',83,'5 / 6'],['Europe',81,'13 / 16'],['N. America',50,'3 / 6'],['Asia',22,'2 / 9'],['Oceania',0,'0 / 1']];
+var r16rate=[['N. America',100,'3 / 3'],['S. America',80,'4 / 5'],['Europe',54,'7 / 13'],['Africa',22,'2 / 9'],['Asia',0,'0 / 2']];
+var r16teams=[['Europe',['France','Spain','Portugal','Belgium','Switzerland','England','Norway']],
+ ['S. America',['Argentina','Brazil','Colombia','Paraguay']],['N. America',['Mexico','United States','Canada']],['Africa',['Morocco','Egypt']]];
+var qfexp=[['Europe',3.90],['S. America',2.27],['N. America',0.97],['Africa',0.86]];
+var ties=[['France',88,'Paraguay',12,'Europe',false],['Argentina',83,'Egypt',17,'S. America',false],['Brazil',76,'Norway',24,'S. America',false],
+ ['England',70,'Mexico',30,'Europe',false],['Morocco',69,'Canada',31,'Africa',false],['Spain',63,'Portugal',37,'Europe',true],
+ ['Belgium',63,'United States',37,'Europe',true],['Colombia',56,'Switzerland',44,'S. America',true]];
+var sfexp=[['Europe',2.19],['S. America',1.31],['Africa',0.26],['N. America',0.24]];
+var sfnames=[['France','Europe',70],['Argentina','S. America',61],['Spain','Europe',47],['Brazil','S. America',46],['England','Europe',37],['Morocco','Africa',20]];
+var paircont=[['Europe','S. America',61.5,false],['Europe','Europe',23.1,true],['Africa','S. America',5.0,false],['Europe','N. America',3.8,false],
+ ['Africa','Europe',3.1,false],['N. America','S. America',2.4,false],['S. America','S. America',0.6,true],['Africa','N. America',0.3,false]];
+var paircountry=[['Argentina','France',15.6],['Brazil','France',11.4],['Argentina','Spain',9.4],['England','France',8.5],
+ ['Brazil','Spain',6.7],['England','Spain',5.1],['Argentina','Portugal',3.5],['Colombia','France',3.4]];
+var champ=[['France','Europe',27.7],['Argentina','S. America',18.2],['Spain','Europe',15.8],['Brazil','S. America',12.6]];
+
+/* ---------- helpers ---------- */
+function dot(c){return '<span class="dot" style="background:'+HEX[c]+'"></span>'}
+function barRow(cont,pct,val,sub,clickable){
+  return '<div class="brow'+(clickable?' click':'')+'"'+(clickable?' data-cont="'+cont+'" role="button" tabindex="0"':'')+'>'+
+    '<div class="blabel"><span class="lead">'+dot(cont)+cont+'</span>'+(sub?'<span class="bsub">'+sub+'</span>':'')+'</div>'+
+    '<div class="btrack"><i data-w="'+pct+'" style="background:'+HEX[cont]+'"></i></div>'+
+    '<div class="bval">'+val+(clickable?'<span class="chev">&rsaquo;</span>':'')+'</div></div>';
+}
+function fillBars(id,rows,max,unit,clickable){
+  var h='';rows.forEach(function(r){var pct=Math.max(2,(r[1]/max)*100);
+    h+=barRow(r[0],pct,r[1]+(unit||''),r[2]||'',clickable);});$('#'+id).innerHTML=h;
+}
+function pctBars(id,rows,clickable){var h='';rows.forEach(function(r){
+  h+=barRow(r[0],r[1],r[1]+'<small>%</small>',r[2]||'',clickable);});$('#'+id).innerHTML=h;}
+
+/* ---------- static renders ---------- */
+fillBars('viz-field',field,16,'',true);
+fillBars('viz-r32count',r32count,13,'',true);
+pctBars('viz-r32rate',r32rate,true);
+pctBars('viz-r16rate',r16rate,true);
+(function(){var h='';r16teams.forEach(function(g){
+  var chips=g[1].map(function(t){return '<span class="chip" style="--c:'+HEX[g[0]]+'">'+t+' <span style="color:var(--muted);font-size:11px">#'+fifaOf[t]+'</span></span>';}).join('');
+  h+='<div class="chiprow"><span class="grp">'+dot(g[0])+g[0]+' &middot; '+g[1].length+'</span>'+chips+'</div>';});
+  $('#viz-r16teams').innerHTML=h;})();
+
+(function(){var head='<thead><tr><th>#</th><th>Team</th><th class="r hide-sm">FIFA</th><th class="r hide-sm">Rating</th><th class="r">Odds</th><th class="r">Win%</th></tr></thead>';
+ var b='<tbody>';RAT.forEach(function(r,i){b+='<tr><td><span class="rank">'+(i+1)+'</span></td>'+
+  '<td><div class="tcell">'+dot(CONT16[r[0]])+r[0]+'</div><div class="mini"><i style="width:'+Math.max(3,(r[3]/27.7)*100)+'%;background:'+HEX[CONT16[r[0]]]+'"></i></div></td>'+
+  '<td class="r hide-sm fifa">#'+r[1]+'</td><td class="r hide-sm rat">'+r[2]+'</td><td class="r odds">'+r[4]+' : 1</td><td class="r"><span class="win">'+r[3].toFixed(1)+'</span></td></tr>';});
+  $('#viz-ratings').innerHTML=head+b+'</tbody>';})();
+
+fillBars('viz-qfexp',qfexp.map(function(r){return [r[0],r[1]]}),3.9,'',true);
+$('#viz-qfexp').querySelectorAll('.bval').forEach(function(el,i){el.firstChild.textContent=qfexp[i][1].toFixed(2);});
+(function(){var h='';ties.forEach(function(t){
+  h+='<div class="tie'+(t[5]?' flip':'')+'"><div class="tie-top"><div class="tie-fav">'+dot(t[4])+t[0]+(t[5]?' <span class="tag">coin-flip</span>':'')+'</div>'+
+   '<div class="tie-pct" style="color:'+HEX[t[4]]+'">'+t[1]+'%</div></div>'+
+   '<div class="tie-bar"><i style="width:'+t[1]+'%;background:'+HEX[t[4]]+'"></i><i style="width:'+t[3]+'%;background:var(--line-2)"></i></div>'+
+   '<div class="tie-dog"><span>'+t[2]+'</span><span>'+t[3]+'%</span></div></div>';});$('#viz-ties').innerHTML=h;})();
+
+var paths=[{name:'Path A',dest:'&rarr; SF1 &middot; Dallas',ties:['France &ndash; Paraguay','Canada &ndash; Morocco','Portugal &ndash; Spain','USA &ndash; Belgium'],mix:[['Europe',4],['N. America',2],['S. America',1],['Africa',1]],likely:'Europe',lp:88},
+ {name:'Path B',dest:'&rarr; SF2 &middot; Atlanta',ties:['Brazil &ndash; Norway','Mexico &ndash; England','Argentina &ndash; Egypt','Switzerland &ndash; Colombia'],mix:[['S. America',3],['Europe',3],['N. America',1],['Africa',1]],likely:'S. America',lp:69}];
+(function(){var h='';paths.forEach(function(p){
+  var t=p.ties.map(function(x){return '<span class="ptie">'+x+'</span>';}).join('');
+  var m=p.mix.map(function(x){return '<span class="mixdot">'+dot(x[0])+'<b>'+x[1]+'</b> '+x[0]+'</span>';}).join('');
+  h+='<div class="pathcard"><div class="ph"><span class="pname">'+p.name+'</span><span class="pdest">'+p.dest+'</span></div><div>'+t+'</div><div class="mix">'+m+'</div>'+
+   '<div class="plikely">Likely finalist: <b style="color:'+HEX[p.likely]+'">'+p.likely+' &middot; '+p.lp+'%</b></div></div>';});$('#viz-paths').innerHTML=h;})();
+
+fillBars('viz-sfexp',sfexp.map(function(r){return [r[0],r[1]]}),2.2,'',true);
+$('#viz-sfexp').querySelectorAll('.bval').forEach(function(el,i){el.firstChild.textContent=sfexp[i][1].toFixed(2);});
+(function(){var h='';sfnames.forEach(function(s){h+='<div class="brow"><div class="blabel"><span class="lead">'+dot(s[1])+s[0]+'</span></div>'+
+  '<div class="btrack"><i data-w="'+s[2]+'" style="width:0;background:'+HEX[s[1]]+'"></i></div><div class="bval">'+s[2]+'<small>%</small></div></div>';});$('#viz-sfnames').innerHTML=h;})();
+
+(function(){var max=61.5,h='';paircont.forEach(function(p){var col=p[3]?'var(--line-2)':'#0E9AA0';
+  h+='<div class="pairrow"><div class="pairlabel"><span class="duo">'+dot(p[0])+dot(p[1])+'</span>'+p[0]+' vs '+p[1]+(p[3]?' <span class="same">same</span>':'')+'</div>'+
+   '<div class="btrack"><i data-w="'+Math.max(2,(p[2]/max)*100)+'" style="width:0;background:'+col+'"></i></div><div class="bval">'+p[2].toFixed(1)+'<small>%</small></div></div>';});$('#viz-paircont').innerHTML=h;})();
+(function(){var max=15.6,h='';paircountry.forEach(function(p){var c1=CONT16[p[0]],c2=CONT16[p[1]];
+  h+='<div class="pairrow"><div class="pairlabel"><span class="duo">'+dot(c1)+dot(c2)+'</span>'+p[0]+' vs '+p[1]+'</div>'+
+   '<div class="btrack"><i data-w="'+Math.max(3,(p[2]/max)*100)+'" style="width:0;background:linear-gradient(90deg,'+HEX[c1]+','+HEX[c2]+')"></i></div><div class="bval">'+p[2].toFixed(1)+'<small>%</small></div></div>';});$('#viz-paircountry').innerHTML=h;})();
+(function(){var max=27.7,h='';champ.forEach(function(c){h+='<div class="brow"><div class="blabel"><span class="lead">'+dot(c[1])+c[0]+'</span></div>'+
+  '<div class="btrack"><i data-w="'+(c[2]/max*100)+'" style="width:0;background:'+HEX[c[1]]+'"></i></div><div class="bval" style="color:var(--acc-2)">'+c[2].toFixed(1)+'<small>%</small></div></div>';});$('#viz-champ').innerHTML=h;})();
+
+(function(){var s=['48','32','16','8','4','2','1'],h='';s.forEach(function(x,i){h+='<span class="st'+(x==='1'?' one':'')+'">'+x+'</span>';if(i<s.length-1)h+='<span class="aw">&rarr;</span>';});$('#ribbon').innerHTML=h;})();
+
+/* ---------- continent modal ---------- */
+var scrim=$('#scrim');
+function openModal(cont){
+  var teams=WC.filter(function(t){return t[1]===cont;}).sort(function(a,b){return a[2]-b[2];});
+  var adv16=teams.filter(function(t){return t[3]==='R16';}).length, adv32=teams.filter(function(t){return t[3]!=='GROUP';}).length;
+  $('#modalDot').style.background=HEX[cont];
+  $('#modalTitle').textContent=cont;
+  $('#modalSub').innerHTML=teams.length+' teams &middot; '+adv32+' reached the last 32 &middot; '+adv16+' reached the last 16';
+  var h='';teams.forEach(function(t){
+    var badge=t[3]==='R16'?'<span class="badge b16">Last 16</span>':t[3]==='R32'?'<span class="badge b32">Last 32</span>':'<span class="badge bg">Group stage</span>';
+    h+='<div class="mteam"><div class="mrank">#'+t[2]+'</div><div class="mname">'+t[0]+(t[4]?'<span class="host">HOST</span>':'')+'</div>'+badge+'</div>';});
+  $('#modalBody').innerHTML=h;scrim.classList.add('open');
+}
+function closeModal(){scrim.classList.remove('open');}
+$('#modalClose').addEventListener('click',closeModal);
+scrim.addEventListener('click',function(e){if(e.target===scrim)closeModal();});
+document.addEventListener('click',function(e){var b=e.target.closest('.brow.click');if(b){openModal(b.getAttribute('data-cont'));}});
+document.addEventListener('keydown',function(e){var b=document.activeElement;
+  if((e.key==='Enter'||e.key===' ')&&b&&b.classList&&b.classList.contains('click')){e.preventDefault();openModal(b.getAttribute('data-cont'));}
+  if(e.key==='Escape')closeModal();});
+
+/* ---------- probability calculator (two paths) ---------- */
+var PATH_A=['France','Paraguay','Canada','Morocco','Portugal','Spain','United States','Belgium'];
+var PATH_B=['Brazil','Norway','Mexico','England','Argentina','Egypt','Switzerland','Colombia'];
+function pWin(a,b){return 1/(1+Math.pow(10,(ELO[b]-ELO[a])/400));}
+function topFinalist(list){return list.slice().sort(function(x,y){return FINP[y]-FINP[x];})[0];}
+(function(){function opt(l){return l.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');}
+  $('#calcA').innerHTML=opt(PATH_A);$('#calcB').innerHTML=opt(PATH_B);
+  $('#calcA').value='Morocco';$('#calcB').value=topFinalist(PATH_B);})();
+function calc(){var a=$('#calcA').value,b=$('#calcB').value;
+  var pa=pWin(a,b)*100;$('#coAn').textContent=a;$('#coBn').textContent=b;
+  $('#coAp').textContent=pa.toFixed(1)+'%';$('#coBp').textContent=(100-pa).toFixed(1)+'%';
+  $('#coAp').style.color=HEX[CONT16[a]];$('#coBp').style.color=HEX[CONT16[b]];
+  $('#coAr').textContent='rating '+ELO[a]+' · FIFA #'+fifaOf[a];$('#coBr').textContent='rating '+ELO[b]+' · FIFA #'+fifaOf[b];
+  var pf=(FINP[a]*FINP[b]/100);
+  $('#calcFinal').innerHTML='If they meet, the win split is above. Chance this exact final is even reached: <b>'+pf.toFixed(1)+'%</b>'+
+    '<span class="cf-sub">'+a+' has a '+FINP[a].toFixed(1)+'% shot at winning Path A &middot; '+b+' a '+FINP[b].toFixed(1)+'% shot at Path B</span>';}
+$('#calcA').addEventListener('change',function(){$('#calcB').value=topFinalist(PATH_B);calc();});
+$('#calcB').addEventListener('change',calc);
+calc();
+
+/* ---------- interactive bracket (two-sided tree) ---------- */
+var FLAG={France:'🇫🇷',Paraguay:'🇵🇾',Canada:'🇨🇦',Morocco:'🇲🇦',Portugal:'🇵🇹',Spain:'🇪🇸','United States':'🇺🇸',Belgium:'🇧🇪',Brazil:'🇧🇷',Norway:'🇳🇴',Mexico:'🇲🇽',England:'🏴',Argentina:'🇦🇷',Egypt:'🇪🇬',Switzerland:'🇨🇭',Colombia:'🇨🇴'};
+var TIES={t1:['France','Paraguay'],t2:['Canada','Morocco'],t3:['Portugal','Spain'],t4:['United States','Belgium'],
+ t5:['Brazil','Norway'],t6:['Mexico','England'],t7:['Argentina','Egypt'],t8:['Switzerland','Colombia']};
+var FEED={q1:['t1','t2'],q2:['t3','t4'],q3:['t5','t6'],q4:['t7','t8'],s1:['q1','q2'],s2:['q3','q4'],f:['s1','s2']};
+var picks={};
+function teamsOf(id){if(TIES[id])return TIES[id].slice();var f=FEED[id];return [picks[f[0]]||null,picks[f[1]]||null];}
+function validate(){['q1','q2','q3','q4','s1','s2','f'].forEach(function(id){var t=teamsOf(id);if(picks[id]&&t.indexOf(picks[id])<0)picks[id]=null;});}
+function eloFav(a,b){if(!a||!b)return null;return ELO[a]>=ELO[b]?a:b;}
+function disp(t){return t==='United States'?'USA':t;}
+function slotHTML(id,team,opp){
+  if(!team)return '<button class="kslot tbd" disabled><span class="kflag"></span><span class="kdot" style="background:var(--line-2)"></span><span class="kname">To be decided</span></button>';
+  var picked=picks[id]===team;
+  var pct=opp?('<span class="kpct">'+Math.round(pWin(team,opp)*100)+'%</span>'):'';
+  var up=(picked&&opp&&ELO[team]<ELO[opp])?'<span class="kup">upset</span>':'';
+  return '<button class="kslot'+(picked?' pick':'')+'" data-mid="'+id+'" data-team="'+team+'">'+
+    '<span class="kflag">'+(FLAG[team]||'')+'</span><span class="kdot" style="background:'+HEX[CONT16[team]]+'"></span>'+
+    '<span class="kname">'+disp(team)+'</span>'+up+pct+'</button>';
+}
+function matchHTML(id){var t=teamsOf(id);return '<div class="kmatch" id="m-'+id+'">'+slotHTML(id,t[0],t[1])+slotHTML(id,t[1],t[0])+'</div>';}
+function renderBracket(){
+  validate();
+  $('#kheads').innerHTML=['Round of 16','Quarterfinal','Semifinal','Final','Semifinal','Quarterfinal','Round of 16'].map(function(h){return '<span>'+h+'</span>';}).join('');
+  var champ=picks.f||null;
+  var champBlock='<div class="kchamp" id="m-champ"><div class="cl">World Champion</div>'+
+    '<div class="cn">'+(champ?((FLAG[champ]||'')+' '+champ):'<small>pick the final</small>')+'</div>'+
+    (champ?'<div class="cmeta">model: '+(WINP[champ]||0).toFixed(1)+'% to win it all</div>':'')+'</div>'+
+    '<div class="kbronze">Bronze final &middot; SF losers</div>';
+  var fT=teamsOf('f');
+  var center='<div class="kcol center"><div class="kmatch" id="m-f">'+slotHTML('f',fT[0],fT[1])+slotHTML('f',fT[1],fT[0])+'</div>'+champBlock+'</div>';
+  var col=function(ids){return '<div class="kcol">'+ids.map(matchHTML).join('')+'</div>';};
+  $('#kgrid').innerHTML=col(['t1','t2','t3','t4'])+col(['q1','q2'])+col(['s1'])+center+col(['s2'])+col(['q3','q4'])+col(['t5','t6','t7','t8']);
+  updateYour();
+  requestAnimationFrame(drawConnectors);
+}
+var kb=$('#kbracket'),klines=$('#klines'),GREY='#98A0AD',ACC='#F26A24',MATCH='#2A2F38';
+function P(id,side){var el=document.getElementById('m-'+id);if(!el)return null;var r=el.getBoundingClientRect(),o=kb.getBoundingClientRect();
+  return {x:side==='right'?r.right-o.left:side==='left'?r.left-o.left:(r.left+r.right)/2-o.left,
+          y:side==='top'?r.top-o.top:side==='bottom'?r.bottom-o.top:(r.top+r.bottom)/2-o.top};}
+function seg(c,p,acc){var sx=(c.x+p.x)/2;return '<path d="M'+c.x+' '+c.y+' H'+sx+' V'+p.y+' H'+p.x+'" fill="none" stroke="'+(acc?ACC:GREY)+'" stroke-width="'+(acc?3.2:2)+'" stroke-linecap="round" stroke-linejoin="round"/>';}
+function r16Bracket(mid,side){
+  var el=document.getElementById('m-'+mid);if(!el)return '';
+  var s=el.querySelectorAll('.kslot');if(s.length<2)return '';
+  var o=kb.getBoundingClientRect(),re=el.getBoundingClientRect();
+  var r1=s[0].getBoundingClientRect(),r2=s[1].getBoundingClientRect();
+  var y1=r1.top+r1.height/2-o.top,y2=r2.top+r2.height/2-o.top;
+  var edge=(side==='left'?re.left:re.right)-o.left;
+  var out=(side==='left'?edge-10:edge+10);
+  var my=(y1+y2)/2,tick=(side==='left'?out-6:out+6);
+  return '<path d="M'+edge+' '+y1+' H'+out+' V'+y2+' H'+edge+'" fill="none" stroke="'+MATCH+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+
+         '<path d="M'+out+' '+my+' H'+tick+'" fill="none" stroke="'+MATCH+'" stroke-width="2.4" stroke-linecap="round"/>';
+}
+function drawConnectors(){
+  if(!kb)return;var w=Math.max(kb.scrollWidth,kb.offsetWidth),h=kb.offsetHeight;
+  klines.setAttribute('width',w);klines.setAttribute('height',h);klines.setAttribute('viewBox','0 0 '+w+' '+h);
+  klines.style.width=w+'px';klines.style.height=h+'px';
+  var out='';
+  ['t1','t2','t3','t4'].forEach(function(id){out+=r16Bracket(id,'left');});
+  ['t5','t6','t7','t8'].forEach(function(id){out+=r16Bracket(id,'right');});
+  var L=[['t1','q1'],['t2','q1'],['t3','q2'],['t4','q2'],['q1','s1'],['q2','s1'],['s1','f']];
+  var R=[['t5','q3'],['t6','q3'],['t7','q4'],['t8','q4'],['q3','s2'],['q4','s2'],['s2','f']];
+  L.forEach(function(k){var c=P(k[0],'right'),p=P(k[1],'left');if(c&&p)out+=seg(c,p,!!picks[k[0]]);});
+  R.forEach(function(k){var c=P(k[0],'left'),p=P(k[1],'right');if(c&&p)out+=seg(c,p,!!picks[k[0]]);});
+  var cf=P('f','bottom'),cc=P('champ','top');
+  if(cf&&cc)out+='<path d="M'+cf.x+' '+cf.y+' V'+cc.y+'" fill="none" stroke="'+(picks.f?ACC:GREY)+'" stroke-width="'+(picks.f?3.2:2)+'" stroke-linecap="round"/>';
+  klines.innerHTML=out;
+}
+function updateYour(){
+  var champ=picks.f||null;
+  if(champ){$('#yourChamp').textContent=champ;
+    $('#yourChampMeta').innerHTML='The model gives '+champ+' a <b style="color:var(--acc-2)">'+(WINP[champ]||0).toFixed(1)+'%</b> chance to win it all ('+(CONT16[champ])+').';}
+  else{$('#yourChamp').textContent='Pick a final winner …';$('#yourChampMeta').textContent='';}
+  var fa=picks.s1?picks.s1:null, fb=picks.s2?picks.s2:null; // finalists = winners of s1,s2? no: finalists are the two teams in final f
+  var ft=teamsOf('f');var A=ft[0],B=ft[1];
+  if(A&&B){
+    $('#yourFinal').textContent=A+' vs '+B;
+    var prob=(FINP[A]*FINP[B]/100);
+    $('#yourFinalMeta').innerHTML='Model probability of this exact final: <b style="color:var(--acc-2)">'+prob.toFixed(1)+'%</b> ('+A+' '+FINP[A].toFixed(1)+'% × '+B+' '+FINP[B].toFixed(1)+'% to reach it).';
+  }else{$('#yourFinal').textContent='Complete both halves …';$('#yourFinalMeta').textContent='';}
+  // your final four by continent
+  var ff=[picks.q1,picks.q2,picks.q3,picks.q4].filter(Boolean);
+  if(ff.length){var cc={};ff.forEach(function(t){cc[CONT16[t]]=(cc[CONT16[t]]||0)+1;});
+    var h='<div style="font-size:11px;color:var(--muted);margin-bottom:6px">Your semifinalists so far ('+ff.length+'/4)</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
+    ff.forEach(function(t){h+='<span class="chip" style="--c:'+HEX[CONT16[t]]+'">'+t+'</span>';});h+='</div>';$('#yourFF').innerHTML=h;}
+  else $('#yourFF').innerHTML='';
+  updateEntryLock();
+}
+
+/* ---------- Predict & Win entry ---------- */
+var ENTRY_URL="https://script.google.com/macros/s/AKfycbzJRS2XxpQqjENpgKZhQKzC2O1dZklxGgngRjsC6tLypNgj7iT6KFUyvrlkKYVKKuMw3w/exec";
+var EMAILJS_SERVICE="service_ortl1vg", EMAILJS_TEMPLATE="template_eyzk0dg", EMAILJS_PUBLIC="6svlOkrevGHII2V8s";
+try{ if(window.emailjs) emailjs.init({publicKey:EMAILJS_PUBLIC}); }catch(e){}
+function entryComplete(){return !!picks.f;}
+function alreadyEntered(){try{return !!localStorage.getItem('dla_wc_entered');}catch(e){return false;}}
+function updateEntryLock(){
+  var form=document.getElementById('entryForm'),sub=document.getElementById('entrySub'),btn=document.getElementById('efSubmit');
+  if(!form)return;
+  if(form.classList.contains('submitted'))return;
+  if(alreadyEntered()){form.classList.add('submitted');if(btn)btn.disabled=true;
+    if(sub)sub.innerHTML="You&#39;ve already entered on this device &mdash; check your email for your confirmation.";return;}
+  if(entryComplete()){form.classList.add('unlocked');if(btn)btn.disabled=false;
+    if(sub)sub.innerHTML='Your predicted champion: <b>'+picks.f+'</b>. Fill in your details below to enter.';}
+  else{form.classList.remove('unlocked');if(btn)btn.disabled=true;
+    if(sub)sub.textContent='Complete your bracket above (pick a champion) to unlock your entry.';}
+}
+(function(){
+  var btn=document.getElementById('efSubmit');if(!btn)return;
+  btn.addEventListener('click',function(){
+    if(!entryComplete())return;
+    var g=function(id){return (document.getElementById(id).value||'').trim();};
+    var name=g('efName'),email=g('efEmail'),country=g('efCountry'),phone=g('efPhone');
+    var msg=document.getElementById('efMsg'),form=document.getElementById('entryForm');
+    if(!name||!email||!country||!phone){msg.className='ef-msg err';msg.textContent='Please fill in all four fields.';return;}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className='ef-msg err';msg.textContent='Please enter a valid email address.';return;}
+    var finalStr=[picks.s1,picks.s2].filter(Boolean).join(', ');
+    var semiStr=[picks.q1,picks.q2,picks.q3,picks.q4].filter(Boolean).join(', ');
+    var quarterStr=[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8].filter(Boolean).join(', ');
+    // 1) save to the Google Sheet (fire-and-forget; the Sheet is the record of entries)
+    try{fetch(ENTRY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({name:name,email:email,country:country,phone:phone,champion:picks.f,
+        finalists:[picks.s1,picks.s2],semifinalists:[picks.q1,picks.q2,picks.q3,picks.q4],
+        quarterfinalists:[picks.t1,picks.t2,picks.t3,picks.t4,picks.t5,picks.t6,picks.t7,picks.t8]})}).catch(function(){});}catch(e){}
+    // 2) send the confirmation email via EmailJS; only confirm success when it actually sends
+    btn.disabled=true;msg.className='ef-msg';msg.textContent='Submitting\u2026';
+    if(!window.emailjs){msg.className='ef-msg err';msg.textContent='Email service didn\u2019t load \u2014 please refresh and try again.';btn.disabled=false;return;}
+    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:email,to_name:name,country:country,phone:phone,
+      champion:picks.f,finalists:finalStr,semifinalists:semiStr,quarterfinalists:quarterStr
+    }).then(function(){
+      try{localStorage.setItem('dla_wc_entered','1');}catch(e){}
+      msg.className='ef-msg ok';msg.textContent="You're in! Check your email for your confirmation. \ud83c\udf89";
+      form.classList.add('submitted');
+    }).catch(function(err){
+      msg.className='ef-msg err';msg.textContent='Your entry was saved, but the confirmation email didn\u2019t send \u2014 please check your email address and try again.';
+      btn.disabled=false;
+    });
+  });
+})();
+
+
+/* ---------- searchable country dropdown ---------- */
+var COUNTRIES=["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Brazzaville)", "Congo (Kinshasa)", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czechia", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"];
+(function(){
+  var wrap=document.getElementById('countryCombo'),input=document.getElementById('efCountry'),menu=document.getElementById('countryMenu');
+  if(!wrap||!input||!menu)return;
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function render(f){f=(f||'').toLowerCase();
+    var list=COUNTRIES.filter(function(c){return c.toLowerCase().indexOf(f)>-1;});
+    if(!list.length){menu.innerHTML='<div class="combo-empty">No match</div>';return;}
+    menu.innerHTML=list.slice(0,80).map(function(c){return '<div class="combo-item" role="option">'+esc(c)+'</div>';}).join('');
+  }
+  function open(){render(input.value);menu.classList.add('open');input.setAttribute('aria-expanded','true');}
+  function close(){menu.classList.remove('open');input.setAttribute('aria-expanded','false');}
+  input.addEventListener('focus',open);
+  input.addEventListener('input',function(){render(input.value);menu.classList.add('open');});
+  menu.addEventListener('mousedown',function(e){var it=e.target.closest('.combo-item');if(!it)return;e.preventDefault();input.value=it.textContent;close();});
+  document.addEventListener('mousedown',function(e){if(!wrap.contains(e.target))close();});
+})();
+
+$('#kgrid').addEventListener('click',function(e){var b=e.target.closest('.kslot');if(!b||b.classList.contains('tbd'))return;
+  picks[b.getAttribute('data-mid')]=b.getAttribute('data-team');renderBracket();});
+$('#brkReset').addEventListener('click',function(){picks={};renderBracket();});
+$('#brkFill').addEventListener('click',function(){picks={};
+  ['t1','t2','t3','t4','t5','t6','t7','t8','q1','q2','q3','q4','s1','s2','f'].forEach(function(id){var t=teamsOf(id);picks[id]=eloFav(t[0],t[1]);});
+  renderBracket();});
+window.addEventListener('resize',function(){requestAnimationFrame(drawConnectors);});
+renderBracket();
+
+/* ---------- carousel + menu ---------- */
+var track=$('#track'),slides=track.children,n=slides.length,timer=$('#timer'),timerM=$('#timer-m');
+var idx=0,paused=false,reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+var menuHTML='';
+for(var i=0;i<n;i++){menuHTML+='<button class="mitem" data-i="'+i+'"><span class="mnum">'+(i<10?'0':'')+i+'</span><span class="mlabel">'+slides[i].getAttribute('data-menu')+'</span></button>';}
+$('#menu').innerHTML=menuHTML;$('#menu-m').innerHTML=menuHTML;
+var dotsWrap=$('#dots');for(var d=0;d<n;d++){(function(d){var b=document.createElement('button');b.className='dotb';b.setAttribute('aria-label','Slide '+(d+1));b.addEventListener('click',function(){go(d);});dotsWrap.appendChild(b);})(d);}
+var dots=dotsWrap.children;
+document.querySelectorAll('.mitem').forEach(function(m){m.addEventListener('click',function(){go(+m.getAttribute('data-i'));$('#drawer').classList.remove('open');});});
+
+function animateBars(sl){sl.querySelectorAll('.btrack>i[data-w]').forEach(function(bar){bar.style.width='0%';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width=bar.getAttribute('data-w')+'%';});});});}
+function setTimer(run){[timer,timerM].forEach(function(t){t.style.animation='none';void t.offsetWidth;if(run)t.style.animation='grow 20s linear forwards';else t.style.width='0';});}
+function restart(){var noAuto=slides[idx].classList.contains('no-auto');
+  if(reduce||paused||noAuto){setTimer(false);$('#playstate').textContent=noAuto?'Interactive':'Paused';if(!noAuto&&!paused&&!reduce)$('#playstate').textContent='Auto · 20s';return;}
+  setTimer(true);$('#playstate').textContent='Auto · 20s';}
+function go(i){idx=(i+n)%n;track.style.transform='translateX(-'+idx*100+'%)';
+  for(var k=0;k<n;k++){dots[k].className='dotb'+(k===idx?' active':'');}
+  document.querySelectorAll('.mitem').forEach(function(m){m.classList.toggle('active',+m.getAttribute('data-i')===idx);});
+  animateBars(slides[idx]);restart();
+  if(slides[idx].getAttribute('data-menu')==='Your Bracket'){requestAnimationFrame(function(){requestAnimationFrame(drawConnectors);});}}
+function next(){go(idx+1);}function prev(){go(idx-1);}
+$('#next').addEventListener('click',next);$('#prev').addEventListener('click',prev);
+[timer,timerM].forEach(function(t){t.addEventListener('animationend',function(){if(t===timer)next();});});
+
+function setPaused(p){paused=p;$('#pausebtn').textContent=p?'Play':'Pause';if(p){[timer,timerM].forEach(function(t){t.style.animationPlayState='paused';});$('#playstate').textContent='Paused';}else{[timer,timerM].forEach(function(t){t.style.animationPlayState='running';});restart();}}
+$('#pausebtn').addEventListener('click',function(){setPaused(!paused);});
+var vp=$('#viewport');
+vp.addEventListener('mouseenter',function(){[timer,timerM].forEach(function(t){t.style.animationPlayState='paused';});});
+vp.addEventListener('mouseleave',function(){if(!paused)[timer,timerM].forEach(function(t){t.style.animationPlayState='running';});});
+vp.addEventListener('focusin',function(){[timer,timerM].forEach(function(t){t.style.animationPlayState='paused';});});
+document.addEventListener('keydown',function(e){if($('#scrim').classList.contains('open'))return;if(e.key==='ArrowRight')next();else if(e.key==='ArrowLeft')prev();});
+var sx=0,sy=0,dr=false;
+vp.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;dr=true;},{passive:true});
+vp.addEventListener('touchend',function(e){if(!dr)return;dr=false;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy))dx<0?next():prev();},{passive:true});
+$('#menubtn').addEventListener('click',function(){$('#drawer').classList.toggle('open');});
+
+go(0);
+})();
+</script>
+</body>
+</html>
