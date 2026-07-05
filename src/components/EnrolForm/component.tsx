@@ -7,7 +7,7 @@ import {
   COUNTRIES,
   NIGERIA_STATES,
   HEARD_OPTIONS,
-  cohortsFor,
+  TIMEFRAME_OPTIONS,
 } from "../LeadForm/data";
 import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 
@@ -351,7 +351,6 @@ export default function EnrolForm({
                 onChange={(e) => {
                   setProgramme(e.target.value);
                   setPlan("");
-                  setCohort("");
                 }}
               >
                 <option value="">— Select a programme —</option>
@@ -578,7 +577,7 @@ export default function EnrolForm({
               </div>
               <div className="lf-field">
                 <label className="lf-label" htmlFor="ef-cohort">
-                  Preferred cohort
+                  When are you hoping to start?
                 </label>
                 <select
                   id="ef-cohort"
@@ -587,7 +586,7 @@ export default function EnrolForm({
                   onChange={(e) => setCohort(e.target.value)}
                 >
                   <option value="">— Select —</option>
-                  {cohortsFor(programme).map((x) => (
+                  {TIMEFRAME_OPTIONS.map((x) => (
                     <option key={x} value={x}>
                       {x}
                     </option>
