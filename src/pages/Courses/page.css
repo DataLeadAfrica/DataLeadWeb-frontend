@@ -637,3 +637,23 @@
 .lc-card__brochure:hover {
   text-decoration: underline;
 }
+
+/* grid card now has two actions: Enrol + Brochure */
+.lc-card__acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.lc-card__enrol {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: var(--font-xs);
+  color: var(--clr-orange);
+  cursor: pointer;
+}
+.lc-card__enrol:hover {
+  text-decoration: underline;
+}

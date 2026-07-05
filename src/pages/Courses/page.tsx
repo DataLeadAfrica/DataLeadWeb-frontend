@@ -7,6 +7,7 @@ import "./page.css";
 
 import { CourseInfo } from "./router";
 import LeadForm from "../../components/LeadForm/component";
+import EnrolForm from "../../components/EnrolForm/component";
 import Seo from "../../components/Seo/component";
 
 type Meta = {
@@ -94,6 +95,10 @@ export default function Courses({
   // When non-null, the brochure modal is open, pre-selected to this programme
   // name ("" = no pre-selection).
   const [brochureFor, setBrochureFor] = useState<string | null>(null);
+  // When non-null, the enrol modal is open, pre-selected to this programme.
+  const [enrolFor, setEnrolFor] = useState<string | null>(null);
+
+  const programmes = courseInfos.map((c) => c.name);
 
   useEffect(() => {
     const t = setInterval(() => setLine((i) => (i + 1) % ROTATOR.length), 2800);
@@ -183,9 +188,13 @@ export default function Courses({
                 Download brochure ↓
               </button>
               {featured && (
-                <Link className="lc-btn" to={featured.link}>
+                <button
+                  type="button"
+                  className="lc-btn"
+                  onClick={() => setEnrolFor(featured.name)}
+                >
                   Enrol now →
-                </Link>
+                </button>
               )}
             </div>
           </div>
@@ -279,9 +288,13 @@ export default function Courses({
               <div className="lc-feature__side">
                 <div className="lc-price">₦{featured.price}</div>
                 <div className="lc-price__sub">one-time · next cohort soon</div>
-                <Link className="lc-btn lc-btn--block" to={featured.link}>
+                <button
+                  type="button"
+                  className="lc-btn lc-btn--block"
+                  onClick={() => setEnrolFor(featured.name)}
+                >
                   Enrol now →
-                </Link>
+                </button>
                 <button
                   type="button"
                   className="lc-btn lc-btn--ghost lc-btn--block"
@@ -312,13 +325,22 @@ export default function Courses({
                       ₦{v.price}
                       <small> one-time</small>
                     </span>
-                    <button
-                      type="button"
-                      className="lc-card__brochure"
-                      onClick={() => setBrochureFor(v.name)}
-                    >
-                      Brochure ↓
-                    </button>
+                    <span className="lc-card__acts">
+                      <button
+                        type="button"
+                        className="lc-card__enrol"
+                        onClick={() => setEnrolFor(v.name)}
+                      >
+                        Enrol
+                      </button>
+                      <button
+                        type="button"
+                        className="lc-card__brochure"
+                        onClick={() => setBrochureFor(v.name)}
+                      >
+                        Brochure ↓
+                      </button>
+                    </span>
                   </div>
                 </div>
               );
@@ -410,6 +432,14 @@ export default function Courses({
         <LeadForm
           defaultProgramme={brochureFor}
           onClose={() => setBrochureFor(null)}
+        />
+      )}
+
+      {enrolFor !== null && (
+        <EnrolForm
+          defaultProgramme={enrolFor}
+          programmes={programmes}
+          onClose={() => setEnrolFor(null)}
         />
       )}
     </div>
