@@ -15,6 +15,11 @@ import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 // TODO: paste the "Enrolments" Apps Script Web App URL here once created.
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbw8Pi0xqYpOBrIQc0VjADk1vU0hE2Tor1FikOw6CV3SS365WgLM55hfSJLrfPUeTJ3afQ/exec";
 
+// Registration confirmation email (same EmailJS account as the brochure form).
+const EMAILJS_SERVICE = "service_ortl1vg";
+const EMAILJS_TEMPLATE = "enrollment_dla";
+const EMAILJS_PUBLIC = "6svlOkrevGHII2V8s";
+
 // Company bank-transfer details (shown on the payment step).
 const BANK = {
   name: "Polaris Bank",
@@ -77,7 +82,7 @@ export default function EnrolForm({
   const [heard, setHeard] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
-  const [paid, setPaid] = useState(false); // true = show payment step
+  const [step, setStep] = useState<"form" | "registered" | "payment">("form");
   const [msg, setMsg] = useState<Msg>({ type: "", text: "" });
 
   const comboRef = useRef<HTMLDivElement | null>(null);
@@ -110,6 +115,12 @@ export default function EnrolForm({
   }, [country, plan]);
 
   useEffect(() => {
+    try {
+      const ej = (window as unknown as { emailjs?: any }).emailjs;
+      if (ej) ej.init({ publicKey: EMAILJS_PUBLIC });
+    } catch (e) {
+      /* ignore */
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -175,7 +186,7 @@ export default function EnrolForm({
           : pay?.full?.amount;
 
     setSubmitting(true);
-    setMsg({ type: "", text: "Saving your enrolment…" });
+    setMsg({ type: "", text: "Registering you…" });
 
     // Save the enrolment to the Google Sheet (fire-and-forget).
     try {
@@ -207,8 +218,37 @@ export default function EnrolForm({
       /* ignore */
     }
 
-    // Move straight to the payment step (no email yet — that's the next task).
-    setPaid(true);
+    // Email the prospective student a registration confirmation + how to pay.
+    const slug =
+      plan === "installments"
+        ? pay?.installments?.paystack
+        : plan === "nysc"
+          ? pay?.nysc?.paystack
+          : pay?.full?.paystack;
+    const planText =
+      plan === "installments"
+        ? "Installments"
+        : plan === "nysc"
+          ? "NYSC discount"
+          : "Full payment";
+    try {
+      const ej = (window as unknown as { emailjs?: any }).emailjs;
+      if (ej) {
+        ej.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+          to_email: em,
+          to_name: firstName.trim(),
+          programme,
+          plan: planText,
+          amount: amount ? naira(amount) : "",
+          paystack_link: slug ? PAYSTACK_BASE + slug : "",
+        }).catch(() => {});
+      }
+    } catch (e) {
+      /* ignore */
+    }
+
+    // Show the "registration received" screen (payment is an optional next step).
+    setStep("registered");
     setSubmitting(false);
   }
 
@@ -245,11 +285,11 @@ export default function EnrolForm({
           ×
         </button>
 
-        {paid ? (
+        {step === "payment" ? (
           /* ── PAYMENT STEP ── */
           <div className="ef-pay">
             <h3 id="ef-title" className="lf-title">
-              You're almost enrolled 🎉
+              Secure your seat
             </h3>
             <p className="lf-sub">
               We've received your details for <b>{programme}</b>. Complete your
@@ -328,6 +368,29 @@ export default function EnrolForm({
 
             <button className="lf-textbtn" onClick={onClose}>
               Done
+            </button>
+          </div>
+        ) : step === "registered" ? (
+          /* ── REGISTRATION RECEIVED ── */
+          <div className="ef-pay">
+            <div className="lf-success__tick">✓</div>
+            <h3 id="ef-title" className="lf-title">
+              Registration received
+            </h3>
+            <p className="lf-sub">
+              Thanks {firstName || "there"} — we've received your registration for{" "}
+              <b>{programme}</b>. Someone from Data-Lead Africa will reach out to you
+              shortly to guide you through the next steps. We've also emailed the
+              details to {email}.
+            </p>
+            <button
+              className="lf-btn lf-btn--block"
+              onClick={() => setStep("payment")}
+            >
+              Secure your seat — make payment →
+            </button>
+            <button className="lf-textbtn" onClick={onClose}>
+              I'll pay later
             </button>
           </div>
         ) : (
@@ -665,7 +728,7 @@ export default function EnrolForm({
               onClick={submit}
               disabled={submitting}
             >
-              {submitting ? "Saving…" : "Continue to payment →"}
+              {submitting ? "Registering…" : "Register →"}
             </button>
             <p className="lf-fine">
               We'll use your details to process your enrolment and keep you updated
