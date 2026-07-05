@@ -274,7 +274,7 @@ export default function Courses({
           {featured && (
             <div className="lc-card lc-feature">
               <span className="lc-badge">🏆 Scholarship eligible</span>
-              <div className="lc-feature__text">
+              <Link to={featured.link} className="lc-feature__text">
                 <div className="lc-card__ico">
                   <img src={featured.imgSrc} alt={featured.name + " bootcamp"} />
                 </div>
@@ -284,7 +284,7 @@ export default function Courses({
                   {META[featured.name].tagline} {META[featured.name].duration}, online
                   and onsite, beginner-friendly.
                 </p>
-              </div>
+              </Link>
               <div className="lc-feature__side">
                 <div className="lc-price">₦{featured.price}</div>
                 <div className="lc-price__sub">one-time · next cohort soon</div>

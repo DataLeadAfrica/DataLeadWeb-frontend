@@ -470,6 +470,12 @@
 }
 .lc-feature__text {
   flex: 1;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.lc-feature__text:hover .lc-card__name {
+  color: var(--clr-orange);
 }
 .lc-feature__side {
   width: 250px;
