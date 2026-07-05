@@ -13,7 +13,7 @@ import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 
 // ── Backend config ───────────────────────────────────────────────────
 // TODO: paste the "Enrolments" Apps Script Web App URL here once created.
-const SHEET_URL = "REPLACE_WITH_ENROLMENTS_APPS_SCRIPT_URL";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw8Pi0xqYpOBrIQc0VjADk1vU0hE2Tor1FikOw6CV3SS365WgLM55hfSJLrfPUeTJ3afQ/exec";
 
 // Company bank-transfer details (shown on the payment step).
 const BANK = {
