@@ -1,0 +1,35 @@
+.tg { padding: 84px 0; overflow: hidden; }
+.tg__head { max-width: 1160px; margin: 0 auto 32px; padding: 0 24px; }
+.tg__eyebrow {
+  font-family: var(--mono, monospace); font-size: 12px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--clr-orange); font-weight: 700;
+}
+.tg__title { font-size: clamp(26px, 4vw, 38px); font-weight: 700; margin-top: 10px; }
+
+.tg__viewport { position: relative; width: 100%; }
+.tg__viewport::before, .tg__viewport::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 90px; z-index: 2; pointer-events: none;
+}
+.tg__viewport::before { left: 0; background: linear-gradient(90deg, #fff, transparent); }
+.tg__viewport::after { right: 0; background: linear-gradient(270deg, #fff, transparent); }
+
+.tg__track { display: flex; gap: 18px; width: max-content; animation: tg-scroll 48s linear infinite; }
+.tg__viewport:hover .tg__track { animation-play-state: paused; }
+
+.tg__item {
+  margin: 0; flex: 0 0 auto; width: 380px; border-radius: 14px; overflow: hidden;
+  background: #17171b; position: relative; box-shadow: 0 14px 34px -20px rgba(0,0,0,.4);
+}
+.tg__item img { display: block; width: 100%; height: 250px; object-fit: cover; }
+.tg__item figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 16px 12px;
+  color: #fff; font-size: 13.5px; font-weight: 600;
+  background: linear-gradient(0deg, rgba(0,0,0,.72), transparent);
+}
+
+@keyframes tg-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+@media (max-width: 560px) { .tg__item { width: 300px; } .tg__item img { height: 210px; } }
+@media (prefers-reduced-motion: reduce) {
+  .tg__track { animation: none; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; }
+}
