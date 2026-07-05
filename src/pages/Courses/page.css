@@ -610,3 +610,30 @@
     align-items: flex-start;
   }
 }
+
+/* ── brochure buttons render as <button>; keep them pixel-consistent ── */
+.lc .lc-btn {
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+/* grid card is now a wrapper: linked body + foot with a brochure button */
+.lc-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  color: inherit;
+}
+.lc-card__brochure {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: var(--font-xs);
+  color: var(--clr-orange);
+  cursor: pointer;
+}
+.lc-card__brochure:hover {
+  text-decoration: underline;
+}

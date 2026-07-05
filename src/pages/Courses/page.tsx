@@ -6,10 +6,8 @@ import { useEffect, useState } from "react";
 import "./page.css";
 
 import { CourseInfo } from "./router";
-
-// Existing Data Analytics brochure (Google Drive). Phase 2: replace with a gated form.
-const BROCHURE =
-  "https://drive.google.com/file/d/1jHZvPz1fvEXb9sh_KsJ94y-_1oZUpTpt/view?usp=sharing";
+import LeadForm from "../../components/LeadForm/component";
+import Seo from "../../components/Seo/component";
 
 type Meta = {
   category: string;
@@ -35,7 +33,7 @@ const META: { [name: string]: Meta } = {
   },
   "Business Analytics": {
     category: "Business",
-    duration: "6 weeks",
+    duration: "3 months",
     tagline: "Turn business data into smarter decisions with Excel, SQL and Power BI.",
   },
   Bioinformatics: {
@@ -85,12 +83,18 @@ const COUNTRIES: Array<{ flag: string; name: string; hq?: boolean }> = [
   { flag: "🇹🇩", name: "Chad" },
 ];
 
+const SITE = "https://dataleadafrica.com";
+
 export default function Courses({
   courseInfos,
 }: {
   courseInfos: Array<CourseInfo>;
 }) {
   const [line, setLine] = useState(0);
+  // When non-null, the brochure modal is open, pre-selected to this programme
+  // name ("" = no pre-selection).
+  const [brochureFor, setBrochureFor] = useState<string | null>(null);
+
   useEffect(() => {
     const t = setInterval(() => setLine((i) => (i + 1) % ROTATOR.length), 2800);
     return () => clearInterval(t);
@@ -99,8 +103,58 @@ export default function Courses({
   const featured = courseInfos.find((c) => META[c.name]?.featured);
   const rest = courseInfos.filter((c) => !META[c.name]?.featured);
 
+  // ── SEO: structured data for the organisation + the course list ──
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Data-Lead Africa",
+      url: SITE,
+      description:
+        "Research and training consultancy providing data analytics, data science and AI bootcamps across Africa.",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Plot 759, Bassan Plaza, Central Business District",
+        addressLocality: "Abuja",
+        addressCountry: "NG",
+      },
+      email: "info@dataleadafrica.com",
+      telephone: "+234-703-050-0741",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: courseInfos.map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: {
+          "@type": "Course",
+          name: c.name,
+          description: META[c.name]?.tagline || c.desc,
+          url: SITE + c.link,
+          provider: {
+            "@type": "Organization",
+            name: "Data-Lead Africa",
+            sameAs: SITE,
+          },
+          offers: {
+            "@type": "Offer",
+            price: (c.price || "").replace(/[^0-9]/g, ""),
+            priceCurrency: "NGN",
+          },
+        },
+      })),
+    },
+  ];
+
   return (
     <div className="lc">
+      <Seo
+        title="Data & AI Bootcamps in Nigeria & Africa | Data-Lead Africa"
+        description="Practitioner-led bootcamps in data analytics, AI & machine learning, business analytics, bioinformatics, HR analytics and research methods — online or onsite in Abuja. Explore courses and download a brochure."
+        jsonLd={jsonLd}
+      />
+
       {/* HERO */}
       <section className="lc-hero">
         <div className="cwrap lc-hero__grid">
@@ -121,14 +175,13 @@ export default function Courses({
               <a className="lc-btn" href="#courses">
                 Explore courses →
               </a>
-              <a
+              <button
+                type="button"
                 className="lc-btn lc-btn--ghost"
-                href={BROCHURE}
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={() => setBrochureFor("")}
               >
                 Download brochure ↓
-              </a>
+              </button>
               {featured && (
                 <Link className="lc-btn" to={featured.link}>
                   Enrol now →
@@ -214,7 +267,7 @@ export default function Courses({
               <span className="lc-badge">🏆 Scholarship eligible</span>
               <div className="lc-feature__text">
                 <div className="lc-card__ico">
-                  <img src={featured.imgSrc} alt="" />
+                  <img src={featured.imgSrc} alt={featured.name + " bootcamp"} />
                 </div>
                 <p className="lc-card__tag">{META[featured.name].category}</p>
                 <h3 className="lc-card__name">{featured.name} Bootcamp</h3>
@@ -229,14 +282,13 @@ export default function Courses({
                 <Link className="lc-btn lc-btn--block" to={featured.link}>
                   Enrol now →
                 </Link>
-                <a
+                <button
+                  type="button"
                   className="lc-btn lc-btn--ghost lc-btn--block"
-                  href={BROCHURE}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  onClick={() => setBrochureFor(featured.name)}
                 >
                   Download brochure ↓
-                </a>
+                </button>
               </div>
             </div>
           )}
@@ -245,22 +297,30 @@ export default function Courses({
             {rest.map((v) => {
               const m = META[v.name];
               return (
-                <Link to={v.link} className="lc-card lc-card--link" key={v.name}>
-                  <div className="lc-card__ico">
-                    <img src={v.imgSrc} alt="" />
-                  </div>
-                  <p className="lc-card__tag">{m?.category}</p>
-                  <h3 className="lc-card__name">{v.name}</h3>
-                  <p className="lc-card__blurb">{m?.tagline}</p>
-                  <div className="lc-card__meta">🗓️ {m?.duration}</div>
+                <div className="lc-card lc-card--link" key={v.name}>
+                  <Link to={v.link} className="lc-card__body">
+                    <div className="lc-card__ico">
+                      <img src={v.imgSrc} alt={v.name + " bootcamp"} />
+                    </div>
+                    <p className="lc-card__tag">{m?.category}</p>
+                    <h3 className="lc-card__name">{v.name}</h3>
+                    <p className="lc-card__blurb">{m?.tagline}</p>
+                    <div className="lc-card__meta">🗓️ {m?.duration}</div>
+                  </Link>
                   <div className="lc-card__foot">
                     <span className="lc-price lc-price--sm">
                       ₦{v.price}
                       <small> one-time</small>
                     </span>
-                    <span className="lc-go">Explore →</span>
+                    <button
+                      type="button"
+                      className="lc-card__brochure"
+                      onClick={() => setBrochureFor(v.name)}
+                    >
+                      Brochure ↓
+                    </button>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -315,14 +375,13 @@ export default function Courses({
               <a className="lc-btn" href="#courses">
                 Explore courses →
               </a>
-              <a
+              <button
+                type="button"
                 className="lc-btn lc-btn--ghost-dark"
-                href={BROCHURE}
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={() => setBrochureFor("")}
               >
                 Download brochure ↓
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -346,6 +405,13 @@ export default function Courses({
           ))}
         </div>
       </div>
+
+      {brochureFor !== null && (
+        <LeadForm
+          defaultProgramme={brochureFor}
+          onClose={() => setBrochureFor(null)}
+        />
+      )}
     </div>
   );
 }
