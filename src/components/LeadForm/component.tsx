@@ -6,7 +6,7 @@ import { BROCHURES, Brochure } from "./brochures";
 import {
   COUNTRIES,
   NIGERIA_STATES,
-  startOptionsFor,
+  TIMEFRAME_OPTIONS,
   HEARD_OPTIONS,
 } from "./data";
 
@@ -242,10 +242,7 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
                 id="lf-programme"
                 className="lf-input"
                 value={programme}
-                onChange={(e) => {
-                  setProgramme(e.target.value);
-                  setStart("");
-                }}
+                onChange={(e) => setProgramme(e.target.value)}
               >
                 <option value="">— Select a programme —</option>
                 {BROCHURES.map((b) => (
@@ -389,7 +386,7 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
                 onChange={(e) => setStart(e.target.value)}
               >
                 <option value="">— Select one —</option>
-                {startOptionsFor(programme).map((s) => (
+                {TIMEFRAME_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>

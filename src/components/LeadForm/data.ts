@@ -79,46 +79,19 @@ export const NIGERIA_STATES: string[] = [
   "Yobe", "Zamfara",
 ];
 
-// ── Cohort options — sensitive to the programme selected ──────────────
-// Kids' courses run once a year in summer, so they must NOT show the adult
-// 27 July / 19 October cohort dates. To treat a programme as "kids", add its
-// exact name here.
-export const KIDS_COURSES: string[] = [
-  "Digital Creators",
-  "AI & ML for Kids",
-  "Python Coding for Kids",
-];
-
-export function isKidsCourse(programme: string): boolean {
-  return KIDS_COURSES.includes(programme);
-}
-
-// "How early do you want to start?" (brochure form).
-const ADULT_START_OPTIONS = [
-  "Cohort 3 – 27 July",
-  "Cohort 4 – 19 October",
-  "A future cohort",
+// ── "When are you hoping to start?" — universal timeframe buckets ──────
+// Used by BOTH forms. These work for every programme (no per-course dates
+// to maintain) and capture intent, so follow-up emails can be tailored to
+// how soon someone plans to start. Specific cohort dates live in the
+// brochure and the confirmation email, not in this form question.
+export const TIMEFRAME_OPTIONS: string[] = [
+  "Within 1 month",
+  "1–3 months",
+  "3–6 months",
+  "Later this year",
+  "Next year",
   "Just exploring",
 ];
-const KIDS_START_OPTIONS = [
-  "This summer's cohort",
-  "A future summer",
-  "Just exploring",
-];
-export function startOptionsFor(programme: string): string[] {
-  return isKidsCourse(programme) ? KIDS_START_OPTIONS : ADULT_START_OPTIONS;
-}
-
-// "Preferred cohort" (enrol form).
-const ADULT_COHORTS = [
-  "Cohort 3 – 27 July",
-  "Cohort 4 – 19 October",
-  "A future cohort",
-];
-const KIDS_COHORTS = ["This summer's cohort", "A future summer"];
-export function cohortsFor(programme: string): string[] {
-  return isKidsCourse(programme) ? KIDS_COHORTS : ADULT_COHORTS;
-}
 
 // Options for the optional "How did you hear about us?" question.
 export const HEARD_OPTIONS: string[] = [
