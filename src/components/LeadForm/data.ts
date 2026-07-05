@@ -79,13 +79,46 @@ export const NIGERIA_STATES: string[] = [
   "Yobe", "Zamfara",
 ];
 
-// Options for the "How early do you want to start?" question.
-export const START_OPTIONS: string[] = [
+// ── Cohort options — sensitive to the programme selected ──────────────
+// Kids' courses run once a year in summer, so they must NOT show the adult
+// 27 July / 19 October cohort dates. To treat a programme as "kids", add its
+// exact name here.
+export const KIDS_COURSES: string[] = [
+  "Digital Creators",
+  "AI & ML for Kids",
+  "Python Coding for Kids",
+];
+
+export function isKidsCourse(programme: string): boolean {
+  return KIDS_COURSES.includes(programme);
+}
+
+// "How early do you want to start?" (brochure form).
+const ADULT_START_OPTIONS = [
   "Cohort 3 – 27 July",
   "Cohort 4 – 19 October",
   "A future cohort",
   "Just exploring",
 ];
+const KIDS_START_OPTIONS = [
+  "This summer's cohort",
+  "A future summer",
+  "Just exploring",
+];
+export function startOptionsFor(programme: string): string[] {
+  return isKidsCourse(programme) ? KIDS_START_OPTIONS : ADULT_START_OPTIONS;
+}
+
+// "Preferred cohort" (enrol form).
+const ADULT_COHORTS = [
+  "Cohort 3 – 27 July",
+  "Cohort 4 – 19 October",
+  "A future cohort",
+];
+const KIDS_COHORTS = ["This summer's cohort", "A future summer"];
+export function cohortsFor(programme: string): string[] {
+  return isKidsCourse(programme) ? KIDS_COHORTS : ADULT_COHORTS;
+}
 
 // Options for the optional "How did you hear about us?" question.
 export const HEARD_OPTIONS: string[] = [
