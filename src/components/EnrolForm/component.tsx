@@ -3,7 +3,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "../LeadForm/component.css"; // reuse the shared modal + field styles (lf-*)
 import "./component.css"; // enrol-specific additions (ef-*)
 
-import { COUNTRIES, NIGERIA_STATES, HEARD_OPTIONS } from "../LeadForm/data";
+import {
+  COUNTRIES,
+  NIGERIA_STATES,
+  HEARD_OPTIONS,
+  cohortsFor,
+} from "../LeadForm/data";
 import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 
 // ── Backend config ───────────────────────────────────────────────────
@@ -46,11 +51,6 @@ const STATUSES = [
   "Other",
 ];
 const FORMATS = ["Online", "Onsite", "Hybrid"];
-const COHORTS = [
-  "Cohort 3 – 27 July",
-  "Cohort 4 – 19 October",
-  "A future cohort",
-];
 
 export default function EnrolForm({
   defaultProgramme,
@@ -351,6 +351,7 @@ export default function EnrolForm({
                 onChange={(e) => {
                   setProgramme(e.target.value);
                   setPlan("");
+                  setCohort("");
                 }}
               >
                 <option value="">— Select a programme —</option>
@@ -586,7 +587,7 @@ export default function EnrolForm({
                   onChange={(e) => setCohort(e.target.value)}
                 >
                   <option value="">— Select —</option>
-                  {COHORTS.map((x) => (
+                  {cohortsFor(programme).map((x) => (
                     <option key={x} value={x}>
                       {x}
                     </option>
