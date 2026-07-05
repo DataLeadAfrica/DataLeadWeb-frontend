@@ -14,6 +14,7 @@ import business_analytics from "./assets/business-analytics.svg";
 import Courses from "./page";
 import Course from "./Course/page";
 import { ReactNode } from "react";
+import { TrainingShot } from "../../components/TrainingGallery/component";
 
 export type Modules = { [head: string]: string };
 export type ModulesWithTracks = { [key: string]: { [head: string]: string } };
@@ -27,7 +28,27 @@ export interface CourseInfo {
   modules: Modules | ModulesWithTracks;
   videoEmbed?: ReactNode;
   formLink?: string;
+  tagline?: string;
+  duration?: string;
+  cohortNote?: string;
+  outcomes?: string[];
+  tools?: string[];
+  whoFor?: string[];
+  faqs?: { q: string; a: string }[];
+  scholarship?: boolean;
+  gallery?: TrainingShot[];
 }
+
+// Shared training photos for the adult course pages. Kids pages will pass
+// their own set later. Files live in public/assets/training/.
+const ADULT_TRAINING: TrainingShot[] = [
+  { src: "/assets/training/training-sql-session.jpg", caption: "Live SQL session" },
+  { src: "/assets/training/training-excel-session.jpg", caption: "Excel and data cleaning" },
+  { src: "/assets/training/training-r-session.jpg", caption: "R programming class" },
+  { src: "/assets/training/training-r-session-2.jpg", caption: "Working through R together" },
+  { src: "/assets/training/training-pair-programming.jpg", caption: "Pair programming in class" },
+  { src: "/assets/training/training-lab-pairing.jpg", caption: "Hands-on lab" },
+];
 
 const courseInfos: Array<CourseInfo> = [
   {
@@ -59,6 +80,37 @@ const courseInfos: Array<CourseInfo> = [
         allowFullScreen
       ></iframe>
     ),
+    tagline:
+      "Turn raw data into decisions. A hands-on, mentor-led programme that makes you job-ready in three months, online or onsite in Abuja, open to learners across Africa.",
+    duration: "3 months",
+    cohortNote: "Next cohort now enrolling · limited seats",
+    scholarship: true,
+    outcomes: [
+      "Collect and clean real-world datasets end to end",
+      "Store and query data with SQL",
+      "Run descriptive, inferential and predictive analysis",
+      "Build interactive dashboards in Power BI",
+      "Turn analysis into clear, decision-ready recommendations",
+      "Graduate with a portfolio-ready capstone project",
+    ],
+    tools: [
+      "Excel", "SPSS", "Stata", "Python", "R", "MySQL",
+      "Power BI", "NVivo", "QDA Miner", "ArcGIS", "Kobo Toolbox",
+    ],
+    whoFor: [
+      "Aspiring data analysts and recent graduates",
+      "Career-changers moving into data",
+      "Researchers who want stronger analysis skills",
+      "Monitoring and evaluation and programme staff",
+    ],
+    faqs: [
+      { q: "Do I need coding or data experience?", a: "No. The programme starts from the basics and builds up to job-ready skills. Beginners are welcome." },
+      { q: "Is it online or onsite?", a: "Both. You can join live online from anywhere, or in person at our Abuja hub. Sessions run Monday to Friday." },
+      { q: "What laptop do I need?", a: "Any laptop running Windows, macOS or Linux with at least 4GB RAM and about 250GB storage, plus a stable internet connection." },
+      { q: "Will I get a certificate?", a: "Yes, a Data-Lead Africa certificate, plus a portfolio-ready capstone project you can show employers." },
+      { q: "Can I pay in installments?", a: "Yes. You can spread payment as three payments of ₦100,000 over the term (₦300,000 total), or pay ₦250,000 once." },
+      { q: "Is there an NYSC discount?", a: "Yes. Serving corps members in Nigeria pay ₦150,000. You will show proof of NYSC at onboarding." },
+    ],
   },
   {
     imgSrc: data_science,
@@ -214,7 +266,16 @@ export default function courseRouter() {
                 modules={v.modules}
                 price={v.price}
                 videoEmbed={v.videoEmbed}
-                formLink={v.formLink}
+                programmes={courseInfos.map((c) => c.name)}
+                tagline={v.tagline}
+                duration={v.duration}
+                cohortNote={v.cohortNote}
+                outcomes={v.outcomes}
+                tools={v.tools}
+                whoFor={v.whoFor}
+                faqs={v.faqs}
+                scholarship={v.scholarship}
+                gallery={v.gallery || ADULT_TRAINING}
               />
             }
           />

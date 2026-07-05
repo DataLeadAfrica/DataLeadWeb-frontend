@@ -1,0 +1,124 @@
+/* Enrol form additions — reuses the brochure form's lf-* base styles. */
+
+.ef-panel {
+  max-width: 560px;
+}
+
+.ef-textarea {
+  resize: vertical;
+  min-height: 3.5rem;
+  line-height: 1.5;
+}
+
+.ef-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: #8a8a8d;
+}
+
+/* ── Payment step ── */
+.ef-pay {
+  padding-top: 0.25rem;
+}
+
+.ef-summary {
+  border: 1px solid #ececed;
+  border-radius: 12px;
+  padding: 0.4rem 1rem;
+  margin: 0.25rem 0 1.1rem;
+}
+.ef-summary > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f2f2f4;
+  font-size: 0.92rem;
+}
+.ef-summary > div:last-child {
+  border-bottom: none;
+}
+.ef-summary span {
+  color: #6b6b6d;
+}
+.ef-summary b {
+  color: var(--clr-gray, #2c2b2d);
+  text-align: right;
+}
+
+.ef-paylabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clr-orange, #f56e0f);
+  margin: 0.4rem 0 0.6rem;
+}
+
+.ef-or {
+  text-align: center;
+  color: #b6b6ba;
+  font-size: 0.8rem;
+  margin: 1.1rem 0 0.9rem;
+  position: relative;
+}
+.ef-or::before,
+.ef-or::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background: #ececed;
+}
+.ef-or::before { left: 0; }
+.ef-or::after { right: 0; }
+
+.ef-bank {
+  border: 1px solid #ececed;
+  border-radius: 12px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 0.7rem;
+  background: #fafafa;
+}
+.ef-bank > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f2f2f4;
+  font-size: 0.92rem;
+}
+.ef-bank > div:last-child {
+  border-bottom: none;
+}
+.ef-bank span {
+  color: #6b6b6d;
+}
+.ef-bank b {
+  color: var(--clr-gray, #2c2b2d);
+  letter-spacing: 0.03em;
+}
+
+.ef-note {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #6b6b6d;
+  margin: 0.2rem 0 0.6rem;
+}
+.ef-note a {
+  color: var(--clr-orange, #f56e0f);
+}
+
+.ef-soon {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #6b6b6d;
+  background: #fff6ee;
+  border: 1px solid #f3d9c1;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  margin: 0;
+}

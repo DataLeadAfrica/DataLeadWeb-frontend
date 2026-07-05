@@ -1,0 +1,213 @@
+/* ── Lead capture modal (brochure download) ───────────────────── */
+.lf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(20, 20, 30, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5vh 1rem 2rem;
+  overflow-y: auto;
+}
+
+.lf-panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: lf-in 0.18s ease-out;
+}
+
+@keyframes lf-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lf-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.95rem;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: #f2f2f4;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #555;
+  cursor: pointer;
+}
+.lf-close:hover { background: #e7e7ea; color: #000; }
+
+.lf-title {
+  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+  color: var(--clr-gray, #2c2b2d);
+}
+.lf-sub {
+  font-size: 0.9rem;
+  color: #6b6b6d;
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.lf-field { margin-bottom: 0.9rem; }
+.lf-row {
+  display: flex;
+  gap: 0.75rem;
+}
+.lf-row .lf-field { flex: 1; }
+
+.lf-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-gray, #2c2b2d);
+  margin-bottom: 0.35rem;
+}
+.lf-opt { font-weight: 400; color: #9a9a9d; }
+
+.lf-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--clr-gray, #2c2b2d);
+  background: #fff;
+  border: 1px solid #d9d9de;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lf-input:focus {
+  border-color: var(--clr-orange, #f56e0f);
+  box-shadow: 0 0 0 3px rgba(245, 110, 15, 0.15);
+}
+select.lf-input { cursor: pointer; }
+
+/* searchable country combo */
+.lf-combo { position: relative; }
+.lf-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d9d9de;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+.lf-menu__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.lf-menu__item:hover { background: var(--clr-orange-light, #fde9da); }
+.lf-menu__dial { color: #9a9a9d; }
+.lf-menu__empty { padding: 0.7rem 0.85rem; color: #9a9a9d; font-size: 0.9rem; }
+
+/* phone with dial prefix */
+.lf-phone { display: flex; align-items: stretch; gap: 0.5rem; }
+.lf-phone__dial {
+  flex: 0 0 auto;
+  min-width: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--clr-gray, #2c2b2d);
+  background: #f4f4f5;
+  border: 1px solid #d9d9de;
+  border-radius: 10px;
+}
+.lf-phone__num { flex: 1; }
+
+/* buttons + messages */
+.lf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid var(--clr-orange, #f56e0f);
+  background: var(--clr-orange, #f56e0f);
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s;
+}
+.lf-btn:hover { background: #e0620c; border-color: #e0620c; }
+.lf-btn--block { width: 100%; margin-top: 0.4rem; }
+.lf-btn:disabled { opacity: 0.7; cursor: default; }
+
+.lf-textbtn {
+  display: block;
+  margin: 0.85rem auto 0;
+  background: none;
+  border: none;
+  color: #6b6b6d;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.lf-fine {
+  margin: 0.7rem 0 0;
+  font-size: 0.75rem;
+  color: #9a9a9d;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.lf-msg {
+  margin: 0 0 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.lf-msg--info { background: #f4f4f5; color: #555; }
+.lf-msg--ok { background: #e6f7ec; color: #1a7f43; }
+.lf-msg--err { background: #fdecec; color: #c0392b; }
+
+/* success state */
+.lf-success { text-align: center; padding: 0.5rem 0.5rem 0; }
+.lf-success__tick {
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0.5rem auto 1rem;
+  border-radius: 50%;
+  background: #e6f7ec;
+  color: #1a7f43;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lf-success .lf-btn { margin-top: 0.5rem; }
+
+@media (max-width: 560px) {
+  .lf-panel { padding: 1.5rem; }
+  .lf-row { flex-direction: column; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-panel { animation: none; }
+}

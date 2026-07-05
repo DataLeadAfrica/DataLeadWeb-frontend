@@ -1,35 +1,61 @@
 import { FormEventHandler, useState } from "react";
 import "./page.css";
 
+// Contact messages are saved to a Google Sheet (Apps Script) and the sender
+// gets an auto-reply via EmailJS. Service + public key match the rest of the site.
+const CONTACT_SHEET_URL =
+  "https://script.google.com/macros/s/AKfycbzBadpLU3m0tbO8igK7V0E_tAS1kfi6krMl2GdgZXmGidMnN_un08bVH2fjhowbsM5d/exec";
+const EMAILJS_SERVICE = "service_ortl1vg";
+const EMAILJS_PUBLIC = "6svlOkrevGHII2V8s";
+const EMAILJS_CONTACT_TEMPLATE = "dla_reply";
+
 export default function ContactUs() {
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [isFailureVisible, setIsFailureVisible] = useState(false);
+  const [sending, setSending] = useState(false);
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const message = formData.get("message");
-    fetch("https://formsubmit.co/ajax/da1f4391d4119597412aae0932a6b544", {
+    const name = String(formData.get("name") || "");
+    const email = String(formData.get("email") || "");
+    const subject = String(formData.get("subject") || "");
+    const message = String(formData.get("message") || "");
+
+    setSending(true);
+
+    // 1) Save the message to the Google Sheet (fire and forget).
+    fetch(CONTACT_SHEET_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        message: message,
-      }),
-    }).then((response) => {
-      if (response.ok) {
-        setIsSuccessVisible(true);
-        console.log("Email sent succsfully");
-      } else {
-        setIsFailureVisible(true);
-        console.log("Error while sending response");
-      }
-    });
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, subject, message }),
+    }).catch(() => {});
+
+    // 2) Send the sender an auto-reply via EmailJS.
+    const ej = (window as unknown as { emailjs?: any }).emailjs;
+    if (ej) {
+      ej.init({ publicKey: EMAILJS_PUBLIC });
+      ej
+        .send(EMAILJS_SERVICE, EMAILJS_CONTACT_TEMPLATE, {
+          to_email: email,
+          to_name: name,
+          subject: subject,
+          message: message,
+        })
+        .then(() => {
+          setIsSuccessVisible(true);
+          form.reset();
+        })
+        .catch(() => setIsFailureVisible(true))
+        .finally(() => setSending(false));
+    } else {
+      // EmailJS not loaded, the message is still saved to the sheet above.
+      setIsSuccessVisible(true);
+      form.reset();
+      setSending(false);
+    }
   };
 
   const PopUpSucces = () => {
@@ -69,9 +95,6 @@ export default function ContactUs() {
       </div>
     );
   };
-
-  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-  const [isFailureVisible, setIsFailureVisible] = useState(false);
 
   return (
     <div className="contact-us__page">
@@ -176,7 +199,9 @@ export default function ContactUs() {
             />
           </div>
 
-          <button className="btn">Send</button>
+          <button className="btn" disabled={sending}>
+            {sending ? "Sending…" : "Send"}
+          </button>
         </form>
       </div>
     </div>
