@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import "./component.css";
 
-import { BROCHURES } from "./brochures";
+import { BROCHURES, Brochure } from "./brochures";
 import {
   COUNTRIES,
   NIGERIA_STATES,
@@ -26,9 +26,8 @@ type LeadFormProps = {
   onClose: () => void;
 };
 
-function fileForProgramme(name: string): string | null {
-  const b = BROCHURES.find((x) => x.name === name);
-  return b ? b.file : null;
+function brochureFor(name: string): Brochure | null {
+  return BROCHURES.find((x) => x.name === name) || null;
 }
 
 export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
@@ -119,13 +118,13 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
     if (country === "Nigeria" && !stateRes)
       return setMsg({ type: "err", text: "Please select your state of residence." });
 
-    const file = fileForProgramme(programme);
-    if (!file)
+    const b = brochureFor(programme);
+    if (!b)
       return setMsg({
         type: "err",
         text: "Sorry, that brochure isn't available yet. Please pick another programme.",
       });
-    const brochureLink = window.location.origin + "/brochures/" + file;
+    const brochureLink = window.location.origin + "/brochures/" + b.file;
     const fullPhone = (dial ? dial + " " : "") + phone.trim();
 
     setSubmitting(true);
@@ -167,6 +166,7 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
       to_email: em,
       to_name: firstName.trim(),
       programme,
+      duration: b.duration,
       brochure_link: brochureLink,
     })
       .then(() => {
@@ -186,8 +186,8 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
   }
 
   const brochureLinkNow = (() => {
-    const file = fileForProgramme(programme);
-    return file ? window.location.origin + "/brochures/" + file : "#";
+    const b = brochureFor(programme);
+    return b ? window.location.origin + "/brochures/" + b.file : "#";
   })();
 
   return (
