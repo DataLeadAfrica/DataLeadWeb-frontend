@@ -231,6 +231,17 @@ export default function EnrolForm({
         : plan === "nysc"
           ? "NYSC discount"
           : "Full payment";
+    const amountText =
+      plan === "installments" && pay?.installments
+        ? naira(pay.installments.per) +
+          " × " +
+          pay.installments.count +
+          " (total " +
+          naira(pay.installments.total) +
+          ")"
+        : amount
+          ? naira(amount)
+          : "";
     try {
       const ej = (window as unknown as { emailjs?: any }).emailjs;
       if (ej) {
@@ -239,7 +250,7 @@ export default function EnrolForm({
           to_name: firstName.trim(),
           programme,
           plan: planText,
-          amount: amount ? naira(amount) : "",
+          amount: amountText,
           paystack_link: slug ? PAYSTACK_BASE + slug : "",
         }).catch(() => {});
       }
@@ -271,6 +282,10 @@ export default function EnrolForm({
       : plan === "nysc"
         ? "NYSC discount"
         : "Full payment";
+  // What the Paystack page actually charges. For installments the page charges
+  // ONE installment (per), which the learner pays `count` times.
+  const payNowAmount =
+    plan === "installments" ? pay?.installments?.per : chosenAmount;
 
   return (
     <div className="lf-overlay" onClick={onClose}>
@@ -326,6 +341,15 @@ export default function EnrolForm({
               </p>
             )}
 
+            {plan === "installments" && pay?.installments && (
+              <p className="ef-note">
+                You're paying in {pay.installments.count} installments of{" "}
+                {naira(pay.installments.per)}. The button below charges one
+                installment ({naira(pay.installments.per)}) — you'll pay it{" "}
+                {pay.installments.count} times over the programme.
+              </p>
+            )}
+
             <div className="ef-paylabel">Pay online</div>
             {chosenSlug ? (
               <a
@@ -334,7 +358,8 @@ export default function EnrolForm({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Pay {chosenAmount ? naira(chosenAmount) : ""} with Paystack →
+                Pay {payNowAmount ? naira(payNowAmount) : ""}
+                {plan === "installments" ? " (1 of 3)" : ""} with Paystack →
               </a>
             ) : (
               <p className="ef-soon">
