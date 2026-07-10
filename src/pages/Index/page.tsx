@@ -9,6 +9,7 @@ import split_card_3 from "./assets/split-card-3.svg";
 
 import { routes } from "../routes";
 import CallToAction from "../../components/CallToAction/component";
+import GizStrip from "../../components/GizStrip/component";
 
 function Index() {
   return (
@@ -35,6 +36,10 @@ function Index() {
                 <i className="nf nf-fa-arrow_right"></i>
               </a>
             </div>
+
+            {/* GIZ-ZME promo - TEMPORARY. Remove this line and the import when
+                applications close. */}
+            <GizStrip />
           </div>
         </div>
         <div className="hero__image">

@@ -10,9 +10,12 @@ import employability_entrepreneurship from "./assets/employability-entrepreneurs
 import research_methodologies from "./assets/research-methodologies.svg";
 import hr_analytics from "./assets/hr-analytics.svg";
 import business_analytics from "./assets/business-analytics.svg";
+import ai_ml_kids from "./assets/ai-ml-kids.svg";
+import python_kids from "./assets/python-kids.svg";
 
 import Courses from "./page";
 import Course from "./Course/page";
+import Kids from "./Kids/page";
 import { ReactNode } from "react";
 import { TrainingShot } from "../../components/TrainingGallery/component";
 
@@ -37,6 +40,9 @@ export interface CourseInfo {
   faqs?: { q: string; a: string }[];
   scholarship?: boolean;
   gallery?: TrainingShot[];
+  /** Marks a Summer Bootcamp for Kids track. Drives the kids section + menu. */
+  kids?: boolean;
+  ageRange?: string;
 }
 
 // Shared training photos for the adult course pages. Kids pages will pass
@@ -194,6 +200,8 @@ const courseInfos: Array<CourseInfo> = [
     imgSrc: digital_creation,
     link: routes.coursesDigitalCreation,
     name: "Digital Creators",
+    kids: true,
+    ageRange: "12 to 17",
     formLink:
       "#",
     desc: "Give your child a fun and productive summer! This exciting hands-on summer bootcamp is designed for kids and teens (ages 12–17) who want to explore the world of digital content creation. From vlogging and photography to social media storytelling, they will learn how to plan, film, edit, and share amazing content using popular tools and apps. It’s the perfect blend of creativity, tech skills, and summer fun, setting them up to be confident, future ready creators!",
@@ -229,6 +237,90 @@ const courseInfos: Array<CourseInfo> = [
     },
   },
   {
+    imgSrc: ai_ml_kids,
+    link: routes.coursesAiMlKids,
+    name: "AI & ML for Kids",
+    kids: true,
+    ageRange: "8 to 17",
+    formLink: "#",
+    desc: "A month of curious, hands-on fun where kids discover how machines learn, train their very own AI and build a smart project, safely and responsibly. Artificial intelligence is all around us, in phones, games and apps. In one month your child learns what AI really is, trains their own simple models with kid-friendly tools, builds a smart project and explores how to use AI fairly and responsibly.",
+    price: "100,000",
+    tagline:
+      "Kids train real models with simple, visual tools, no hard maths. One month, no experience needed.",
+    duration: "1 month",
+    cohortNote: "Summer cohort now enrolling",
+    modules: {
+      "What is AI?": "Spot AI all around us and understand how machines learn.",
+      "Teach a Machine": "Train a simple AI to recognise pictures and sounds.",
+      "AI Sees & Hears": "Fun experiments with image and sound recognition.",
+      "Games & Chatbots": "Build simple smart games and friendly chatbots.",
+      "Fair & Friendly AI": "Explore fairness and how to use AI responsibly.",
+      "My First AI Project": "Create an AI project and present it to the class.",
+    },
+    outcomes: [
+      "Explain what AI is, in their own words",
+      "Train a simple image and sound recognition model",
+      "Build a smart game or a friendly chatbot",
+      "Talk about fairness and safe, responsible use of AI",
+      "Finish a project of their own and present it to the class",
+    ],
+    tools: ["Teachable Machine", "Scratch", "Kid-friendly AI tools"],
+    whoFor: [
+      "Kids and teens, ages 8 to 17",
+      "Total beginners",
+      "Curious minds and young inventors",
+      "Future AI creators",
+    ],
+    faqs: [
+      { q: "Does my child need any experience?", a: "No. Everything starts from the beginning. No coding and no maths beyond what they already know at school." },
+      { q: "How long is it?", a: "One month, run as a summer bootcamp." },
+      { q: "What will they leave with?", a: "Their own AI project, which they present to the class on the final day." },
+      { q: "Is it safe?", a: "Yes. Small classes, kid-appropriate tools, and a lesson dedicated to using AI fairly and responsibly." },
+    ],
+  },
+  {
+    imgSrc: python_kids,
+    link: routes.coursesPythonKids,
+    name: "Python Coding for Kids",
+    kids: true,
+    ageRange: "8 to 17",
+    formLink: "#",
+    desc: "A playful first month of real coding. Kids write their own Python programs, draw with code and build a mini game, all while having a blast. Python is one of the world's most popular programming languages, and it is friendly enough for beginners. In one month, your child goes from their very first line of code to building and sharing a small project, learning to think, solve problems and create like a real programmer.",
+    price: "100,000",
+    tagline:
+      "Their first real programming language. From first line of code to first game, in one month.",
+    duration: "1 month",
+    cohortNote: "Summer cohort now enrolling",
+    modules: {
+      "Hello, Code!": "Meet Python and write a first program that actually runs.",
+      "Words & Numbers": "Use variables to store words and numbers and talk to the computer.",
+      "Making Decisions": "Teach programs to choose with if-and-else, just like a game.",
+      "Loops & Turtle Art": "Repeat with loops and draw cool shapes with turtle graphics.",
+      "Functions & Games": "Reuse code with functions and build a simple, fun game.",
+      "Show-and-Tell": "Build a mini project and present it to the class.",
+    },
+    outcomes: [
+      "Write and run their own Python programs",
+      "Use variables, decisions and loops with confidence",
+      "Draw shapes and art with turtle graphics",
+      "Build a small game from scratch",
+      "Present a mini project to the class",
+    ],
+    tools: ["Python", "Turtle graphics", "Thonny"],
+    whoFor: [
+      "Kids and teens, ages 8 to 17",
+      "Total beginners",
+      "Curious problem-solvers and young game-makers",
+      "Future coders",
+    ],
+    faqs: [
+      { q: "Does my child need any experience?", a: "No. They start with their very first line of code." },
+      { q: "How long is it?", a: "One month, run as a summer bootcamp." },
+      { q: "What will they leave with?", a: "A mini project of their own, presented to the class on the final day." },
+      { q: "Why Python?", a: "It is one of the world's most used languages, and it is friendly enough for a beginner's first line of code." },
+    ],
+  },
+  {
     imgSrc: hr_analytics,
     link: routes.coursesHrAnalytcis,
     name: "HR Analytics",
@@ -254,6 +346,10 @@ export default function courseRouter() {
       <Route
         path={routes.courses}
         element={<Courses courseInfos={courseInfos} />}
+      />
+      <Route
+        path={routes.coursesKids}
+        element={<Kids courseInfos={courseInfos.filter((c) => c.kids)} />}
       />
       {courseInfos.map((v) => {
         return (
