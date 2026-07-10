@@ -205,7 +205,9 @@ h1,h2,h3{letter-spacing:-.02em}
 /* ================================================================
    Landing
    ================================================================ */
-.hero{padding:3rem 0 1.5rem;display:grid;grid-template-columns:minmax(300px,.9fr) 1fr;gap:2.5rem;align-items:center;position:relative}
+.hero{padding:3rem 0 1.5rem;display:grid;grid-template-columns:minmax(300px,.9fr) 1fr;gap:2.5rem;align-items:center;position:relative;
+  margin-left:calc((100vw - var(--maxw)) / -2 + 1rem);
+  padding-left:clamp(1.25rem,5vw,4rem)}
 .hero__left{text-align:left;position:relative;z-index:1}
 /* Full-bleed right: the photo column stretches from its grid start to the
    right screen edge, ignoring the 860px container cap. */
@@ -222,9 +224,10 @@ h1,h2,h3{letter-spacing:-.02em}
   font-size:.82rem;font-weight:600;color:var(--ink);box-shadow:0 6px 18px rgba(28,27,34,.15)}
 .hero__photo-badge svg{width:15px;height:15px;stroke:var(--orange-strong);fill:none;stroke-width:2}
 @media (max-width:900px){
-  .hero{grid-template-columns:1fr;gap:2rem;padding-top:2rem}
+  .hero{grid-template-columns:1fr;gap:2rem;padding-top:2rem;margin-left:0;padding-left:0}
   .hero__right{order:-1;margin-right:calc(50% - 50vw);margin-left:calc(50% - 50vw);
     justify-content:center;padding-right:0}
+  .hero__right .hero__photo{width:100%}
   .hero__photo{max-width:560px;transform:none;border-radius:var(--radius-5)}
 }
 .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-deep);background:var(--clr-orange-light);border:1px solid #f6d3b6;padding:.4rem .8rem;border-radius:999px;margin-bottom:1.1rem}
