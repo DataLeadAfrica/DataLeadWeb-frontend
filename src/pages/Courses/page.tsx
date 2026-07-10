@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import "./page.css";
 
 import { CourseInfo } from "./router";
+import { routes } from "../routes";
 import LeadForm from "../../components/LeadForm/component";
 import EnrolForm from "../../components/EnrolForm/component";
 import Seo from "../../components/Seo/component";
+import GizStrip from "../../components/GizStrip/component";
 
 type Meta = {
   category: string;
@@ -61,9 +63,21 @@ const META: { [name: string]: Meta } = {
     tagline: "Land the job or launch the business with practical, real-world skills.",
   },
   "Digital Creators": {
-    category: "Teens · Ages 12-17",
-    duration: "Summer",
+    category: "Teens · Ages 12 to 17",
+    duration: "1 month",
     tagline: "A fun summer of content creation, design and video editing for teens.",
+  },
+  "AI & ML for Kids": {
+    category: "Kids & Teens · Ages 8 to 17",
+    duration: "1 month",
+    tagline:
+      "Discover how machines learn, train a real model and build a smart project.",
+  },
+  "Python Coding for Kids": {
+    category: "Kids & Teens · Ages 8 to 17",
+    duration: "1 month",
+    tagline:
+      "From their very first line of code to their very first game, in one month.",
   },
 };
 
@@ -106,7 +120,10 @@ export default function Courses({
   }, []);
 
   const featured = courseInfos.find((c) => META[c.name]?.featured);
-  const rest = courseInfos.filter((c) => !META[c.name]?.featured);
+  // Adult bootcamps keep the main grid. Kids tracks get their own band below,
+  // so a 3-month professional course is never confused with a summer club.
+  const rest = courseInfos.filter((c) => !META[c.name]?.featured && !c.kids);
+  const kidsCourses = courseInfos.filter((c) => c.kids);
 
   // ── SEO: structured data for the organisation + the course list ──
   const jsonLd = [
@@ -156,7 +173,7 @@ export default function Courses({
     <div className="lc">
       <Seo
         title="Data & AI Bootcamps in Nigeria & Africa | Data-Lead Africa"
-        description="Practitioner-led bootcamps in data analytics, AI & machine learning, business analytics, bioinformatics, HR analytics and research methods — online or onsite in Abuja. Explore courses and download a brochure."
+        description="Practitioner-led bootcamps in data analytics, AI & machine learning, business analytics, bioinformatics, HR analytics and research methods - online or onsite in Abuja. Explore courses and download a brochure."
         jsonLd={jsonLd}
       />
 
@@ -197,6 +214,10 @@ export default function Courses({
                 </button>
               )}
             </div>
+
+            {/* GIZ-ZME promo - TEMPORARY. Remove this line and the import when
+                applications close. */}
+            <GizStrip />
           </div>
           <div className="lc-hero__art">
             <AfricaMap />
@@ -348,6 +369,70 @@ export default function Courses({
           </div>
         </div>
       </section>
+
+      {/* SUMMER BOOTCAMP FOR KIDS */}
+      {kidsCourses.length > 0 && (
+        <section className="lc-kids" id="kids">
+          <div className="cwrap">
+            <div className="lc-sec-head">
+              <span className="lc-kids__badge">☀ Summer Bootcamp</span>
+              <p className="lc-eyebrow lc-eyebrow--kids">For kids and teens</p>
+              <h2 className="lc-h2">Summer Bootcamp for Kids</h2>
+              <p className="lc-muted">
+                One month, hands-on, no experience needed. Your child builds something
+                real and presents it to the class.
+              </p>
+            </div>
+
+            <div className="lc-grid">
+              {kidsCourses.map((v) => {
+                const m = META[v.name];
+                return (
+                  <div className="lc-card lc-card--link lc-card--kid" key={v.name}>
+                    <Link to={v.link} className="lc-card__body">
+                      <div className="lc-card__ico">
+                        <img src={v.imgSrc} alt={v.name + " bootcamp"} />
+                      </div>
+                      <p className="lc-card__tag">{m?.category}</p>
+                      <h3 className="lc-card__name">{v.name}</h3>
+                      <p className="lc-card__blurb">{m?.tagline}</p>
+                      <div className="lc-card__meta">🗓️ {m?.duration}</div>
+                    </Link>
+                    <div className="lc-card__foot">
+                      <span className="lc-price lc-price--sm">
+                        ₦{v.price}
+                        <small> one-time</small>
+                      </span>
+                      <span className="lc-card__acts">
+                        <button
+                          type="button"
+                          className="lc-card__enrol"
+                          onClick={() => setEnrolFor(v.name)}
+                        >
+                          Enrol
+                        </button>
+                        <button
+                          type="button"
+                          className="lc-card__brochure"
+                          onClick={() => setBrochureFor(v.name)}
+                        >
+                          Brochure ↓
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="lc-kids__more">
+              <Link className="lc-btn lc-btn--kid" to={routes.coursesKids}>
+                See the kids programme →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* WHY US */}
       <section className="lc-why">

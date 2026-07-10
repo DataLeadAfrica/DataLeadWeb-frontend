@@ -60,13 +60,13 @@ export const PAYMENTS: Record<string, CoursePayment> = {
     nysc: { amount: 60000, paystack: "dla-employability-nysc-v2" },
   },
   "Digital Creators": {
-    full: { amount: 70000, paystack: "dla-digital-creators-full-v2" },
+    full: { amount: 100000, paystack: "dla-digital-creators-full-v2" },
   },
   "AI & ML for Kids": {
-    full: { amount: 70000, paystack: "dla-ai-ml-kids-full-v2" },
+    full: { amount: 100000, paystack: "dla-ai-ml-kids-full-v2" },
   },
   "Python Coding for Kids": {
-    full: { amount: 70000, paystack: "dla-python-kids-full" },
+    full: { amount: 100000, paystack: "dla-python-kids-full" },
   },
 };
 
