@@ -663,3 +663,53 @@
 .lc-card__enrol:hover {
   text-decoration: underline;
 }
+
+/* ============ Summer Bootcamp for Kids ============
+   Its own tinted band so a 3-month professional bootcamp is never
+   mistaken for a one-month holiday club. Tokens are local to .lc-kids. */
+.lc-kids {
+  --kid-mint: #7bd8a6;
+  --kid-green: #2f8a5e;
+  --kid-deep: #0d3b26;
+  --kid-line: #d3ead9;
+  padding-block: var(--padding-4);
+  background: linear-gradient(160deg, #f0fbf5 0%, #fffaef 100%);
+  border-block: 1px solid var(--kid-line);
+}
+.lc-kids .lc-kids__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--kid-mint);
+  color: var(--kid-deep);
+  font-size: var(--font-xxs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-10);
+  margin-bottom: 0.75rem;
+}
+.lc-kids .lc-eyebrow--kids {
+  color: var(--kid-green);
+}
+.lc-kids .lc-card--kid {
+  border-color: var(--kid-line);
+}
+.lc-kids .lc-card--kid .lc-card__enrol {
+  background: var(--kid-green);
+  border-color: var(--kid-green);
+}
+.lc-kids .lc-kids__more {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.lc-kids .lc-btn--kid {
+  background: var(--kid-green);
+  border-color: var(--kid-green);
+}
+.lc-kids .lc-btn--kid:hover {
+  background: var(--kid-deep);
+  border-color: var(--kid-deep);
+}
