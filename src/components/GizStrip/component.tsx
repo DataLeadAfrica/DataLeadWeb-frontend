@@ -12,7 +12,7 @@ import "./component.css";
  */
 export default function GizStrip() {
   return (
-    <div className="giz-strip">
+    <a className="giz-strip" href="/giz" aria-label="GIZ-ZME Remote Work Training Programme, read more and apply">
       <div className="giz-strip__main">
         <div className="giz-strip__pills">
           <span className="giz-pill giz-pill--free">Full scholarship</span>
@@ -29,9 +29,7 @@ export default function GizStrip() {
         </p>
 
         <div className="giz-strip__foot">
-          <a className="giz-strip__cta" href="/giz">
-            Apply now &rarr;
-          </a>
+          <span className="giz-strip__cta">Apply now &rarr;</span>
           <div className="giz-strip__partners">
             <small>With</small>
             <img
@@ -54,6 +52,6 @@ export default function GizStrip() {
           <div className="giz-strip__numlbl">Funded places</div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
