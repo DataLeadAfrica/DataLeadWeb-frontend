@@ -19,10 +19,17 @@ export default function Header() {
   }) {
     return (
       <div className="nav__dropdown-container" tabIndex={0}>
-        <p className="nav__link">
-          {title}
-          <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
-        </p>
+        {allTo ? (
+          <Link className="nav__link" to={allTo}>
+            {title}
+            <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
+          </Link>
+        ) : (
+          <p className="nav__link">
+            {title}
+            <i className="nf nf-cod-chevron_down drop-down__arrow"></i>
+          </p>
+        )}
         <div className="drop-down">
           <div className="drop-down__sep"></div>
           <div className="drop-down__top"></div>
