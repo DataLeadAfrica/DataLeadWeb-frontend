@@ -215,9 +215,6 @@ export default function Courses({
               )}
             </div>
 
-            {/* GIZ-ZME promo - TEMPORARY. Remove this line and the import when
-                applications close. */}
-            <GizStrip />
           </div>
           <div className="lc-hero__art">
             <AfricaMap />
@@ -367,6 +364,15 @@ export default function Courses({
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* GIZ-ZME promo band - TEMPORARY. Remove this whole block and the
+          import when applications close. Sits between courses and kids so it
+          does not crowd the hero. */}
+      <section className="lc-giz-band">
+        <div className="cwrap">
+          <GizStrip />
         </div>
       </section>
 
