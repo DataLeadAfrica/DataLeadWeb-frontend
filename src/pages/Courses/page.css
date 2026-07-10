@@ -1,538 +1,729 @@
-import { Link } from "react-router";
+/* ============ Courses landing page (redesign) ============ */
+.lc {
+  --line: #ecebf0;
+  --muted: #5b5b66;
+  width: 100%;
+  color: var(--font-color);
+}
+.lc .cwrap {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: var(--padding-2);
+}
+.lc h1,
+.lc h2,
+.lc h3 {
+  font-family: "ClashDisplay-Semibold", "ClashDisplay-Regular";
+  font-weight: 600;
+  line-height: 1.1;
+}
+.lc .lc-eyebrow {
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular";
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--font-xxs);
+  color: var(--clr-orange);
+  margin-bottom: 0.6rem;
+}
+.lc .lc-h2 {
+  font-size: var(--font-xl);
+  margin-bottom: 0.6rem;
+}
+.lc .lc-muted {
+  color: var(--muted);
+  max-width: 52ch;
+}
 
-import AfricaMap from "./AfricaMap";
-import { useEffect, useState } from "react";
+/* buttons */
+.lc .lc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: var(--font-xs);
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--radius-10);
+  border: 1px solid var(--clr-orange);
+  background: var(--clr-orange);
+  color: #fff;
+  transition: var(--transition-2);
+  cursor: pointer;
+  width: fit-content;
+}
+.lc .lc-btn:hover {
+  background: #e0620c;
+  border-color: #e0620c;
+  transform: translateY(-1px);
+}
+.lc .lc-btn--ghost {
+  background: #fff;
+  color: var(--font-color);
+  border-color: var(--clr-gray-light);
+}
+.lc .lc-btn--ghost:hover {
+  background: #fff;
+  color: var(--clr-orange);
+  border-color: var(--clr-orange);
+}
+.lc .lc-btn--ghost-dark {
+  background: transparent;
+  color: #fff;
+  border-color: #4a4753;
+}
+.lc .lc-btn--ghost-dark:hover {
+  background: transparent;
+  color: #fff;
+  border-color: #fff;
+}
+.lc .lc-btn--block {
+  width: 100%;
+  justify-content: center;
+}
 
-import "./page.css";
+/* ---------- HERO ---------- */
+.lc-hero {
+  min-height: calc(100svh - 5rem);
+  display: flex;
+  align-items: center;
+  background:
+    radial-gradient(1100px 520px at 78% -12%, #ffe9d6 0%, rgba(255, 233, 214, 0) 60%),
+    radial-gradient(700px 500px at -6% 110%, #eaf5fe 0%, rgba(234, 245, 254, 0) 55%),
+    #fffdfb;
+  border-bottom: 1px solid var(--line);
+}
+.lc-hero__grid {
+  padding-block: var(--padding-2);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: var(--gap-2);
+  align-items: center;
+}
+.lc-hero__title {
+  font-family: "ClashDisplay-Semibold", "ClashDisplay-Regular";
+  font-size: var(--font-xxxl);
+  letter-spacing: -0.01em;
+  margin: 0.6rem 0 0.8rem;
+}
+.lc-hero__title span {
+  color: var(--clr-orange);
+}
+.lc-hero__lead {
+  font-size: var(--font-sm);
+  color: var(--muted);
+  max-width: 38ch;
+}
+.lc-rotor {
+  margin-top: 0.9rem;
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular";
+  font-weight: 500;
+  font-size: var(--font-xs);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 1.6em;
+}
+.lc-rotor__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--clr-orange);
+  flex: 0 0 auto;
+}
+.lc-hero__cta {
+  display: flex;
+  gap: var(--gap-1);
+  margin-top: 1.6rem;
+  flex-wrap: wrap;
+}
+.lc-hero__art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.afmap {
+  width: 100%;
+  max-width: 470px;
+  height: auto;
+  overflow: visible;
+}
+.af-cont {
+  fill: #fdeede;
+  stroke: #f0b988;
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+  transition: fill 0.2s;
+}
+.af-op {
+  fill: #f9c79b;
+}
+.af-label {
+  fill: #7a5230;
+  font-size: 8px;
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #fffdfb;
+  stroke-width: 2.4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.af-hub-label {
+  fill: var(--clr-orange);
+  font-size: 10px;
+  font-weight: 700;
+}
+.af-ln {
+  stroke: var(--clr-orange);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  opacity: 0.55;
+  animation: af-flow 3s linear infinite;
+}
+.af-cd {
+  fill: #fff;
+  stroke: var(--clr-orange);
+  stroke-width: 2;
+}
+.af-hub-glow {
+  fill: var(--clr-orange);
+  opacity: 0.16;
+}
+.af-hub {
+  fill: var(--clr-orange);
+}
+.af-hub-ring {
+  fill: none;
+  stroke: var(--clr-orange);
+  stroke-width: 2;
+  opacity: 0.5;
+}
+@keyframes af-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .af-ln {
+    animation: none;
+  }
+}
+.lc-chip {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3);
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-xxs);
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(20, 20, 30, 0.08);
+  white-space: nowrap;
+}
+.lc-chip--1 {
+  top: 6%;
+  left: 0;
+}
+.lc-chip--2 {
+  bottom: 8%;
+  right: 0;
+}
 
-import { CourseInfo } from "./router";
-import { routes } from "../routes";
-import LeadForm from "../../components/LeadForm/component";
-import EnrolForm from "../../components/EnrolForm/component";
-import Seo from "../../components/Seo/component";
-import GizStrip from "../../components/GizStrip/component";
+/* ---------- FOOTPRINT TICKER ---------- */
+.lc-ticker {
+  background: var(--bg-color-dark);
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.lc-ticker__track {
+  display: inline-flex;
+  animation: lc-scroll 26s linear infinite;
+}
+.lc-ticker__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.2rem;
+  padding: 0.85rem 1.1rem;
+}
+.lc-ticker__group > span {
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular";
+  font-weight: 500;
+  font-size: var(--font-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #f4f4f5;
+}
+.lc-ticker__group i {
+  color: var(--clr-orange-medium);
+  font-style: normal;
+}
+.lc-ticker__o {
+  color: var(--clr-orange-medium);
+}
+@keyframes lc-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 
-type Meta = {
-  category: string;
-  duration: string;
-  tagline: string;
-  featured?: boolean;
-};
+/* ---------- TOOLS ---------- */
+.lc-tools {
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+.lc-tools__row {
+  padding-block: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.lc-tools__lbl {
+  font-size: var(--font-xxs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.lc-tools__chip {
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular";
+  font-weight: 500;
+  font-size: var(--font-xs);
+  color: var(--clr-gray);
+  background: #f6f6f8;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-10);
+  padding: 0.4rem 0.9rem;
+}
 
-// Enrichment for the cards, keyed by course name (names come from router.tsx).
-const META: { [name: string]: Meta } = {
-  "Data Analytics": {
-    category: "Analytics · Flagship",
-    duration: "3 months",
-    tagline:
-      "Manage data end-to-end and apply analytics to real-world problems across sectors and policy.",
-    featured: true,
-  },
-  "AI & Machine Learning": {
-    category: "Artificial Intelligence",
-    duration: "3 months",
-    tagline:
-      "From Python fundamentals to building predictive models with real datasets.",
-  },
-  "Business Analytics": {
-    category: "Business",
-    duration: "3 months",
-    tagline: "Turn business data into smarter decisions with Excel, SQL and Power BI.",
-  },
-  Bioinformatics: {
-    category: "Research",
-    duration: "3 months",
-    tagline:
-      "Analyse biological data with computational biology, genomics and health research.",
-  },
-  "HR Analytics": {
-    category: "Business",
-    duration: "1 month",
-    tagline:
-      "Make evidence-based workforce decisions with people data and dashboards.",
-  },
-  "Research Methodology and Manuscript Writing": {
-    category: "Research",
-    duration: "Intensive",
-    tagline:
-      "Design rigorous research and get published, from question to journal submission.",
-  },
-  "Employability & Entrepreneurship": {
-    category: "Career",
-    duration: "2 weeks",
-    tagline: "Land the job or launch the business with practical, real-world skills.",
-  },
-  "Digital Creators": {
-    category: "Teens · Ages 12 to 17",
-    duration: "1 month",
-    tagline: "A fun summer of content creation, design and video editing for teens.",
-  },
-  "AI & ML for Kids": {
-    category: "Kids & Teens · Ages 8 to 17",
-    duration: "1 month",
-    tagline:
-      "Discover how machines learn, train a real model and build a smart project.",
-  },
-  "Python Coding for Kids": {
-    category: "Kids & Teens · Ages 8 to 17",
-    duration: "1 month",
-    tagline:
-      "From their very first line of code to their very first game, in one month.",
-  },
-};
+/* ---------- IMPACT / WHO WE ARE ---------- */
+.lc-impact {
+  background: linear-gradient(180deg, #fff, #fbf7f2);
+  border-bottom: 1px solid var(--line);
+}
+.lc-impact__grid {
+  padding-block: var(--padding-4);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--gap-3);
+  align-items: center;
+}
+.lc-countries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+.lc-cty {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-10);
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  font-size: var(--font-xxs);
+}
+.lc-cty b {
+  color: var(--clr-orange);
+}
+.lc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-1);
+}
+.lc-stat {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4);
+  padding: 1.2rem;
+}
+.lc-stat__n {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular";
+  font-weight: 700;
+  font-size: var(--font-xl);
+  line-height: 1;
+}
+.lc-stat__l {
+  font-size: var(--font-xxs);
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
 
-const ROTATOR = [
-  "Powering high-level impact research, evaluations and training across Africa",
-  "Headquartered in Abuja, operating across five countries",
-  "Learn online or onsite, from anywhere in the world",
-  "Practitioner-led. Project-based. Career-focused.",
-];
+/* ---------- COURSES ---------- */
+.lc-courses {
+  padding-block: var(--padding-4);
+}
+.lc-sec-head {
+  max-width: 60ch;
+  margin-bottom: var(--gap-2);
+}
+.lc-sec-head .lc-h2 {
+  margin-top: 0.4rem;
+}
 
-const TOOLS = ["Python", "R", "SQL", "Power BI", "Excel", "SPSS", "STATA", "Nvivo"];
+.lc-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-5);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-2);
+}
+.lc-card--link:hover,
+.lc-card--link:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(20, 20, 30, 0.1);
+  border-color: #f3d3b6;
+}
+.lc-card__ico {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-orange-light);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.lc-card__ico img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+.lc-card__tag {
+  font-size: var(--font-xxs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-orange);
+  margin-bottom: 0.35rem;
+}
+.lc-card__name {
+  font-size: var(--font-md);
+  margin-bottom: 0.4rem;
+}
+.lc-card__blurb {
+  color: var(--muted);
+  font-size: var(--font-xs);
+  flex: 1;
+}
+.lc-card__meta {
+  font-size: var(--font-xxs);
+  color: var(--clr-gray);
+  margin-top: 0.9rem;
+}
+.lc-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+.lc-go {
+  color: var(--clr-orange);
+  font-weight: 600;
+  font-size: var(--font-xs);
+}
+.lc-price {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular";
+  font-weight: 700;
+  font-size: var(--font-md);
+}
+.lc-price--sm {
+  font-size: var(--font-xs);
+}
+.lc-price small {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: var(--font-xxs);
+}
+.lc-price__sub {
+  font-size: var(--font-xxs);
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
 
-const COUNTRIES: Array<{ flag: string; name: string; hq?: boolean }> = [
-  { flag: "🇳🇬", name: "Nigeria", hq: true },
-  { flag: "🇧🇯", name: "Benin Republic" },
-  { flag: "🇬🇼", name: "Guinea-Bissau" },
-  { flag: "🇹🇬", name: "Togo" },
-  { flag: "🇹🇩", name: "Chad" },
-];
+.lc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-1);
+}
 
-const SITE = "https://dataleadafrica.com";
+/* featured */
+.lc-feature {
+  flex-direction: row;
+  gap: var(--gap-2);
+  align-items: center;
+  background: linear-gradient(120deg, #fff, #fff6ee);
+  border-color: #f3cba6;
+  margin-bottom: var(--gap-1);
+}
+.lc-feature__text {
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.lc-feature__text:hover .lc-card__name {
+  color: var(--clr-orange);
+}
+.lc-feature__side {
+  width: 250px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4);
+  padding: 1.2rem;
+  text-align: center;
+  flex: 0 0 auto;
+}
+.lc-feature__side .lc-price {
+  font-size: var(--font-lg);
+}
+.lc-feature__side .lc-btn {
+  margin-top: 0.5rem;
+}
+.lc-badge {
+  position: absolute;
+  top: 1.1rem;
+  left: 1.1rem;
+  background: var(--clr-orange);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-10);
+}
 
-export default function Courses({
-  courseInfos,
-}: {
-  courseInfos: Array<CourseInfo>;
-}) {
-  const [line, setLine] = useState(0);
-  // When non-null, the brochure modal is open, pre-selected to this programme
-  // name ("" = no pre-selection).
-  const [brochureFor, setBrochureFor] = useState<string | null>(null);
-  // When non-null, the enrol modal is open, pre-selected to this programme.
-  const [enrolFor, setEnrolFor] = useState<string | null>(null);
+/* ---------- WHY US ---------- */
+.lc-why {
+  background: #fbfaf9;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding-block: var(--padding-4);
+}
+.lc-why__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-1);
+  margin-top: var(--gap-2);
+}
+.lc-why__item {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4);
+  padding: 1.4rem;
+}
+.lc-why__ic {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-3);
+  background: var(--clr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 0.9rem;
+}
+.lc-why__item h3 {
+  font-size: var(--font-sm);
+  margin-bottom: 0.3rem;
+}
+.lc-why__item p {
+  font-size: var(--font-xs);
+  color: var(--muted);
+}
 
-  const programmes = courseInfos.map((c) => c.name);
+/* ---------- CTA BAND ---------- */
+.lc-ctaband-wrap {
+  padding-block: var(--padding-4);
+}
+.lc-ctaband {
+  background: linear-gradient(120deg, #1c1b22, #2a2733);
+  color: #fff;
+  border-radius: var(--radius-5);
+  padding: var(--padding-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+.lc-ctaband__title {
+  color: #fff;
+  max-width: 18ch;
+}
+.lc-ctaband__sub {
+  color: #c9c7d2;
+  margin-top: 0.4rem;
+  max-width: 42ch;
+}
+.lc-ctaband__btns {
+  display: flex;
+  gap: var(--gap-1);
+  flex-wrap: wrap;
+}
 
-  useEffect(() => {
-    const t = setInterval(() => setLine((i) => (i + 1) % ROTATOR.length), 2800);
-    return () => clearInterval(t);
-  }, []);
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1100px) {
+  .lc-hero__grid,
+  .lc-impact__grid {
+    grid-template-columns: 1fr;
+  }
+  .lc-hero__art {
+    display: none;
+  }
+  .lc-hero {
+    min-height: auto;
+  }
+  .lc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .lc-why__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .lc-feature {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lc-feature__side {
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .lc-grid {
+    grid-template-columns: 1fr;
+  }
+  .lc-why__grid {
+    grid-template-columns: 1fr;
+  }
+  .lc-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lc-ctaband {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 
-  const featured = courseInfos.find((c) => META[c.name]?.featured);
-  // Adult bootcamps keep the main grid. Kids tracks get their own band below,
-  // so a 3-month professional course is never confused with a summer club.
-  const rest = courseInfos.filter((c) => !META[c.name]?.featured && !c.kids);
-  const kidsCourses = courseInfos.filter((c) => c.kids);
+/* ── brochure buttons render as <button>; keep them pixel-consistent ── */
+.lc .lc-btn {
+  font-family: inherit;
+  line-height: 1.2;
+}
 
-  // ── SEO: structured data for the organisation + the course list ──
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Data-Lead Africa",
-      url: SITE,
-      description:
-        "Research and training consultancy providing data analytics, data science and AI bootcamps across Africa.",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Plot 759, Bassan Plaza, Central Business District",
-        addressLocality: "Abuja",
-        addressCountry: "NG",
-      },
-      email: "info@dataleadafrica.com",
-      telephone: "+234-703-050-0741",
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      itemListElement: courseInfos.map((c, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        item: {
-          "@type": "Course",
-          name: c.name,
-          description: META[c.name]?.tagline || c.desc,
-          url: SITE + c.link,
-          provider: {
-            "@type": "Organization",
-            name: "Data-Lead Africa",
-            sameAs: SITE,
-          },
-          offers: {
-            "@type": "Offer",
-            price: (c.price || "").replace(/[^0-9]/g, ""),
-            priceCurrency: "NGN",
-          },
-        },
-      })),
-    },
-  ];
+/* grid card is now a wrapper: linked body + foot with a brochure button */
+.lc-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  color: inherit;
+}
+.lc-card__brochure {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: var(--font-xs);
+  color: var(--clr-orange);
+  cursor: pointer;
+}
+.lc-card__brochure:hover {
+  text-decoration: underline;
+}
 
-  return (
-    <div className="lc">
-      <Seo
-        title="Data & AI Bootcamps in Nigeria & Africa | Data-Lead Africa"
-        description="Practitioner-led bootcamps in data analytics, AI & machine learning, business analytics, bioinformatics, HR analytics and research methods - online or onsite in Abuja. Explore courses and download a brochure."
-        jsonLd={jsonLd}
-      />
+/* grid card now has two actions: Enrol + Brochure */
+.lc-card__acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.lc-card__enrol {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: var(--font-xs);
+  color: var(--clr-orange);
+  cursor: pointer;
+}
+.lc-card__enrol:hover {
+  text-decoration: underline;
+}
 
-      {/* HERO */}
-      <section className="lc-hero">
-        <div className="cwrap lc-hero__grid">
-          <div>
-            <p className="lc-eyebrow">Data-Lead Africa · Learn</p>
-            <h1 className="lc-hero__title">
-              Master the data skills the <span>world</span> is hiring for.
-            </h1>
-            <p className="lc-hero__lead">
-              Expert-led bootcamps in analytics, AI and research. Learn online or
-              onsite, from anywhere.
-            </p>
-            <p className="lc-rotor">
-              <span className="lc-rotor__dot" />
-              <span className="lc-rotor__txt">{ROTATOR[line]}</span>
-            </p>
-            <div className="lc-hero__cta">
-              <a className="lc-btn" href="#courses">
-                Explore courses →
-              </a>
-              <button
-                type="button"
-                className="lc-btn lc-btn--ghost"
-                onClick={() => setBrochureFor("")}
-              >
-                Download brochure ↓
-              </button>
-              {featured && (
-                <button
-                  type="button"
-                  className="lc-btn"
-                  onClick={() => setEnrolFor(featured.name)}
-                >
-                  Enrol now →
-                </button>
-              )}
-            </div>
+/* ============ Summer Bootcamp for Kids ============
+   Its own tinted band so a 3-month professional bootcamp is never
+   mistaken for a one-month holiday club. Tokens are local to .lc-kids. */
+.lc-kids {
+  --kid-mint: #7bd8a6;
+  --kid-green: #2f8a5e;
+  --kid-deep: #0d3b26;
+  --kid-line: #d3ead9;
+  padding-block: var(--padding-4);
+  background: linear-gradient(160deg, #f0fbf5 0%, #fffaef 100%);
+  border-block: 1px solid var(--kid-line);
+}
+.lc-kids .lc-kids__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--kid-mint);
+  color: var(--kid-deep);
+  font-size: var(--font-xxs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-10);
+  margin-bottom: 0.75rem;
+}
+.lc-kids .lc-eyebrow--kids {
+  color: var(--kid-green);
+}
+.lc-kids .lc-card--kid {
+  border-color: var(--kid-line);
+}
+.lc-kids .lc-card--kid .lc-card__enrol {
+  background: var(--kid-green);
+  border-color: var(--kid-green);
+}
+.lc-kids .lc-kids__more {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.lc-kids .lc-btn--kid {
+  background: var(--kid-green);
+  border-color: var(--kid-green);
+}
+.lc-kids .lc-btn--kid:hover {
+  background: var(--kid-deep);
+  border-color: var(--kid-deep);
+}
 
-          </div>
-          <div className="lc-hero__art">
-            <AfricaMap />
-            <span className="lc-chip lc-chip--1">🇳🇬 Abuja · HQ</span>
-            <span className="lc-chip lc-chip--2">🌍 Footprint &amp; reach</span>
-          </div>
-        </div>
-      </section>
 
-      {/* TOOLS */}
-      <div className="lc-tools">
-        <div className="cwrap lc-tools__row">
-          <span className="lc-tools__lbl">Tools you'll master</span>
-          {TOOLS.map((t) => (
-            <span className="lc-tools__chip" key={t}>
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* WHO WE ARE / IMPACT */}
-      <section className="lc-impact">
-        <div className="cwrap lc-impact__grid">
-          <div>
-            <p className="lc-eyebrow">Who we are</p>
-            <h2 className="lc-h2">Built in Africa. Trusted across borders.</h2>
-            <p className="lc-muted">
-              Headquartered in Abuja and operating across Benin Republic,
-              Guinea-Bissau, Togo and Chad, Data-Lead Africa powers high-level impact
-              research, evaluations and training across the continent.
-            </p>
-            <div className="lc-countries">
-              {COUNTRIES.map((c) => (
-                <span className="lc-cty" key={c.name}>
-                  {c.flag} {c.name}
-                  {c.hq ? <b> · HQ</b> : null}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="lc-stats">
-            <div className="lc-stat">
-              <div className="lc-stat__n">5</div>
-              <div className="lc-stat__l">countries of operation</div>
-            </div>
-            <div className="lc-stat">
-              <div className="lc-stat__n">8</div>
-              <div className="lc-stat__l">career-focused bootcamps</div>
-            </div>
-            <div className="lc-stat">
-              <div className="lc-stat__n">100%</div>
-              <div className="lc-stat__l">hands-on &amp; project-based</div>
-            </div>
-            <div className="lc-stat">
-              <div className="lc-stat__n">Global</div>
-              <div className="lc-stat__l">learners, online &amp; onsite</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* COURSES */}
-      <section className="lc-courses" id="courses">
-        <div className="cwrap">
-          <div className="lc-sec-head">
-            <p className="lc-eyebrow">Our bootcamps</p>
-            <h2 className="lc-h2">Pick your path into data</h2>
-            <p className="lc-muted">
-              Every course is hands-on and taught by practitioners. Online or onsite,
-              beginner-friendly to advanced.
-            </p>
-          </div>
-
-          {featured && (
-            <div className="lc-card lc-feature">
-              <span className="lc-badge">🏆 Scholarship eligible</span>
-              <Link to={featured.link} className="lc-feature__text">
-                <div className="lc-card__ico">
-                  <img src={featured.imgSrc} alt={featured.name + " bootcamp"} />
-                </div>
-                <p className="lc-card__tag">{META[featured.name].category}</p>
-                <h3 className="lc-card__name">{featured.name} Bootcamp</h3>
-                <p className="lc-card__blurb">
-                  {META[featured.name].tagline} {META[featured.name].duration}, online
-                  and onsite, beginner-friendly.
-                </p>
-              </Link>
-              <div className="lc-feature__side">
-                <div className="lc-price">₦{featured.price}</div>
-                <div className="lc-price__sub">one-time · next cohort soon</div>
-                <button
-                  type="button"
-                  className="lc-btn lc-btn--block"
-                  onClick={() => setEnrolFor(featured.name)}
-                >
-                  Enrol now →
-                </button>
-                <button
-                  type="button"
-                  className="lc-btn lc-btn--ghost lc-btn--block"
-                  onClick={() => setBrochureFor(featured.name)}
-                >
-                  Download brochure ↓
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="lc-grid">
-            {rest.map((v) => {
-              const m = META[v.name];
-              return (
-                <div className="lc-card lc-card--link" key={v.name}>
-                  <Link to={v.link} className="lc-card__body">
-                    <div className="lc-card__ico">
-                      <img src={v.imgSrc} alt={v.name + " bootcamp"} />
-                    </div>
-                    <p className="lc-card__tag">{m?.category}</p>
-                    <h3 className="lc-card__name">{v.name}</h3>
-                    <p className="lc-card__blurb">{m?.tagline}</p>
-                    <div className="lc-card__meta">🗓️ {m?.duration}</div>
-                  </Link>
-                  <div className="lc-card__foot">
-                    <span className="lc-price lc-price--sm">
-                      ₦{v.price}
-                      <small> one-time</small>
-                    </span>
-                    <span className="lc-card__acts">
-                      <button
-                        type="button"
-                        className="lc-card__enrol"
-                        onClick={() => setEnrolFor(v.name)}
-                      >
-                        Enrol
-                      </button>
-                      <button
-                        type="button"
-                        className="lc-card__brochure"
-                        onClick={() => setBrochureFor(v.name)}
-                      >
-                        Brochure ↓
-                      </button>
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* GIZ-ZME promo band - TEMPORARY. Remove this whole block and the
-          import when applications close. Sits between courses and kids so it
-          does not crowd the hero. */}
-      <section className="lc-giz-band">
-        <div className="cwrap">
-          <GizStrip />
-        </div>
-      </section>
-
-      {/* SUMMER BOOTCAMP FOR KIDS */}
-      {kidsCourses.length > 0 && (
-        <section className="lc-kids" id="kids">
-          <div className="cwrap">
-            <div className="lc-sec-head">
-              <span className="lc-kids__badge">☀ Summer Bootcamp</span>
-              <p className="lc-eyebrow lc-eyebrow--kids">For kids and teens</p>
-              <h2 className="lc-h2">Summer Bootcamp for Kids</h2>
-              <p className="lc-muted">
-                One month, hands-on, no experience needed. Your child builds something
-                real and presents it to the class.
-              </p>
-            </div>
-
-            <div className="lc-grid">
-              {kidsCourses.map((v) => {
-                const m = META[v.name];
-                return (
-                  <div className="lc-card lc-card--link lc-card--kid" key={v.name}>
-                    <Link to={v.link} className="lc-card__body">
-                      <div className="lc-card__ico">
-                        <img src={v.imgSrc} alt={v.name + " bootcamp"} />
-                      </div>
-                      <p className="lc-card__tag">{m?.category}</p>
-                      <h3 className="lc-card__name">{v.name}</h3>
-                      <p className="lc-card__blurb">{m?.tagline}</p>
-                      <div className="lc-card__meta">🗓️ {m?.duration}</div>
-                    </Link>
-                    <div className="lc-card__foot">
-                      <span className="lc-price lc-price--sm">
-                        ₦{v.price}
-                        <small> one-time</small>
-                      </span>
-                      <span className="lc-card__acts">
-                        <button
-                          type="button"
-                          className="lc-card__enrol"
-                          onClick={() => setEnrolFor(v.name)}
-                        >
-                          Enrol
-                        </button>
-                        <button
-                          type="button"
-                          className="lc-card__brochure"
-                          onClick={() => setBrochureFor(v.name)}
-                        >
-                          Brochure ↓
-                        </button>
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="lc-kids__more">
-              <Link className="lc-btn lc-btn--kid" to={routes.coursesKids}>
-                See the kids programme →
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* WHY US */}
-      <section className="lc-why">
-        <div className="cwrap">
-          <div className="lc-sec-head">
-            <p className="lc-eyebrow">Why Data-Lead Africa</p>
-            <h2 className="lc-h2">Learning built for the real world</h2>
-          </div>
-          <div className="lc-why__grid">
-            <div className="lc-why__item">
-              <div className="lc-why__ic">🎥</div>
-              <h3>Video + live sessions</h3>
-              <p>Recorded lessons plus live, expert-led classes.</p>
-            </div>
-            <div className="lc-why__item">
-              <div className="lc-why__ic">🌍</div>
-              <h3>Online &amp; onsite</h3>
-              <p>Collaborate with learners online and in person.</p>
-            </div>
-            <div className="lc-why__item">
-              <div className="lc-why__ic">🤝</div>
-              <h3>Peer review</h3>
-              <p>Gain new perspectives with your cohort.</p>
-            </div>
-            <div className="lc-why__item">
-              <div className="lc-why__ic">📊</div>
-              <h3>Real case studies</h3>
-              <p>Solve real business and research problems.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA BAND */}
-      <section className="lc-ctaband-wrap">
-        <div className="cwrap">
-          <div className="lc-ctaband">
-            <div>
-              <h2 className="lc-h2 lc-ctaband__title">
-                Ready to accelerate your career?
-              </h2>
-              <p className="lc-ctaband__sub">
-                Join the next cohort and build the skills the world is hiring for.
-              </p>
-            </div>
-            <div className="lc-ctaband__btns">
-              <a className="lc-btn" href="#courses">
-                Explore courses →
-              </a>
-              <button
-                type="button"
-                className="lc-btn lc-btn--ghost-dark"
-                onClick={() => setBrochureFor("")}
-              >
-                Download brochure ↓
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTPRINT TICKER (bottom) */}
-      <div className="lc-ticker" aria-hidden="true">
-        <div className="lc-ticker__track">
-          {[0, 1].map((k) => (
-            <div className="lc-ticker__group" key={k}>
-              {COUNTRIES.map((c) => (
-                <span key={c.name}>
-                  {c.flag} <b>{c.name}</b>
-                  {c.hq ? <i> · Abuja HQ</i> : null}
-                </span>
-              ))}
-              <span className="lc-ticker__o">
-                High-level impact research, evaluations &amp; training across Africa
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {brochureFor !== null && (
-        <LeadForm
-          defaultProgramme={brochureFor}
-          onClose={() => setBrochureFor(null)}
-        />
-      )}
-
-      {enrolFor !== null && (
-        <EnrolForm
-          defaultProgramme={enrolFor}
-          programmes={programmes}
-          onClose={() => setEnrolFor(null)}
-        />
-      )}
-    </div>
-  );
+/* GIZ-ZME promo band. Sits between courses and kids, its own full-width
+   section so it does not crowd the hero. TEMPORARY, remove with the component. */
+.lc-giz-band {
+  padding-block: 2.5rem;
+  background: #fff;
+  border-block: 1px solid var(--line);
+}
+.lc-giz-band .giz-strip {
+  margin-block-start: 0;
+  max-width: 62rem;
+  margin-inline: auto;
 }
