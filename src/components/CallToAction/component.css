@@ -5,8 +5,8 @@
   justify-content: center;
   gap: var(--gap-2);
 
-  padding: var(--padding-5);
-  height: 30rem;
+  padding-block: var(--padding-4);
+  padding-inline: var(--padding-5);
 
   border-radius: var(--radius-5);
 
