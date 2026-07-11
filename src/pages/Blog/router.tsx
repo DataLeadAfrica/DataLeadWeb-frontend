@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 import { routes } from "../routes";
 
-import Blog from "./page";
+import DynamicBlog from "./DynamicBlog";
 import BlogPost from "./Post/page";
 import WhyShouldIRegister from "./Post/posts/WhyShouldIRegister";
 import Top7DataAnalytics from "./Post/posts/Top7DataAnalytics";
@@ -94,7 +94,7 @@ const blogInfos: Array<BlogInfo> = [
 export default function blogRouter() {
   return (
     <>
-      <Route path={routes.blog} element={<Blog blogInfos={blogInfos} />} />
+      <Route path={routes.blog} element={<DynamicBlog />} />
       {blogInfos.map((v, _) => {
         return (
           <Route
