@@ -13,16 +13,23 @@ export type StaffInfo = Record<
     imgSrc: string;
     bioRoute: string;
     bioText: string;
+    lead?: boolean;
+    leadBio?: string;
+    expertise?: string;
+    institutions?: string[];
   }
 >;
 
 const staffInfo: StaffInfo = {
-  /* Management */
   Doc: {
-    name: "Dr. Arowolo Ayoola",
-    title: "Lead Partner",
-    imgSrc: "/assets/our-team/Doc.png",
+    name: "Arowolo Ayoola, Ph.D",
+    title: "Lead Partner and Founder",
+    imgSrc: "/assets/our-team/arowolo-lead.jpg",
     bioRoute: routes.ourTeamDrAyo,
+    lead: true,
+    leadBio:
+      "A researcher, data analyst and monitoring & evaluation consultant with nearly two decades of experience shaping high-impact policy and research, including working on the Nigeria's Economic Recovery & Growth Plan. Founder of Deaf-in-Tech and World Economic Forum Social Intrapreneur of the Year 2023.",
+    institutions: ["World Bank", "USAID", "FCDO", "GIZ", "R4D", "AGRA"],
     bioText: `Dr. Arowolo Ayoola is a researcher, data analyst, monitoring and evaluation consultant, and health financing expert. With a profound commitment to diversity, equity, and inclusion, he is a passionate advocate for gender, disability, and social inclusion. Dr. Arowolo is the founder of Deaf-in-Tech and co-founder of Data-Lead Africa, where he is dedicated to leveraging data for transformative change and promoting inclusivity in the tech sector.
 
 At Data-Lead Africa, Dr. Arowolo plays a pivotal role in driving strategic decision-making and organizational success through data analytics. His groundbreaking Deaf-in-Tech project equips individuals with disabilities for success in the tech industry, earning him recognition as a World Economic Forum Social Intrapreneur of the Year 2023.
@@ -38,10 +45,11 @@ Dr Arowolo is also a member of the Board of Advisors at Genius Business School A
 Dr. Arowolo’s unwavering commitment to data-driven solutions and inclusive development strategies positions him as a leading figure in shaping a more equitable and prosperous future for all. He holds a Ph.D. in Industrial Technical Education (Automobile) from the University of Nigeria, Nsukka.`,
   },
   Abdul: {
-    name: "Abdulsalam Oluwatosin",
-    title: "Senior Partner and Co-Founder, Data-Lead Africa",
-    imgSrc: "/assets/our-team/Abdulsalam.png",
+    name: "Abdulsalam Oluwatosin, Ph.D",
+    title: "Senior Partner and Co-Founder",
+    imgSrc: "/assets/our-team/abdulsalam-light.jpg",
     bioRoute: routes.ourTeamAbdul,
+    expertise: "Bioinformatics and data science, computational genomics",
     bioText: `Abdulsalam Oluwatosin is the Senior Partner and Co-Founder of Data-Lead Africa. He is a bioinformatics and data science expert with over eight years of experience in computational genomics and working with NGS data. Abdulsalam has a comprehensive background in developing and implementing computational methods and workflows to analyze high-throughput genomic data. Proficient in Python, SQL, R, and Shell scripting, he is also competent in working in Linux environments and HPC computing.
 
 Abdulsalam’s research expertise lies in population genetics, with prior experience in applied bioinformatics in plant genetics. He holds a Doctor of Philosophy (Ph.D.) in Bioinformatics from UNSW, a Master’s Degree in Computer Science/Bioinformatics from the University of Ibadan, and a Postgraduate Diploma in Agronomy and Crop Science from Ladoke Akintola University of Technology. He also holds a Bachelor’s Degree in Agricultural Engineering from Ladoke Akintola University of Technology.
@@ -52,10 +60,10 @@ Abdulsalam has a lifelong personal interest in supporting equitable health acces
   },
   Sefunmi: {
     name: "Sefunmi Oluwole",
-    title:
-      "DEI Partnerships, Advocacy, Policy Strengthening, & Program Dev. Manager",
-    imgSrc: "/assets/our-team/Sefunmi.png",
+    title: "DEI, Partnerships & Programs Manager",
+    imgSrc: "/assets/our-team/sefunmi-light.jpg",
     bioRoute: routes.ourTeamSefunmi,
+    expertise: "Public health, humanitarian programming, policy",
     bioText: `Sefunmi Oluwole is the DEI Partnerships, Advocacy, Policy Strengthening, and Program Development Manager at Data-Lead Africa. She is also the co-founder of the Data-Lead Africa Foundation, where she leads initiatives to strengthen and bridge the economic gap for marginalized communities and groups.
 
 A public health professional, Sefunmi has extensive experience in donor program management and the implementation of humanitarian aid, humanitarian coordination, risk and program analysis, infection control, and ethical clinical research. Her expertise spans AMR, HPV and cervical cancer, clinical trials, monitoring and evaluation, program planning and development, and curriculum development in reproductive, maternal, adolescent, and infant health in low-and-middle-income countries.
@@ -70,12 +78,12 @@ Additionally, Sefunmi has experience as a Program Officer at the Women’s Refug
 
 Sefunmi’s dedication to public health and her commitment to bridging economic gaps for marginalized communities make her a vital asset to Data-Lead Africa.’`,
   },
-  /* Communications */
   Felicia: {
     name: "Felicia Ayodele",
     title: "Chief Operating Officer",
-    imgSrc: "/assets/our-team/Felicia.png",
+    imgSrc: "/assets/our-team/felicia-light.jpg",
     bioRoute: routes.ourTeamFelicia,
+    expertise: "Operations, communications and organisational strategy",
     bioText: `Felicia Oborotomu Ayodele is the Chief Operating Officer of Data-Lead Africa, where she oversees the organization's daily operations and supports the successful delivery of projects and organizational goals. With over a decade of experience in communications, management, and team leadership, she has played an important role in the growth and development of the organization.
 
 Felicia began her career as a content creator at Data-Lead Africa, rising through the ranks to become the head of communications. Her unique blend of creativity, strategic thinking, and analytical insight has earned her a proven track record of leading teams, collaborating with multicultural stakeholders, and delivering impactful results.
@@ -84,58 +92,14 @@ In addition to her professional achievements, Felicia is committed to giving bac
 
 Felicia’s warm and engaging approach has built her a reputation as a trusted brand advisor, creative content genius, and passionate advocate for innovation and growth. Before joining Data-Lead Africa, she worked as a field journalist with the Nigerian Television Authority in Zaria.`,
   },
-  Maranatha: {
-    name: "Ekwukwu Maranatha Emmaogobji",
-    title: "Head of Media and Creative Production",
-    imgSrc: "/assets/our-team/Maranatha.png",
-    bioRoute: routes.ourTeamMaranatha,
-    bioText: `Ekwukwu Maranatha Emmaogobji is the Head of Media and Creative Production at Data-Lead Africa, where he leads the organization's media, branding, digital communications, and creative content strategy. With over ten years of experience in media production and communications, he has developed expertise in video production, photography, graphic design, digital storytelling, social media management, content development, and audience engagement. He oversees the planning and execution of creative campaigns and multimedia projects within the organization.
-
-He holds a Bachelor's Degree in English Language from Benue State University. His professional journey into media began during his undergraduate years, where he served as a Production Manager for several theatre productions on campus. Through these productions, he gained practical experience in production planning, stage management, team coordination, storytelling, effectively laying the foundation for his career into the broader media and communications industry.
-
-Beyond creative media production, Ekwukwu is also a creative writer and literary enthusiast. He has written stage plays, contributed to literary projects, and published poetry works exploring themes of identity, society, culture, and human experience. His background in literature and storytelling continues to influence his approach to content creation.
-
-At Data-Lead Africa, he remains committed to using creative media to support sustainable development outcomes across Africa.`,
-  },
-  Loveth: {
-    name: "Oche Loveth",
-    title: "Head of Programs",
-    imgSrc: "/assets/our-team/Loveth.png",
-    bioRoute: routes.ourTeamLoveth,
-    bioText: `Loveth Oche is a Programme Officer at Data-Lead Africa, with extensive experience in grant and proposal writing, data collection and database management. Her expertise in these areas drives impactful, data-driven initiatives across public health, WASH (Water, Sanitation, and Hygiene), and DEI (Diversity, Equity, and Inclusion) projects.
-
-At Data-Lead Africa, Loveth plays a critical role in overseeing multiple projects, ensuring smooth operations through her organizational skills and the ability to multitask effectively. She is an advocate for continuous learning and improvement, fostering collaboration and knowledge-sharing among her team to enhance project outcomes.
-
-Loveth’s experience spans various high-impact projects for USAID and FCDO funded projects. In public health, she has led initiatives focused on improving community health outcomes through data-driven strategies. Her work in WASH has involved developing and implementing programs that promote access to clean water and sanitation, directly impacting community health and well-being.
-Before joining Data-Lead Africa, Loveth worked with the Nigerian Christian Pilgrim Board where as an administrative officer.
-
-Loveth holds a Bachelor of Science in Anatomy from Bingham University and a Master of Public Health from Nile University, Abuja. Her academic background and commitment to continuous professional development are evident in her pursuit of advanced training and certifications in project management and data analysis.
-
-Born and raised in Nigeria, Loveth is fluent in English and brings a deep understanding of the local context to her work. Her dedication to improving community health and promoting inclusion through data-driven approaches makes her an invaluable asset to Data-Lead Africa.`,
-  },
   Matthew: {
-    bioRoute: routes.ourTeamMatthew,
-    title: "Communications Officer",
-    imgSrc: "/assets/our-team/Matthew.png",
     name: "Gabriel Matthew",
+    title: "Head of Communications",
+    imgSrc: "/assets/our-team/gabriel-light.jpg",
+    bioRoute: routes.ourTeamMatthew,
+    expertise: "Brand, media and creative direction",
     bioText: `I'm Gabriel Mathew, a multidisciplinary creative and Visual Storyteller. I currently serve as the Graphics Manager at Data-Lead Africa, where I lead the visual strategy within the Communications Department.I wear many hats, as a Director, Graphic Designer, Visual Content Curator, and Photographer — and I’m passionate about turning ideas into compelling visuals. Whether I’m behind the lens or designing behind the screen, I focus on creating content that connects, inspires, and drives impact.`,
   },
-  Eniola: {
-    name: "Oyekale Eniola Yetunde",
-    title: "Knowledge Management officer",
-    imgSrc: "/assets/our-team/Eniola.png",
-    bioRoute: routes.ourTeamEniola,
-    bioText:
-      "Eniola manages the communication of bootcamps, training, ensuring high standards of execution across all levels.",
-  },
-  Blessing: {
-    title: "Client Response Officer",
-    name: "Blessing Adem",
-    imgSrc: "/assets/our-team/Blessing.png",
-    bioRoute: routes.ourTeamBlessing,
-    bioText:
-      "Blessing Adem is the Client Response Officer at Data-Lead Africa, bringing over two years of experience to the role. She is adept at multitasking and problem-solving, ensuring that the office runs seamlessly. Blessing’s commitment to excellence and proactive approach make her an invaluable asset to the team, consistently contributing to the smooth operation and success of Data-Lead Africa.",
-  }
 };
 
 export default function ourTeamRouter() {
