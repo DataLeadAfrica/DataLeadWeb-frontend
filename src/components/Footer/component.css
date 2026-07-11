@@ -49,6 +49,13 @@
   display: flex;
   gap: var(--gap-1);
 }
+.footer .follow-links .follow-svg {
+  width: var(--font-md);
+  height: var(--font-md);
+  display: block;
+}
+.footer .follow-links a { display: inline-flex; align-items: center; }
+.footer .phone-list { display: flex; flex-direction: column; gap: 0.35rem; }
 .footer .follow-links i {
   font-size: var(--font-md);
 }
