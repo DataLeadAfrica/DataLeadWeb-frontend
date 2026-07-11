@@ -1,5 +1,6 @@
 import "./page.css";
 
+import Seo from "../../components/Seo/component";
 import Partners from "../../components/Partners/component";
 
 import hero from "./assets/wwa-hero.jpg";
@@ -12,8 +13,49 @@ import teaching from "./assets/wwa-teaching.jpg";
 import discussion from "./assets/wwa-discussion.jpg";
 
 export default function WhoWeAre() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About Data-Lead Africa",
+    url: "https://dataleadafrica.com/who-we-are",
+    description:
+      "Data-Lead Africa is a research, training and consulting firm turning data into decisions across Africa. 100+ research projects, 52+ development partners, work in 12 African countries.",
+    mainEntity: {
+      "@type": "Organization",
+      name: "Data-Lead Africa",
+      url: "https://dataleadafrica.com",
+      logo: "https://dataleadafrica.com/assets/dla-logo-email.png",
+      description:
+        "A research, training and consulting firm providing data analytics, monitoring and evaluation, and strategic consulting services across Africa.",
+      foundingLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Plot 759, Bassan Plaza, Central Business District",
+          addressLocality: "Abuja",
+          addressCountry: "NG",
+        },
+      },
+      email: "info@dataleadafrica.com",
+      areaServed: "Africa",
+      knowsAbout: [
+        "Data analytics",
+        "Monitoring and evaluation",
+        "Research methods",
+        "Statistical analysis",
+        "Strategic consulting",
+      ],
+    },
+  };
+
   return (
     <div className="wwa">
+      <Seo
+        title="Who We Are | Data-Lead Africa - Research, Training & Consulting"
+        description="Data-Lead Africa turns data into decisions across the continent. 100+ research projects delivered, 52+ development partners, and work in 12 African countries, grounded in rigor, relevance and results."
+        jsonLd={jsonLd}
+      />
+
       {/* HERO */}
       <section className="wwa-hero">
         <div className="wwa-hero__grid">
