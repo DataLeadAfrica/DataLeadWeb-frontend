@@ -52,3 +52,12 @@
   flex-direction: column;
   gap: var(--gap-1);
 }
+
+.bio__link {
+  color: var(--clr-orange, #f56e0f);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bio__link:hover {
+  color: var(--clr-orange-strong, #d94a00);
+}
