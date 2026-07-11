@@ -14,6 +14,10 @@
   "dependencies": {
     "@forge42/seo-tools": "^1.4.5",
     "@supabase/supabase-js": "^2.110.2",
+    "@tiptap/extension-image": "^3.27.3",
+    "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/react": "^3.27.3",
+    "@tiptap/starter-kit": "^3.27.3",
     "@types/react-helmet": "^6.1.11",
     "@vercel/analytics": "^1.6.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
