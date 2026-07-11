@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import { routes } from "../routes";
 
 import DynamicBlog from "./DynamicBlog";
+import Article from "./Article";
 import BlogPost from "./Post/page";
 import WhyShouldIRegister from "./Post/posts/WhyShouldIRegister";
 import Top7DataAnalytics from "./Post/posts/Top7DataAnalytics";
@@ -95,6 +96,7 @@ export default function blogRouter() {
   return (
     <>
       <Route path={routes.blog} element={<DynamicBlog />} />
+      <Route path="/blog/:slug" element={<Article />} />
       {blogInfos.map((v, _) => {
         return (
           <Route
