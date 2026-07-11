@@ -1,16 +1,55 @@
+import { useState } from "react";
 import { Link } from "react-router";
 
 import "./page.css";
 
 import africa from "./assets/africa.svg";
-import split_card_1 from "./assets/split-card-1.svg";
-import split_card_2 from "./assets/split-card-2.svg";
-import split_card_3 from "./assets/split-card-3.svg";
+import svcConsultancy from "./assets/svc-consultancy.jpg";
+import svcResearch from "./assets/svc-research.jpg";
+import svcTraining from "./assets/svc-training.jpg";
 
 import { routes } from "../routes";
 import CallToAction from "../../components/CallToAction/component";
 
+const SERVICES = [
+  {
+    no: "01",
+    tab: "Consultancy",
+    tabDesc: "Research, M&E and strategic planning",
+    img: svcConsultancy,
+    title: "Ready to move your mission forward?",
+    body: "Expert research, monitoring and evaluation, and strategic planning that delivers measurable impact for your organization.",
+    cta: "Book Consultancy",
+    href: "https://calendly.com/datalead-a-info/30min",
+    external: true,
+  },
+  {
+    no: "02",
+    tab: "Research",
+    tabDesc: "Proof of impact across major projects",
+    img: svcResearch,
+    title: "See our proof of impact",
+    body: "A history of major research projects across M&E, assessment and strategic planning, from field data collection to the final report.",
+    cta: "View Our Research",
+    to: routes.research,
+    external: false,
+  },
+  {
+    no: "03",
+    tab: "Training",
+    tabDesc: "Upskill your team with tailored programmes",
+    img: svcTraining,
+    title: "Upskill your team. Maximize your data.",
+    body: "Customized corporate training in analytics and M&E capacity building, designed to turn your staff into data-driven decision-makers.",
+    cta: "Explore Corporate Training",
+    to: routes.training,
+    external: false,
+  },
+];
+
 function Index() {
+  const [svc, setSvc] = useState(0);
+
   return (
     <div className="landing">
       <div className="landing__hero">
@@ -53,70 +92,55 @@ function Index() {
       <div className="landing__our-services">
         <p className="landing__heading">Our Services</p>
         <h2 className="landing__sub-heading">
-          Empowering individuals and organizations through data-driven
-          solutions.
+          Data-driven solutions, end to end.
         </h2>
-        <div className="our-services__split-cards">
-          <div className="our-services__split-card">
-            <div>
-              <h2>Ready to Move Your Mission Forward?</h2>
-              <p>
-                Let's discuss how our expert research, M&E, and strategic
-                planning can deliver measurable impact for your organization
-              </p>
-              <a
-                href="https://calendly.com/datalead-a-info/30min"
-                className="btn btn--white"
-                style={{ display: "flex", gap: "var(--gap-1)" }}
+
+        <div className="svc-panel">
+          <div className="svc-panel__tabs" role="tablist">
+            {SERVICES.map((sv, i) => (
+              <button
+                key={sv.no}
+                className="svc-tab"
+                role="tab"
+                aria-selected={svc === i}
+                onClick={() => setSvc(i)}
+                type="button"
               >
-                Book Consultancy
-                <i className="nf nf-fa-arrow_right"></i>
-              </a>
-            </div>
-            <div>
-              <img src={split_card_1} alt="" />
-            </div>
+                <span className="svc-tab__no">{sv.no}</span>
+                <span className="svc-tab__text">
+                  <span className="svc-tab__title">{sv.tab}</span>
+                  <span className="svc-tab__desc">{sv.tabDesc}</span>
+                </span>
+              </button>
+            ))}
           </div>
-          <div className="our-services__split-card">
-            <div>
-              <img src={split_card_2} alt="" />
+
+          <div className="svc-panel__stage">
+            <div className="svc-panel__media">
+              {SERVICES.map((sv, i) => (
+                <img
+                  key={sv.no}
+                  src={sv.img}
+                  alt=""
+                  className={"svc-panel__img" + (svc === i ? " on" : "")}
+                  loading="lazy"
+                />
+              ))}
             </div>
-            <div>
-              <h2>See Our Proof of Impact</h2>
-              <p>
-                Explore our history of major research projects and discover the
-                depth of expertise we bring to complex M&E, assessment, and
-                strategic planning challenges
-              </p>
-              <Link
-                to={routes.research}
-                className="btn btn--white"
-                style={{ display: "flex", gap: "var(--gap-1)" }}
-              >
-                View Our Research
-                <i className="nf nf-fa-arrow_right"></i>
-              </Link>
-            </div>
-          </div>
-          <div className="our-services__split-card">
-            <div>
-              <h2>Upskill Your Team. Maximize Your Data</h2>
-              <p>
-                Explore our customized corporate training programs, including
-                analytics and M&E capacity building, designed to transform your
-                staff into data-driven decision-makers{" "}
-              </p>
-              <Link
-                to={routes.training}
-                className="btn btn--white"
-                style={{ display: "flex", gap: "var(--gap-1)" }}
-              >
-                Explore Corporate Training
-                <i className="nf nf-fa-arrow_right"></i>
-              </Link>
-            </div>
-            <div>
-              <img src={split_card_3} alt="" />
+            <div className="svc-panel__body">
+              <h3>{SERVICES[svc].title}</h3>
+              <p>{SERVICES[svc].body}</p>
+              {SERVICES[svc].external ? (
+                <a className="svc-panel__cta" href={SERVICES[svc].href}>
+                  {SERVICES[svc].cta}
+                  <i className="nf nf-fa-arrow_right"></i>
+                </a>
+              ) : (
+                <Link className="svc-panel__cta" to={SERVICES[svc].to as string}>
+                  {SERVICES[svc].cta}
+                  <i className="nf nf-fa-arrow_right"></i>
+                </Link>
+              )}
             </div>
           </div>
         </div>
