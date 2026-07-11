@@ -109,9 +109,9 @@ export default function Footer() {
           <div className="get-in-touch">
             <i className="nf nf-fa-phone"></i>
             <div className="phone-list">
-              <Link to="tel:+2349166661234">+234 916 666 1234</Link>
-              <Link to="tel:+2347030500741">+234 703 050 0741</Link>
-              <Link to="tel:+245957914857">+245 957 914 857</Link>
+              <Link to="tel:+2349166661234">+234 916 666 1234</Link>,{" "}
+              <Link to="tel:+2347030500741">+234 703 050 0741</Link>,{" "}
+              <Link to="tel:+245957914857">+245 957 914 857</Link>,{" "}
               <Link to="tel:+447983203075">+44 7983 203075</Link>
             </div>
           </div>
