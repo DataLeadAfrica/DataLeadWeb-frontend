@@ -241,3 +241,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.dblog__mast-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.dblog__staff {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--orange-strong);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.dblog__staff:hover {
+  border-color: var(--orange);
+  background: #fdeede;
+}

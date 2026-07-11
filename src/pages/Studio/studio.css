@@ -214,3 +214,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+.studio-login__forgot {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.studio-login__forgot:hover {
+  color: var(--orange);
+}

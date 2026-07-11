@@ -34,7 +34,7 @@ export async function registerStaff(
   if (!isAllowedEmail(email)) {
     return {
       ok: false,
-      message: "Please use your @dataleadafrica.com email address.",
+      message: "Submission of articles is only open to staff of Data-Lead Africa.",
     };
   }
   if (input.password.length < 8) {
@@ -78,7 +78,7 @@ export async function login(
   if (!isAllowedEmail(clean)) {
     return {
       ok: false,
-      message: "Please use your @dataleadafrica.com email address.",
+      message: "Submission of articles is only open to staff of Data-Lead Africa.",
     };
   }
   const { error } = await supabase.auth.signInWithPassword({
@@ -89,6 +89,39 @@ export async function login(
     return { ok: false, message: error.message };
   }
   return { ok: true, message: "Signed in." };
+}
+
+// Send a password-reset email. Note: depends on email delivery being set up.
+export async function resetPassword(
+  email: string,
+): Promise<{ ok: boolean; message: string }> {
+  const clean = email.trim().toLowerCase();
+  if (!isAllowedEmail(clean)) {
+    return {
+      ok: false,
+      message: "Submission of articles is only open to staff of Data-Lead Africa.",
+    };
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(clean, {
+    redirectTo: window.location.origin + "/studio",
+  });
+  if (error) return { ok: false, message: error.message };
+  return {
+    ok: true,
+    message: "If email is set up, a reset link is on its way to your inbox.",
+  };
+}
+
+// Update the current user's password (used after a reset link or from settings).
+export async function updatePassword(
+  newPassword: string,
+): Promise<{ ok: boolean; message: string }> {
+  if (newPassword.length < 8) {
+    return { ok: false, message: "Password must be at least 8 characters." };
+  }
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Password updated." };
 }
 
 export async function getCurrentEmail(): Promise<string | null> {
