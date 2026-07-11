@@ -5,12 +5,13 @@ import { supabase } from "../../lib/supabase";
 import { getCurrentEmail, isAdminEmail, signOut } from "../../lib/auth";
 import StudioLogin from "./Login";
 import Editor from "./Editor";
+import Queue from "./Queue";
 
 export default function Studio() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
-  const [view, setView] = useState<"home" | "write">("home");
+  const [view, setView] = useState<"home" | "write" | "queue">("home");
 
   useEffect(() => {
     let robots = document.head.querySelector<HTMLMetaElement>(
@@ -64,6 +65,10 @@ export default function Studio() {
     );
   }
 
+  if (view === "queue" && admin) {
+    return <Queue onDone={() => setView("home")} />;
+  }
+
   return (
     <div className="studio">
       <div className="studio__bar">
@@ -96,11 +101,13 @@ export default function Studio() {
             </span>
           </button>
           {admin && (
-            <div className="studio__card studio__card--soon">
+            <button className="studio__card" onClick={() => setView("queue")}>
               <span className="studio__card-icon">&#9745;</span>
               <span className="studio__card-title">Approval queue</span>
-              <span className="studio__card-sub">Coming in the next step</span>
-            </div>
+              <span className="studio__card-sub">
+                Review and publish staff submissions
+              </span>
+            </button>
           )}
         </div>
       </div>

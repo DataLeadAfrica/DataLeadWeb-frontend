@@ -22,6 +22,10 @@ export type Post = {
   published: boolean;
   published_at: string | null;
   created_at: string;
+  status: string;
+  author_email: string | null;
+  review_note: string | null;
+  updated_at: string | null;
 };
 
 // Fetch all published posts, newest first.
@@ -135,4 +139,66 @@ export async function savePost(
     .single();
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Saved.", id: data?.id };
+}
+
+// ---- Admin queue helpers ----
+
+// Posts an admin can act on: everything not-yet-public plus live ones.
+export async function fetchAdminPosts(): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("updated_at", { ascending: false });
+  if (error) {
+    console.error("Failed to load admin posts:", error.message);
+    return [];
+  }
+  return (data as Post[]) || [];
+}
+
+// Approve a pending post -> publish it live.
+export async function approvePost(
+  id: string,
+): Promise<{ ok: boolean; message: string }> {
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      status: "published",
+      published: true,
+      published_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Published." };
+}
+
+// Send a post back to the author with a note.
+export async function rejectPost(
+  id: string,
+  note: string,
+): Promise<{ ok: boolean; message: string }> {
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      status: "rejected",
+      published: false,
+      review_note: note,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Sent back." };
+}
+
+// Unpublish a live post (back to draft, removed from public view).
+export async function unpublishPost(
+  id: string,
+): Promise<{ ok: boolean; message: string }> {
+  const { error } = await supabase
+    .from("posts")
+    .update({ status: "draft", published: false, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Unpublished." };
 }
