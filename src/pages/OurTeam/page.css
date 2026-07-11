@@ -1,98 +1,215 @@
-.our-team__page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.wwt {
+  --orange: #f56e0f;
+  --orange-strong: #d94a00;
+  --ink: #141317;
+  --muted: #6c6b74;
+  --faint: #9a99a2;
+  --line: #e7e6ea;
+  --paper: #f3f1ee;
+  --wmax: 1180px;
+  color: var(--ink);
+  background: #fff;
+}
+.wwt img {
+  display: block;
+  max-width: 100%;
+}
+.wwt__wrap {
+  max-width: var(--wmax);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.wwt-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--orange);
 }
 
-.our-team__heading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--padding-5);
-  gap: var(--gap-1);
-
-  & h1 {
-    text-align: center;
-    font-family: "ClashDisplay-Regular";
-    font-weight: 400;
-    font-size: var(--font-xxxl);
-  }
-
-  & p {
-    text-align: center;
-    font-weight: 400;
-    width: 60%;
-    font-size: var(--font-xs);
-    color: var(--clr-gray);
-  }
+/* MASTHEAD */
+.wwt-mast {
+  padding: 4.5rem 0 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.wwt-mast__title {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.6rem, 5.5vw, 4.6rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  margin: 1.1rem 0 1.3rem;
+  max-width: 15ch;
+}
+.wwt-mast__lead {
+  font-size: 1.12rem;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 62ch;
+  font-weight: 300;
 }
 
-.our-team__members {
+/* LEAD FEATURE */
+.wwt-lead {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-3);
-  padding: var(--padding-4);
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
 }
-
-.our-team__member {
+.wwt-lead__photo {
+  position: relative;
+  background: var(--paper);
+  overflow: hidden;
+}
+.wwt-lead__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 12%;
+}
+.wwt-lead__body {
+  padding: 3.5rem 3rem;
   display: flex;
   flex-direction: column;
-  width: 25rem;
-
-  border: solid 1px var(--clr-gray-light);
-  padding: var(--padding-1);
-  border-radius: var(--radius-10);
-
-  &:hover,
-  &:focus {
-    border: solid 1px var(--clr-orange);
-  }
-
-  & .member__image {
-    display: flex;
-    align-items: center;
-
-    height: 23rem;
-
-    border-top-left-radius: var(--radius-5);
-    border-top-right-radius: var(--radius-5);
-
-    background-color: var(--clr-gray-light);
-
-    & img {
-      height: 100%;
-    }
-  }
-
-  & .member__info {
-    display: flex;
-    flex-direction: column;
-    padding: var(--padding-1);
-
-    & h3 {
-      font-size: var(--font-md);
-      font-weight: 400;
-    }
-
-    & .member__name {
-      font-size: var(--font-sm);
-    }
-  }
+  justify-content: center;
 }
-@media (max-width: 1400px) {
-  .our-team__members {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.wwt-lead__kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 1rem;
 }
-@media (max-width: 1200px) {
-  .our-team__heading h1,
-  .our-team__heading p {
-    text-align: left;
-    width: 100%;
+.wwt-lead__name {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 3.5vw, 2.9rem);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.wwt-lead__role {
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular", sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin-bottom: 1.4rem;
+}
+.wwt-lead__bio {
+  font-size: 1.02rem;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 300;
+  margin-bottom: 1.4rem;
+  max-width: 52ch;
+}
+.wwt-inline-link {
+  color: var(--orange-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 400;
+}
+.wwt-inline-link:hover {
+  color: var(--orange);
+}
+.wwt-lead__inst {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--line);
+  margin-bottom: 1.8rem;
+}
+.wwt-lead__inst span {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+}
+.wwt-lead__link {
+  font-family: "ClashDisplay-Medium", "ClashDisplay-Regular", sans-serif;
+  font-weight: 500;
+  align-self: flex-start;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.98rem;
+  border-bottom: 2px solid var(--orange);
+  padding-bottom: 3px;
+}
+.wwt-lead__link:hover {
+  color: var(--orange);
+}
+
+/* ROSTER */
+.wwt-roster-head {
+  padding: 3rem 0 1.6rem;
+}
+.wwt-roster-head h2 {
+  font-family: "ClashDisplay-Semibold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+}
+.wwt-roster {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.75rem;
+  padding-bottom: 5rem;
+}
+.wwt-ro {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.wwt-ro__photo {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--paper);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.wwt-ro__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  transition: transform 0.35s ease;
+}
+.wwt-ro:hover .wwt-ro__photo img {
+  transform: scale(1.04);
+}
+.wwt-ro__meta h3 {
+  font-family: "ClashDisplay-Semibold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.3rem;
+}
+.wwt-ro__role {
+  font-size: 0.82rem;
+  color: var(--orange);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.wwt-ro__exp {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+  font-weight: 300;
+}
+
+@media (max-width: 900px) {
+  .wwt-lead {
+    grid-template-columns: 1fr;
   }
-  .our-team__members {
-    grid-template-columns: repeat(1, 1fr);
+  .wwt-lead__photo {
+    aspect-ratio: 1;
+  }
+  .wwt-lead__body {
+    padding: 2.5rem;
+  }
+  .wwt-roster {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem 1.5rem;
   }
 }
