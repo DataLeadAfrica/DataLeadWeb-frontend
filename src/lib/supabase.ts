@@ -64,13 +64,80 @@ export async function fetchPostBySlug(slug: string): Promise<Post | null> {
 
 // ---- Studio (authenticated) helpers ----
 
+// Downscale and compress an image in the browser before upload. This keeps the
+// storage bucket small and helps the blog load quickly. Large photos are
+// resized so the longest side is at most maxDim pixels and re-encoded as WebP,
+// which is smaller than JPEG or PNG and keeps transparency. Vector (SVG) and
+// animated (GIF) images are left untouched so they are not broken.
+async function compressImage(
+  file: File,
+  maxDim = 1600,
+  quality = 0.82,
+): Promise<File> {
+  const type = file.type;
+  if (
+    !type.startsWith("image/") ||
+    type === "image/svg+xml" ||
+    type === "image/gif"
+  ) {
+    return file;
+  }
+
+  try {
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(new Error("read failed"));
+      r.readAsDataURL(file);
+    });
+
+    const img: HTMLImageElement = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error("decode failed"));
+      i.src = dataUrl;
+    });
+
+    const longest = Math.max(img.width, img.height);
+    // Already small enough on both dimensions and in bytes: leave it alone.
+    if (longest <= maxDim && file.size <= 500 * 1024) return file;
+
+    const scale = Math.min(1, maxDim / longest);
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/webp", quality),
+    );
+    // Fall back to the original if the browser could not produce a smaller file.
+    if (!blob || blob.size >= file.size) return file;
+
+    const newName = file.name.replace(/\.[^.]+$/, "") + ".webp";
+    return new File([blob], newName, { type: "image/webp" });
+  } catch {
+    return file;
+  }
+}
+
 // Upload an image to the blog-images bucket and return its public URL.
 export async function uploadImage(file: File): Promise<string | null> {
-  const ext = file.name.split(".").pop() || "jpg";
+  const optimised = await compressImage(file);
+  const ext = optimised.name.split(".").pop() || "jpg";
   const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage
     .from("blog-images")
-    .upload(name, file, { cacheControl: "3600", upsert: false });
+    .upload(name, optimised, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: optimised.type,
+    });
   if (error) {
     console.error("Image upload failed:", error.message);
     return null;
