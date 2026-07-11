@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import "./studio.css";
-import { supabase } from "../../lib/supabase";
+import { Post, supabase } from "../../lib/supabase";
 import { getCurrentEmail, isAdminEmail, signOut } from "../../lib/auth";
 import StudioLogin from "./Login";
 import Editor from "./Editor";
@@ -11,7 +11,10 @@ export default function Studio() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
-  const [view, setView] = useState<"home" | "write" | "queue">("home");
+  const [view, setView] = useState<"home" | "write" | "queue" | "workspace">(
+    "home",
+  );
+  const [openedPost, setOpenedPost] = useState<Post | null>(null);
 
   useEffect(() => {
     let robots = document.head.querySelector<HTMLMetaElement>(
@@ -60,13 +63,37 @@ export default function Studio() {
       <Editor
         authorEmail={email}
         authorName={name}
+        isAdmin={admin}
         onDone={() => setView("home")}
       />
     );
   }
 
+  if (view === "workspace" && openedPost) {
+    return (
+      <Editor
+        authorEmail={email}
+        authorName={name}
+        isAdmin={admin}
+        initialPost={openedPost}
+        onDone={() => {
+          setOpenedPost(null);
+          setView("queue");
+        }}
+      />
+    );
+  }
+
   if (view === "queue" && admin) {
-    return <Queue onDone={() => setView("home")} />;
+    return (
+      <Queue
+        onDone={() => setView("home")}
+        onOpen={(p) => {
+          setOpenedPost(p);
+          setView("workspace");
+        }}
+      />
+    );
   }
 
   return (

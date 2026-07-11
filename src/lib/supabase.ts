@@ -202,3 +202,46 @@ export async function unpublishPost(
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Unpublished." };
 }
+
+// Update only the content fields of a post, leaving status and published
+// untouched. Used when an admin edits an article in the workspace so that
+// editing a live post keeps it live and editing a pending post keeps it pending.
+export type ContentUpdate = {
+  title: string;
+  excerpt: string;
+  body: string; // HTML from the editor
+  cover_url: string | null;
+  category: string;
+  tags: string[];
+  read_minutes: number;
+};
+
+export async function updatePostContent(
+  id: string,
+  input: ContentUpdate,
+): Promise<{ ok: boolean; message: string }> {
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      title: input.title.trim(),
+      excerpt: input.excerpt.trim(),
+      body: input.body,
+      cover_url: input.cover_url,
+      category: input.category.trim() || null,
+      tags: input.tags,
+      read_minutes: input.read_minutes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Saved." };
+}
+
+// Permanently delete a post. Admin only (enforced by RLS).
+export async function deletePost(
+  id: string,
+): Promise<{ ok: boolean; message: string }> {
+  const { error } = await supabase.from("posts").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "Deleted." };
+}

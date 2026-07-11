@@ -7,6 +7,7 @@ import {
   approvePost,
   rejectPost,
   unpublishPost,
+  deletePost,
 } from "../../lib/supabase";
 
 function shortDate(d: string | null): string {
@@ -19,7 +20,13 @@ function shortDate(d: string | null): string {
   });
 }
 
-export default function Queue({ onDone }: { onDone: () => void }) {
+export default function Queue({
+  onDone,
+  onOpen,
+}: {
+  onDone: () => void;
+  onOpen: (post: Post) => void;
+}) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -49,6 +56,16 @@ export default function Queue({ onDone }: { onDone: () => void }) {
   async function onUnpublish(id: string) {
     setBusyId(id);
     await unpublishPost(id);
+    await load();
+    setBusyId(null);
+  }
+  async function onDelete(id: string) {
+    if (
+      !window.confirm("Delete this article permanently? This cannot be undone.")
+    )
+      return;
+    setBusyId(id);
+    await deletePost(id);
     await load();
     setBusyId(null);
   }
@@ -90,6 +107,13 @@ export default function Queue({ onDone }: { onDone: () => void }) {
         </div>
         <span className={statusClass(p.status)}>{p.status}</span>
         <div className="q-actions">
+          <button
+            className="q-btn q-btn--open"
+            onClick={() => onOpen(p)}
+            disabled={busy}
+          >
+            Open
+          </button>
           {p.status === "published" ? (
             <>
               <a
@@ -126,6 +150,13 @@ export default function Queue({ onDone }: { onDone: () => void }) {
               </button>
             </>
           )}
+          <button
+            className="q-btn q-btn--delete"
+            onClick={() => onDelete(p.id)}
+            disabled={busy}
+          >
+            Delete
+          </button>
         </div>
       </div>
     );
@@ -139,8 +170,8 @@ export default function Queue({ onDone }: { onDone: () => void }) {
         </button>
         <h1>Approval queue</h1>
         <p>
-          Review articles submitted by staff. Approve to publish live, or send
-          back with a note.
+          Review articles submitted by staff. Open to preview or edit, approve
+          to publish live, send back with a note, or delete.
         </p>
       </div>
 

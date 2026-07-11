@@ -161,3 +161,28 @@
     width: 100%;
   }
 }
+
+/* Open + Delete actions (added) */
+.q-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 0.5rem;
+}
+.q-btn--open {
+  background: var(--ink);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+}
+.q-btn--open:hover {
+  background: #000;
+}
+.q-btn--delete {
+  background: #fff;
+  color: #b91c1c;
+  border: 1px solid #e6a49b;
+}
+.q-btn--delete:hover {
+  background: #fff5f4;
+  border-color: #b91c1c;
+}
