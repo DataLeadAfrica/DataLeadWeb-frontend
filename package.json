@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@forge42/seo-tools": "^1.4.5",
+    "@supabase/supabase-js": "^2.110.2",
     "@types/react-helmet": "^6.1.11",
     "@vercel/analytics": "^1.6.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
