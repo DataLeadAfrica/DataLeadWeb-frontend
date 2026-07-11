@@ -4,13 +4,15 @@ import "./studio.css";
 import { supabase } from "../../lib/supabase";
 import { getCurrentEmail, isAdminEmail, signOut } from "../../lib/auth";
 import StudioLogin from "./Login";
+import Editor from "./Editor";
 
 export default function Studio() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
+  const [view, setView] = useState<"home" | "write">("home");
 
   useEffect(() => {
-    // set noindex for the whole studio
     let robots = document.head.querySelector<HTMLMetaElement>(
       'meta[name="robots"]',
     );
@@ -20,26 +22,47 @@ export default function Studio() {
       document.head.appendChild(robots);
     }
     robots.setAttribute("content", "noindex, nofollow");
+    document.title = "Content Studio | Data-Lead Africa";
 
     getCurrentEmail().then((e) => {
       setEmail(e);
       setLoading(false);
+      if (e) loadName();
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setEmail(session?.user?.email ?? null);
+      const e = session?.user?.email ?? null;
+      setEmail(e);
+      if (e) loadName();
     });
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  if (loading) {
-    return <div className="studio-loading">Loading...</div>;
+  async function loadName() {
+    const { data } = await supabase.auth.getUser();
+    const uid = data.user?.id;
+    if (!uid) return;
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", uid)
+      .maybeSingle();
+    if (prof?.full_name) setName(prof.full_name);
   }
 
-  if (!email) {
-    return <StudioLogin />;
-  }
+  if (loading) return <div className="studio-loading">Loading...</div>;
+  if (!email) return <StudioLogin />;
 
   const admin = isAdminEmail(email);
+
+  if (view === "write") {
+    return (
+      <Editor
+        authorEmail={email}
+        authorName={name}
+        onDone={() => setView("home")}
+      />
+    );
+  }
 
   return (
     <div className="studio">
@@ -47,7 +70,7 @@ export default function Studio() {
         <b>Data-Lead Africa</b>
         <span className="studio__bar-sub">Content Studio</span>
         <span className="studio__who">
-          {email}
+          {name || email}
           <span className="studio__role">{admin ? "Admin" : "Staff"}</span>
         </span>
         <button className="studio__signout" onClick={() => signOut()}>
@@ -55,15 +78,31 @@ export default function Studio() {
         </button>
       </div>
 
-      <div className="studio__placeholder">
-        <h1>You're signed in.</h1>
-        <p>
-          Welcome, {email}. You are signed in as{" "}
-          <strong>{admin ? "an admin" : "staff"}</strong>.
+      <div className="studio__home">
+        <h1>
+          Welcome{name ? ", " + name.split(" ")[0] : ""}.
+        </h1>
+        <p className="studio__home-lead">
+          {admin
+            ? "You can write articles and approve submissions from staff."
+            : "Write an article and submit it for review. An admin approves before it goes live."}
         </p>
-        <p className="studio__placeholder-note">
-          The writing editor and approval queue are coming in the next steps.
-        </p>
+        <div className="studio__cards">
+          <button className="studio__card" onClick={() => setView("write")}>
+            <span className="studio__card-icon">&#9998;</span>
+            <span className="studio__card-title">Write an article</span>
+            <span className="studio__card-sub">
+              Compose, add images, and submit for review
+            </span>
+          </button>
+          {admin && (
+            <div className="studio__card studio__card--soon">
+              <span className="studio__card-icon">&#9745;</span>
+              <span className="studio__card-title">Approval queue</span>
+              <span className="studio__card-sub">Coming in the next step</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

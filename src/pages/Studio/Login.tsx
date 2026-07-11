@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import "./studio.css";
-import { login, registerStaff } from "../../lib/auth";
+import { login, registerStaff, resetPassword } from "../../lib/auth";
 
 function useNoIndex() {
   useEffect(() => {
@@ -18,19 +18,24 @@ function useNoIndex() {
   }, []);
 }
 
+type Mode = "login" | "register" | "reset";
+
 export default function StudioLogin() {
   useNoIndex();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<Mode>("login");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  // shared
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // register-only
   const [fullName, setFullName] = useState("");
   const [department, setDepartment] = useState("");
   const [title, setTitle] = useState("");
+
+  function switchMode(m: Mode) {
+    setMode(m);
+    setMsg(null);
+  }
 
   async function submitLogin() {
     setBusy(true);
@@ -38,7 +43,6 @@ export default function StudioLogin() {
     const res = await login(email, password);
     if (!res.ok) setMsg({ ok: false, text: res.message });
     setBusy(false);
-    // on success, the Studio shell reacts to the auth state change automatically
   }
 
   async function submitRegister() {
@@ -55,32 +59,48 @@ export default function StudioLogin() {
     setBusy(false);
   }
 
+  async function submitReset() {
+    setBusy(true);
+    setMsg(null);
+    const res = await resetPassword(email);
+    setMsg({ ok: res.ok, text: res.message });
+    setBusy(false);
+  }
+
   return (
     <div className="studio-login">
       <div className="studio-login__card">
         <div className="studio-login__brand">Data-Lead Africa</div>
         <h1>Content Studio</h1>
 
-        <div className="studio-login__tabs">
-          <button
-            className={mode === "login" ? "on" : ""}
-            onClick={() => {
-              setMode("login");
-              setMsg(null);
-            }}
-          >
-            Sign in
-          </button>
-          <button
-            className={mode === "register" ? "on" : ""}
-            onClick={() => {
-              setMode("register");
-              setMsg(null);
-            }}
-          >
-            Create account
-          </button>
-        </div>
+        {mode !== "reset" && (
+          <div className="studio-login__tabs">
+            <button
+              className={mode === "login" ? "on" : ""}
+              onClick={() => switchMode("login")}
+            >
+              Sign in
+            </button>
+            <button
+              className={mode === "register" ? "on" : ""}
+              onClick={() => switchMode("register")}
+            >
+              Sign up
+            </button>
+          </div>
+        )}
+
+        {mode === "register" && (
+          <p className="studio-login__lead">
+            Sign up, write and submit your articles.
+          </p>
+        )}
+
+        {mode === "reset" && (
+          <p className="studio-login__lead">
+            Enter your email and we'll send you a link to reset your password.
+          </p>
+        )}
 
         {mode === "register" && (
           <>
@@ -112,46 +132,67 @@ export default function StudioLogin() {
           onChange={(e) => setEmail(e.target.value)}
           aria-label="Email address"
         />
-        <input
-          type="password"
-          placeholder={
-            mode === "register" ? "Create a password (8+ characters)" : "Password"
-          }
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === "Enter" &&
-            (mode === "login" ? submitLogin() : submitRegister())
-          }
-          aria-label="Password"
-        />
+
+        {mode !== "reset" && (
+          <input
+            type="password"
+            placeholder={
+              mode === "register"
+                ? "Create a password (8+ characters)"
+                : "Password"
+            }
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) =>
+              e.key === "Enter" &&
+              (mode === "login" ? submitLogin() : submitRegister())
+            }
+            aria-label="Password"
+          />
+        )}
 
         <button
           className="studio-btn"
-          onClick={mode === "login" ? submitLogin : submitRegister}
-          disabled={busy || !email || !password}
+          onClick={
+            mode === "login"
+              ? submitLogin
+              : mode === "register"
+                ? submitRegister
+                : submitReset
+          }
+          disabled={busy || !email || (mode !== "reset" && !password)}
         >
           {busy
             ? "Please wait..."
             : mode === "login"
               ? "Sign in"
-              : "Create account"}
+              : mode === "register"
+                ? "Sign up"
+                : "Send reset link"}
         </button>
 
         {msg && (
-          <p
-            className={
-              msg.ok ? "studio-login__success" : "studio-login__error"
-            }
-          >
+          <p className={msg.ok ? "studio-login__success" : "studio-login__error"}>
             {msg.text}
           </p>
         )}
 
-        <p className="studio-login__note">
-          Only @dataleadafrica.com addresses can register. Staff can write and
-          submit articles; admins approve them for publishing.
-        </p>
+        {mode === "login" && (
+          <button
+            className="studio-login__forgot"
+            onClick={() => switchMode("reset")}
+          >
+            Forgot password?
+          </button>
+        )}
+        {mode === "reset" && (
+          <button
+            className="studio-login__forgot"
+            onClick={() => switchMode("login")}
+          >
+            &larr; Back to sign in
+          </button>
+        )}
       </div>
     </div>
   );

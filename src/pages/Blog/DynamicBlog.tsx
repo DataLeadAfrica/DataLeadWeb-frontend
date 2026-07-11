@@ -104,7 +104,12 @@ export default function DynamicBlog() {
 
       <div className="dblog__wrap">
         <header className="dblog__mast">
-          <p className="dblog__eyebrow">Insights</p>
+          <div className="dblog__mast-top">
+            <p className="dblog__eyebrow">Insights</p>
+            <Link to="/studio" className="dblog__staff">
+              Staff Login &rarr;
+            </Link>
+          </div>
           <h1>
             The Data-Lead Africa <em>Blog</em>
           </h1>
