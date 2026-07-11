@@ -14,6 +14,7 @@ import ContactUs from "./pages/ContactUs/page";
 import PrivacyPolicy from "./pages/PrivacyPolicy/page";
 import ourTeamRouter from "./pages/OurTeam/router";
 import blogRouter from "./pages/Blog/router";
+import Studio from "./pages/Studio/Studio";
 import researchRouter from "./pages/Research/router";
 import courseRouter from "./pages/Courses/router";
 import consultancyRouter from "./pages/Consultancy/router";
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path={routes.whoWeAre} element={<WhoWeAre />} />
         <Route path={routes.contactUs} element={<ContactUs />} />
         <Route path={routes.privacyPolicy} element={<PrivacyPolicy />} />
+        <Route path="/studio" element={<Studio />} />
         {ourTeamRouter()}
         {blogRouter()}
         {researchRouter()}

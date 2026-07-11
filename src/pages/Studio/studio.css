@@ -1,0 +1,210 @@
+.studio-login,
+.studio {
+  --orange: #f56e0f;
+  --orange-strong: #d94a00;
+  --ink: #141317;
+  --muted: #5f5e68;
+  --faint: #9a99a2;
+  --line: #e7e6ea;
+  --paper: #f7f6f4;
+  color: var(--ink);
+}
+
+/* LOGIN */
+.studio-login {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  background: #faf9f8;
+  padding: 2rem;
+}
+.studio-login__card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+}
+.studio-login__brand {
+  font-family: "ClashDisplay-Bold", sans-serif;
+  font-weight: 700;
+  color: var(--orange);
+  font-size: 1.05rem;
+}
+.studio-login h1 {
+  font-family: "ClashDisplay-Bold", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+.studio-login__lead {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.studio-login input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  margin-bottom: 0.9rem;
+  outline: none;
+}
+.studio-login input:focus {
+  border-color: var(--orange);
+}
+.studio-btn {
+  background: var(--orange);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.8rem 1.4rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  width: 100%;
+}
+.studio-btn:hover {
+  background: var(--orange-strong);
+}
+.studio-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.studio-login__note {
+  font-size: 0.78rem;
+  color: var(--faint);
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+.studio-login__error {
+  color: #b91c1c;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+}
+.studio-login__sent p {
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.studio-login__hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-top: 0.6rem;
+}
+
+/* STUDIO SHELL */
+.studio-loading {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  color: var(--faint);
+}
+.studio__bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+.studio__bar b {
+  font-family: "ClashDisplay-Semibold", sans-serif;
+  font-weight: 600;
+}
+.studio__bar-sub {
+  color: #8f8d99;
+}
+.studio__who {
+  margin-left: auto;
+  color: #c9c7d2;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.studio__role {
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+.studio__signout {
+  background: none;
+  border: 1px solid #3a3942;
+  color: #c9c7d2;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.studio__signout:hover {
+  border-color: var(--orange);
+  color: #fff;
+}
+.studio__placeholder {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.studio__placeholder h1 {
+  font-family: "ClashDisplay-Bold", sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 0.6rem;
+}
+.studio__placeholder p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.studio__placeholder-note {
+  color: var(--faint);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* Login/register tabs */
+.studio-login__tabs {
+  display: flex;
+  gap: 0.3rem;
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 0.3rem;
+  margin-bottom: 1.3rem;
+}
+.studio-login__tabs button {
+  flex: 1;
+  border: 0;
+  background: none;
+  padding: 0.55rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.studio-login__tabs button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(28, 27, 34, 0.08);
+  font-weight: 600;
+}
+.studio-login__success {
+  color: #1a7f43;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+}
