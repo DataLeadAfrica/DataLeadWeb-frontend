@@ -174,7 +174,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center top;
   transition: transform 0.35s ease;
 }
 .wwt-ro:hover .wwt-ro__photo img {
@@ -204,9 +204,11 @@
 @media (max-width: 900px) {
   .wwt-lead {
     grid-template-columns: 1fr;
+    max-height: none;
   }
   .wwt-lead__photo {
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 5;
+    max-height: none;
   }
   .wwt-lead__body {
     padding: 2.5rem;
@@ -214,5 +216,10 @@
   .wwt-roster {
     grid-template-columns: 1fr 1fr;
     gap: 1.75rem 1.5rem;
+  }
+}
+@media (max-width: 560px) {
+  .wwt-roster {
+    grid-template-columns: 1fr;
   }
 }
