@@ -79,6 +79,31 @@ export default function Article() {
     );
   }
 
+  const titledAuthor =
+    (post.author_honorific && post.author_honorific !== "None"
+      ? post.author_honorific + " "
+      : "") + (post.author || "Data-Lead Africa");
+
+  const authorLd = post.author
+    ? {
+        "@type": "Person",
+        name: post.author,
+        ...(post.author_honorific && post.author_honorific !== "None"
+          ? { honorificPrefix: post.author_honorific }
+          : {}),
+        ...(post.author_designation
+          ? { jobTitle: post.author_designation }
+          : {}),
+        worksFor: { "@type": "Organization", name: "Data-Lead Africa" },
+        ...(post.author_show_email && post.author_email
+          ? { email: post.author_email }
+          : {}),
+        ...(post.author_show_phone && post.author_phone
+          ? { telephone: post.author_phone }
+          : {}),
+      }
+    : { "@type": "Organization", name: "Data-Lead Africa" };
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -87,10 +112,7 @@ export default function Article() {
     image: post.cover_url ? [post.cover_url] : undefined,
     datePublished: post.published_at || post.created_at,
     dateModified: post.updated_at || post.published_at || post.created_at,
-    author: {
-      "@type": "Organization",
-      name: post.author || "Data-Lead Africa",
-    },
+    author: authorLd,
     publisher: {
       "@type": "Organization",
       name: "Data-Lead Africa",
@@ -135,10 +157,34 @@ export default function Article() {
           <div className="article__byline">
             <div className="article__avatar" />
             <div className="article__byline-who">
-              <div className="article__author">{post.author || "Data-Lead Africa"}</div>
-              <div className="article__author-role">
-                Data-Lead Africa
-              </div>
+              <div className="article__author">{titledAuthor}</div>
+              {post.author_designation && (
+                <div className="article__author-role">
+                  {post.author_designation}
+                </div>
+              )}
+              <div className="article__author-role">Data-Lead Africa</div>
+              {((post.author_show_email && post.author_email) ||
+                (post.author_show_phone && post.author_phone)) && (
+                <div className="article__contacts">
+                  {post.author_show_email && post.author_email && (
+                    <a
+                      className="article__contact"
+                      href={"mailto:" + post.author_email}
+                    >
+                      {post.author_email}
+                    </a>
+                  )}
+                  {post.author_show_phone && post.author_phone && (
+                    <a
+                      className="article__contact"
+                      href={"tel:" + post.author_phone.replace(/\s+/g, "")}
+                    >
+                      {post.author_phone}
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
             <div className="article__share">
               <button onClick={() => share("x")} title="Share on X">

@@ -21,9 +21,11 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 export type SignUpInput = {
   email: string;
   password: string;
+  honorific: string;
   fullName: string;
+  designation: string;
   department: string;
-  title: string;
+  phone: string;
 };
 
 // Register a new staff account and save their profile details.
@@ -49,16 +51,18 @@ export async function registerStaff(
     return { ok: false, message: error.message };
   }
 
-  // Save the profile (name, department, title). If the session is active
-  // (email confirmation off), this writes immediately.
+  // Save the profile. If the session is active (email confirmation off),
+  // this writes immediately.
   const userId = data.user?.id;
   if (userId) {
     const { error: pErr } = await supabase.from("profiles").insert({
       id: userId,
       email,
       full_name: input.fullName.trim(),
+      honorific: input.honorific.trim(),
+      designation: input.designation.trim(),
       department: input.department.trim(),
-      title: input.title.trim(),
+      phone: input.phone.trim(),
     });
     if (pErr) {
       // Account exists but profile failed; not fatal for login.

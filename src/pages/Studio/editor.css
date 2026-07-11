@@ -274,3 +274,30 @@
   color: var(--muted);
   line-height: 1.4;
 }
+
+/* Registration: title dropdown + name row (added) */
+.studio-login__row2 {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 0.6rem;
+}
+.studio-login select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  margin-bottom: 0.9rem;
+  background: #fff;
+  outline: none;
+}
+.studio-login select:focus {
+  border-color: var(--orange);
+}
+.studio-login__row2 select {
+  margin-bottom: 0;
+}
+.studio-login__row2 input {
+  margin-bottom: 0;
+}

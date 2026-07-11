@@ -24,6 +24,11 @@ export type Post = {
   created_at: string;
   status: string;
   author_email: string | null;
+  author_honorific: string | null;
+  author_designation: string | null;
+  author_phone: string | null;
+  author_show_email: boolean | null;
+  author_show_phone: boolean | null;
   review_note: string | null;
   updated_at: string | null;
 };
@@ -101,6 +106,11 @@ export type DraftInput = {
   read_minutes: number;
   authorEmail: string;
   authorName: string;
+  honorific: string;
+  designation: string;
+  phone: string;
+  showEmail: boolean;
+  showPhone: boolean;
 };
 
 // Save as draft or submit for review. status: 'draft' | 'pending'
@@ -118,6 +128,11 @@ export async function savePost(
     read_minutes: input.read_minutes,
     author: input.authorName || input.authorEmail,
     author_email: input.authorEmail,
+    author_honorific: input.honorific.trim() || null,
+    author_designation: input.designation.trim() || null,
+    author_phone: input.phone.trim() || null,
+    author_show_email: input.showEmail,
+    author_show_phone: input.showPhone,
     status,
     updated_at: new Date().toISOString(),
   };
@@ -214,6 +229,11 @@ export type ContentUpdate = {
   category: string;
   tags: string[];
   read_minutes: number;
+  honorific: string;
+  designation: string;
+  phone: string;
+  showEmail: boolean;
+  showPhone: boolean;
 };
 
 export async function updatePostContent(
@@ -230,11 +250,44 @@ export async function updatePostContent(
       category: input.category.trim() || null,
       tags: input.tags,
       read_minutes: input.read_minutes,
+      author_honorific: input.honorific.trim() || null,
+      author_designation: input.designation.trim() || null,
+      author_phone: input.phone.trim() || null,
+      author_show_email: input.showEmail,
+      author_show_phone: input.showPhone,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Saved." };
+}
+
+// The signed-in user's own profile, used to pre-fill author attribution.
+export type MyProfile = {
+  honorific: string;
+  full_name: string;
+  designation: string;
+  phone: string;
+  email: string;
+};
+
+export async function fetchMyProfile(): Promise<MyProfile | null> {
+  const { data: u } = await supabase.auth.getUser();
+  const uid = u.user?.id;
+  if (!uid) return null;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("honorific, full_name, designation, phone, email")
+    .eq("id", uid)
+    .maybeSingle();
+  if (error || !data) return null;
+  return {
+    honorific: data.honorific || "",
+    full_name: data.full_name || "",
+    designation: data.designation || "",
+    phone: data.phone || "",
+    email: data.email || "",
+  };
 }
 
 // Permanently delete a post. Admin only (enforced by RLS).
