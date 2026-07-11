@@ -105,7 +105,7 @@ export default function WhoWeAre() {
           </div>
           <a
             className="wwa-strip__link"
-            href="https://www.flickr.com/photos/dataleadafrica/"
+            href="https://www.flickr.com/photos/dataleadafrica/albums/"
             target="_blank"
             rel="noopener noreferrer"
           >
