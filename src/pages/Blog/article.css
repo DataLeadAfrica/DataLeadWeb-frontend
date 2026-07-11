@@ -247,3 +247,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Author attribution (added) */
+.article__byline {
+  align-items: flex-start;
+}
+.article__contacts {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.article__contact {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--orange-strong);
+  background: #fff2e7;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  text-decoration: none;
+}
+.article__contact:hover {
+  background: #ffe4cf;
+}

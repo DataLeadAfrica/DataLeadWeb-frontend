@@ -20,6 +20,18 @@ function useNoIndex() {
 
 type Mode = "login" | "register" | "reset";
 
+const TITLES = [
+  "Dr.",
+  "Prof.",
+  "Engr.",
+  "Rev.",
+  "Mr.",
+  "Mrs.",
+  "Ms.",
+  "Mx.",
+  "None",
+];
+
 export default function StudioLogin() {
   useNoIndex();
   const [mode, setMode] = useState<Mode>("login");
@@ -30,7 +42,9 @@ export default function StudioLogin() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [department, setDepartment] = useState("");
-  const [title, setTitle] = useState("");
+  const [honorific, setHonorific] = useState(TITLES[0]);
+  const [designation, setDesignation] = useState("");
+  const [phone, setPhone] = useState("");
 
   function switchMode(m: Mode) {
     setMode(m);
@@ -51,9 +65,11 @@ export default function StudioLogin() {
     const res = await registerStaff({
       email,
       password,
+      honorific,
       fullName,
+      designation,
       department,
-      title,
+      phone,
     });
     setMsg({ ok: res.ok, text: res.message });
     setBusy(false);
@@ -104,23 +120,40 @@ export default function StudioLogin() {
 
         {mode === "register" && (
           <>
+            <div className="studio-login__row2">
+              <select
+                value={honorific}
+                onChange={(e) => setHonorific(e.target.value)}
+                aria-label="Title"
+              >
+                {TITLES.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+              <input
+                placeholder="Full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                aria-label="Full name"
+              />
+            </div>
             <input
-              placeholder="Full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              aria-label="Full name"
+              placeholder="Designation (for example, Lead Partner)"
+              value={designation}
+              onChange={(e) => setDesignation(e.target.value)}
+              aria-label="Designation"
             />
             <input
-              placeholder="Department"
+              placeholder="Department (for example, Research)"
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
               aria-label="Department"
             />
             <input
-              placeholder="Title / role"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              aria-label="Title"
+              placeholder="Phone (optional, shown only if you choose)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              aria-label="Phone"
             />
           </>
         )}

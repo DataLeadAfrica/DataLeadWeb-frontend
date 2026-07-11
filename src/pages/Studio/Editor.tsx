@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -15,9 +15,21 @@ import {
   rejectPost,
   unpublishPost,
   deletePost,
+  fetchMyProfile,
 } from "../../lib/supabase";
 
 const CATEGORIES = ["Career", "Learning", "Tools", "Skills", "Impact", "News"];
+const TITLES = [
+  "Dr.",
+  "Prof.",
+  "Engr.",
+  "Rev.",
+  "Mr.",
+  "Mrs.",
+  "Ms.",
+  "Mx.",
+  "None",
+];
 
 function longDate(d: string | null): string {
   if (!d) return "Draft";
@@ -58,6 +70,38 @@ export default function Editor({
   const [coverBusy, setCoverBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Author attribution (stored on the article so the public page can show it)
+  const [honorific, setHonorific] = useState(
+    initialPost?.author_honorific ?? "",
+  );
+  const [fullName, setFullName] = useState(
+    initialPost?.author ?? authorName ?? "",
+  );
+  const [designation, setDesignation] = useState(
+    initialPost?.author_designation ?? "",
+  );
+  const [phone, setPhone] = useState(initialPost?.author_phone ?? "");
+  const [showEmail, setShowEmail] = useState(!!initialPost?.author_show_email);
+  const [showPhone, setShowPhone] = useState(!!initialPost?.author_show_phone);
+
+  // Pre-fill attribution from the signed-in user's profile, but only for a
+  // brand-new article. When editing, keep whatever is already on the post so
+  // an admin never overwrites another author's credit.
+  useEffect(() => {
+    if (editing) return;
+    fetchMyProfile().then((p) => {
+      if (!p) return;
+      setHonorific((v) => v || p.honorific);
+      setFullName((v) => v || p.full_name);
+      setDesignation((v) => v || p.designation);
+      setPhone((v) => v || p.phone);
+    });
+  }, []);
+
+  const authorEmailDisplay = initialPost?.author_email ?? authorEmail;
+  const titledName = (honorific && honorific !== "None" ? honorific + " " : "") +
+    (fullName || authorName || authorEmail);
 
   const editor = useEditor({
     extensions: [StarterKit, Link.configure({ openOnClick: false }), Image],
@@ -119,7 +163,12 @@ export default function Editor({
         tags: tagList,
         read_minutes: estimateReadMinutes(html),
         authorEmail,
-        authorName,
+        authorName: fullName || authorName,
+        honorific,
+        designation,
+        phone,
+        showEmail,
+        showPhone,
       },
       status,
     );
@@ -154,6 +203,11 @@ export default function Editor({
       category,
       tags: tagList,
       read_minutes: estimateReadMinutes(html),
+      honorific,
+      designation,
+      phone,
+      showEmail,
+      showPhone,
     });
     if (!res.ok) setMsg({ ok: false, text: res.message });
     return res.ok;
@@ -278,8 +332,17 @@ export default function Editor({
           <div className="ed__pv-byline">
             <div className="ed__pv-avatar" />
             <div>
-              {(authorName || initialPost?.author || authorEmail) +
-                " \u00b7 Data-Lead Africa"}
+              <div className="ed__pv-author">{titledName}</div>
+              {designation && (
+                <div className="ed__pv-role">{designation}</div>
+              )}
+              <div className="ed__pv-role">Data-Lead Africa</div>
+              {(showEmail || (showPhone && phone)) && (
+                <div className="ed__pv-contacts">
+                  {showEmail && <span>{authorEmailDisplay}</span>}
+                  {showPhone && phone && <span>{phone}</span>}
+                </div>
+              )}
             </div>
           </div>
           {coverUrl ? (
@@ -408,6 +471,67 @@ export default function Editor({
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="data, career, excel"
               />
+            </div>
+
+            <div className="ed__panel">
+              <label className="ed__panel-title">Author details</label>
+              <p className="ed__panel-hint">
+                Pre-filled from your profile. This is how you are credited on
+                the article.
+              </p>
+
+              <div className="ed__author-row">
+                <div>
+                  <label>Title</label>
+                  <select
+                    value={honorific}
+                    onChange={(e) => setHonorific(e.target.value)}
+                  >
+                    {TITLES.map((t) => (
+                      <option key={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label>Full name</label>
+                  <input
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Full name"
+                  />
+                </div>
+              </div>
+
+              <label>Designation</label>
+              <input
+                value={designation}
+                onChange={(e) => setDesignation(e.target.value)}
+                placeholder="For example, Lead Partner"
+              />
+
+              <label>Phone</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+234 ..."
+              />
+
+              <label className="ed__check">
+                <input
+                  type="checkbox"
+                  checked={showEmail}
+                  onChange={(e) => setShowEmail(e.target.checked)}
+                />
+                Show my email on this article
+              </label>
+              <label className="ed__check">
+                <input
+                  type="checkbox"
+                  checked={showPhone}
+                  onChange={(e) => setShowPhone(e.target.checked)}
+                />
+                Show my phone on this article
+              </label>
             </div>
           </div>
         </div>
