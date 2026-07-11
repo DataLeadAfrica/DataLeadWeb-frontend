@@ -10,6 +10,7 @@ import svcTraining from "./assets/svc-training.jpg";
 
 import { routes } from "../routes";
 import CallToAction from "../../components/CallToAction/component";
+import Seo from "../../components/Seo/component";
 
 const SERVICES = [
   {
@@ -50,8 +51,53 @@ const SERVICES = [
 function Index() {
   const [svc, setSvc] = useState(0);
 
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Data-Lead Africa",
+      alternateName: "DLA",
+      url: "https://dataleadafrica.com",
+      logo: "https://dataleadafrica.com/assets/dla-logo-email.png",
+      description:
+        "Data-Lead Africa is a research and training consulting firm providing monitoring and evaluation, data analytics, data science training and strategic consulting services across Africa.",
+      email: "info@dataleadafrica.com",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Plot 759, Bassan Plaza, Central Business District",
+        addressLocality: "Abuja",
+        addressCountry: "NG",
+      },
+      areaServed: "Africa",
+      sameAs: [
+        "https://www.linkedin.com/company/data-leadafrica",
+        "https://www.instagram.com/datalead_africa/",
+        "https://x.com/datalead_africa",
+        "https://www.youtube.com/@data-leadafrica3321",
+        "https://www.tiktok.com/@data_leadafrica",
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Data-Lead Africa",
+      url: "https://dataleadafrica.com",
+      potentialAction: {
+        "@type": "SearchAction",
+        target:
+          "https://dataleadafrica.com/research?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ];
+
   return (
     <div className="landing">
+      <Seo
+        title="Data-Lead Africa | Data Analytics, Research & Training in Africa"
+        description="Data-Lead Africa turns data into decisions. We deliver monitoring & evaluation, research, data analytics and strategic consulting, plus practitioner-led training, across 12 African countries. 100+ projects, 52+ partners."
+        jsonLd={jsonLd}
+      />
       <div className="landing__hero">
         <div className="hero__text">
           <h1>Empowering Africa's Next Generation of Data Leaders</h1>
