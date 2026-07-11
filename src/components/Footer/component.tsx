@@ -68,6 +68,20 @@ export default function Footer() {
               >
                 <i className="nf nf-fa-youtube"></i>
               </a>
+              <a
+                href="https://www.tiktok.com/@data_leadafrica"
+                className="follow-link"
+                aria-label="TikTok"
+              >
+                <svg
+                  className="follow-svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M16.5 3c.3 2.1 1.6 3.6 3.6 3.8v2.4c-1.2.1-2.4-.2-3.5-.8v5.9c0 3.2-2.4 5.7-5.6 5.7-3 0-5.4-2.3-5.4-5.3 0-3.1 2.6-5.5 5.9-5.1v2.5c-.4-.1-.8-.2-1.2-.2-1.5 0-2.6 1.1-2.6 2.7 0 1.5 1.1 2.6 2.6 2.6 1.5 0 2.7-1.1 2.7-2.9V3h3z" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
@@ -94,7 +108,12 @@ export default function Footer() {
           </div>
           <div className="get-in-touch">
             <i className="nf nf-fa-phone"></i>
-            <Link to="tel:+2347030500741">+234-703-0500-741</Link>
+            <div className="phone-list">
+              <Link to="tel:+2349166661234">+234 916 666 1234</Link>
+              <Link to="tel:+2347030500741">+234 703 050 0741</Link>
+              <Link to="tel:+245957914857">+245 957 914 857</Link>
+              <Link to="tel:+447983203075">+44 7983 203075</Link>
+            </div>
           </div>
         </div>
         <p className="footer__copyright">
