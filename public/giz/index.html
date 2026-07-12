@@ -954,12 +954,12 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
   <!-- ============================ SUCCESS ============================ -->
   <section class="success" id="successScreen" tabindex="-1" hidden>
     <div class="success__icon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
-    <h2 class="success__title">Thanks, your application is in</h2>
-    <p class="success__text">
+    <h2 class="success__title" id="successTitle">Thanks, your application is in</h2>
+    <p class="success__text" id="successText">
       We have sent a confirmation email with a copy of your answers. Our team reviews every
       application, and we will reach out to you directly if you are selected.
     </p>
-    <p class="success__ref">Reference: <strong id="refCode">DLA-000000</strong></p>
+    <p class="success__ref" id="successRefLine">Reference: <strong id="refCode">DLA-000000</strong></p>
   </section>
 </main>
 
@@ -972,7 +972,7 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
    CONFIG. The only place a URL lives.
    ================================================================ */
 const CONFIG = {
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbytlfriNEiqECj0znq0RpTPFC01y-AjkUpSvROmGhNcA_jOQIo_iQHuGWxkU8Av9cmHaA/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbw1Qay9qLtsATwl0ZbOPD_7xsj_vBHEd8yEbcCs3V6MVFUOcxH4q2xa3jJqI_pQVRJjOQ/exec",
   PROGRAMME_NAME: "GIZ-ZME Remote Work Training Programme",
   LOCATION: "Abuja",
 };
@@ -1504,11 +1504,9 @@ async function handleSubmit(e){
   e.preventDefault();
   const form = e.currentTarget;
 
-  // Honeypot. If filled, silently reject. The bot sees a success screen.
-  if (form.company_website && form.company_website.value.trim() !== ""){
-    showSuccess("DLA-000000");
-    return;
-  }
+  // The hidden honeypot field is no longer used to block submissions, because
+  // browser autofill was filling it and silently dropping real applications.
+  // The field stays in the markup but does not stop anyone.
 
   clearFormError();
 
@@ -1525,8 +1523,12 @@ async function handleSubmit(e){
 
   setLoading(true);
   try{
-    await saveToSheet(payload);
-    showSuccess(payload.reference);
+    const result = await saveToSheet(payload);
+    if (result && result.duplicate){
+      showAlreadyRegistered(payload.fullName);
+    } else {
+      showSuccess(payload.reference, payload.fullName, result && result.emailed);
+    }
   }catch(err){
     console.error(err);
     setLoading(false);
@@ -1603,13 +1605,38 @@ function setLoading(on){
   btn.classList.toggle("is-loading", on);
   btn.querySelector(".btn__label").textContent = on ? "Submitting" : "Submit registration";
 }
-function showSuccess(ref){
+function firstNameOf(name){
+  return (name || "").trim().split(/\s+/)[0] || "";
+}
+
+function revealSuccessScreen(){
   document.getElementById("application").hidden = true;
   document.getElementById("landing").hidden = true;
-  document.getElementById("refCode").textContent = ref || "DLA-000000";
   const s = document.getElementById("successScreen");
   s.hidden = false; s.focus();
   window.scrollTo({ top:0, behavior: reduceMotion ? "auto" : "smooth" });
+}
+
+function showSuccess(ref, name, emailed){
+  const first = firstNameOf(name);
+  document.getElementById("successTitle").textContent =
+    "Thanks" + (first ? ", " + first : "") + ", your application is in";
+  document.getElementById("successText").textContent = (emailed === false)
+    ? "Your application has been recorded. Your confirmation email is on its way and should arrive within a day. Our team reviews every application, and we will reach out to you directly if you are selected."
+    : "We have sent a confirmation email with a copy of your answers. Our team reviews every application, and we will reach out to you directly if you are selected.";
+  document.getElementById("refCode").textContent = ref || "DLA-000000";
+  document.getElementById("successRefLine").style.display = "";
+  revealSuccessScreen();
+}
+
+function showAlreadyRegistered(name){
+  const first = firstNameOf(name);
+  document.getElementById("successTitle").textContent =
+    (first ? first + ", you" : "You") + " have already registered";
+  document.getElementById("successText").textContent =
+    "Our records show an application with this email address has already been received, so you do not need to submit again. If you believe this is a mistake, please contact us.";
+  document.getElementById("successRefLine").style.display = "none";
+  revealSuccessScreen();
 }
 function showError(name,msg){
   const el = document.getElementById(ERROR_IDS[name]);
