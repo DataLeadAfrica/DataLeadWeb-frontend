@@ -6,14 +6,15 @@ import { getCurrentEmail, isAdminEmail, signOut } from "../../lib/auth";
 import StudioLogin from "./Login";
 import Editor from "./Editor";
 import Queue from "./Queue";
+import Readership from "./Readership";
 
 export default function Studio() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
-  const [view, setView] = useState<"home" | "write" | "queue" | "workspace">(
-    "home",
-  );
+  const [view, setView] = useState<
+    "home" | "write" | "queue" | "workspace" | "readership"
+  >("home");
   const [openedPost, setOpenedPost] = useState<Post | null>(null);
 
   useEffect(() => {
@@ -96,6 +97,10 @@ export default function Studio() {
     );
   }
 
+  if (view === "readership" && admin) {
+    return <Readership onDone={() => setView("home")} />;
+  }
+
   return (
     <div className="studio">
       <div className="studio__bar">
@@ -133,6 +138,18 @@ export default function Studio() {
               <span className="studio__card-title">Approval queue</span>
               <span className="studio__card-sub">
                 Review and publish staff submissions
+              </span>
+            </button>
+          )}
+          {admin && (
+            <button
+              className="studio__card"
+              onClick={() => setView("readership")}
+            >
+              <span className="studio__card-icon">&#128202;</span>
+              <span className="studio__card-title">Readership</span>
+              <span className="studio__card-sub">
+                See how many people read each article
               </span>
             </button>
           )}
