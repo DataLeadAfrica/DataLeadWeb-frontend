@@ -12,13 +12,9 @@ import {
 import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 
 // ── Backend config ───────────────────────────────────────────────────
-// TODO: paste the "Enrolments" Apps Script Web App URL here once created.
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbw8Pi0xqYpOBrIQc0VjADk1vU0hE2Tor1FikOw6CV3SS365WgLM55hfSJLrfPUeTJ3afQ/exec";
-
-// Registration confirmation email (same EmailJS account as the brochure form).
-const EMAILJS_SERVICE = "service_ortl1vg";
-const EMAILJS_TEMPLATE = "enrollment_dla";
-const EMAILJS_PUBLIC = "6svlOkrevGHII2V8s";
+// Enrolments Apps Script Web App (runs on datalead.africa@gmail.com). It saves
+// to the sheet AND sends the confirmation email, so EmailJS is no longer used.
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyOO5cvLd1WSFUBR23txtA-m6ClDOicRasHcYtK6UB9c9ne8D0ZpcDsv_wVnP-7tZVOJQ/exec";
 
 // Company bank-transfer details (shown on the payment step).
 const BANK = {
@@ -115,12 +111,6 @@ export default function EnrolForm({
   }, [country, plan]);
 
   useEffect(() => {
-    try {
-      const ej = (window as unknown as { emailjs?: any }).emailjs;
-      if (ej) ej.init({ publicKey: EMAILJS_PUBLIC });
-    } catch (e) {
-      /* ignore */
-    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -185,40 +175,9 @@ export default function EnrolForm({
           ? pay?.nysc?.amount
           : pay?.full?.amount;
 
-    setSubmitting(true);
-    setMsg({ type: "", text: "Registering you…" });
-
-    // Save the enrolment to the Google Sheet (fire-and-forget).
-    try {
-      fetch(SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          programme,
-          plan,
-          amount: amount || "",
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: em,
-          phone: fullPhone,
-          country,
-          state: stateRes,
-          gender,
-          dob,
-          education,
-          status,
-          format,
-          cohort,
-          why: why.trim(),
-          heardAboutUs: heard,
-        }),
-      }).catch(() => {});
-    } catch (e) {
-      /* ignore */
-    }
-
-    // Email the prospective student a registration confirmation + how to pay.
+    // Payment link plus readable plan and amount for this exact selection.
+    // These are sent to the endpoint so the confirmation email (built on the
+    // server) shows the right programme, plan, amount, and Paystack button.
     const slug =
       plan === "installments"
         ? pay?.installments?.paystack
@@ -242,18 +201,39 @@ export default function EnrolForm({
         : amount
           ? naira(amount)
           : "";
+    const paystackLink = slug ? PAYSTACK_BASE + slug : "";
+
+    setSubmitting(true);
+    setMsg({ type: "", text: "Registering you…" });
+
+    // Save the enrolment and let the endpoint send the confirmation email
+    // (fire-and-forget; no-cors means we do not read the response).
     try {
-      const ej = (window as unknown as { emailjs?: any }).emailjs;
-      if (ej) {
-        ej.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-          to_email: em,
-          to_name: firstName.trim(),
+      fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
           programme,
           plan: planText,
           amount: amountText,
-          paystack_link: slug ? PAYSTACK_BASE + slug : "",
-        }).catch(() => {});
-      }
+          paystackLink,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: em,
+          phone: fullPhone,
+          country,
+          state: stateRes,
+          gender,
+          dob,
+          education,
+          status,
+          format,
+          cohort,
+          why: why.trim(),
+          heardAboutUs: heard,
+        }),
+      }).catch(() => {});
     } catch (e) {
       /* ignore */
     }
