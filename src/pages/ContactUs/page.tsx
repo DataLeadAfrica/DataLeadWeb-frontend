@@ -1,13 +1,10 @@
 import { FormEventHandler, useState } from "react";
 import "./page.css";
 
-// Contact messages are saved to a Google Sheet (Apps Script) and the sender
-// gets an auto-reply via EmailJS. Service + public key match the rest of the site.
+// Contact messages are saved to a Google Sheet (Apps Script), which also sends
+// the sender an auto-reply. EmailJS is no longer used here.
 const CONTACT_SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbzBadpLU3m0tbO8igK7V0E_tAS1kfi6krMl2GdgZXmGidMnN_un08bVH2fjhowbsM5d/exec";
-const EMAILJS_SERVICE = "service_ortl1vg";
-const EMAILJS_PUBLIC = "6svlOkrevGHII2V8s";
-const EMAILJS_CONTACT_TEMPLATE = "dla_reply";
+  "https://script.google.com/macros/s/AKfycbwrEWqiqo_p_MEojmFrihByrDv3Vk1EGl8Vd3buZAHpsd5h2GXMVTzrR37A90g5I4sT/exec";
 
 export default function ContactUs() {
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
@@ -26,36 +23,21 @@ export default function ContactUs() {
 
     setSending(true);
 
-    // 1) Save the message to the Google Sheet (fire and forget).
+    // Save the message to the Google Sheet, which also sends the auto-reply.
+    // text/plain + no-cors avoids a CORS preflight so the request reliably
+    // reaches Apps Script.
     fetch(CONTACT_SHEET_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ name, email, subject, message }),
-    }).catch(() => {});
-
-    // 2) Send the sender an auto-reply via EmailJS.
-    const ej = (window as unknown as { emailjs?: any }).emailjs;
-    if (ej) {
-      ej.init({ publicKey: EMAILJS_PUBLIC });
-      ej
-        .send(EMAILJS_SERVICE, EMAILJS_CONTACT_TEMPLATE, {
-          to_email: email,
-          to_name: name,
-          subject: subject,
-          message: message,
-        })
-        .then(() => {
-          setIsSuccessVisible(true);
-          form.reset();
-        })
-        .catch(() => setIsFailureVisible(true))
-        .finally(() => setSending(false));
-    } else {
-      // EmailJS not loaded, the message is still saved to the sheet above.
-      setIsSuccessVisible(true);
-      form.reset();
-      setSending(false);
-    }
+    })
+      .then(() => {
+        setIsSuccessVisible(true);
+        form.reset();
+      })
+      .catch(() => setIsFailureVisible(true))
+      .finally(() => setSending(false));
   };
 
   const PopUpSucces = () => {
