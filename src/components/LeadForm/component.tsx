@@ -10,12 +10,11 @@ import {
   HEARD_OPTIONS,
 } from "./data";
 
-// ── Backend config (same account as the World Cup form) ──────────────
+// ── Backend config ───────────────────────────────────────────────────
+// Brochure Apps Script Web App. It saves the lead AND emails the brochure
+// link, so EmailJS is no longer used here.
 const SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbw5Cfj1iNr_KfYciNl5Bdxr6cfeY_BK9-mtabjb3ueC21RAws3E76ZzdJxVxDksZW16Zg/exec";
-const EMAILJS_SERVICE = "service_ortl1vg";
-const EMAILJS_TEMPLATE = "template_2nrbioa";
-const EMAILJS_PUBLIC = "6svlOkrevGHII2V8s";
+  "https://script.google.com/macros/s/AKfycbyTl86dYSPwt05HOxI2TNGeYHkL_D24A4Val6vkP7awhHVYt7e5PjrAURdCd2wcd0qQqw/exec";
 
 type Msg = { type: "" | "ok" | "err"; text: string };
 
@@ -56,12 +55,6 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
 
   // Initialise EmailJS + lock body scroll while the modal is open.
   useEffect(() => {
-    try {
-      const ej = (window as unknown as { emailjs?: any }).emailjs;
-      if (ej) ej.init({ publicKey: EMAILJS_PUBLIC });
-    } catch (e) {
-      /* ignore */
-    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -130,44 +123,25 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
     setSubmitting(true);
     setMsg({ type: "", text: "Sending your brochure…" });
 
-    // 1) Save the lead to the Google Sheet (fire-and-forget).
-    try {
-      fetch(SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          programme,
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: em,
-          phone: fullPhone,
-          country,
-          state: stateRes,
-          start,
-          heardAboutUs: heard,
-        }),
-      }).catch(() => {});
-    } catch (e) {
-      /* ignore */
-    }
-
-    // 2) Email the brochure via EmailJS.
-    const ej = (window as unknown as { emailjs?: any }).emailjs;
-    if (!ej) {
-      setMsg({
-        type: "err",
-        text: "Email service didn't load — please refresh and try again.",
-      });
-      setSubmitting(false);
-      return;
-    }
-    ej.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-      to_email: em,
-      to_name: firstName.trim(),
-      programme,
-      duration: b.duration,
-      brochure_link: brochureLink,
+    // Save the lead and let the endpoint email the brochure link. text/plain +
+    // no-cors avoids a CORS preflight so the request reliably reaches Apps Script.
+    fetch(SHEET_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        programme,
+        duration: b.duration,
+        brochureLink,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: em,
+        phone: fullPhone,
+        country,
+        state: stateRes,
+        start,
+        heardAboutUs: heard,
+      }),
     })
       .then(() => {
         setDone(true);
@@ -179,7 +153,7 @@ export default function LeadForm({ defaultProgramme, onClose }: LeadFormProps) {
       .catch(() => {
         setMsg({
           type: "err",
-          text: "We saved your details but the email didn't send — please check your address and try again.",
+          text: "We saved your details but something went wrong. Please try again.",
         });
         setSubmitting(false);
       });
