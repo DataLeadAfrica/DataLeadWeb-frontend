@@ -365,3 +365,65 @@ export async function deletePost(
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Deleted." };
 }
+
+// ---- Readership tracking ----
+//
+// Anonymous, privacy-friendly reading counts. When a published article opens
+// we log one "view". When the reader scrolls to the end we log one "read".
+// No names, emails, or IP addresses are stored, just the post and the kind of
+// event. Rows live in the post_events table in Supabase. The public can only
+// INSERT (never read) these rows; the admin totals are read through the
+// get_readership() database function, which checks the caller is an admin.
+
+// Record a single reading event. Fire-and-forget: it never blocks the page and
+// never shows an error to the reader. A per-tab guard (sessionStorage) means a
+// refresh does not inflate the numbers.
+export async function trackArticleEvent(
+  postId: string,
+  kind: "view" | "read",
+): Promise<void> {
+  try {
+    if (typeof window !== "undefined") {
+      const key = "dla_ev_" + kind + "_" + postId;
+      if (window.sessionStorage.getItem(key)) return;
+      window.sessionStorage.setItem(key, "1");
+    }
+    await supabase.from("post_events").insert({ post_id: postId, kind });
+  } catch {
+    // Tracking must never break the reading experience.
+  }
+}
+
+export type ReadershipRow = {
+  slug: string;
+  title: string;
+  category: string | null;
+  cover_url: string | null;
+  published_at: string | null;
+  views: number;
+  reads: number;
+};
+
+// Admin-only: per-article view and read counts for every published article.
+// Reads through the get_readership() database function (admin-checked there).
+export async function fetchReadership(): Promise<{
+  ok: boolean;
+  rows: ReadershipRow[];
+  message: string;
+}> {
+  const { data, error } = await supabase.rpc("get_readership");
+  if (error) {
+    console.error("Failed to load readership:", error.message);
+    return { ok: false, rows: [], message: error.message };
+  }
+  const rows: ReadershipRow[] = ((data as ReadershipRow[]) || []).map((r) => ({
+    slug: r.slug,
+    title: r.title,
+    category: r.category,
+    cover_url: r.cover_url,
+    published_at: r.published_at,
+    views: Number(r.views) || 0,
+    reads: Number(r.reads) || 0,
+  }));
+  return { ok: true, rows, message: "" };
+}

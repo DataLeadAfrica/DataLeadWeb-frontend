@@ -1,9 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router";
 
 import "./article.css";
 import Seo from "../../components/Seo/component";
-import { Post, fetchPostBySlug, fetchPublishedPosts } from "../../lib/supabase";
+import {
+  Post,
+  fetchPostBySlug,
+  fetchPublishedPosts,
+  trackArticleEvent,
+} from "../../lib/supabase";
 
 function shortDate(d: string | null): string {
   if (!d) return "";
@@ -20,6 +25,7 @@ export default function Article() {
   const [related, setRelated] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -29,6 +35,8 @@ export default function Article() {
       setPost(p);
       setLoading(false);
       if (p) {
+        // Count one view for this article (anonymous, deduped per tab).
+        trackArticleEvent(p.id, "view");
         const all = await fetchPublishedPosts();
         setRelated(
           all
@@ -42,6 +50,24 @@ export default function Article() {
       active = false;
     };
   }, [slug]);
+
+  // Count a "read" when the reader scrolls to the end of the article.
+  useEffect(() => {
+    if (!post) return;
+    const el = endRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          trackArticleEvent(post.id, "read");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [post]);
 
   const url =
     typeof window !== "undefined" ? window.location.href : "";
@@ -221,6 +247,7 @@ export default function Article() {
           className="article__body"
           dangerouslySetInnerHTML={{ __html: post.body || "" }}
         />
+        <div ref={endRef} aria-hidden="true" />
 
         <div className="article__share-bar">
           <span>Share this article</span>
