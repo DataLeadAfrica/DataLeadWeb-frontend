@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Admin · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clr-gray:#2c2b2d; --clr-gray-light:#dae2e7;
+  --clr-orange:#f56e0f; --clr-orange-medium:#f9a971; --clr-orange-light:#fde9da;
+  --clr-blue:#e7f5fe; --ink:#14232e;
+  --line:#ecebf0; --muted:#5b5b66; --faint:#8b8792;
+  --paper:#fffdfb; --card:#ffffff;
+  --green:#1d6b4c; --green-bg:#e9f5ef;
+  --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
+  --red:#a32d2d; --red-bg:#fbecec;
+  --radius:12px; --radius-lg:16px;
+  --display:"ClashDisplay-Semibold","ClashDisplay-Regular","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","ClashDisplay-Regular","Poppins",sans-serif;
+  --body:"Poppins",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--clr-gray);background:var(--paper);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
+.num{font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer;border:1px solid var(--clr-gray-light);background:var(--card);color:var(--clr-gray);border-radius:var(--radius);padding:10px 16px;transition:.15s}
+button:hover{border-color:var(--clr-gray)}
+button:focus-visible{outline:2px solid var(--clr-orange);outline-offset:2px}
+.btn-primary{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500}
+.btn-primary:hover{background:#e0620c;border-color:#e0620c}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint);cursor:not-allowed}
+input,select{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;background:var(--card);color:var(--clr-gray)}
+input:focus,select:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 70px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:24px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:15px}
+.mark{width:24px;height:24px;flex:none}
+.who{font-size:13px;color:var(--muted);text-align:right;line-height:1.35}
+.who b{color:var(--clr-gray);font-weight:500;font-family:var(--display-md)}
+.who button{padding:3px 10px;font-size:12px;margin-top:3px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:500;font-family:var(--display-md);margin-bottom:4px}
+.card .cardsub{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+.eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--clr-orange);margin-bottom:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.fld{margin-bottom:14px}
+.hint{font-size:12px;color:var(--faint);margin-top:5px}
+
+.alert{border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.5px;border-left:3px solid}
+.alert.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.alert.info{background:var(--clr-blue);border-color:#7fbde8;color:#1a4e73}
+.alert b{display:block;font-weight:600;margin-bottom:2px;font-family:var(--display-md)}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:500;padding:0 10px 8px 0}
+td{padding:11px 10px 11px 0;border-top:1px solid var(--line);vertical-align:top}
+td.n{font-variant-numeric:tabular-nums;text-align:right;padding-right:0}
+th.n{text-align:right;padding-right:0}
+.tag{font-size:11px;padding:2px 9px;border-radius:20px;font-family:var(--display-md);display:inline-block}
+.tag.invited{background:var(--amber-bg);color:var(--amber)}
+.tag.active{background:var(--green-bg);color:var(--green)}
+.tag.suspended{background:var(--red-bg);color:var(--red)}
+.tag.role{background:var(--clr-orange-light);color:#7a5230;margin-left:4px}
+.rowbtn{padding:5px 11px;font-size:12px}
+
+/* login gate */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.plate{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px}
+.plate h2{font-size:24px;margin-bottom:4px}
+.plate .lede{font-size:13.5px;color:var(--muted);margin-bottom:22px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN GATE ============ -->
+<div id="gate" class="gate">
+  <div class="plate">
+    <div class="logo" style="margin-bottom:20px">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+    <h2>Admin sign in</h2>
+    <p class="lede">Super-admin only. This is where staff and salaries are managed.</p>
+    <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username" placeholder="arowolo.ayoola@dataleadafrica.com"></div>
+    <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+    <div id="li-msg"></div>
+    <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+  </div>
+</div>
+
+<!-- ============ CONSOLE ============ -->
+<div id="app" class="wrap hidden">
+  <div class="topbar">
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell · Admin
+    </div>
+    <div class="who"><b id="who-name">—</b><br><span id="who-role">super admin</span><br>
+      <button onclick="signOut()">Sign out</button></div>
+  </div>
+
+  <div class="eyebrow">Staff register</div>
+  <h1 style="font-size:26px;margin-bottom:6px">Manage staff</h1>
+  <p style="color:var(--muted);margin-bottom:22px">Add a person here and they can create their account. Until then, they cannot sign in.</p>
+
+  <!-- add staff -->
+  <div class="card">
+    <h3>Add a staff member</h3>
+    <p class="cardsub">Their email must be exact. It is the key they sign up with.</p>
+    <div class="grid2">
+      <div class="fld"><label>Full name</label><input id="f-name" placeholder="Ada Okoro"></div>
+      <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="ada.okoro@dataleadafrica.com"></div>
+    </div>
+    <div class="grid3">
+      <div class="fld"><label>Department</label>
+        <select id="f-dept"><option value="">Choose…</option></select></div>
+      <div class="fld"><label>Staff ID</label><input id="f-code" placeholder="DLA-0012"></div>
+      <div class="fld"><label>Type</label>
+        <select id="f-type" onchange="onTypeChange()">
+          <option value="employee">Employee</option>
+          <option value="corps_member">Corps member</option>
+        </select></div>
+    </div>
+    <div class="grid2">
+      <div class="fld"><label id="lbl-gross">Monthly gross (₦)</label><input id="f-gross" type="number" placeholder="342000"></div>
+      <div class="fld"><label>Effective from</label><input id="f-eff" type="date"></div>
+    </div>
+    <div id="corps-note" class="alert info hidden">
+      <b>Corps member</b>Marked outside PAYE by CEO decision. Their stipend is recorded, no tax is computed. No annual leave; sick leave allowed.
+    </div>
+    <div id="add-msg"></div>
+    <button class="btn-primary" id="add-btn" onclick="addStaff()">Add to register</button>
+  </div>
+
+  <!-- staff list -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px">
+      <div><h3 style="margin:0">Everyone on the register</h3></div>
+      <button class="rowbtn" onclick="loadStaff()">Refresh</button>
+    </div>
+    <div id="list-wrap"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+  </div>
+
+  <!-- set department head -->
+  <div class="card">
+    <h3>Set a department head</h3>
+    <p class="cardsub">Adds the head role and points that department's staff at them as line manager. Add the person first, then set them here.</p>
+    <div class="grid2">
+      <div class="fld"><label>Department</label>
+        <select id="h-dept"><option value="">Choose…</option></select></div>
+      <div class="fld"><label>Head's email</label><input id="h-email" type="email" placeholder="musa.bello@dataleadafrica.com"></div>
+    </div>
+    <div id="head-msg"></div>
+    <button class="btn-primary" id="head-btn" onclick="setHead()">Make department head</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// ---- your live project ----
+const SUPABASE_URL = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+const DEPTS = ["Operations","Communications","Programmes","Deaf-in-Tech"];
+const naira = v => v==null ? "—" : "₦" + Number(v).toLocaleString("en-NG");
+
+// expose handlers to inline onclick
+window.signIn = signIn; window.signOut = signOut;
+window.addStaff = addStaff; window.setHead = setHead;
+window.loadStaff = loadStaff; window.onTypeChange = onTypeChange;
+
+// default effective-from = today
+$("f-eff").value = new Date().toISOString().slice(0,10);
+
+// fill department dropdowns
+for(const d of DEPTS){
+  $("f-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
+  $("h-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
+}
+
+// ---------- session ----------
+db.auth.onAuthStateChange((_e, session) => { if(session) enterApp(); });
+(async () => {
+  const { data:{ session } } = await db.auth.getSession();
+  if(session) enterApp();
+})();
+
+async function signIn(){
+  const email = $("li-email").value.trim();
+  const pass = $("li-pass").value;
+  if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
+  btn("li-btn", true, "Signing in");
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  btn("li-btn", false, "Sign in");
+  if(error){ msg("li-msg","err","Could not sign in", error.message); return; }
+  // enterApp fires via onAuthStateChange
+}
+
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+async function enterApp(){
+  // confirm this account is actually super-admin before showing the console
+  const { data, error } = await db.from("my_profile").select("full_name, roles").maybeSingle();
+  if(error || !data){ msg("li-msg","err","Profile not found","Your account is not linked to a staff row."); return; }
+  const roles = data.roles || [];
+  if(!roles.includes("super_admin")){
+    msg("li-msg","err","Not an admin","This screen is for the super-admin only.");
+    await db.auth.signOut();
+    return;
+  }
+  $("who-name").textContent = data.full_name;
+  $("gate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  loadStaff();
+}
+
+// ---------- add staff ----------
+function onTypeChange(){
+  const corps = $("f-type").value === "corps_member";
+  $("corps-note").classList.toggle("hidden", !corps);
+  $("lbl-gross").textContent = corps ? "Monthly stipend (₦)" : "Monthly gross (₦)";
+}
+
+async function addStaff(){
+  const name = $("f-name").value.trim();
+  const email = $("f-email").value.trim();
+  const dept = $("f-dept").value || null;
+  const code = $("f-code").value.trim() || null;
+  const type = $("f-type").value;
+  const gross = $("f-gross").value ? Number($("f-gross").value) : null;
+  const eff = $("f-eff").value || null;
+
+  if(!name || !email){ msg("add-msg","err","Missing details","Full name and email are required."); return; }
+
+  const params = {
+    p_email: email, p_full_name: name, p_staff_code: code,
+    p_department: dept, p_person_type: type,
+    p_monthly_gross: gross, p_effective_from: eff,
+  };
+  if(type === "corps_member"){
+    params.p_paye_exempt = true;
+    params.p_paye_exempt_basis = "NYSC corps member, treated outside PAYE by CEO decision. Stipend recorded, no tax computed.";
+  }
+
+  btn("add-btn", true, "Adding");
+  const { data, error } = await db.rpc("admin_add_staff", params);
+  btn("add-btn", false, "Add to register");
+
+  if(error){ msg("add-msg","err","Could not add", error.message); return; }
+  msg("add-msg","ok","Added", `${name} is now on the register and can sign up with ${email}.`);
+  // clear form
+  $("f-name").value=""; $("f-email").value=""; $("f-code").value="";
+  $("f-gross").value=""; $("f-dept").value=""; $("f-type").value="employee"; onTypeChange();
+  loadStaff();
+}
+
+// ---------- list ----------
+async function loadStaff(){
+  const wrap = $("list-wrap");
+  wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">Loading…</p>`;
+  const { data, error } = await db.from("admin_staff_list").select("*");
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${error.message}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No one added yet.</p>`; return; }
+
+  const rows = data.map(s => {
+    const roleTags = (s.roles||[]).filter(r=>r!=="staff")
+      .map(r=>`<span class="tag role">${r.replace("_"," ")}</span>`).join("");
+    return `<tr>
+      <td><b style="font-family:var(--display-md);font-weight:500">${esc(s.full_name)}</b>${roleTags}
+          <div style="font-size:12px;color:var(--muted)">${esc(s.email)}</div></td>
+      <td>${esc(s.department||"—")}<div style="font-size:12px;color:var(--faint)">${s.line_manager?"↳ "+esc(s.line_manager):""}</div></td>
+      <td><span class="tag ${s.status}">${s.status}</span></td>
+      <td class="n">${naira(s.current_gross)}</td>
+    </tr>`;
+  }).join("");
+
+  wrap.innerHTML = `<table>
+    <thead><tr><th>Name</th><th>Department</th><th>Status</th><th class="n">Monthly</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p class="hint" style="margin-top:14px">Salary is visible here because you are the super-admin. Department heads never see it.</p>`;
+}
+
+// ---------- set head ----------
+async function setHead(){
+  const dept = $("h-dept").value;
+  const email = $("h-email").value.trim();
+  if(!dept || !email){ msg("head-msg","err","Missing details","Choose a department and enter the head's email."); return; }
+  btn("head-btn", true, "Setting");
+  const { error } = await db.rpc("admin_set_department_head", { p_department: dept, p_head_email: email });
+  btn("head-btn", false, "Make department head");
+  if(error){ msg("head-msg","err","Could not set head", error.message); return; }
+  msg("head-msg","ok","Done", `${email} now heads ${dept}. Their department reports to them.`);
+  $("h-email").value=""; $("h-dept").value="";
+  loadStaff();
+}
+
+// ---------- helpers ----------
+function msg(id, kind, title, body){
+  $(id).innerHTML = `<div class="alert ${kind}"><b>${title}</b>${esc(body)}</div>`;
+}
+function btn(id, busy, label){
+  const b = $(id); b.disabled = busy;
+  b.innerHTML = busy ? `<span class="spin"></span>${label}…` : label;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+</script>
+</body>
+</html>
