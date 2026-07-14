@@ -409,6 +409,21 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
 .note{display:flex;gap:.7rem;background:var(--clr-blue);border:1px solid #bfe1f7;border-radius:var(--radius-3);padding:.85rem 1rem;font-size:.9rem;color:#0d4d73;margin:.2rem 0 1.2rem;animation:reveal .4s ease}
 .note svg{width:18px;height:18px;flex:none;margin-top:.2rem;stroke:#0d4d73;fill:none;stroke-width:2}
 
+.phone-row{display:flex;gap:.5rem}
+.dial-btn{display:flex;align-items:center;gap:.4rem;min-height:var(--tap);padding:.75rem .8rem;background:#fff;border:1.5px solid var(--clr-gray-light);border-radius:var(--radius-2);font-family:inherit;font-size:1rem;color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
+.dial-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dial-flag{font-size:1.15rem;line-height:1}
+.dial-caret{color:var(--ink-soft);font-size:.8rem}
+.phone-num{flex:1;min-width:0}
+.combo-panel{border:1.5px solid var(--clr-gray-light);border-radius:var(--radius-2);margin-top:.4rem;overflow:hidden;background:#fff}
+.combo-search{width:100%;box-sizing:border-box;min-height:44px;border:0;border-bottom:1px solid var(--line);padding:.6rem .9rem;font-family:inherit;font-size:1rem;color:var(--ink)}
+.combo-search:focus{outline:none}
+.combo-list{max-height:220px;overflow-y:auto}
+.combo-opt{display:flex;justify-content:space-between;align-items:center;gap:.6rem;width:100%;box-sizing:border-box;border:0;background:#fff;text-align:left;font-family:inherit;font-size:.95rem;color:var(--ink);padding:.6rem .9rem;cursor:pointer}
+.combo-opt:hover,.combo-opt.is-active{background:var(--clr-orange-light)}
+.combo-code{color:var(--ink-soft)}
+.combo-none{padding:.65rem .9rem;color:var(--ink-soft);font-size:.9rem}
+
 .field__error{color:var(--error);font-size:.85rem;margin:.4rem 0 0}
 .field__error:empty{display:none}
 
@@ -705,7 +720,18 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
 
         <div class="field">
           <label class="field__label" for="phone">Phone number <span class="req" aria-hidden="true">*</span></label>
-          <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="0803 000 0000" aria-describedby="phone-err">
+          <div class="phone-row">
+            <button type="button" class="dial-btn" id="dialBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Change country code">
+              <span class="dial-flag" id="dialFlag">🇳🇬</span>
+              <span id="dialCode">+234</span>
+              <span class="dial-caret" aria-hidden="true">▾</span>
+            </button>
+            <input type="tel" id="phone" name="phone" class="phone-num" autocomplete="tel" inputmode="tel" placeholder="803 000 0000" aria-describedby="phone-err">
+          </div>
+          <div class="combo-panel" id="dialPanel" hidden>
+            <input type="text" class="combo-search" id="dialSearch" placeholder="Search country or code" aria-label="Search country code" autocomplete="off">
+            <div class="combo-list" id="dialList" role="listbox"></div>
+          </div>
           <p class="field__error" id="phone-err" role="alert"></p>
         </div>
 
@@ -721,6 +747,30 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
             <option value="">Select your state</option>
           </select>
           <p class="field__error" id="state-err" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="disabilityStatus">Do you have a disability? <span class="req" aria-hidden="true">*</span></label>
+          <select id="disabilityStatus" name="disabilityStatus" aria-describedby="disabilityStatus-err">
+            <option value="">Select an option</option>
+            <option>No disability</option>
+            <option>Visual impairment</option>
+            <option>Hearing impairment</option>
+            <option>Physical or mobility</option>
+            <option>Cognitive or learning</option>
+            <option>Psychosocial or mental health</option>
+            <option>Speech impairment</option>
+            <option>Multiple disabilities</option>
+            <option value="Other">Other</option>
+            <option>Prefer not to say</option>
+          </select>
+          <p class="field__error" id="disabilityStatus-err" role="alert"></p>
+        </div>
+
+        <div class="field conditional" id="accommodationWrap" hidden>
+          <label class="field__label" for="accommodationNeeds">What support or adjustment would help you take part? <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="accommodationNeeds" name="accommodationNeeds" placeholder="For example, captions, screen-reader friendly materials, extra time" aria-describedby="accommodationNeeds-err">
+          <p class="field__error" id="accommodationNeeds-err" role="alert"></p>
         </div>
 
         <div class="step__nav">
@@ -750,6 +800,20 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
         <div class="note" id="describeNote" hidden>
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
           <span>This programme prioritises returning and potential migrants, but you may still apply.</span>
+        </div>
+
+        <div class="field conditional" id="returnedFromWrap" hidden>
+          <label class="field__label" for="returnedFrom">Which country did you return from? <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="returnedFrom" name="returnedFrom" class="country-input" placeholder="Start typing a country" autocomplete="off" aria-describedby="returnedFrom-err">
+          <div class="combo-panel" id="returnedFromPanel" hidden><div class="combo-list" id="returnedFromList" role="listbox"></div></div>
+          <p class="field__error" id="returnedFrom-err" role="alert"></p>
+        </div>
+
+        <div class="field conditional" id="intendedDestinationWrap" hidden>
+          <label class="field__label" for="intendedDestination">Which country are you planning to move to? <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="intendedDestination" name="intendedDestination" class="country-input" placeholder="Start typing a country" autocomplete="off" aria-describedby="intendedDestination-err">
+          <div class="combo-panel" id="intendedDestinationPanel" hidden><div class="combo-list" id="intendedDestinationList" role="listbox"></div></div>
+          <p class="field__error" id="intendedDestination-err" role="alert"></p>
         </div>
 
         <div class="field">
@@ -925,7 +989,34 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--error);bac
           <span class="step__num" aria-hidden="true">5</span>
           <h3 class="step__title" id="s5-title">Consent</h3>
         </div>
-        <p class="step__sub">One box, then you are done.</p>
+        <p class="step__sub">Two quick things, then you are done.</p>
+
+        <div class="field">
+          <label class="field__label" for="heardFrom">Where did you hear about this programme? <span class="req" aria-hidden="true">*</span></label>
+          <select id="heardFrom" name="heardFrom" aria-describedby="heardFrom-err">
+            <option value="">Select an option</option>
+            <option>Facebook</option>
+            <option>Instagram</option>
+            <option>X (Twitter)</option>
+            <option>LinkedIn</option>
+            <option>WhatsApp</option>
+            <option>Radio</option>
+            <option>Television</option>
+            <option>Flyer or poster</option>
+            <option>Friend or family</option>
+            <option>GIZ</option>
+            <option>Data-Lead Africa website</option>
+            <option>Community or religious group</option>
+            <option value="Other">Other</option>
+          </select>
+          <p class="field__error" id="heardFrom-err" role="alert"></p>
+        </div>
+
+        <div class="field conditional" id="heardFromOtherWrap" hidden>
+          <label class="field__label" for="heardFromOther">Where did you hear about it? <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="heardFromOther" name="heardFromOther" placeholder="Tell us where" aria-describedby="heardFromOther-err">
+          <p class="field__error" id="heardFromOther-err" role="alert"></p>
+        </div>
 
         <fieldset class="field field--group">
           <div class="choices">
@@ -1067,6 +1158,71 @@ function computeScore(d){
    Static data
    ================================================================ */
 const STATES = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Federal Capital Territory (Abuja)","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","Outside Nigeria"];
+/* ================================================================
+   Country list, phone dial-code picker, and searchable country
+   comboboxes (returned-from / intended-destination).
+   ================================================================ */
+var COUNTRIES=[{"n":"Afghanistan","i":"AF","d":"+93","f":"🇦🇫"},{"n":"Albania","i":"AL","d":"+355","f":"🇦🇱"},{"n":"Algeria","i":"DZ","d":"+213","f":"🇩🇿"},{"n":"American Samoa","i":"AS","d":"+1","f":"🇦🇸"},{"n":"Andorra","i":"AD","d":"+376","f":"🇦🇩"},{"n":"Angola","i":"AO","d":"+244","f":"🇦🇴"},{"n":"Anguilla","i":"AI","d":"+1","f":"🇦🇮"},{"n":"Antigua and Barbuda","i":"AG","d":"+1","f":"🇦🇬"},{"n":"Argentina","i":"AR","d":"+54","f":"🇦🇷"},{"n":"Armenia","i":"AM","d":"+374","f":"🇦🇲"},{"n":"Aruba","i":"AW","d":"+297","f":"🇦🇼"},{"n":"Australia","i":"AU","d":"+61","f":"🇦🇺"},{"n":"Austria","i":"AT","d":"+43","f":"🇦🇹"},{"n":"Azerbaijan","i":"AZ","d":"+994","f":"🇦🇿"},{"n":"Bahamas","i":"BS","d":"+1","f":"🇧🇸"},{"n":"Bahrain","i":"BH","d":"+973","f":"🇧🇭"},{"n":"Bangladesh","i":"BD","d":"+880","f":"🇧🇩"},{"n":"Barbados","i":"BB","d":"+1","f":"🇧🇧"},{"n":"Belarus","i":"BY","d":"+375","f":"🇧🇾"},{"n":"Belgium","i":"BE","d":"+32","f":"🇧🇪"},{"n":"Belize","i":"BZ","d":"+501","f":"🇧🇿"},{"n":"Benin","i":"BJ","d":"+229","f":"🇧🇯"},{"n":"Bermuda","i":"BM","d":"+1","f":"🇧🇲"},{"n":"Bhutan","i":"BT","d":"+975","f":"🇧🇹"},{"n":"Bolivia","i":"BO","d":"+591","f":"🇧🇴"},{"n":"Bonaire, Sint Eustatius and Saba","i":"BQ","d":"+599","f":"🇧🇶"},{"n":"Bosnia and Herzegovina","i":"BA","d":"+387","f":"🇧🇦"},{"n":"Botswana","i":"BW","d":"+267","f":"🇧🇼"},{"n":"Brazil","i":"BR","d":"+55","f":"🇧🇷"},{"n":"British Indian Ocean Territory","i":"IO","d":"+246","f":"🇮🇴"},{"n":"Brunei Darussalam","i":"BN","d":"+673","f":"🇧🇳"},{"n":"Bulgaria","i":"BG","d":"+359","f":"🇧🇬"},{"n":"Burkina Faso","i":"BF","d":"+226","f":"🇧🇫"},{"n":"Burundi","i":"BI","d":"+257","f":"🇧🇮"},{"n":"Cabo Verde","i":"CV","d":"+238","f":"🇨🇻"},{"n":"Cambodia","i":"KH","d":"+855","f":"🇰🇭"},{"n":"Cameroon","i":"CM","d":"+237","f":"🇨🇲"},{"n":"Canada","i":"CA","d":"+1","f":"🇨🇦"},{"n":"Cayman Islands","i":"KY","d":"+1","f":"🇰🇾"},{"n":"Central African Republic","i":"CF","d":"+236","f":"🇨🇫"},{"n":"Chad","i":"TD","d":"+235","f":"🇹🇩"},{"n":"Chile","i":"CL","d":"+56","f":"🇨🇱"},{"n":"China","i":"CN","d":"+86","f":"🇨🇳"},{"n":"Christmas Island","i":"CX","d":"+61","f":"🇨🇽"},{"n":"Cocos (Keeling) Islands","i":"CC","d":"+61","f":"🇨🇨"},{"n":"Colombia","i":"CO","d":"+57","f":"🇨🇴"},{"n":"Comoros","i":"KM","d":"+269","f":"🇰🇲"},{"n":"Congo","i":"CG","d":"+242","f":"🇨🇬"},{"n":"Congo, The Democratic Republic of the","i":"CD","d":"+243","f":"🇨🇩"},{"n":"Cook Islands","i":"CK","d":"+682","f":"🇨🇰"},{"n":"Costa Rica","i":"CR","d":"+506","f":"🇨🇷"},{"n":"Croatia","i":"HR","d":"+385","f":"🇭🇷"},{"n":"Cuba","i":"CU","d":"+53","f":"🇨🇺"},{"n":"Curaçao","i":"CW","d":"+599","f":"🇨🇼"},{"n":"Cyprus","i":"CY","d":"+357","f":"🇨🇾"},{"n":"Czechia","i":"CZ","d":"+420","f":"🇨🇿"},{"n":"Côte d'Ivoire","i":"CI","d":"+225","f":"🇨🇮"},{"n":"Denmark","i":"DK","d":"+45","f":"🇩🇰"},{"n":"Djibouti","i":"DJ","d":"+253","f":"🇩🇯"},{"n":"Dominica","i":"DM","d":"+1","f":"🇩🇲"},{"n":"Dominican Republic","i":"DO","d":"+1","f":"🇩🇴"},{"n":"Ecuador","i":"EC","d":"+593","f":"🇪🇨"},{"n":"Egypt","i":"EG","d":"+20","f":"🇪🇬"},{"n":"El Salvador","i":"SV","d":"+503","f":"🇸🇻"},{"n":"Equatorial Guinea","i":"GQ","d":"+240","f":"🇬🇶"},{"n":"Eritrea","i":"ER","d":"+291","f":"🇪🇷"},{"n":"Estonia","i":"EE","d":"+372","f":"🇪🇪"},{"n":"Eswatini","i":"SZ","d":"+268","f":"🇸🇿"},{"n":"Ethiopia","i":"ET","d":"+251","f":"🇪🇹"},{"n":"Falkland Islands (Malvinas)","i":"FK","d":"+500","f":"🇫🇰"},{"n":"Faroe Islands","i":"FO","d":"+298","f":"🇫🇴"},{"n":"Fiji","i":"FJ","d":"+679","f":"🇫🇯"},{"n":"Finland","i":"FI","d":"+358","f":"🇫🇮"},{"n":"France","i":"FR","d":"+33","f":"🇫🇷"},{"n":"French Guiana","i":"GF","d":"+594","f":"🇬🇫"},{"n":"French Polynesia","i":"PF","d":"+689","f":"🇵🇫"},{"n":"Gabon","i":"GA","d":"+241","f":"🇬🇦"},{"n":"Gambia","i":"GM","d":"+220","f":"🇬🇲"},{"n":"Georgia","i":"GE","d":"+995","f":"🇬🇪"},{"n":"Germany","i":"DE","d":"+49","f":"🇩🇪"},{"n":"Ghana","i":"GH","d":"+233","f":"🇬🇭"},{"n":"Gibraltar","i":"GI","d":"+350","f":"🇬🇮"},{"n":"Greece","i":"GR","d":"+30","f":"🇬🇷"},{"n":"Greenland","i":"GL","d":"+299","f":"🇬🇱"},{"n":"Grenada","i":"GD","d":"+1","f":"🇬🇩"},{"n":"Guadeloupe","i":"GP","d":"+590","f":"🇬🇵"},{"n":"Guam","i":"GU","d":"+1","f":"🇬🇺"},{"n":"Guatemala","i":"GT","d":"+502","f":"🇬🇹"},{"n":"Guernsey","i":"GG","d":"+44","f":"🇬🇬"},{"n":"Guinea","i":"GN","d":"+224","f":"🇬🇳"},{"n":"Guinea-Bissau","i":"GW","d":"+245","f":"🇬🇼"},{"n":"Guyana","i":"GY","d":"+592","f":"🇬🇾"},{"n":"Haiti","i":"HT","d":"+509","f":"🇭🇹"},{"n":"Holy See (Vatican City State)","i":"VA","d":"+39","f":"🇻🇦"},{"n":"Honduras","i":"HN","d":"+504","f":"🇭🇳"},{"n":"Hong Kong","i":"HK","d":"+852","f":"🇭🇰"},{"n":"Hungary","i":"HU","d":"+36","f":"🇭🇺"},{"n":"Iceland","i":"IS","d":"+354","f":"🇮🇸"},{"n":"India","i":"IN","d":"+91","f":"🇮🇳"},{"n":"Indonesia","i":"ID","d":"+62","f":"🇮🇩"},{"n":"Iran","i":"IR","d":"+98","f":"🇮🇷"},{"n":"Iraq","i":"IQ","d":"+964","f":"🇮🇶"},{"n":"Ireland","i":"IE","d":"+353","f":"🇮🇪"},{"n":"Isle of Man","i":"IM","d":"+44","f":"🇮🇲"},{"n":"Israel","i":"IL","d":"+972","f":"🇮🇱"},{"n":"Italy","i":"IT","d":"+39","f":"🇮🇹"},{"n":"Jamaica","i":"JM","d":"+1","f":"🇯🇲"},{"n":"Japan","i":"JP","d":"+81","f":"🇯🇵"},{"n":"Jersey","i":"JE","d":"+44","f":"🇯🇪"},{"n":"Jordan","i":"JO","d":"+962","f":"🇯🇴"},{"n":"Kazakhstan","i":"KZ","d":"+7","f":"🇰🇿"},{"n":"Kenya","i":"KE","d":"+254","f":"🇰🇪"},{"n":"Kiribati","i":"KI","d":"+686","f":"🇰🇮"},{"n":"Kuwait","i":"KW","d":"+965","f":"🇰🇼"},{"n":"Kyrgyzstan","i":"KG","d":"+996","f":"🇰🇬"},{"n":"Laos","i":"LA","d":"+856","f":"🇱🇦"},{"n":"Latvia","i":"LV","d":"+371","f":"🇱🇻"},{"n":"Lebanon","i":"LB","d":"+961","f":"🇱🇧"},{"n":"Lesotho","i":"LS","d":"+266","f":"🇱🇸"},{"n":"Liberia","i":"LR","d":"+231","f":"🇱🇷"},{"n":"Libya","i":"LY","d":"+218","f":"🇱🇾"},{"n":"Liechtenstein","i":"LI","d":"+423","f":"🇱🇮"},{"n":"Lithuania","i":"LT","d":"+370","f":"🇱🇹"},{"n":"Luxembourg","i":"LU","d":"+352","f":"🇱🇺"},{"n":"Macao","i":"MO","d":"+853","f":"🇲🇴"},{"n":"Madagascar","i":"MG","d":"+261","f":"🇲🇬"},{"n":"Malawi","i":"MW","d":"+265","f":"🇲🇼"},{"n":"Malaysia","i":"MY","d":"+60","f":"🇲🇾"},{"n":"Maldives","i":"MV","d":"+960","f":"🇲🇻"},{"n":"Mali","i":"ML","d":"+223","f":"🇲🇱"},{"n":"Malta","i":"MT","d":"+356","f":"🇲🇹"},{"n":"Marshall Islands","i":"MH","d":"+692","f":"🇲🇭"},{"n":"Martinique","i":"MQ","d":"+596","f":"🇲🇶"},{"n":"Mauritania","i":"MR","d":"+222","f":"🇲🇷"},{"n":"Mauritius","i":"MU","d":"+230","f":"🇲🇺"},{"n":"Mayotte","i":"YT","d":"+262","f":"🇾🇹"},{"n":"Mexico","i":"MX","d":"+52","f":"🇲🇽"},{"n":"Micronesia, Federated States of","i":"FM","d":"+691","f":"🇫🇲"},{"n":"Moldova","i":"MD","d":"+373","f":"🇲🇩"},{"n":"Monaco","i":"MC","d":"+377","f":"🇲🇨"},{"n":"Mongolia","i":"MN","d":"+976","f":"🇲🇳"},{"n":"Montenegro","i":"ME","d":"+382","f":"🇲🇪"},{"n":"Montserrat","i":"MS","d":"+1","f":"🇲🇸"},{"n":"Morocco","i":"MA","d":"+212","f":"🇲🇦"},{"n":"Mozambique","i":"MZ","d":"+258","f":"🇲🇿"},{"n":"Myanmar","i":"MM","d":"+95","f":"🇲🇲"},{"n":"Namibia","i":"NA","d":"+264","f":"🇳🇦"},{"n":"Nauru","i":"NR","d":"+674","f":"🇳🇷"},{"n":"Nepal","i":"NP","d":"+977","f":"🇳🇵"},{"n":"Netherlands","i":"NL","d":"+31","f":"🇳🇱"},{"n":"New Caledonia","i":"NC","d":"+687","f":"🇳🇨"},{"n":"New Zealand","i":"NZ","d":"+64","f":"🇳🇿"},{"n":"Nicaragua","i":"NI","d":"+505","f":"🇳🇮"},{"n":"Niger","i":"NE","d":"+227","f":"🇳🇪"},{"n":"Nigeria","i":"NG","d":"+234","f":"🇳🇬"},{"n":"Niue","i":"NU","d":"+683","f":"🇳🇺"},{"n":"Norfolk Island","i":"NF","d":"+672","f":"🇳🇫"},{"n":"North Korea","i":"KP","d":"+850","f":"🇰🇵"},{"n":"North Macedonia","i":"MK","d":"+389","f":"🇲🇰"},{"n":"Northern Mariana Islands","i":"MP","d":"+1","f":"🇲🇵"},{"n":"Norway","i":"NO","d":"+47","f":"🇳🇴"},{"n":"Oman","i":"OM","d":"+968","f":"🇴🇲"},{"n":"Pakistan","i":"PK","d":"+92","f":"🇵🇰"},{"n":"Palau","i":"PW","d":"+680","f":"🇵🇼"},{"n":"Palestine, State of","i":"PS","d":"+970","f":"🇵🇸"},{"n":"Panama","i":"PA","d":"+507","f":"🇵🇦"},{"n":"Papua New Guinea","i":"PG","d":"+675","f":"🇵🇬"},{"n":"Paraguay","i":"PY","d":"+595","f":"🇵🇾"},{"n":"Peru","i":"PE","d":"+51","f":"🇵🇪"},{"n":"Philippines","i":"PH","d":"+63","f":"🇵🇭"},{"n":"Poland","i":"PL","d":"+48","f":"🇵🇱"},{"n":"Portugal","i":"PT","d":"+351","f":"🇵🇹"},{"n":"Puerto Rico","i":"PR","d":"+1","f":"🇵🇷"},{"n":"Qatar","i":"QA","d":"+974","f":"🇶🇦"},{"n":"Romania","i":"RO","d":"+40","f":"🇷🇴"},{"n":"Russian Federation","i":"RU","d":"+7","f":"🇷🇺"},{"n":"Rwanda","i":"RW","d":"+250","f":"🇷🇼"},{"n":"Réunion","i":"RE","d":"+262","f":"🇷🇪"},{"n":"Saint Barthélemy","i":"BL","d":"+590","f":"🇧🇱"},{"n":"Saint Helena, Ascension and Tristan da Cunha","i":"SH","d":"+290","f":"🇸🇭"},{"n":"Saint Kitts and Nevis","i":"KN","d":"+1","f":"🇰🇳"},{"n":"Saint Lucia","i":"LC","d":"+1","f":"🇱🇨"},{"n":"Saint Martin (French part)","i":"MF","d":"+590","f":"🇲🇫"},{"n":"Saint Pierre and Miquelon","i":"PM","d":"+508","f":"🇵🇲"},{"n":"Saint Vincent and the Grenadines","i":"VC","d":"+1","f":"🇻🇨"},{"n":"Samoa","i":"WS","d":"+685","f":"🇼🇸"},{"n":"San Marino","i":"SM","d":"+378","f":"🇸🇲"},{"n":"Sao Tome and Principe","i":"ST","d":"+239","f":"🇸🇹"},{"n":"Saudi Arabia","i":"SA","d":"+966","f":"🇸🇦"},{"n":"Senegal","i":"SN","d":"+221","f":"🇸🇳"},{"n":"Serbia","i":"RS","d":"+381","f":"🇷🇸"},{"n":"Seychelles","i":"SC","d":"+248","f":"🇸🇨"},{"n":"Sierra Leone","i":"SL","d":"+232","f":"🇸🇱"},{"n":"Singapore","i":"SG","d":"+65","f":"🇸🇬"},{"n":"Sint Maarten (Dutch part)","i":"SX","d":"+1","f":"🇸🇽"},{"n":"Slovakia","i":"SK","d":"+421","f":"🇸🇰"},{"n":"Slovenia","i":"SI","d":"+386","f":"🇸🇮"},{"n":"Solomon Islands","i":"SB","d":"+677","f":"🇸🇧"},{"n":"Somalia","i":"SO","d":"+252","f":"🇸🇴"},{"n":"South Africa","i":"ZA","d":"+27","f":"🇿🇦"},{"n":"South Korea","i":"KR","d":"+82","f":"🇰🇷"},{"n":"South Sudan","i":"SS","d":"+211","f":"🇸🇸"},{"n":"Spain","i":"ES","d":"+34","f":"🇪🇸"},{"n":"Sri Lanka","i":"LK","d":"+94","f":"🇱🇰"},{"n":"Sudan","i":"SD","d":"+249","f":"🇸🇩"},{"n":"Suriname","i":"SR","d":"+597","f":"🇸🇷"},{"n":"Svalbard and Jan Mayen","i":"SJ","d":"+47","f":"🇸🇯"},{"n":"Sweden","i":"SE","d":"+46","f":"🇸🇪"},{"n":"Switzerland","i":"CH","d":"+41","f":"🇨🇭"},{"n":"Syria","i":"SY","d":"+963","f":"🇸🇾"},{"n":"Taiwan","i":"TW","d":"+886","f":"🇹🇼"},{"n":"Tajikistan","i":"TJ","d":"+992","f":"🇹🇯"},{"n":"Tanzania","i":"TZ","d":"+255","f":"🇹🇿"},{"n":"Thailand","i":"TH","d":"+66","f":"🇹🇭"},{"n":"Timor-Leste","i":"TL","d":"+670","f":"🇹🇱"},{"n":"Togo","i":"TG","d":"+228","f":"🇹🇬"},{"n":"Tokelau","i":"TK","d":"+690","f":"🇹🇰"},{"n":"Tonga","i":"TO","d":"+676","f":"🇹🇴"},{"n":"Trinidad and Tobago","i":"TT","d":"+1","f":"🇹🇹"},{"n":"Tunisia","i":"TN","d":"+216","f":"🇹🇳"},{"n":"Turkmenistan","i":"TM","d":"+993","f":"🇹🇲"},{"n":"Turks and Caicos Islands","i":"TC","d":"+1","f":"🇹🇨"},{"n":"Tuvalu","i":"TV","d":"+688","f":"🇹🇻"},{"n":"Türkiye","i":"TR","d":"+90","f":"🇹🇷"},{"n":"Uganda","i":"UG","d":"+256","f":"🇺🇬"},{"n":"Ukraine","i":"UA","d":"+380","f":"🇺🇦"},{"n":"United Arab Emirates","i":"AE","d":"+971","f":"🇦🇪"},{"n":"United Kingdom","i":"GB","d":"+44","f":"🇬🇧"},{"n":"United States","i":"US","d":"+1","f":"🇺🇸"},{"n":"Uruguay","i":"UY","d":"+598","f":"🇺🇾"},{"n":"Uzbekistan","i":"UZ","d":"+998","f":"🇺🇿"},{"n":"Vanuatu","i":"VU","d":"+678","f":"🇻🇺"},{"n":"Venezuela","i":"VE","d":"+58","f":"🇻🇪"},{"n":"Vietnam","i":"VN","d":"+84","f":"🇻🇳"},{"n":"Virgin Islands, British","i":"VG","d":"+1","f":"🇻🇬"},{"n":"Virgin Islands, U.S.","i":"VI","d":"+1","f":"🇻🇮"},{"n":"Wallis and Futuna","i":"WF","d":"+681","f":"🇼🇫"},{"n":"Western Sahara","i":"EH","d":"+212","f":"🇪🇭"},{"n":"Yemen","i":"YE","d":"+967","f":"🇾🇪"},{"n":"Zambia","i":"ZM","d":"+260","f":"🇿🇲"},{"n":"Zimbabwe","i":"ZW","d":"+263","f":"🇿🇼"},{"n":"Åland Islands","i":"AX","d":"+358","f":"🇦🇽"}];
+var dialSel = COUNTRIES.filter(function(c){return c.i==='NG';})[0] || COUNTRIES[0];
+function getDialCode(){ return dialSel ? dialSel.d : ''; }
+function byIso_(iso){ return COUNTRIES.filter(function(c){return c.i===iso;})[0]; }
+function comboOptionHtml_(c, showCode){
+  return '<button type="button" class="combo-opt" role="option" data-i="'+c.i+'">'+
+    '<span>'+c.f+'&nbsp;&nbsp;'+c.n+'</span>'+
+    (showCode ? '<span class="combo-code">'+c.d+'</span>' : '')+
+  '</button>';
+}
+function filterCountries_(q, byCode){
+  q = (q||'').toLowerCase().trim();
+  if(!q) return COUNTRIES;
+  return COUNTRIES.filter(function(c){
+    return c.n.toLowerCase().indexOf(q)>-1 || (byCode && (c.d.indexOf(q)>-1 || c.i.toLowerCase()===q));
+  });
+}
+function renderList_(listEl, items, showCode){
+  listEl.innerHTML = items.length
+    ? items.map(function(c){return comboOptionHtml_(c, showCode);}).join('')
+    : '<div class="combo-none">No match</div>';
+}
+function wireDialPicker_(){
+  var btn=document.getElementById('dialBtn');
+  var panel=document.getElementById('dialPanel');
+  var search=document.getElementById('dialSearch');
+  var list=document.getElementById('dialList');
+  if(!btn) return;
+  function open(){ panel.hidden=false; btn.setAttribute('aria-expanded','true'); search.value=''; renderList_(list, COUNTRIES, true); search.focus(); }
+  function close(){ panel.hidden=true; btn.setAttribute('aria-expanded','false'); }
+  function setDial(c){ dialSel=c; document.getElementById('dialFlag').textContent=c.f; document.getElementById('dialCode').textContent=c.d; }
+  btn.addEventListener('click', function(){ panel.hidden ? open() : close(); });
+  search.addEventListener('input', function(){ renderList_(list, filterCountries_(this.value, true), true); });
+  list.addEventListener('click', function(e){ var b=e.target.closest('.combo-opt'); if(!b) return; var c=byIso_(b.getAttribute('data-i')); if(c) setDial(c); close(); document.getElementById('phone').focus(); });
+}
+function wireCountryCombo_(inputId){
+  var input=document.getElementById(inputId);
+  var panel=document.getElementById(inputId+'Panel');
+  var list=document.getElementById(inputId+'List');
+  if(!input) return;
+  function open(){ panel.hidden=false; renderList_(list, filterCountries_(input.value,false), false); }
+  input.addEventListener('focus', open);
+  input.addEventListener('input', open);
+  list.addEventListener('click', function(e){ var b=e.target.closest('.combo-opt'); if(!b) return; var c=byIso_(b.getAttribute('data-i')); if(c){ input.value=c.n; } panel.hidden=true; validateField(document.getElementById('registration-form'), inputId); updateProgress(); });
+}
+function wireCountryPickers(){
+  wireDialPicker_();
+  wireCountryCombo_('returnedFrom');
+  wireCountryCombo_('intendedDestination');
+  document.addEventListener('click', function(e){
+    [['dialBtn','dialPanel'],['returnedFrom','returnedFromPanel'],['intendedDestination','intendedDestinationPanel']].forEach(function(pair){
+      var anchor=document.getElementById(pair[0]);
+      var panel=document.getElementById(pair[1]);
+      if(!panel || panel.hidden) return;
+      if((anchor && anchor.contains(e.target)) || panel.contains(e.target)) return;
+      panel.hidden=true;
+      if(pair[0]==='dialBtn' && anchor) anchor.setAttribute('aria-expanded','false');
+    });
+  });
+}
+
 
 const ICONS = {
   globe:'<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/>',
@@ -1105,6 +1261,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("year").textContent = new Date().getFullYear();
   animateHero();
   buildStates();
+  wireCountryPickers();
   buildCarousel();
   buildRateMatrix();
   wireSkipLogic();
@@ -1354,6 +1511,45 @@ function wireSkipLogic(){
       updateProgress();
     });
   });
+
+  // (g) Migration country appears based on "Which best describes you?"
+  form.querySelectorAll('input[name="describe"]').forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const val = getRadio(form,"describe");
+      const rf = document.getElementById("returnedFromWrap");
+      const idw = document.getElementById("intendedDestinationWrap");
+      rf.hidden = (val !== "Returning migrant");
+      idw.hidden = (val !== "Potential migrant");
+      if (rf.hidden){
+        document.getElementById("returnedFrom").value = "";
+        document.getElementById("returnedFromPanel").hidden = true;
+        showError("returnedFrom","");
+      }
+      if (idw.hidden){
+        document.getElementById("intendedDestination").value = "";
+        document.getElementById("intendedDestinationPanel").hidden = true;
+        showError("intendedDestination","");
+      }
+      updateProgress();
+    });
+  });
+
+  // (h) Accommodation question appears when a disability is disclosed.
+  document.getElementById("disabilityStatus").addEventListener("change", ()=>{
+    const v = document.getElementById("disabilityStatus").value;
+    const show = v && v !== "No disability" && v !== "Prefer not to say";
+    document.getElementById("accommodationWrap").hidden = !show;
+    if (!show){ document.getElementById("accommodationNeeds").value=""; showError("accommodationNeeds",""); }
+    updateProgress();
+  });
+
+  // (i) "Where did you hear" Other reveals a free-text box.
+  document.getElementById("heardFrom").addEventListener("change", ()=>{
+    const other = document.getElementById("heardFrom").value === "Other";
+    document.getElementById("heardFromOtherWrap").hidden = !other;
+    if (!other){ document.getElementById("heardFromOther").value=""; showError("heardFromOther",""); }
+    updateProgress();
+  });
 }
 
 function isVisible(id){ return !document.getElementById(id).hidden; }
@@ -1378,6 +1574,16 @@ const VALIDATORS = {
     return "";
   },
   state:      f => getText(f,"state") ? "" : "Select your state of residence.",
+  disabilityStatus: f => getText(f,"disabilityStatus") ? "" : "Select an option.",
+  accommodationNeeds: f => isVisible("accommodationWrap") && !getText(f,"accommodationNeeds")
+    ? "Tell us what would help." : "",
+  returnedFrom: f => isVisible("returnedFromWrap") && !getText(f,"returnedFrom")
+    ? "Select the country you returned from." : "",
+  intendedDestination: f => isVisible("intendedDestinationWrap") && !getText(f,"intendedDestination")
+    ? "Select the country you plan to move to." : "",
+  heardFrom: f => getText(f,"heardFrom") ? "" : "Select an option.",
+  heardFromOther: f => isVisible("heardFromOtherWrap") && !getText(f,"heardFromOther")
+    ? "Tell us where you heard about it." : "",
   describe:   f => getRadio(f,"describe") ? "" : "Select an option.",
   occupation: f => getText(f,"occupation") ? "" : "Select your occupation.",
   occupationOther: f => isVisible("occupationOtherWrap") && !getText(f,"occupationOther")
@@ -1401,14 +1607,17 @@ const ERROR_IDS = {
   freelanceBefore:"freelance-err", platformsOther:"platformsOther-err",
   experienceOther:"experienceOther-err", digitalTools:"digitalTools-err",
   devices:"devices-err", internet:"internet-err", consent:"consent-err",
+  disabilityStatus:"disabilityStatus-err", accommodationNeeds:"accommodationNeeds-err",
+  returnedFrom:"returnedFrom-err", intendedDestination:"intendedDestination-err",
+  heardFrom:"heardFrom-err", heardFromOther:"heardFromOther-err",
 };
 
 const SECTION_REQUIRED = {
-  1: ["fullName","gender","phone","email","state"],
-  2: ["describe","occupation","occupationOther","education"],
+  1: ["fullName","gender","phone","email","state","disabilityStatus","accommodationNeeds"],
+  2: ["describe","returnedFrom","intendedDestination","occupation","occupationOther","education"],
   3: ["freelanceBefore","platformsOther","experienceOther"],
   4: ["digitalTools","devices","internet"],
-  5: ["consent"],
+  5: ["heardFrom","heardFromOther","consent"],
 };
 
 function validateField(form,name){
@@ -1552,9 +1761,16 @@ function collectData(form){
     reference: makeReference(),
     fullName: getText(form,"fullName"),
     gender: getRadio(form,"gender"),
-    phone: getText(form,"phone"),
+    phone: getDialCode() + " " + getText(form,"phone"),
     email: getText(form,"email"),
     state: getText(form,"state"),
+    disabilityStatus: getText(form,"disabilityStatus"),
+    accommodationNeeds: getText(form,"accommodationNeeds"),
+    returnedFrom: getText(form,"returnedFrom"),
+    intendedDestination: getText(form,"intendedDestination"),
+    heardFrom: getText(form,"heardFrom") === "Other"
+      ? "Other: " + getText(form,"heardFromOther")
+      : getText(form,"heardFrom"),
     describe: getRadio(form,"describe"),
     occupation: getText(form,"occupation") === "Other"
       ? "Other: " + getText(form,"occupationOther")
