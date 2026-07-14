@@ -71,7 +71,12 @@ th.n{text-align:right;padding-right:0}
 .tag{font-size:11px;padding:2px 9px;border-radius:20px;font-family:var(--display-md);display:inline-block}
 .tag.invited{background:var(--amber-bg);color:var(--amber)}
 .tag.active{background:var(--green-bg);color:var(--green)}
-.tag.suspended{background:var(--red-bg);color:var(--red)}
+.tag.confirmed{background:var(--green-bg);color:var(--green)}
+.tag.probationary{background:var(--clr-blue);color:#1a4e73}
+.tag.suspended{background:var(--amber-bg);color:var(--amber)}
+.tag.resigned{background:var(--red-bg);color:var(--red)}
+.tag.terminated{background:var(--red-bg);color:var(--red)}
+.tag.exited{background:var(--line);color:var(--muted)}
 .tag.role{background:var(--clr-orange-light);color:#7a5230;margin-left:4px}
 .rowbtn{padding:5px 11px;font-size:12px}
 
@@ -132,25 +137,38 @@ th.n{text-align:right;padding-right:0}
     <h3>Add a staff member</h3>
     <p class="cardsub">Their email must be exact. It is the key they sign up with.</p>
     <div class="grid2">
-      <div class="fld"><label>Full name</label><input id="f-name" placeholder="Ada Okoro"></div>
+      <div class="fld"><label>Full name</label><input id="f-name" placeholder="e.g. first and last name"></div>
       <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="name@example.com"></div>
     </div>
     <div class="grid3">
       <div class="fld"><label>Department</label>
         <select id="f-dept"><option value="">Choose…</option></select></div>
       <div class="fld"><label>Staff ID</label><input id="f-code" placeholder="DLA-0012"></div>
-      <div class="fld"><label>Type</label>
-        <select id="f-type" onchange="onTypeChange()">
-          <option value="employee">Employee</option>
-          <option value="corps_member">Corps member</option>
+      <div class="fld"><label>Job title</label><input id="f-job" placeholder="e.g. Data Analyst"></div>
+    </div>
+    <div class="grid3">
+      <div class="fld"><label>Employment type</label>
+        <select id="f-emptype" onchange="onTypeChange()">
+          <option value="full_time">Full-time employee</option>
+          <option value="part_time">Part-time employee</option>
+          <option value="fixed_term">Fixed-term employee</option>
+          <option value="temporary">Temporary hire</option>
+          <option value="intern">Intern</option>
+          <option value="nysc">NYSC (corps member)</option>
         </select></div>
+      <div class="fld"><label>Employment status</label>
+        <select id="f-status">
+          <option value="probationary">Probationary</option>
+          <option value="confirmed">Confirmed</option>
+        </select></div>
+      <div class="fld"><label id="lbl-gross">Monthly gross (₦)</label><input id="f-gross" type="number" placeholder="e.g. 250000"></div>
     </div>
     <div class="grid2">
-      <div class="fld"><label id="lbl-gross">Monthly gross (₦)</label><input id="f-gross" type="number" placeholder="342000"></div>
-      <div class="fld"><label>Effective from</label><input id="f-eff" type="date"></div>
+      <div class="fld"><label>Salary effective from</label><input id="f-eff" type="date"></div>
+      <div class="fld"><label>Employed from (optional)</label><input id="f-employed" type="date"></div>
     </div>
     <div id="corps-note" class="alert info hidden">
-      <b>Corps member</b>Marked outside PAYE by CEO decision. Their stipend is recorded, no tax is computed. No annual leave; sick leave allowed.
+      <b>NYSC corps member</b>Marked outside PAYE per the Employee Handbook §3.13 (organisation stipend is tax-exempt). No annual leave; sick leave allowed.
     </div>
     <div id="add-msg"></div>
     <button class="btn-primary" id="add-btn" onclick="addStaff()">Add to register</button>
@@ -176,6 +194,85 @@ th.n{text-align:right;padding-right:0}
     </div>
     <div id="head-msg"></div>
     <button class="btn-primary" id="head-btn" onclick="setHead()">Make department head</button>
+  </div>
+
+  <!-- appointments -->
+  <div class="card">
+    <h3>Appointments</h3>
+    <p class="cardsub">Appoint someone as COO, Director, Department Head, Finance Manager, or Deputy. Substantive is the real post; acting is a stand-in (with an optional end date that auto-expires).</p>
+    <div class="grid2">
+      <div class="fld"><label>Person's email</label><input id="ap-email" type="email" placeholder="name@example.com"></div>
+      <div class="fld"><label>Position</label>
+        <select id="ap-pos" onchange="onPosChange()">
+          <option value="coo">Chief Operating Officer</option>
+          <option value="director">Director</option>
+          <option value="head">Department Head</option>
+          <option value="finance">Finance Manager</option>
+          <option value="deputy">Deputy</option>
+        </select></div>
+    </div>
+    <div class="grid2">
+      <div class="fld"><label>Display title</label><input id="ap-title" placeholder="e.g. Chief Operating Officer"></div>
+      <div class="fld"><label>Kind</label>
+        <select id="ap-kind" onchange="onKindChange()">
+          <option value="substantive">Substantive (holds the post)</option>
+          <option value="acting">Acting (standing in)</option>
+        </select></div>
+    </div>
+    <div class="grid2" id="ap-dept-row">
+      <div class="fld"><label>Department (for a Head)</label>
+        <select id="ap-dept"><option value="">—</option></select></div>
+      <div class="fld" id="ap-portfolio-row"><label>Portfolio / pillar (for a Director)</label><input id="ap-portfolio" placeholder="e.g. Research & Analytics"></div>
+    </div>
+    <div class="grid2" id="ap-acting-row" style="display:none">
+      <div class="fld"><label>Acting from</label><input id="ap-start" type="date"></div>
+      <div class="fld"><label>Acting until (blank = open-ended)</label><input id="ap-end" type="date"></div>
+    </div>
+    <div id="ap-msg"></div>
+    <button class="btn-primary" id="ap-btn" onclick="appoint()">Appoint</button>
+
+    <div style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0;font-size:14px">Current appointments</h3>
+        <button class="rowbtn" onclick="loadAppointments()">Refresh</button>
+      </div>
+      <div id="ap-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+    </div>
+  </div>
+
+  <!-- employment status -->
+  <div class="card">
+    <h3>Employment status</h3>
+    <p class="cardsub">Confirm, suspend, or record an exit. Suspension asks whether it is with pay, half pay, or no pay, per the Handbook §12.1.</p>
+    <div class="grid2">
+      <div class="fld"><label>Person's email</label><input id="st-email" type="email" placeholder="name@example.com"></div>
+      <div class="fld"><label>New status</label>
+        <select id="st-status" onchange="onStatusChange()">
+          <option value="confirmed">Confirmed</option>
+          <option value="probationary">Probationary</option>
+          <option value="suspended">Suspended</option>
+          <option value="resigned">Resigned</option>
+          <option value="terminated">Terminated</option>
+          <option value="exited">Exited</option>
+        </select></div>
+    </div>
+    <div class="grid2">
+      <div class="fld"><label>Effective date</label><input id="st-eff" type="date"></div>
+      <div class="fld" id="st-exit-row" style="display:none"><label>Last working day</label><input id="st-exit" type="date"></div>
+    </div>
+    <div class="grid2" id="st-susp-row" style="display:none">
+      <div class="fld"><label>Suspension pay</label>
+        <select id="st-susp-pay">
+          <option value="with_pay">With full pay</option>
+          <option value="half_pay">Half pay</option>
+          <option value="no_pay">No pay</option>
+        </select></div>
+      <div class="fld"><label>Suspension ends (optional)</label><input id="st-susp-end" type="date"></div>
+    </div>
+    <div class="fld"><label>Note / reason (optional)</label><input id="st-note" placeholder="Kept private; visible to you and directors only"></div>
+    <div class="alert info" id="st-legal" style="display:none"><b>A reminder, not legal advice</b>Suspension, resignation and termination carry legal requirements under Nigerian labour law. The system records your decision; confirm the process with an HR or legal adviser before acting.</div>
+    <div id="st-msg"></div>
+    <button class="btn-primary" id="st-btn" onclick="setStatus()">Update status</button>
   </div>
 
   <!-- payroll settings -->
@@ -226,6 +323,10 @@ window.addStaff = addStaff; window.setHead = setHead;
 window.loadStaff = loadStaff; window.onTypeChange = onTypeChange;
 window.togglePS = togglePS; window.uploadPolicy = uploadPolicy;
 window.loadPolicies = loadPolicies; window.deletePolicy = deletePolicy;
+window.appoint = appoint; window.loadAppointments = loadAppointments;
+window.revokeAppointment = revokeAppointment; window.setStatus = setStatus;
+window.onPosChange = onPosChange; window.onKindChange = onKindChange;
+window.onStatusChange = onStatusChange;
 
 // default effective-from = today
 $("f-eff").value = new Date().toISOString().slice(0,10);
@@ -234,7 +335,12 @@ $("f-eff").value = new Date().toISOString().slice(0,10);
 for(const d of DEPTS){
   $("f-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
   $("h-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
+  $("ap-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
 }
+const today = new Date().toISOString().slice(0,10);
+$("ap-start").value = today;
+$("st-eff").value = today;
+onPosChange();
 
 // ---------- session ----------
 db.auth.onAuthStateChange((_e, session) => { if(session) enterApp(); });
@@ -272,11 +378,12 @@ async function enterApp(){
   loadStaff();
   loadPayrollSettings();
   loadPolicies();
+  loadAppointments();
 }
 
 // ---------- add staff ----------
 function onTypeChange(){
-  const corps = $("f-type").value === "corps_member";
+  const corps = $("f-emptype").value === "nysc";
   $("corps-note").classList.toggle("hidden", !corps);
   $("lbl-gross").textContent = corps ? "Monthly stipend (₦)" : "Monthly gross (₦)";
 }
@@ -286,31 +393,136 @@ async function addStaff(){
   const email = $("f-email").value.trim();
   const dept = $("f-dept").value || null;
   const code = $("f-code").value.trim() || null;
-  const type = $("f-type").value;
+  const empType = $("f-emptype").value;
+  const status = $("f-status").value;
+  const job = $("f-job").value.trim() || null;
   const gross = $("f-gross").value ? Number($("f-gross").value) : null;
   const eff = $("f-eff").value || null;
+  const employed = $("f-employed").value || null;
 
   if(!name || !email){ msg("add-msg","err","Missing details","Full name and email are required."); return; }
 
+  // map the rich employment type onto the person_type the add function expects
+  const personType = empType === "nysc" ? "corps_member" : "employee";
   const params = {
     p_email: email, p_full_name: name, p_staff_code: code,
-    p_department: dept, p_person_type: type,
-    p_monthly_gross: gross, p_effective_from: eff,
+    p_department: dept, p_person_type: personType,
+    p_monthly_gross: gross, p_effective_from: eff, p_employed_from: employed,
   };
-  if(type === "corps_member"){
+  if(empType === "nysc"){
     params.p_paye_exempt = true;
-    params.p_paye_exempt_basis = "NYSC corps member, treated outside PAYE by CEO decision. Stipend recorded, no tax computed.";
+    params.p_paye_exempt_basis = "NYSC corps member. Organisation stipend is tax-exempt per DLA Employee Handbook §3.13. No tax computed.";
   }
 
   btn("add-btn", true, "Adding");
   const { data, error } = await db.rpc("admin_add_staff", params);
+  if(error){ btn("add-btn", false, "Add to register"); msg("add-msg","err","Could not add", error.message); return; }
+
+  // set the richer employment fields + status
+  await db.rpc("admin_set_employment", { p_email: email, p_employment_type: empType, p_job_title: job });
+  if(status && status !== "probationary"){
+    await db.rpc("admin_set_status", { p_email: email, p_status: status, p_effective: eff || today });
+  }
   btn("add-btn", false, "Add to register");
 
-  if(error){ msg("add-msg","err","Could not add", error.message); return; }
-  msg("add-msg","ok","Added", `${name} is now on the register and can sign up with ${email}.`);
-  // clear form
-  $("f-name").value=""; $("f-email").value=""; $("f-code").value="";
-  $("f-gross").value=""; $("f-dept").value=""; $("f-type").value="employee"; onTypeChange();
+  msg("add-msg","ok","Added", `${name} is on the register and can sign up.`);
+  ["f-name","f-email","f-code","f-job","f-gross"].forEach(id=>$(id).value="");
+  $("f-dept").value=""; $("f-emptype").value="full_time"; $("f-status").value="probationary"; onTypeChange();
+  loadStaff();
+}
+
+// ---------- appointments ----------
+function onPosChange(){
+  const pos = $("ap-pos").value;
+  // sensible default title
+  const titles = { coo:"Chief Operating Officer", director:"Director", head:"", finance:"Finance Manager", deputy:"Deputy" };
+  $("ap-title").value = titles[pos] ?? "";
+  // show department only for head; portfolio only for director
+  $("ap-dept-row").style.display = (pos==="head"||pos==="director") ? "grid" : "none";
+  $("ap-portfolio-row").style.display = pos==="director" ? "block" : "none";
+  document.querySelector('label[for]') ; // noop
+}
+function onKindChange(){
+  $("ap-acting-row").style.display = $("ap-kind").value === "acting" ? "grid" : "none";
+}
+async function appoint(){
+  const email = $("ap-email").value.trim();
+  const pos = $("ap-pos").value;
+  const title = $("ap-title").value.trim();
+  const kind = $("ap-kind").value;
+  const dept = (pos==="head") ? ($("ap-dept").value || null) : null;
+  const portfolio = (pos==="director") ? ($("ap-portfolio").value.trim() || null) : null;
+  if(!email || !title){ msg("ap-msg","err","Missing details","Email and a display title are required."); return; }
+
+  const params = {
+    p_email: email, p_position: pos, p_title: title,
+    p_department: dept, p_kind: kind, p_portfolio: portfolio,
+  };
+  if(kind === "acting"){
+    params.p_starts_on = $("ap-start").value || today;
+    params.p_ends_on = $("ap-end").value || null;
+  }
+
+  btn("ap-btn", true, "Appointing");
+  const { error } = await db.rpc("admin_appoint", params);
+  btn("ap-btn", false, "Appoint");
+  if(error){ msg("ap-msg","err","Could not appoint", error.message); return; }
+  msg("ap-msg","ok","Appointed", `${email} is now ${title}${kind==="acting"?" (acting)":""}.`);
+  $("ap-email").value=""; $("ap-portfolio").value=""; onPosChange();
+  loadAppointments(); loadStaff();
+}
+async function loadAppointments(){
+  const wrap = $("ap-list");
+  const { data, error } = await db.from("appointments_list").select("*");
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No appointments yet.</p>`; return; }
+  wrap.innerHTML = data.map(a => {
+    const extra = [a.department, a.portfolio].filter(Boolean).join(" · ");
+    const until = a.ends_on ? ` · until ${new Date(a.ends_on).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}` : "";
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)">
+      <div style="flex:1">
+        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(a.staff)}</b>
+        ${a.kind==="acting"?'<span class="tag" style="background:var(--amber-bg);color:var(--amber);margin-left:4px">Acting</span>':""}
+        <div style="font-size:12px;color:var(--muted)">${esc(a.title)}${extra?" · "+esc(extra):""}${until}</div>
+      </div>
+      <button class="rowbtn" onclick="revokeAppointment(${a.id})" style="color:var(--red)">Remove</button>
+    </div>`;
+  }).join("");
+}
+async function revokeAppointment(id){
+  if(!confirm("Remove this appointment? Their access for this role will end.")) return;
+  const { error } = await db.rpc("admin_revoke_appointment", { p_id: id });
+  if(error){ alert("Could not remove: " + error.message); return; }
+  loadAppointments(); loadStaff();
+}
+
+// ---------- employment status ----------
+function onStatusChange(){
+  const s = $("st-status").value;
+  $("st-susp-row").style.display = s === "suspended" ? "grid" : "none";
+  $("st-exit-row").style.display = (s==="resigned"||s==="terminated"||s==="exited") ? "block" : "none";
+  $("st-legal").style.display = (s==="suspended"||s==="resigned"||s==="terminated") ? "block" : "none";
+}
+async function setStatus(){
+  const email = $("st-email").value.trim();
+  const status = $("st-status").value;
+  if(!email){ msg("st-msg","err","Missing email","Enter the person's email."); return; }
+  const params = {
+    p_email: email, p_status: status,
+    p_effective: $("st-eff").value || today,
+    p_note: $("st-note").value.trim() || null,
+  };
+  if(status==="resigned"||status==="terminated"||status==="exited") params.p_exit_date = $("st-exit").value || null;
+  if(status==="suspended"){
+    params.p_susp_pay = $("st-susp-pay").value;
+    params.p_susp_ends = $("st-susp-end").value || null;
+  }
+  btn("st-btn", true, "Updating");
+  const { error } = await db.rpc("admin_set_status", params);
+  btn("st-btn", false, "Update status");
+  if(error){ msg("st-msg","err","Could not update", error.message); return; }
+  msg("st-msg","ok","Updated", `Status set to ${status}.`);
+  $("st-email").value=""; $("st-note").value="";
   loadStaff();
 }
 
@@ -322,20 +534,24 @@ async function loadStaff(){
   if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${error.message}</div>`; return; }
   if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No one added yet.</p>`; return; }
 
+  const EMP = { full_time:"Full-time", part_time:"Part-time", fixed_term:"Fixed-term", temporary:"Temporary", intern:"Intern", nysc:"NYSC", consultant:"Consultant" };
   const rows = data.map(s => {
     const roleTags = (s.roles||[]).filter(r=>r!=="staff")
       .map(r=>`<span class="tag role">${r.replace("_"," ")}</span>`).join("");
+    const appt = s.appointments ? `<div style="font-size:11px;color:var(--clr-orange);font-family:var(--display-md)">${esc(s.appointments)}</div>` : "";
+    const empLine = [EMP[s.employment_type]||"", s.job_title||""].filter(Boolean).join(" · ");
     return `<tr>
-      <td><b style="font-family:var(--display-md);font-weight:500">${esc(s.full_name)}</b>${roleTags}
-          <div style="font-size:12px;color:var(--muted)">${esc(s.email)}</div></td>
+      <td><b style="font-family:var(--display-md);font-weight:500">${esc(s.full_name)}</b>${roleTags}${appt}
+          <div style="font-size:12px;color:var(--muted)">${esc(s.email)}</div>
+          ${empLine?`<div style="font-size:11px;color:var(--faint)">${esc(empLine)}</div>`:""}</td>
       <td>${esc(s.department||"—")}<div style="font-size:12px;color:var(--faint)">${s.line_manager?"↳ "+esc(s.line_manager):""}</div></td>
-      <td><span class="tag ${s.status}">${s.status}</span></td>
+      <td><span class="tag ${s.employment_status||s.status}">${esc(s.employment_status||s.status)}</span></td>
       <td class="n">${naira(s.current_gross)}</td>
     </tr>`;
   }).join("");
 
   wrap.innerHTML = `<table>
-    <thead><tr><th>Name</th><th>Department</th><th>Status</th><th class="n">Monthly</th></tr></thead>
+    <thead><tr><th>Name &amp; role</th><th>Department</th><th>Status</th><th class="n">Monthly</th></tr></thead>
     <tbody>${rows}</tbody></table>
     <p class="hint" style="margin-top:14px">Salary is visible here because you are the super-admin. Department heads never see it.</p>`;
 }
