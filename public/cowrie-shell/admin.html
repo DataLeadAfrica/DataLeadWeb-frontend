@@ -101,7 +101,7 @@ th.n{text-align:right;padding-right:0}
     </div>
     <h2>Admin sign in</h2>
     <p class="lede">Super-admin only. This is where staff and salaries are managed.</p>
-    <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username" placeholder="arowolo.ayoola@dataleadafrica.com"></div>
+    <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
     <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
     <div id="li-msg"></div>
     <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
@@ -133,7 +133,7 @@ th.n{text-align:right;padding-right:0}
     <p class="cardsub">Their email must be exact. It is the key they sign up with.</p>
     <div class="grid2">
       <div class="fld"><label>Full name</label><input id="f-name" placeholder="Ada Okoro"></div>
-      <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="ada.okoro@dataleadafrica.com"></div>
+      <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="name@example.com"></div>
     </div>
     <div class="grid3">
       <div class="fld"><label>Department</label>
@@ -172,10 +172,39 @@ th.n{text-align:right;padding-right:0}
     <div class="grid2">
       <div class="fld"><label>Department</label>
         <select id="h-dept"><option value="">Choose…</option></select></div>
-      <div class="fld"><label>Head's email</label><input id="h-email" type="email" placeholder="musa.bello@dataleadafrica.com"></div>
+      <div class="fld"><label>Head's email</label><input id="h-email" type="email" placeholder="name@example.com"></div>
     </div>
     <div id="head-msg"></div>
     <button class="btn-primary" id="head-btn" onclick="setHead()">Make department head</button>
+  </div>
+
+  <!-- payroll settings -->
+  <div class="card">
+    <h3>Payroll settings</h3>
+    <p class="cardsub">Statutory and benefit lines. Every one shows on the payslip; when off it reads ₦0. Turn a line on only when the remittance is actually set up.</p>
+    <div id="ps-wrap"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+    <div class="alert info" style="margin-bottom:0"><b>Pre-tax lines reduce PAYE</b>Pension and NHF come out before tax, so switching them on lowers taxable pay too. HMO, NSITF and group life are employer-borne, shown for transparency, and never reduce staff net pay.</div>
+  </div>
+
+  <!-- policies -->
+  <div class="card">
+    <h3>Policies</h3>
+    <p class="cardsub">Upload a policy document. Every staff member can then download it. Each carries the date it was uploaded.</p>
+    <div class="grid2">
+      <div class="fld"><label>Title</label><input id="pol-title" placeholder="Employee Handbook"></div>
+      <div class="fld"><label>Version (optional)</label><input id="pol-version" placeholder="v2.0"></div>
+    </div>
+    <div class="fld"><label>Short description (optional)</label><input id="pol-desc" placeholder="HR policy manual, effective 2026"></div>
+    <div class="fld"><label>Document file (PDF)</label><input id="pol-file" type="file" accept="application/pdf"></div>
+    <div id="pol-msg"></div>
+    <button class="btn-primary" id="pol-btn" onclick="uploadPolicy()">Upload policy</button>
+    <div style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0;font-size:14px">Uploaded policies</h3>
+        <button class="rowbtn" onclick="loadPolicies()">Refresh</button>
+      </div>
+      <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+    </div>
   </div>
 </div>
 
@@ -195,6 +224,8 @@ const naira = v => v==null ? "—" : "₦" + Number(v).toLocaleString("en-NG");
 window.signIn = signIn; window.signOut = signOut;
 window.addStaff = addStaff; window.setHead = setHead;
 window.loadStaff = loadStaff; window.onTypeChange = onTypeChange;
+window.togglePS = togglePS; window.uploadPolicy = uploadPolicy;
+window.loadPolicies = loadPolicies; window.deletePolicy = deletePolicy;
 
 // default effective-from = today
 $("f-eff").value = new Date().toISOString().slice(0,10);
@@ -239,6 +270,8 @@ async function enterApp(){
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   loadStaff();
+  loadPayrollSettings();
+  loadPolicies();
 }
 
 // ---------- add staff ----------
@@ -319,6 +352,87 @@ async function setHead(){
   msg("head-msg","ok","Done", `${email} now heads ${dept}. Their department reports to them.`);
   $("h-email").value=""; $("h-dept").value="";
   loadStaff();
+}
+
+// ---------- payroll settings ----------
+async function loadPayrollSettings(){
+  const wrap = $("ps-wrap");
+  const { data, error } = await db.from("payroll_settings").select("*").order("key");
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  wrap.innerHTML = data.map(s => {
+    const kind = s.scope === "employee_deduction" ? "Staff deduction"
+               : s.scope === "employer_cost" ? "Employer cost" : "Staff + employer";
+    const rates = [];
+    if(s.employee_pct>0) rates.push(`${s.employee_pct}% staff`);
+    if(s.employer_pct>0) rates.push(`${s.employer_pct}% employer`);
+    const pretax = s.reduces_paye ? ` · pre-tax` : "";
+    return `<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)">
+      <div style="flex:1">
+        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(s.label)}</b>
+        <div style="font-size:12px;color:var(--muted)">${kind}${rates.length?" · "+rates.join(", "):""}${pretax}</div>
+      </div>
+      <button class="rowbtn ${s.enabled?'btn-primary':''}" onclick="togglePS('${s.key}', ${!s.enabled})">
+        ${s.enabled ? "On" : "Off"}
+      </button>
+    </div>`;
+  }).join("");
+}
+async function togglePS(key, enable){
+  const { error } = await db.rpc("admin_set_payroll_setting", { p_key: key, p_enabled: enable });
+  if(error){ alert("Could not change: " + error.message); return; }
+  loadPayrollSettings();
+}
+
+// ---------- policies ----------
+async function uploadPolicy(){
+  const title = $("pol-title").value.trim();
+  const file = $("pol-file").files[0];
+  if(!title){ msg("pol-msg","err","Missing title","Give the policy a title."); return; }
+  if(!file){ msg("pol-msg","err","No file","Choose a PDF to upload."); return; }
+
+  btn("pol-btn", true, "Uploading");
+  // upload the file to the 'policies' storage bucket
+  const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+  const up = await db.storage.from("policies").upload(path, file, { upsert: false });
+  if(up.error){ btn("pol-btn", false, "Upload policy"); msg("pol-msg","err","Upload failed", up.error.message + " (is the 'policies' bucket created?)"); return; }
+
+  // record it
+  const { error } = await db.rpc("admin_add_policy", {
+    p_title: title,
+    p_storage_path: path,
+    p_description: $("pol-desc").value.trim() || null,
+    p_version: $("pol-version").value.trim() || null,
+  });
+  btn("pol-btn", false, "Upload policy");
+  if(error){ msg("pol-msg","err","Could not save", error.message); return; }
+  msg("pol-msg","ok","Uploaded", `${title} is now available to all staff.`);
+  $("pol-title").value=""; $("pol-version").value=""; $("pol-desc").value=""; $("pol-file").value="";
+  loadPolicies();
+}
+async function loadPolicies(){
+  const wrap = $("pol-list");
+  const { data, error } = await db.from("policies").select("*").eq("is_current", true).order("uploaded_at", { ascending:false });
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No policies uploaded yet.</p>`; return; }
+  wrap.innerHTML = data.map(p => {
+    const url = db.storage.from("policies").getPublicUrl(p.storage_path).data.publicUrl;
+    const when = new Date(p.uploaded_at).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)">
+      <div style="flex:1">
+        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(p.title)}</b>
+        ${p.version?`<span class="tag role">${esc(p.version)}</span>`:""}
+        <div style="font-size:12px;color:var(--muted)">Uploaded ${when}${p.description?" · "+esc(p.description):""}</div>
+      </div>
+      <a href="${url}" target="_blank" rel="noopener"><button class="rowbtn">View</button></a>
+      <button class="rowbtn" onclick="deletePolicy(${p.id})" style="color:var(--red)">Remove</button>
+    </div>`;
+  }).join("");
+}
+async function deletePolicy(id){
+  if(!confirm("Remove this policy from the staff download list?")) return;
+  const { error } = await db.from("policies").update({ is_current:false }).eq("id", id);
+  if(error){ alert("Could not remove: " + error.message); return; }
+  loadPolicies();
 }
 
 // ---------- helpers ----------
