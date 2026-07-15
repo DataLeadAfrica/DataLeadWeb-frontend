@@ -321,7 +321,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 
     <div class="card">
       <h3>Personal</h3>
-      <p class="cardsub">Who you are, and how we reach you.</p>
+      <p class="cardsub">Who you are, and how we reach you. Only your phone number, date of birth and address are required. The rest is optional.</p>
       <div class="grid3">
         <div class="fld" style="min-width:96px"><label>Title</label>
           <select id="pf-title">
@@ -363,7 +363,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 
     <div class="card">
       <h3>Next of kin</h3>
-      <p class="cardsub">Who we contact in an emergency. Please keep this current.</p>
+      <p class="cardsub">Who we contact in an emergency. Please keep this current. Their name and phone number are required; the rest is optional.</p>
       <div class="grid2">
         <div class="fld"><label>Full name</label><input id="nk-name"></div>
         <div class="fld"><label>Relationship</label><input id="nk-rel" placeholder="Spouse, parent, sibling…"></div>
@@ -379,7 +379,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 
     <div class="card">
       <h3>Bank and tax</h3>
-      <p class="cardsub">Where your salary is paid, and your tax records.</p>
+      <p class="cardsub">Where your salary is paid, and your tax records. Only the bank name and account number are required.</p>
       <div class="alert info" style="margin-top:0"><b>Only you and Finance can see this</b>Your manager cannot. And only you can change where your salary is paid, not even Finance can alter it.</div>
       <div class="grid2">
         <div class="fld"><label>Bank name</label><input id="bk-bank"></div>
@@ -388,14 +388,18 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <div class="fld"><label>Account name</label><input id="bk-name">
         <p class="hint">Exactly as it appears on your bank account.</p></div>
       <div class="grid2">
-        <div class="fld"><label>Tax Identification Number (TIN)</label><input id="bk-tin"></div>
-        <div class="fld"><label>NHF number (optional)</label><input id="bk-nhf"></div>
+        <div class="fld"><label>Tax Identification Number (TIN)</label><input id="bk-tin">
+          <p class="hint">Optional now, but needed before we can remit your PAYE.</p></div>
+        <div class="fld"><label>National Housing Fund (NHF) number</label><input id="bk-nhf">
+          <p class="hint">Optional.</p></div>
       </div>
       <div class="grid2">
-        <div class="fld"><label>Pension administrator (PFA)</label><input id="bk-pfa"></div>
-        <div class="fld"><label>RSA number</label><input id="bk-rsa"></div>
+        <div class="fld"><label>Pension Fund Administrator (PFA)</label><input id="bk-pfa" placeholder="e.g. Stanbic IBTC Pension Managers">
+          <p class="hint">Optional.</p></div>
+        <div class="fld"><label>Retirement Savings Account (RSA) number</label><input id="bk-rsa">
+          <p class="hint">Optional.</p></div>
       </div>
-      <p class="hint" style="margin-bottom:14px">Pension details are collected now and used if the scheme is switched on.</p>
+      <p class="hint" style="margin-bottom:14px">Only your bank name and account number are required, that is how you get paid. Pension details are collected now and used only if the scheme is switched on.</p>
       <div id="bk-msg"></div>
       <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save bank and tax details</button>
     </div>
