@@ -197,6 +197,19 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <span class="t"><b>My plans</b><span id="pl-sub">What you intend to do this week</span></span><span class="arr">&rarr;</span>
   </button>
 
+  <div id="mgr-block" class="hidden">
+    <div class="section-label" id="mgr-label">Your team</div>
+    <button class="tile" onclick="go('approvals')">
+      <span class="dot todo" id="ap-dot"></span>
+      <span class="t"><b>Approvals</b><span id="ap-sub">Plans and timesheets from your team</span></span>
+      <span class="badge hidden" id="ap-badge">0</span><span class="arr">&rarr;</span>
+    </button>
+    <button class="tile" onclick="go('team')">
+      <span class="dot" style="background:var(--clr-blue)"></span>
+      <span class="t"><b>Targets</b><span>Set and rate targets for your team</span></span><span class="arr">&rarr;</span>
+    </button>
+  </div>
+
   <div class="section-label">You</div>
   <div class="card">
     <h3>Your details</h3>
@@ -311,6 +324,136 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
   </section>
 
+
+  <!-- ---------- approvals ---------- -->
+  <section id="v-approvals" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow" id="mgr-eyebrow">Your team</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Approvals</h1>
+    <p style="color:var(--muted);margin-bottom:18px">You approve whether the work was done. You never see anyone's salary.</p>
+
+    <div class="card">
+      <h3>Plans awaiting you</h3>
+      <div id="ap-plans"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Timesheets awaiting you</h3>
+      <div id="ap-ts"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ---------- review one submission ---------- -->
+  <section id="v-review" class="hidden">
+    <button class="back" onclick="go('approvals')">&larr; Approvals</button>
+    <div class="eyebrow" id="rv-eyebrow">Reviewing</div>
+    <h1 style="font-size:26px;margin-bottom:18px" id="rv-name">&mdash;</h1>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Working days</div><div class="v" id="rv-wd">&mdash;</div></div>
+      <div class="stat"><div class="k">Days logged</div><div class="v" id="rv-logged">&mdash;</div></div>
+      <div class="stat"><div class="k">Normal hours</div><div class="v" id="rv-normal">&mdash;</div></div>
+      <div class="stat accent"><div class="k">Extra hours</div><div class="v" id="rv-extra">&mdash;</div></div>
+    </div>
+
+    <div id="rv-flags"></div>
+
+    <div class="card">
+      <h3>The days</h3>
+      <div id="rv-days"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Their monthly report</h3>
+      <div id="rv-report" style="font-size:13.5px;color:var(--muted);white-space:pre-line">&mdash;</div>
+    </div>
+
+    <div class="card">
+      <div class="alert info" style="margin-top:0"><b>No salary shown</b>You are approving whether the work was done, not what it pays. Pay is private to the person and Finance.</div>
+      <div class="fld"><label>Note (optional, required if returning)</label><textarea id="rv-note"></textarea></div>
+      <div id="rv-msg"></div>
+      <div class="actions">
+        <button onclick="reviewTs(false)">Return for a change</button>
+        <button class="btn-primary" id="rv-ok" onclick="reviewTs(true)">Approve</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- review one plan ---------- -->
+  <section id="v-planreview" class="hidden">
+    <button class="back" onclick="go('approvals')">&larr; Approvals</button>
+    <div class="eyebrow">Reviewing a plan</div>
+    <h1 style="font-size:26px;margin-bottom:4px" id="pr-name">&mdash;</h1>
+    <p style="color:var(--muted);margin-bottom:18px" id="pr-dates">&mdash;</p>
+
+    <div class="card">
+      <h3 id="pr-headline">&mdash;</h3>
+      <div id="pr-items" style="margin-top:12px"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <div class="fld"><label>Note to them (optional)</label><textarea id="pr-note"></textarea></div>
+      <div id="pr-msg"></div>
+      <div class="actions">
+        <button onclick="reviewPlan(false)">Return with a note</button>
+        <button class="btn-primary" id="pr-ok" onclick="reviewPlan(true)">Approve</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- team targets ---------- -->
+  <section id="v-team" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Your team</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Targets</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Set what someone must achieve, and the KPI it is measured against. Rate it at the end of the period.</p>
+
+    <div class="card">
+      <h3>Set a target</h3>
+      <p class="cardsub">A KPI is required. Make it a yardstick, something you could both point at and agree it was met.</p>
+      <div class="grid2">
+        <div class="fld"><label>For whom</label><select id="tg-staff"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Period</label>
+          <select id="tg-period" onchange="tgDates()">
+            <option value="week">This week</option>
+            <option value="month" selected>This month</option>
+            <option value="quarter">This quarter</option>
+            <option value="year">This year</option>
+          </select></div>
+      </div>
+      <div class="fld"><label>Target</label><input id="tg-title" placeholder="Clean and validate the Chad baseline"></div>
+      <div class="fld"><label>KPI: how will you know it was met?</label><input id="tg-kpi" placeholder="400 households validated with under 2% error">
+        <p class="hint">Required. This is the yardstick.</p></div>
+      <div class="grid2">
+        <div class="fld"><label>Measured how?</label>
+          <select id="tg-kind" onchange="tgKind()">
+            <option value="qualitative">Judged by me</option>
+            <option value="quantitative">Counted (a number)</option>
+          </select></div>
+        <div class="fld hidden" id="tg-num-row"><label>Target number</label><input id="tg-value" type="number"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld hidden" id="tg-unit-row"><label>Unit</label><input id="tg-unit" placeholder="households, dashboards, %"></div>
+        <div class="fld"><label>Resource link (optional)</label><input id="tg-link" placeholder="https://&hellip;"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>From</label><input id="tg-start" type="date"></div>
+        <div class="fld"><label>To</label><input id="tg-end" type="date"></div>
+      </div>
+      <div class="fld"><label>Description (optional)</label><textarea id="tg-desc"></textarea></div>
+      <div id="tg-msg"></div>
+      <button class="btn-primary" id="tg-btn" onclick="setTarget()">Set this target</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Targets you have set</h3>
+        <button class="rowbtn" onclick="loadTeamTargets()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="tg-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
   <!-- ---------- profile ---------- -->
   <section id="v-profile" class="hidden">
     <button class="back" onclick="go('home')">← Back</button>
@@ -345,20 +488,78 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </div>
       <div class="grid2">
         <div class="fld"><label>Marital status</label>
-          <select id="pf-marital"><option value="">—</option>
+          <select id="pf-marital"><option value="">&mdash;</option>
             <option value="single">Single</option><option value="married">Married</option>
             <option value="divorced">Divorced</option><option value="widowed">Widowed</option>
             <option value="prefer_not_to_say">Prefer not to say</option></select></div>
-        <div class="fld"><label>Nationality</label><input id="pf-nat" placeholder="Nigerian"></div>
+        <div class="fld"><label>Nationality</label>
+          <select id="pf-nat" onchange="natChange()"></select></div>
       </div>
       <div class="grid2">
-        <div class="fld"><label>State of origin</label><input id="pf-origin"></div>
-        <div class="fld"><label>City</label><input id="pf-city"></div>
+        <div class="fld" id="pf-origin-row"><label>State of origin</label>
+          <select id="pf-origin"></select></div>
+        <div class="fld" id="pf-lga-row"><label>Local government area of origin</label>
+          <input id="pf-lga" placeholder="Optional"></div>
       </div>
-      <div class="fld"><label>State of residence</label><input id="pf-state"></div>
+      <div class="fld"><label>Race or ethnic origin</label>
+        <select id="pf-race">
+          <option value="">&mdash;</option>
+          <option>Black African</option>
+          <option>White / Caucasian</option>
+          <option>Asian</option>
+          <option>Middle Eastern / North African</option>
+          <option>Mixed or multiple</option>
+          <option>Other</option>
+          <option>Prefer not to say</option>
+        </select>
+        <p class="hint">Optional. Held only for demographic reporting some donors require. It plays no part in any employment decision (Employee Handbook 1.2).</p></div>
+      <div class="grid2">
+        <div class="fld"><label>State of residence</label>
+          <select id="pf-state"></select></div>
+        <div class="fld"><label>City or town</label><input id="pf-city"></div>
+      </div>
       <div class="fld"><label>Residential address</label><textarea id="pf-addr"></textarea></div>
       <div id="pf-msg"></div>
       <button class="btn-primary" id="pf-btn" onclick="savePersonal()">Save personal details</button>
+    </div>
+
+
+    <div class="card">
+      <h3>Disability and workplace adjustments</h3>
+      <p class="cardsub">So we can make the adjustments you need. Every part of this is optional, and you choose who sees it.</p>
+      <div class="alert info" style="margin-top:0"><b>Why we ask</b>We cannot provide an adjustment we do not know about. This is held for that reason only. It plays no part in any employment decision (Employee Handbook 1.2), and the Handbook commits us to reasonable adjustments (8.6, 9.22).</div>
+
+      <div class="fld"><label>Do you have a disability or long-term condition?</label>
+        <select id="ds-has" onchange="dsChange()">
+          <option value="">&mdash;</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+          <option value="prefer_not_to_say">Prefer not to say</option>
+        </select></div>
+
+      <div id="ds-detail" class="hidden">
+        <div class="fld"><label>Which apply? Tick any that do.</label>
+          <div id="ds-types" class="checks"></div></div>
+        <div class="fld"><label>Anything else about it you want us to know (optional)</label>
+          <textarea id="ds-notes"></textarea>
+          <p class="hint">Seen only by you, the COO and the CEO. Never by your line manager.</p></div>
+      </div>
+
+      <div id="ds-acc" class="hidden">
+        <div class="fld"><label>What adjustments would help you work well?</label>
+          <div id="ds-accs" class="checks"></div></div>
+        <div class="fld"><label>Anything else you need (optional)</label>
+          <textarea id="ds-acc-notes" placeholder="e.g. meetings captioned, desk near a window, printed handouts in advance"></textarea></div>
+
+        <label style="display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;color:var(--clr-gray);font-size:14px">
+          <input type="checkbox" id="ds-share" style="width:auto;margin-top:4px">
+          <span>My line manager may see the adjustments I need (not my condition), so they can arrange them.
+            <span style="display:block;font-size:12px;color:var(--muted);margin-top:3px">If you leave this unticked, only the COO and the CEO see them, and they will arrange things with you directly.</span></span>
+        </label>
+      </div>
+
+      <div id="ds-msg"></div>
+      <button class="btn-primary" id="ds-btn" onclick="saveDisability()" style="margin-top:14px">Save this section</button>
     </div>
 
     <div class="card">
@@ -366,7 +567,15 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <p class="cardsub">Who we contact in an emergency. Please keep this current. Their name and phone number are required; the rest is optional.</p>
       <div class="grid2">
         <div class="fld"><label>Full name</label><input id="nk-name"></div>
-        <div class="fld"><label>Relationship</label><input id="nk-rel" placeholder="Spouse, parent, sibling…"></div>
+        <div class="fld"><label>Relationship</label>
+          <select id="nk-rel">
+            <option value="">&mdash;</option>
+            <option>Spouse</option><option>Parent</option><option>Child</option>
+            <option>Sibling</option><option>Uncle</option><option>Aunt</option>
+            <option>Cousin</option><option>Nephew</option><option>Niece</option>
+            <option>Grandparent</option><option>In-law</option>
+            <option>Guardian</option><option>Friend</option><option>Other</option>
+          </select></div>
       </div>
       <div class="grid2">
         <div class="fld"><label>Phone number</label><input id="nk-phone" type="tel" inputmode="tel"></div>
@@ -439,11 +648,19 @@ window.openDay=openDay; window.saveDay=saveDay; window.clearDay=clearDay; window
 window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=addItem;
 window.removeItem=removeItem; window.submitPlan=submitPlan;
 
+window.natChange=natChange; window.dsChange=dsChange; window.saveDisability=saveDisability;
+window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openReview;
+window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
+window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
+
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team"];
 function go(v){
-  ["home","profile","timesheet","plans"].forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
   if(v === "timesheet") loadTimesheet();
   if(v === "plans") loadPlan();
+  if(v === "approvals") loadApprovals();
+  if(v === "team") loadTeam();
 }
 
 const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
@@ -517,12 +734,24 @@ async function enterApp(){
   $("d-greet").textContent  = "Welcome, " + first;
   $("d-eyebrow").textContent = PROFILE.department ? PROFILE.department + " \u00b7 your portal" : "Your portal";
 
+  // one-off: populate the reference dropdowns and checkbox grids
+  fillSelect("pf-nat", COUNTRIES);
+  fillSelect("pf-origin", NG_STATES);
+  fillSelect("pf-state", NG_STATES);
+  fillChecks("ds-types", DISABILITY_TYPES, "dt");
+  fillChecks("ds-accs", ACCOMMODATIONS, "ac");
+
   renderFacts(PROFILE);
   renderNudge(PROFILE);
   fillProfileForm(PROFILE);
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   loadTitles(); loadTargets(); loadPolicies();
+
+  if(isManager()){
+    $("mgr-block").classList.remove("hidden");
+    loadApprovals();
+  }
 
   // First visit: nobody has told us anything about themselves yet.
   // Land them on the bio form rather than the dashboard.
@@ -566,9 +795,20 @@ function fillProfileForm(p){
   set("pf-title", p.honorific); set("pf-name", p.full_name);
   set("pf-phone", p.phone); set("pf-phone2", p.alternate_phone);
   set("pf-dob", p.date_of_birth); set("pf-gender", p.gender);
-  set("pf-marital", p.marital_status); set("pf-nat", p.nationality || "Nigerian");
-  set("pf-origin", p.state_of_origin); set("pf-city", p.city);
-  set("pf-state", p.state); set("pf-addr", p.residential_address);
+  set("pf-marital", p.marital_status);
+  set("pf-nat", p.nationality || "Nigeria");
+  set("pf-race", p.race);
+  set("pf-origin", p.state_of_origin); set("pf-lga", p.lga_of_origin);
+  set("pf-city", p.city); set("pf-state", p.state); set("pf-addr", p.residential_address);
+  natChange();
+
+  set("ds-has", p.has_disability);
+  set("ds-notes", p.disability_notes);
+  set("ds-acc-notes", p.accommodation_notes);
+  setChecks("dt", DISABILITY_TYPES, p.disability_types);
+  setChecks("ac", ACCOMMODATIONS, p.accommodations);
+  const sh = $("ds-share"); if(sh) sh.checked = !!p.share_accommodations_with_manager;
+  dsChange();
   set("nk-name", p.nok_name); set("nk-rel", p.nok_relationship);
   set("nk-phone", p.nok_phone); set("nk-email", p.nok_email); set("nk-addr", p.nok_address);
   set("bk-bank", p.bank_name); set("bk-acct", p.account_number); set("bk-name", p.account_name);
@@ -592,6 +832,8 @@ async function savePersonal(){
     p_state_of_origin: val("pf-origin"), p_residential_address: val("pf-addr"),
     p_city: val("pf-city"), p_state: val("pf-state"),
   });
+  // race and LGA live on the identity saver
+  await db.rpc("save_my_identity", { p_race: val("pf-race"), p_lga_of_origin: val("pf-lga") });
   btn("pf-btn", false, "Save personal details");
   if(error){ msg("pf-msg","err","Could not save", error.message); return; }
   msg("pf-msg","ok","Saved","Your personal details are up to date.");
@@ -939,6 +1181,331 @@ async function submitPlan(){
 
 function fmtDate(d){ return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }
 function fmtRange(a,b){ return fmtDate(a) + " to " + fmtDate(b); }
+
+
+// ============================================================
+// MANAGER
+// ============================================================
+const MGR_ROLES = ["head","director","coo","super_admin"];
+let RV_SUB = null, PR_PLAN = null;
+
+function isManager(){
+  return (PROFILE.roles || []).some(r => MGR_ROLES.includes(r));
+}
+
+async function loadApprovals(){
+  // plans
+  const { data: plans, error: pe } = await db.from("plans_to_review").select("*");
+  const pw = $("ap-plans");
+  if(pe){ pw.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(pe.message) + '</div>'; }
+  else if(!plans || !plans.length){ pw.innerHTML = '<p style="color:var(--faint);font-size:13px">No plans waiting.</p>'; }
+  else {
+    pw.innerHTML = plans.map(p => '<div class="qrow"><span class="dot todo"></span>' +
+      '<span class="t"><b>' + esc(p.staff) + '</b><span>' + p.period + " \u00b7 " +
+      fmtRange(p.period_start, p.period_end) + " \u00b7 " + p.item_count + " item" +
+      (p.item_count===1?"":"s") + (p.department ? " \u00b7 " + esc(p.department) : "") + '</span></span>' +
+      '<button onclick="openPlanReview(' + p.id + ')">Review</button></div>').join("");
+  }
+
+  // timesheets
+  const { data: ts, error: te } = await db.from("timesheets_to_review").select("*");
+  const tw = $("ap-ts");
+  if(te){ tw.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(te.message) + '</div>'; }
+  else if(!ts || !ts.length){ tw.innerHTML = '<p style="color:var(--faint);font-size:13px">No timesheets waiting.</p>'; }
+  else {
+    tw.innerHTML = ts.map(t => {
+      const stage = t.status === "submitted" ? "awaiting you" : "awaiting final approval";
+      const flags = t.days_flagged > 0 ? " \u00b7 \u2691 " + t.days_flagged + " flagged" : "";
+      return '<div class="qrow"><span class="dot todo"></span>' +
+        '<span class="t"><b>' + esc(t.staff) + '</b><span>' + MONTHS[t.month-1] + " " + t.year +
+        " \u00b7 " + t.days_logged + " of " + t.working_days + " days \u00b7 " + stage + flags + '</span></span>' +
+        '<button onclick="openReview(' + t.id + ')">Review</button></div>';
+    }).join("");
+  }
+
+  const n = (plans?.length || 0) + (ts?.length || 0);
+  $("ap-badge").textContent = n;
+  $("ap-badge").classList.toggle("hidden", n === 0);
+  $("ap-sub").textContent = n === 0 ? "Nothing waiting" : n + " waiting for you";
+  $("ap-dot").className = "dot " + (n > 0 ? "todo" : "done");
+}
+
+// ---- review a timesheet ----
+async function openReview(id){
+  RV_SUB = id;
+  go("review");
+  const { data: rows } = await db.from("timesheets_to_review").select("*").eq("id", id).maybeSingle();
+  if(rows){
+    $("rv-name").textContent = rows.staff;
+    $("rv-eyebrow").textContent = MONTHS[rows.month-1] + " " + rows.year +
+      (rows.department ? " \u00b7 " + rows.department : "");
+    $("rv-report").textContent = [
+      rows.report_summary ? "Summary\n" + rows.report_summary : "",
+    ].filter(Boolean).join("\n\n") || "No report text.";
+    $("rv-ok").textContent = rows.status === "submitted" ? "Approve and pass up" : "Give final approval";
+  }
+
+  const { data: h } = await db.rpc("submission_hours", { p_submission_id: id });
+  const hh = Array.isArray(h) ? h[0] : h;
+  if(hh){
+    $("rv-wd").textContent = hh.working_days;
+    $("rv-logged").textContent = hh.days_logged;
+    $("rv-normal").textContent = Number(hh.normal_hours || 0);
+    $("rv-extra").textContent = Number(hh.overtime_hours||0) + Number(hh.weekend_hours||0) + Number(hh.holiday_hours||0);
+  }
+
+  const { data: days, error } = await db.rpc("submission_detail", { p_submission_id: id });
+  const wrap = $("rv-days");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!days || !days.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No days logged.</p>'; return; }
+
+  const flagged = days.filter(d => d.ai_flag);
+  $("rv-flags").innerHTML = flagged.length
+    ? '<div class="alert warn"><b>' + flagged.length + ' day' + (flagged.length>1?"s":"") +
+      ' the assistant flagged as thin</b>' +
+      flagged.map(d => fmtDate(d.work_date) + ': "' + esc(d.activity || "(blank)") + '"').join("<br>") +
+      '<div style="font-size:12px;margin-top:6px;opacity:.85">A flag is a prompt to look, not a judgment. You decide.</div></div>'
+    : "";
+
+  wrap.innerHTML = days.map(d => '<div class="qrow"><span class="t"><b>' +
+    fmtDate(d.work_date) + " \u00b7 " + d.hours + "h" +
+    (d.kind !== "normal" ? ' <span class="st submitted">' + d.kind + '</span>' : "") + '</b>' +
+    '<span>' + esc(d.activity || "\u2014") + '</span></span>' +
+    (d.ai_flag ? '<span style="color:var(--amber);font-size:12px">\u2691</span>' : "") + '</div>').join("");
+}
+
+async function reviewTs(approve){
+  const note = val("rv-note");
+  if(!approve && !note){ msg("rv-msg","err","A note is needed","Tell them what to change."); return; }
+  btn("rv-ok", true, "Working");
+  const { error } = await db.rpc("review_timesheet", {
+    p_submission_id: RV_SUB, p_approve: approve, p_note: note
+  });
+  btn("rv-ok", false, "Approve");
+  if(error){ msg("rv-msg","err","Could not do that", error.message); return; }
+  msg("rv-msg","ok", approve ? "Approved" : "Returned",
+      approve ? "Done. They will be told." : "Sent back with your note.");
+  setTimeout(() => { go("approvals"); }, 900);
+}
+
+// ---- review a plan ----
+async function openPlanReview(id){
+  PR_PLAN = id;
+  go("planreview");
+  const { data: p } = await db.from("plans_to_review").select("*").eq("id", id).maybeSingle();
+  if(p){
+    $("pr-name").textContent = p.staff;
+    $("pr-dates").textContent = p.period + " \u00b7 " + fmtRange(p.period_start, p.period_end);
+    $("pr-headline").textContent = p.headline || "No headline given";
+  }
+  const { data: items, error } = await db.rpc("plan_detail", { p_plan_id: id });
+  const wrap = $("pr-items");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!items || !items.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No items.</p>'; return; }
+  wrap.innerHTML = items.map(i => '<div class="item"><div class="t"><b>' + esc(i.task) + '</b>' +
+    (i.expected_output ? '<span>' + esc(i.expected_output) + '</span>' : "") +
+    (i.due_on ? '<span>Due ' + fmtDate(i.due_on) + '</span>' : "") +
+    (i.target_title ? '<div class="serves">Serves: ' + esc(i.target_title) + '</div>' : "") +
+    '</div></div>').join("");
+}
+
+async function reviewPlan(approve){
+  btn("pr-ok", true, "Working");
+  const { error } = await db.rpc("review_plan", {
+    p_plan_id: PR_PLAN, p_approve: approve, p_note: val("pr-note")
+  });
+  btn("pr-ok", false, "Approve");
+  if(error){ msg("pr-msg","err","Could not do that", error.message); return; }
+  msg("pr-msg","ok", approve ? "Approved" : "Returned", "Done.");
+  setTimeout(() => { go("approvals"); }, 900);
+}
+
+// ---- team targets ----
+async function loadTeam(){
+  const { data } = await db.from("my_team").select("*");
+  $("tg-staff").innerHTML = '<option value="">Choose\u2026</option>' +
+    (data||[]).map(t => '<option value="' + esc(t.email) + '">' + esc(t.display_name) +
+      (t.department ? " \u00b7 " + esc(t.department) : "") + '</option>').join("");
+  tgDates();
+  await loadTeamTargets();
+}
+
+function tgKind(){
+  const q = $("tg-kind").value === "quantitative";
+  $("tg-num-row").classList.toggle("hidden", !q);
+  $("tg-unit-row").classList.toggle("hidden", !q);
+}
+
+function tgDates(){
+  const p = $("tg-period").value, d = new Date();
+  let s, e;
+  if(p === "week"){
+    const dow = (d.getDay() + 6) % 7;
+    s = new Date(d); s.setDate(d.getDate() - dow);
+    e = new Date(s); e.setDate(s.getDate() + 4);
+  } else if(p === "month"){
+    s = new Date(d.getFullYear(), d.getMonth(), 1);
+    e = new Date(d.getFullYear(), d.getMonth()+1, 0);
+  } else if(p === "quarter"){
+    const q = Math.floor(d.getMonth()/3);
+    s = new Date(d.getFullYear(), q*3, 1);
+    e = new Date(d.getFullYear(), q*3+3, 0);
+  } else {
+    s = new Date(d.getFullYear(), 0, 1);
+    e = new Date(d.getFullYear(), 11, 31);
+  }
+  $("tg-start").value = iso(s); $("tg-end").value = iso(e);
+}
+function iso(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+
+async function setTarget(){
+  const email = $("tg-staff").value;
+  if(!email){ msg("tg-msg","err","Choose someone","Pick who this target is for."); return; }
+  if(!val("tg-title")){ msg("tg-msg","err","No target","Say what they must achieve."); return; }
+  if(!val("tg-kpi")){ msg("tg-msg","err","KPI needed","A target without a yardstick cannot be assessed fairly."); return; }
+
+  btn("tg-btn", true, "Setting");
+  const { error } = await db.rpc("set_target", {
+    p_staff_email: email, p_title: val("tg-title"), p_kpi: val("tg-kpi"),
+    p_period: $("tg-period").value,
+    p_period_start: val("tg-start"), p_period_end: val("tg-end"),
+    p_description: val("tg-desc"), p_kpi_kind: $("tg-kind").value,
+    p_target_value: val("tg-value") ? Number(val("tg-value")) : null,
+    p_unit: val("tg-unit"), p_resource_link: val("tg-link")
+  });
+  btn("tg-btn", false, "Set this target");
+  if(error){ msg("tg-msg","err","Could not set", error.message); return; }
+  msg("tg-msg","ok","Set","They will see it in their portal.");
+  ["tg-title","tg-kpi","tg-value","tg-unit","tg-link","tg-desc"].forEach(id => $(id).value = "");
+  await loadTeamTargets();
+}
+
+async function loadTeamTargets(){
+  const { data, error } = await db.from("targets_i_manage").select("*");
+  const wrap = $("tg-list");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not set any targets yet.</p>'; return; }
+  wrap.innerHTML = data.map(t => {
+    const prog = t.pct !== null && t.pct !== undefined
+      ? '<div class="bar"><i style="width:' + Math.min(100, t.pct) + '%"></i></div>' +
+        '<div class="tgt-foot"><span>' + (t.current_value||0) + " of " + t.target_value +
+        (t.unit ? " " + esc(t.unit) : "") + '</span><span>' + t.pct + '%</span></div>'
+      : "";
+    const rated = t.rating
+      ? '<span class="st approved">' + esc(t.rating).replace(/_/g," ") + '</span>'
+      : '<select onchange="rateTarget(' + t.id + ', this.value)" style="width:auto;padding:4px 8px;font-size:12px">' +
+        '<option value="">Rate\u2026</option><option value="exceeded">Exceeded</option>' +
+        '<option value="met">Met</option><option value="partly_met">Partly met</option>' +
+        '<option value="not_met">Not met</option></select>';
+    return '<div class="tgt"><div class="tgt-head"><b>' + esc(t.staff) + '</b>' +
+      '<span class="tag ' + t.period + '">' + t.period + '</span></div>' +
+      '<div style="font-size:13.5px;margin-top:3px">' + esc(t.title) + '</div>' +
+      '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' + prog +
+      '<div class="tgt-foot"><span>' + fmtRange(t.period_start, t.period_end) + '</span>' + rated + '</div></div>';
+  }).join("");
+}
+
+async function rateTarget(id, rating){
+  if(!rating) return;
+  const { error } = await db.rpc("rate_target", { p_target_id: id, p_rating: rating });
+  if(error){ alert("Could not rate: " + error.message); return; }
+  await loadTeamTargets();
+}
+
+
+// ============================================================
+// REFERENCE LISTS
+// ============================================================
+const NG_STATES = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno",
+  "Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Federal Capital Territory","Gombe","Imo",
+  "Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun",
+  "Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
+
+const COUNTRIES = ["Nigeria","Benin","Cameroon","Chad","Ghana","Guinea-Bissau","Niger","Togo",
+  "Burkina Faso","Cote d'Ivoire","Gambia","Guinea","Liberia","Mali","Senegal","Sierra Leone",
+  "Kenya","Rwanda","South Africa","Tanzania","Uganda","Zambia","Zimbabwe","Egypt","Ethiopia",
+  "Democratic Republic of the Congo","Central African Republic","Congo","Gabon","Equatorial Guinea",
+  "Canada","China","France","Germany","India","Ireland","Italy","Japan","Netherlands","Spain",
+  "United Kingdom","United States of America","Other"];
+
+const DISABILITY_TYPES = [
+  "Deaf or hard of hearing",
+  "Blind or partially sighted",
+  "Physical or mobility",
+  "Speech",
+  "Neurodivergence (e.g. autism, ADHD, dyslexia)",
+  "Mental health condition",
+  "Long-term illness",
+  "Other"
+];
+
+const ACCOMMODATIONS = [
+  "Sign language interpretation",
+  "Captions or transcripts for meetings",
+  "Screen reader compatible documents",
+  "Large print or high contrast materials",
+  "Step-free or accessible workspace",
+  "Assistive technology or software",
+  "Flexible working hours",
+  "Remote or hybrid working",
+  "Written rather than verbal instructions",
+  "Regular breaks",
+  "Quiet workspace",
+  "Extra time for tasks"
+];
+
+function fillSelect(id, items, blank){
+  const e = $(id); if(!e) return;
+  e.innerHTML = (blank === false ? "" : '<option value="">\u2014</option>') +
+    items.map(i => '<option>' + esc(i) + '</option>').join("");
+}
+function fillChecks(id, items, prefix){
+  const e = $(id); if(!e) return;
+  e.innerHTML = items.map((i, n) =>
+    '<label><input type="checkbox" id="' + prefix + n + '" value="' + esc(i) + '"><span>' +
+    esc(i) + '</span></label>').join("");
+}
+function checkedValues(prefix, items){
+  return items.map((i, n) => $(prefix + n) && $(prefix + n).checked ? i : null).filter(Boolean);
+}
+function setChecks(prefix, items, values){
+  const v = values || [];
+  items.forEach((i, n) => { const e = $(prefix + n); if(e) e.checked = v.includes(i); });
+}
+
+// nationality drives whether "state of origin" makes sense
+function natChange(){
+  const ng = $("pf-nat").value === "Nigeria";
+  $("pf-origin-row").classList.toggle("hidden", !ng);
+  $("pf-lga-row").classList.toggle("hidden", !ng);
+}
+
+function dsChange(){
+  const yes = $("ds-has").value === "yes";
+  $("ds-detail").classList.toggle("hidden", !yes);
+  $("ds-acc").classList.toggle("hidden", !yes);
+}
+
+async function saveDisability(){
+  btn("ds-btn", true, "Saving");
+  const has = $("ds-has").value || null;
+  const types = has === "yes" ? checkedValues("dt", DISABILITY_TYPES) : [];
+  const accs  = has === "yes" ? checkedValues("ac", ACCOMMODATIONS) : [];
+  const { error } = await db.rpc("save_my_disability", {
+    p_has_disability: has,
+    p_disability_types: types,
+    p_disability_notes: val("ds-notes"),
+    p_accommodations: accs,
+    p_accommodation_notes: val("ds-acc-notes"),
+    p_share_with_manager: $("ds-share").checked
+  });
+  btn("ds-btn", false, "Save this section");
+  if(error){ msg("ds-msg","err","Could not save", error.message); return; }
+  msg("ds-msg","ok","Saved", has === "yes" && $("ds-share").checked
+    ? "Thank you. Your line manager will see the adjustments you need, so they can arrange them."
+    : "Thank you. This is held only by the COO and the CEO.");
+  await refresh();
+}
 
 // ---------- helpers ----------
 function msg(id, kind, title, body){
