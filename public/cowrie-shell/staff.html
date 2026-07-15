@@ -459,9 +459,12 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <button class="back" onclick="go('home')">← Back</button>
     <div class="eyebrow">Your details</div>
     <h1 style="font-size:26px;margin-bottom:4px">My details</h1>
-    <p style="color:var(--muted);margin-bottom:22px">Save each section as you go. You can come back and finish later.</p>
+    <p style="color:var(--muted);margin-bottom:22px" id="pf-lede">Four steps. Each one saves as you go.</p>
     <div id="first-run"></div>
 
+    <div class="stepper" id="stepper"></div>
+
+    <div class="step" id="step-personal">
     <div class="card">
       <h3>Personal</h3>
       <p class="cardsub">Who you are, and how we reach you. Only your phone number, date of birth and address are required. The rest is optional.</p>
@@ -520,10 +523,12 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </div>
       <div class="fld"><label>Residential address</label><textarea id="pf-addr"></textarea></div>
       <div id="pf-msg"></div>
-      <button class="btn-primary" id="pf-btn" onclick="savePersonal()">Save personal details</button>
+      <button class="btn-primary" id="pf-btn" onclick="savePersonal()" style="width:100%">Save and continue &rarr;</button>
     </div>
 
 
+    </div>
+    <div class="step" id="step-disability">
     <div class="card">
       <h3>Disability and workplace adjustments</h3>
       <p class="cardsub">So we can make the adjustments you need. Every part of this is optional, and you choose who sees it.</p>
@@ -559,9 +564,14 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </div>
 
       <div id="ds-msg"></div>
-      <button class="btn-primary" id="ds-btn" onclick="saveDisability()" style="margin-top:14px">Save this section</button>
+      <div class="step-nav" style="margin-top:14px">
+        <button onclick="goStep(0)">&larr; Back</button>
+        <button class="btn-primary" id="ds-btn" onclick="saveDisability()">Save and continue &rarr;</button>
+      </div>
     </div>
 
+    </div>
+    <div class="step" id="step-nok">
     <div class="card">
       <h3>Next of kin</h3>
       <p class="cardsub">Who we contact in an emergency. Please keep this current. Their name and phone number are required; the rest is optional.</p>
@@ -583,9 +593,24 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </div>
       <div class="fld"><label>Address</label><textarea id="nk-addr"></textarea></div>
       <div id="nk-msg"></div>
-      <button class="btn-primary" id="nk-btn" onclick="saveNok()">Save next of kin</button>
+      <div class="step-nav">
+        <button onclick="goStep(1)">&larr; Back</button>
+        <button class="btn-primary" id="nk-btn" onclick="saveNok()">Save and continue &rarr;</button>
+      </div>
     </div>
 
+    </div>
+    <div class="step" id="step-done">
+      <div class="card done-card">
+        <div class="tick">&#10003;</div>
+        <h3 style="font-size:20px;font-family:var(--display);margin-bottom:6px">That is everything</h3>
+        <p style="color:var(--muted);font-size:14px;max-width:38ch;margin:0 auto 20px">
+          Thank you. Your details are saved. You can come back and change any of this whenever you need to.</p>
+        <button class="btn-primary" onclick="go('home')">Go to my portal &rarr;</button>
+      </div>
+    </div>
+
+    <div class="step" id="step-bank">
     <div class="card">
       <h3>Bank and tax</h3>
       <p class="cardsub">Where your salary is paid, and your tax records. Only the bank name and account number are required.</p>
@@ -610,7 +635,11 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </div>
       <p class="hint" style="margin-bottom:14px">Only your bank name and account number are required, that is how you get paid. Pension details are collected now and used only if the scheme is switched on.</p>
       <div id="bk-msg"></div>
-      <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save bank and tax details</button>
+      <div class="step-nav">
+        <button onclick="goStep(2)">&larr; Back</button>
+        <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save and finish</button>
+      </div>
+    </div>
     </div>
   </section>
 </div>
@@ -648,6 +677,7 @@ window.openDay=openDay; window.saveDay=saveDay; window.clearDay=clearDay; window
 window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=addItem;
 window.removeItem=removeItem; window.submitPlan=submitPlan;
 
+window.goStep=goStep; window.nextStep=nextStep;
 window.natChange=natChange; window.dsChange=dsChange; window.saveDisability=saveDisability;
 window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openReview;
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
@@ -657,6 +687,7 @@ const VIEWS = ["home","profile","timesheet","plans","approvals","review","planre
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
+  if(v === "profile" && !FIRST_RUN){ showStep(0); }
   if(v === "timesheet") loadTimesheet();
   if(v === "plans") loadPlan();
   if(v === "approvals") loadApprovals();
@@ -754,13 +785,16 @@ async function enterApp(){
   }
 
   // First visit: nobody has told us anything about themselves yet.
-  // Land them on the bio form rather than the dashboard.
+  buildStepper();
   if(!PROFILE.phone){
+    FIRST_RUN = true;
     go("profile");
+    showStep(0);
     $("first-run").innerHTML =
       '<div class="alert info"><b>Welcome. Before you start, please tell us about yourself.</b>' +
-      'This is the staff bio form. It only needs doing once. Save each section as you go; ' +
-      'you can come back and finish the rest later.</div>';
+      'Four short steps, then you are done. Each one saves as you go.</div>';
+  } else {
+    showStep(0);
   }
 }
 
@@ -834,11 +868,12 @@ async function savePersonal(){
   });
   // race and LGA live on the identity saver
   await db.rpc("save_my_identity", { p_race: val("pf-race"), p_lga_of_origin: val("pf-lga") });
-  btn("pf-btn", false, "Save personal details");
+  btn("pf-btn", false, "Save and continue \u2192");
   if(error){ msg("pf-msg","err","Could not save", error.message); return; }
   msg("pf-msg","ok","Saved","Your personal details are up to date.");
   const fr = $("first-run"); if(fr) fr.innerHTML = "";
   await refresh();
+  setTimeout(nextStep, 500);
 }
 
 async function saveNok(){
@@ -847,10 +882,11 @@ async function saveNok(){
     p_nok_name: val("nk-name"), p_nok_relationship: val("nk-rel"),
     p_nok_phone: val("nk-phone"), p_nok_email: val("nk-email"), p_nok_address: val("nk-addr"),
   });
-  btn("nk-btn", false, "Save next of kin");
+  btn("nk-btn", false, "Save and continue \u2192");
   if(error){ msg("nk-msg","err","Could not save", error.message); return; }
   msg("nk-msg","ok","Saved","Thank you. We will only use this in an emergency.");
   await refresh();
+  setTimeout(nextStep, 500);
 }
 
 async function saveFinancial(){
@@ -864,10 +900,11 @@ async function saveFinancial(){
     p_tin: val("bk-tin"), p_pension_pfa: val("bk-pfa"),
     p_pension_rsa_number: val("bk-rsa"), p_nhf_number: val("bk-nhf"),
   });
-  btn("bk-btn", false, "Save bank and tax details");
+  btn("bk-btn", false, "Save and finish");
   if(error){ msg("bk-msg","err","Could not save", error.message); return; }
   msg("bk-msg","ok","Saved","Your bank and tax details are recorded.");
   await refresh();
+  setTimeout(nextStep, 500);
 }
 
 async function refresh(){
@@ -1499,12 +1536,64 @@ async function saveDisability(){
     p_accommodation_notes: val("ds-acc-notes"),
     p_share_with_manager: $("ds-share").checked
   });
-  btn("ds-btn", false, "Save this section");
+  btn("ds-btn", false, "Save and continue \u2192");
   if(error){ msg("ds-msg","err","Could not save", error.message); return; }
   msg("ds-msg","ok","Saved", has === "yes" && $("ds-share").checked
     ? "Thank you. Your line manager will see the adjustments you need, so they can arrange them."
     : "Thank you. This is held only by the COO and the CEO.");
   await refresh();
+  setTimeout(nextStep, 500);
+}
+
+
+// ============================================================
+// BIO WIZARD
+// One card at a time. On a first visit it walks you through and ends.
+// Once you have been through it, the steps become clickable so you can
+// jump straight to the one you want to change.
+// ============================================================
+const STEPS = [
+  { id:"personal",   label:"Personal" },
+  { id:"disability", label:"Adjustments" },
+  { id:"nok",        label:"Next of kin" },
+  { id:"bank",       label:"Bank and tax" },
+];
+let STEP = 0;
+let FIRST_RUN = false;
+
+function buildStepper(){
+  $("stepper").innerHTML = STEPS.map((st, n) =>
+    '<button class="sp" id="sp-' + n + '" onclick="goStep(' + n + ')">' +
+    '<span class="bar"></span><span class="lb">' + (n+1) + '. ' + st.label + '</span></button>').join("");
+}
+
+function paintStepper(){
+  STEPS.forEach((st, n) => {
+    const e = $("sp-" + n); if(!e) return;
+    e.className = "sp" + (n === STEP ? " on" : n < STEP ? " done" : "") + (FIRST_RUN ? "" : " clickable");
+  });
+}
+
+function showStep(n){
+  STEP = n;
+  STEPS.forEach((st, i) => {
+    const e = $("step-" + st.id); if(e) e.classList.toggle("on", i === n);
+  });
+  const done = $("step-done"); if(done) done.classList.toggle("on", n === STEPS.length);
+  $("stepper").classList.toggle("hidden", n === STEPS.length);
+  paintStepper();
+  window.scrollTo(0,0);
+}
+
+function goStep(n){
+  // during a first run you go forward by saving, not by clicking ahead
+  if(FIRST_RUN && n > STEP) return;
+  showStep(n);
+}
+
+function nextStep(){
+  if(STEP < STEPS.length) showStep(STEP + 1);
+  if(STEP === STEPS.length) FIRST_RUN = false;   // they have been all the way through
 }
 
 // ---------- helpers ----------
