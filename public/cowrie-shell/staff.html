@@ -69,6 +69,13 @@ label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
 .tabs button:hover{border-color:transparent;border-bottom-color:var(--clr-gray-light)}
 .tabs button[aria-selected="true"]:hover{border-bottom-color:var(--clr-orange)}
 .fld{margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:auto 1fr;gap:14px}
+textarea{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;min-height:64px;resize:vertical}
+textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
+.back{background:none;border:none;color:var(--muted);font-size:13px;padding:0 0 16px;text-decoration:underline}
+.back:hover{color:var(--clr-gray)}
+.alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
 .hint{font-size:12px;color:var(--faint);margin-top:5px}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -147,6 +154,15 @@ label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
       <h2>Set up your account</h2>
       <p class="lede">First time here? Claim the account already made for you.</p>
       <div class="fld"><label>Your Data-Lead email</label><input type="email" id="su-email" autocomplete="username"></div>
+      <div class="grid3">
+        <div class="fld" style="min-width:96px"><label>Title</label>
+          <select id="su-title">
+            <option value="">—</option>
+            <option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option>
+            <option>Dr</option><option>Prof</option><option>Engr</option><option>Barr</option><option>Chief</option>
+          </select></div>
+        <div class="fld"><label>Phone number</label><input id="su-phone" type="tel" inputmode="tel" placeholder="0801 234 5678"></div>
+      </div>
       <div class="fld"><label>Choose a password</label><input type="password" id="su-pass" autocomplete="new-password">
         <p class="hint">Eight characters or more.</p></div>
       <div class="fld"><label>Confirm password</label><input type="password" id="su-pass2" autocomplete="new-password"></div>
@@ -172,15 +188,19 @@ label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
       <button onclick="signOut()">Sign out</button></div>
   </div>
 
+  <section id="v-home">
   <div class="eyebrow" id="d-eyebrow">Your portal</div>
   <h1 style="font-size:27px;margin-bottom:4px" id="d-greet">Welcome</h1>
   <p style="color:var(--muted);margin-bottom:22px">Your profile, your targets, and the policies that apply to you.</p>
 
   <!-- profile -->
+  <div id="nudge"></div>
+
   <div class="card">
     <h3>You</h3>
     <div id="p-titles"></div>
     <div class="facts" id="p-facts"></div>
+    <div style="margin-top:16px"><button onclick="go('profile')">Update my details →</button></div>
   </div>
 
   <!-- targets -->
@@ -200,6 +220,96 @@ label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
   <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:26px">
     Timesheets, leave and requisitions are coming to this portal shortly.
   </p>
+  </section>
+
+  <!-- ---------- profile ---------- -->
+  <section id="v-profile" class="hidden">
+    <button class="back" onclick="go('home')">← Back</button>
+    <div class="eyebrow">Your details</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My details</h1>
+    <p style="color:var(--muted);margin-bottom:22px">Save each section as you go. You can come back and finish later.</p>
+
+    <div class="card">
+      <h3>Personal</h3>
+      <p class="cardsub">Who you are, and how we reach you.</p>
+      <div class="grid3">
+        <div class="fld" style="min-width:96px"><label>Title</label>
+          <select id="pf-title">
+            <option value="">—</option>
+            <option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option>
+            <option>Dr</option><option>Prof</option><option>Engr</option><option>Barr</option><option>Chief</option>
+          </select></div>
+        <div class="fld"><label>Full name</label><input id="pf-name" disabled>
+          <p class="hint">Set by the office. Contact the Head of Operations if it is wrong.</p></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Phone number</label><input id="pf-phone" type="tel" inputmode="tel"></div>
+        <div class="fld"><label>Alternate phone</label><input id="pf-phone2" type="tel" inputmode="tel"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Date of birth</label><input id="pf-dob" type="date"></div>
+        <div class="fld"><label>Gender</label>
+          <select id="pf-gender"><option value="">—</option>
+            <option value="female">Female</option><option value="male">Male</option>
+            <option value="prefer_not_to_say">Prefer not to say</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Marital status</label>
+          <select id="pf-marital"><option value="">—</option>
+            <option value="single">Single</option><option value="married">Married</option>
+            <option value="divorced">Divorced</option><option value="widowed">Widowed</option>
+            <option value="prefer_not_to_say">Prefer not to say</option></select></div>
+        <div class="fld"><label>Nationality</label><input id="pf-nat" placeholder="Nigerian"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>State of origin</label><input id="pf-origin"></div>
+        <div class="fld"><label>City</label><input id="pf-city"></div>
+      </div>
+      <div class="fld"><label>State of residence</label><input id="pf-state"></div>
+      <div class="fld"><label>Residential address</label><textarea id="pf-addr"></textarea></div>
+      <div id="pf-msg"></div>
+      <button class="btn-primary" id="pf-btn" onclick="savePersonal()">Save personal details</button>
+    </div>
+
+    <div class="card">
+      <h3>Next of kin</h3>
+      <p class="cardsub">Who we contact in an emergency. Please keep this current.</p>
+      <div class="grid2">
+        <div class="fld"><label>Full name</label><input id="nk-name"></div>
+        <div class="fld"><label>Relationship</label><input id="nk-rel" placeholder="Spouse, parent, sibling…"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Phone number</label><input id="nk-phone" type="tel" inputmode="tel"></div>
+        <div class="fld"><label>Email (optional)</label><input id="nk-email" type="email"></div>
+      </div>
+      <div class="fld"><label>Address</label><textarea id="nk-addr"></textarea></div>
+      <div id="nk-msg"></div>
+      <button class="btn-primary" id="nk-btn" onclick="saveNok()">Save next of kin</button>
+    </div>
+
+    <div class="card">
+      <h3>Bank and tax</h3>
+      <p class="cardsub">Where your salary is paid, and your tax records.</p>
+      <div class="alert info" style="margin-top:0"><b>Only you and Finance can see this</b>Your manager cannot. And only you can change where your salary is paid, not even Finance can alter it.</div>
+      <div class="grid2">
+        <div class="fld"><label>Bank name</label><input id="bk-bank"></div>
+        <div class="fld"><label>Account number</label><input id="bk-acct" inputmode="numeric" maxlength="10"></div>
+      </div>
+      <div class="fld"><label>Account name</label><input id="bk-name">
+        <p class="hint">Exactly as it appears on your bank account.</p></div>
+      <div class="grid2">
+        <div class="fld"><label>Tax Identification Number (TIN)</label><input id="bk-tin"></div>
+        <div class="fld"><label>NHF number (optional)</label><input id="bk-nhf"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Pension administrator (PFA)</label><input id="bk-pfa"></div>
+        <div class="fld"><label>RSA number</label><input id="bk-rsa"></div>
+      </div>
+      <p class="hint" style="margin-bottom:14px">Pension details are collected now and used if the scheme is switched on.</p>
+      <div id="bk-msg"></div>
+      <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save bank and tax details</button>
+    </div>
+  </section>
 </div>
 
 <script type="module">
@@ -211,6 +321,12 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const $ = id => document.getElementById(id);
 window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showTab=showTab;
+window.go=go; window.savePersonal=savePersonal; window.saveNok=saveNok; window.saveFinancial=saveFinancial;
+
+function go(v){
+  ["home","profile"].forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  window.scrollTo(0,0);
+}
 
 const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
               temporary:"Temporary hire", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
@@ -240,7 +356,9 @@ async function signIn(){
 async function signUp(){
   const email = $("su-email").value.trim();
   const pass  = $("su-pass").value, pass2 = $("su-pass2").value;
+  const phone = $("su-phone").value.trim(), title = $("su-title").value;
   if(!email || !pass){ msg("su-msg","err","Missing details","Enter your email and a password."); return; }
+  if(!phone){ msg("su-msg","err","Phone needed","We need a number to reach you on."); return; }
   if(pass.length < 8){ msg("su-msg","err","Password too short","Use eight characters or more."); return; }
   if(pass !== pass2){ msg("su-msg","err","Passwords do not match","Please retype them."); return; }
 
@@ -259,27 +377,48 @@ async function signUp(){
   const { error } = await db.auth.signUp({ email, password: pass });
   btn("su-btn", false, "Create my account");
   if(error){ msg("su-msg","err","Could not create account", error.message); return; }
+  // stash what they typed; saved once they are actually signed in
+  sessionStorage.setItem("cowrie_signup", JSON.stringify({ phone, title }));
   msg("su-msg","ok","Account created","If a confirmation email is required, check your inbox. Otherwise you can sign in now.");
 }
 
 async function signOut(){ await db.auth.signOut(); location.reload(); }
 
 // ---------- dashboard ----------
+let PROFILE = null;
+
 async function enterApp(){
-  const { data, error } = await db.from("my_profile").select("*").maybeSingle();
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
   if(error || !data){
     msg("li-msg","err","Profile not found",
         "Your login is not linked to a staff record. Contact the Head of Operations.");
     await db.auth.signOut();
     return;
   }
-  const first = (data.full_name || "").split(" ")[0] || "there";
-  $("who-name").textContent = data.full_name;
-  $("who-dept").textContent = data.department || "—";
-  $("d-greet").textContent  = `Welcome, ${first}`;
-  $("d-eyebrow").textContent = data.department ? data.department + " · your portal" : "Your portal";
+  PROFILE = data;
 
-  renderFacts(data);
+  // save anything typed at signup, now that we are authenticated
+  const stash = sessionStorage.getItem("cowrie_signup");
+  if(stash){
+    try{
+      const { phone, title } = JSON.parse(stash);
+      if(phone) await db.rpc("save_my_personal", { p_phone: phone });
+      if(title) await db.rpc("save_my_honorific", { p_honorific: title });
+      sessionStorage.removeItem("cowrie_signup");
+      const { data: fresh } = await db.from("my_full_profile").select("*").maybeSingle();
+      if(fresh) PROFILE = fresh;
+    }catch(e){ /* not fatal */ }
+  }
+
+  const first = (PROFILE.full_name || "").trim().split(/\s+/)[0] || "there";
+  $("who-name").textContent = PROFILE.display_name || PROFILE.full_name;
+  $("who-dept").textContent = PROFILE.department || "\u2014";
+  $("d-greet").textContent  = "Welcome, " + first;
+  $("d-eyebrow").textContent = PROFILE.department ? PROFILE.department + " \u00b7 your portal" : "Your portal";
+
+  renderFacts(PROFILE);
+  renderNudge(PROFILE);
+  fillProfileForm(PROFILE);
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   loadTitles(); loadTargets(); loadPolicies();
@@ -287,15 +426,100 @@ async function enterApp(){
 
 function renderFacts(p){
   const rows = [
-    ["Staff ID",        p.staff_code || "—"],
-    ["Department",      p.department || "—"],
-    ["Reports to",      p.line_manager || "—"],
-    ["Employment",      EMP[p.employment_type] || EMP[p.person_type] || "—"],
-    ["Status",          STATUS[p.employment_status] || p.status || "—"],
-    ["Email",           p.email],
+    ["Staff ID",   p.staff_code || "\u2014"],
+    ["Department", p.department || "\u2014"],
+    ["Reports to", p.line_manager || "\u2014"],
+    ["Role",       p.job_title || "\u2014"],
+    ["Employment", EMP[p.employment_type] || "\u2014"],
+    ["Status",     STATUS[p.employment_status] || p.status || "\u2014"],
   ];
   $("p-facts").innerHTML = rows.map(([k,v]) =>
     `<div class="fact"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join("");
+}
+
+function renderNudge(p){
+  const missing = [];
+  if(p.personal_incomplete) missing.push("personal details");
+  if(p.nok_incomplete)      missing.push("next of kin");
+  if(p.bank_incomplete)     missing.push("bank details");
+  if(!missing.length){ $("nudge").innerHTML = ""; return; }
+  const list = missing.length === 1 ? missing[0]
+    : missing.slice(0,-1).join(", ") + " and " + missing.slice(-1);
+  $("nudge").innerHTML =
+    `<div class="alert warn"><b>Your profile is not complete</b>
+      We still need your ${list}. Without bank details we cannot pay you.
+      <div style="margin-top:9px"><button onclick="go('profile')">Complete my details \u2192</button></div></div>`;
+}
+
+function fillProfileForm(p){
+  set("pf-title", p.honorific); set("pf-name", p.full_name);
+  set("pf-phone", p.phone); set("pf-phone2", p.alternate_phone);
+  set("pf-dob", p.date_of_birth); set("pf-gender", p.gender);
+  set("pf-marital", p.marital_status); set("pf-nat", p.nationality || "Nigerian");
+  set("pf-origin", p.state_of_origin); set("pf-city", p.city);
+  set("pf-state", p.state); set("pf-addr", p.residential_address);
+  set("nk-name", p.nok_name); set("nk-rel", p.nok_relationship);
+  set("nk-phone", p.nok_phone); set("nk-email", p.nok_email); set("nk-addr", p.nok_address);
+  set("bk-bank", p.bank_name); set("bk-acct", p.account_number); set("bk-name", p.account_name);
+  set("bk-tin", p.tin); set("bk-nhf", p.nhf_number);
+  set("bk-pfa", p.pension_pfa); set("bk-rsa", p.pension_rsa_number);
+}
+function set(id, v){ const e = $(id); if(e) e.value = v ?? ""; }
+function val(id){ const v = $(id) ? $(id).value.trim() : ""; return v ? v : null; }
+
+// ---------- saves ----------
+async function savePersonal(){
+  btn("pf-btn", true, "Saving");
+  const title = val("pf-title");
+  if(title !== (PROFILE.honorific || null)){
+    await db.rpc("save_my_honorific", { p_honorific: title || "" });
+  }
+  const { error } = await db.rpc("save_my_personal", {
+    p_phone: val("pf-phone"), p_alternate_phone: val("pf-phone2"),
+    p_date_of_birth: val("pf-dob"), p_gender: val("pf-gender"),
+    p_marital_status: val("pf-marital"), p_nationality: val("pf-nat"),
+    p_state_of_origin: val("pf-origin"), p_residential_address: val("pf-addr"),
+    p_city: val("pf-city"), p_state: val("pf-state"),
+  });
+  btn("pf-btn", false, "Save personal details");
+  if(error){ msg("pf-msg","err","Could not save", error.message); return; }
+  msg("pf-msg","ok","Saved","Your personal details are up to date.");
+  await refresh();
+}
+
+async function saveNok(){
+  btn("nk-btn", true, "Saving");
+  const { error } = await db.rpc("save_my_nok", {
+    p_nok_name: val("nk-name"), p_nok_relationship: val("nk-rel"),
+    p_nok_phone: val("nk-phone"), p_nok_email: val("nk-email"), p_nok_address: val("nk-addr"),
+  });
+  btn("nk-btn", false, "Save next of kin");
+  if(error){ msg("nk-msg","err","Could not save", error.message); return; }
+  msg("nk-msg","ok","Saved","Thank you. We will only use this in an emergency.");
+  await refresh();
+}
+
+async function saveFinancial(){
+  const acct = val("bk-acct");
+  if(acct && !/^\d{10}$/.test(acct)){
+    msg("bk-msg","err","Check the account number","A Nigerian account number is 10 digits."); return;
+  }
+  btn("bk-btn", true, "Saving");
+  const { error } = await db.rpc("save_my_financial", {
+    p_bank_name: val("bk-bank"), p_account_number: acct, p_account_name: val("bk-name"),
+    p_tin: val("bk-tin"), p_pension_pfa: val("bk-pfa"),
+    p_pension_rsa_number: val("bk-rsa"), p_nhf_number: val("bk-nhf"),
+  });
+  btn("bk-btn", false, "Save bank and tax details");
+  if(error){ msg("bk-msg","err","Could not save", error.message); return; }
+  msg("bk-msg","ok","Saved","Your bank and tax details are recorded.");
+  await refresh();
+}
+
+async function refresh(){
+  const { data } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(data){ PROFILE = data; renderFacts(data); renderNudge(data);
+    $("who-name").textContent = data.display_name || data.full_name; }
 }
 
 async function loadTitles(){
