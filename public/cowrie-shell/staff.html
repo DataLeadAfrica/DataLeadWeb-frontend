@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clr-gray:#2c2b2d; --clr-gray-light:#dae2e7;
+  --clr-orange:#f56e0f; --clr-orange-medium:#f9a971; --clr-orange-light:#fde9da;
+  --clr-blue:#e7f5fe; --ink:#14232e;
+  --line:#ecebf0; --muted:#5b5b66; --faint:#8b8792;
+  --paper:#fffdfb; --card:#ffffff;
+  --green:#1d6b4c; --green-bg:#e9f5ef;
+  --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
+  --red:#a32d2d; --red-bg:#fbecec;
+  --radius:12px; --radius-lg:16px;
+  --display:"ClashDisplay-Semibold","ClashDisplay-Regular","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","ClashDisplay-Regular","Poppins",sans-serif;
+  --body:"Poppins",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--clr-gray);background:var(--paper);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
+.num{font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer;border:1px solid var(--clr-gray-light);background:var(--card);color:var(--clr-gray);border-radius:var(--radius);padding:10px 16px;transition:.15s}
+button:hover{border-color:var(--clr-gray)}
+button:focus-visible{outline:2px solid var(--clr-orange);outline-offset:2px}
+.btn-primary{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500}
+.btn-primary:hover{background:#e0620c;border-color:#e0620c}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint);cursor:not-allowed}
+input{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;background:var(--card);color:var(--clr-gray)}
+input:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
+
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 70px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:26px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:15px}
+.mark{width:24px;height:24px;flex:none}
+.who{font-size:13px;color:var(--muted);text-align:right;line-height:1.35}
+.who b{color:var(--clr-gray);font-weight:500;font-family:var(--display-md)}
+.who button{padding:3px 10px;font-size:12px;margin-top:3px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:500;font-family:var(--display-md);margin-bottom:4px}
+.card .cardsub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--clr-orange);margin-bottom:6px}
+
+.alert{border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.5px;border-left:3px solid}
+.alert.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.alert.info{background:var(--clr-blue);border-color:#7fbde8;color:#1a4e73}
+.alert b{display:block;font-weight:600;margin-bottom:2px;font-family:var(--display-md)}
+
+/* login */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px}
+.plate h2{font-size:24px;margin-bottom:4px}
+.plate .lede{font-size:13.5px;color:var(--muted);margin-bottom:20px}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs button{flex:1;background:none;border:none;padding:9px 0;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;border-radius:0}
+.tabs button[aria-selected="true"]{color:var(--clr-gray);font-weight:600;border-bottom-color:var(--clr-orange);font-family:var(--display-md)}
+.tabs button:hover{border-color:transparent;border-bottom-color:var(--clr-gray-light)}
+.tabs button[aria-selected="true"]:hover{border-bottom-color:var(--clr-orange)}
+.fld{margin-bottom:14px}
+.hint{font-size:12px;color:var(--faint);margin-top:5px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* profile */
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line);margin-top:16px}
+.fact{padding:12px 0;border-bottom:1px solid var(--line)}
+.fact:nth-child(odd){padding-right:16px}
+.fact .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:3px}
+.fact .v{font-size:14px;font-family:var(--display-md);font-weight:500}
+.title-badge{display:inline-block;background:var(--clr-orange-light);color:#7a5230;border:1px solid var(--clr-orange-medium);
+  font-family:var(--display-md);font-size:13px;padding:4px 12px;border-radius:20px;margin-top:8px}
+.title-badge.acting{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+
+/* targets */
+.tgt{border-top:1px solid var(--line);padding:14px 0}
+.tgt:first-child{border-top:none;padding-top:0}
+.tgt-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.tgt-head b{font-family:var(--display-md);font-weight:500;font-size:14.5px}
+.tag{font-size:11px;padding:2px 9px;border-radius:20px;font-family:var(--display-md);white-space:nowrap}
+.tag.week{background:var(--clr-blue);color:#1a4e73}
+.tag.month{background:var(--clr-orange-light);color:#7a5230}
+.tag.quarter{background:var(--amber-bg);color:var(--amber)}
+.tag.year{background:var(--green-bg);color:var(--green)}
+.kpi{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi span{color:var(--clr-gray)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;background:var(--clr-orange)}
+.tgt-foot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:12px;color:var(--faint)}
+.tgt-foot a{color:var(--clr-orange)}
+
+/* policies */
+.pol{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.pol:first-child{border-top:none}
+.pol .t{flex:1}
+.pol .t b{font-family:var(--display-md);font-weight:500;font-size:14px}
+.pol .t div{font-size:12px;color:var(--muted)}
+.pol a button{padding:6px 14px;font-size:12.5px}
+.doc{width:22px;height:22px;flex:none;color:var(--clr-orange)}
+
+@media (max-width:560px){.facts{grid-template-columns:1fr}.fact:nth-child(odd){padding-right:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN / FIRST VISIT ============ -->
+<div id="gate" class="gate">
+  <div class="plate">
+    <div class="logo" style="margin-bottom:20px">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" id="tab-in" onclick="showTab('in')">Sign in</button>
+      <button role="tab" aria-selected="false" id="tab-up" onclick="showTab('up')">First visit</button>
+    </div>
+
+    <!-- sign in -->
+    <div id="pane-in">
+      <h2>Welcome back</h2>
+      <p class="lede">Sign in with your Data-Lead email.</p>
+      <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
+      <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+      <div id="li-msg"></div>
+      <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+    </div>
+
+    <!-- first visit -->
+    <div id="pane-up" class="hidden">
+      <h2>Set up your account</h2>
+      <p class="lede">First time here? Claim the account already made for you.</p>
+      <div class="fld"><label>Your Data-Lead email</label><input type="email" id="su-email" autocomplete="username"></div>
+      <div class="fld"><label>Choose a password</label><input type="password" id="su-pass" autocomplete="new-password">
+        <p class="hint">Eight characters or more.</p></div>
+      <div class="fld"><label>Confirm password</label><input type="password" id="su-pass2" autocomplete="new-password"></div>
+      <div id="su-msg"></div>
+      <button class="btn-primary" style="width:100%" id="su-btn" onclick="signUp()">Create my account</button>
+      <div class="alert info" style="margin-bottom:0"><b>Already on the register</b>Your account only works if the office has added your email. If it says you are not on the register, contact the Head of Operations.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="app" class="wrap hidden">
+  <div class="topbar">
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+    <div class="who"><b id="who-name">—</b><br><span id="who-dept">—</span><br>
+      <button onclick="signOut()">Sign out</button></div>
+  </div>
+
+  <div class="eyebrow" id="d-eyebrow">Your portal</div>
+  <h1 style="font-size:27px;margin-bottom:4px" id="d-greet">Welcome</h1>
+  <p style="color:var(--muted);margin-bottom:22px">Your profile, your targets, and the policies that apply to you.</p>
+
+  <!-- profile -->
+  <div class="card">
+    <h3>You</h3>
+    <div id="p-titles"></div>
+    <div class="facts" id="p-facts"></div>
+  </div>
+
+  <!-- targets -->
+  <div class="card">
+    <h3>Your targets</h3>
+    <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against.</p>
+    <div id="t-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+  </div>
+
+  <!-- policies -->
+  <div class="card">
+    <h3>Policies</h3>
+    <p class="cardsub">Company policies. Download and keep them somewhere you can find them again.</p>
+    <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+  </div>
+
+  <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:26px">
+    Timesheets, leave and requisitions are coming to this portal shortly.
+  </p>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showTab=showTab;
+
+const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
+              temporary:"Temporary hire", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
+const STATUS = { probationary:"Probationary", confirmed:"Confirmed", suspended:"Suspended",
+                 resigned:"Resigned", terminated:"Terminated", exited:"Exited" };
+
+function showTab(which){
+  $("tab-in").setAttribute("aria-selected", which==="in");
+  $("tab-up").setAttribute("aria-selected", which==="up");
+  $("pane-in").classList.toggle("hidden", which!=="in");
+  $("pane-up").classList.toggle("hidden", which!=="up");
+}
+
+// ---------- session ----------
+db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
+
+async function signIn(){
+  const email = $("li-email").value.trim(), pass = $("li-pass").value;
+  if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
+  btn("li-btn", true, "Signing in");
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  btn("li-btn", false, "Sign in");
+  if(error) msg("li-msg","err","Could not sign in", error.message);
+}
+
+async function signUp(){
+  const email = $("su-email").value.trim();
+  const pass  = $("su-pass").value, pass2 = $("su-pass2").value;
+  if(!email || !pass){ msg("su-msg","err","Missing details","Enter your email and a password."); return; }
+  if(pass.length < 8){ msg("su-msg","err","Password too short","Use eight characters or more."); return; }
+  if(pass !== pass2){ msg("su-msg","err","Passwords do not match","Please retype them."); return; }
+
+  btn("su-btn", true, "Checking");
+  // friendly check first: are they on the register?
+  const { data: invited, error: cErr } = await db.rpc("email_is_invited", { p_email: email });
+  if(cErr){ btn("su-btn", false, "Create my account"); msg("su-msg","err","Could not check", cErr.message); return; }
+  if(!invited){
+    btn("su-btn", false, "Create my account");
+    msg("su-msg","err","Not on the register",
+        "This email has not been added yet, or an account already exists for it. Contact the Head of Operations.");
+    return;
+  }
+
+  btn("su-btn", true, "Creating");
+  const { error } = await db.auth.signUp({ email, password: pass });
+  btn("su-btn", false, "Create my account");
+  if(error){ msg("su-msg","err","Could not create account", error.message); return; }
+  msg("su-msg","ok","Account created","If a confirmation email is required, check your inbox. Otherwise you can sign in now.");
+}
+
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+// ---------- dashboard ----------
+async function enterApp(){
+  const { data, error } = await db.from("my_profile").select("*").maybeSingle();
+  if(error || !data){
+    msg("li-msg","err","Profile not found",
+        "Your login is not linked to a staff record. Contact the Head of Operations.");
+    await db.auth.signOut();
+    return;
+  }
+  const first = (data.full_name || "").split(" ")[0] || "there";
+  $("who-name").textContent = data.full_name;
+  $("who-dept").textContent = data.department || "—";
+  $("d-greet").textContent  = `Welcome, ${first}`;
+  $("d-eyebrow").textContent = data.department ? data.department + " · your portal" : "Your portal";
+
+  renderFacts(data);
+  $("gate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  loadTitles(); loadTargets(); loadPolicies();
+}
+
+function renderFacts(p){
+  const rows = [
+    ["Staff ID",        p.staff_code || "—"],
+    ["Department",      p.department || "—"],
+    ["Reports to",      p.line_manager || "—"],
+    ["Employment",      EMP[p.employment_type] || EMP[p.person_type] || "—"],
+    ["Status",          STATUS[p.employment_status] || p.status || "—"],
+    ["Email",           p.email],
+  ];
+  $("p-facts").innerHTML = rows.map(([k,v]) =>
+    `<div class="fact"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join("");
+}
+
+async function loadTitles(){
+  const { data } = await db.from("my_appointments").select("*");
+  if(!data || !data.length){ $("p-titles").innerHTML = ""; return; }
+  $("p-titles").innerHTML = data.map(a => {
+    const acting = a.kind === "acting";
+    const extra = [a.department, a.portfolio].filter(Boolean).join(" · ");
+    return `<span class="title-badge ${acting?"acting":""}">${acting?"Acting ":""}${esc(a.title)}${extra?" — "+esc(extra):""}</span>`;
+  }).join(" ");
+}
+
+async function loadTargets(){
+  const wrap = $("t-list");
+  const { data, error } = await db.from("my_targets").select("*");
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){
+    wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No targets set for you yet. Your manager will add them here.</p>`;
+    return;
+  }
+  wrap.innerHTML = data.map(t => {
+    const quant = t.kpi_kind === "quantitative" && t.target_value;
+    const prog = quant
+      ? `<div class="bar"><i style="width:${Math.min(100, t.pct||0)}%"></i></div>
+         <div class="tgt-foot"><span>${fmtNum(t.current_value||0)} of ${fmtNum(t.target_value)}${t.unit?" "+esc(t.unit):""}</span><span>${t.pct||0}%</span></div>`
+      : `<div class="tgt-foot"><span>Assessed by your manager</span><span>${esc(t.status||"").replace(/_/g," ")}</span></div>`;
+    const res = t.resource_link
+      ? `<div class="tgt-foot"><a href="${esc(t.resource_link)}" target="_blank" rel="noopener">Open the resource →</a><span></span></div>` : "";
+    return `<div class="tgt">
+      <div class="tgt-head"><b>${esc(t.title)}</b><span class="tag ${t.period}">${t.period}</span></div>
+      <div class="kpi">KPI: <span>${esc(t.kpi)}</span></div>
+      ${prog}${res}
+    </div>`;
+  }).join("");
+}
+
+async function loadPolicies(){
+  const wrap = $("pol-list");
+  const { data, error } = await db.from("policies").select("*").eq("is_current", true).order("uploaded_at",{ascending:false});
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No policies published yet.</p>`; return; }
+  wrap.innerHTML = data.map(p => {
+    const url = db.storage.from("policies").getPublicUrl(p.storage_path).data.publicUrl;
+    const when = new Date(p.uploaded_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    return `<div class="pol">
+      <svg class="doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
+      </svg>
+      <div class="t"><b>${esc(p.title)}${p.version?" · "+esc(p.version):""}</b>
+        <div>${p.description?esc(p.description)+" · ":""}Added ${when}</div></div>
+      <a href="${url}" target="_blank" rel="noopener"><button>Download</button></a>
+    </div>`;
+  }).join("");
+}
+
+// ---------- helpers ----------
+function msg(id, kind, title, body){
+  $(id).innerHTML = `<div class="alert ${kind}"><b>${title}</b>${esc(body)}</div>`;
+}
+function btn(id, busy, label){
+  const b = $(id); b.disabled = busy;
+  b.innerHTML = busy ? `<span class="spin"></span>${label}…` : label;
+}
+function fmtNum(n){ return Number(n).toLocaleString("en-NG"); }
+function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+</script>
+</body>
+</html>
