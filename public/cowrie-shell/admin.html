@@ -303,6 +303,16 @@ th.n{text-align:right;padding-right:0}
       <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
     </div>
   </div>
+
+  <!-- notification log -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+      <h3 style="margin:0">Emails sent</h3>
+      <button class="rowbtn" onclick="loadNotifications()">Refresh</button>
+    </div>
+    <p class="cardsub">A permanent record of every notification the system has sent. A copy of each also lands in the operations inbox.</p>
+    <div id="nt-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
+  </div>
 </div>
 
 <script type="module">
@@ -312,6 +322,27 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
 const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ============================================================
+// NOTIFICATIONS
+// This page holds NO secret. It calls the 'notify' Edge Function,
+// which checks you are the signed-in super-admin and then talks to
+// Apps Script using a secret stored in Supabase. Nothing sensitive
+// ships to the browser.
+// ============================================================
+async function notify(event, toEmail, toName, extra = {}){
+  try {
+    const { data, error } = await db.functions.invoke("notify", {
+      body: { event, to_email: toEmail, to_name: toName, ...extra }
+    });
+    if(error) console.warn("notify failed:", error.message);
+    return !error;
+  } catch(e){
+    console.warn("notify error:", e);
+    return false;
+  }
+  // The Edge Function logs every attempt, so there is no separate log call here.
+}
 
 const $ = id => document.getElementById(id);
 const DEPTS = ["Operations","Communications","Programmes","Deaf-in-Tech"];
@@ -327,6 +358,7 @@ window.appoint = appoint; window.loadAppointments = loadAppointments;
 window.revokeAppointment = revokeAppointment; window.setStatus = setStatus;
 window.onPosChange = onPosChange; window.onKindChange = onKindChange;
 window.onStatusChange = onStatusChange;
+window.loadNotifications = loadNotifications;
 
 // default effective-from = today
 $("f-eff").value = new Date().toISOString().slice(0,10);
@@ -379,6 +411,7 @@ async function enterApp(){
   loadPayrollSettings();
   loadPolicies();
   loadAppointments();
+  loadNotifications();
 }
 
 // ---------- add staff ----------
@@ -425,7 +458,9 @@ async function addStaff(){
   }
   btn("add-btn", false, "Add to register");
 
-  msg("add-msg","ok","Added", `${name} is on the register and can sign up.`);
+  await notify("invite", email, name, { department: dept });
+
+  msg("add-msg","ok","Added", `${name} is on the register and can sign up. An invite email has been sent.`);
   ["f-name","f-email","f-code","f-job","f-gross"].forEach(id=>$(id).value="");
   $("f-dept").value=""; $("f-emptype").value="full_time"; $("f-status").value="probationary"; onTypeChange();
   loadStaff();
@@ -467,7 +502,14 @@ async function appoint(){
   const { error } = await db.rpc("admin_appoint", params);
   btn("ap-btn", false, "Appoint");
   if(error){ msg("ap-msg","err","Could not appoint", error.message); return; }
-  msg("ap-msg","ok","Appointed", `${email} is now ${title}${kind==="acting"?" (acting)":""}.`);
+
+  await notify("appointment", email, null, {
+    title, kind, department: dept || null,
+    effective: (kind==="acting" ? ($("ap-start").value || today) : today),
+    ends: (kind==="acting" ? ($("ap-end").value || null) : null)
+  });
+
+  msg("ap-msg","ok","Appointed", `${email} is now ${title}${kind==="acting"?" (acting)":""}. An email has been sent.`);
   $("ap-email").value=""; $("ap-portfolio").value=""; onPosChange();
   loadAppointments(); loadStaff();
 }
@@ -485,14 +527,18 @@ async function loadAppointments(){
         ${a.kind==="acting"?'<span class="tag" style="background:var(--amber-bg);color:var(--amber);margin-left:4px">Acting</span>':""}
         <div style="font-size:12px;color:var(--muted)">${esc(a.title)}${extra?" · "+esc(extra):""}${until}</div>
       </div>
-      <button class="rowbtn" onclick="revokeAppointment(${a.id})" style="color:var(--red)">Remove</button>
+      <button class="rowbtn" onclick="revokeAppointment(${a.id}, '${esc(a.staff_email)}', '${esc(a.title).replace(/'/g,"\\'")}', '${a.kind}')" style="color:var(--red)">Remove</button>
     </div>`;
   }).join("");
 }
-async function revokeAppointment(id){
+async function revokeAppointment(id, email, title, kind){
   if(!confirm("Remove this appointment? Their access for this role will end.")) return;
   const { error } = await db.rpc("admin_revoke_appointment", { p_id: id });
   if(error){ alert("Could not remove: " + error.message); return; }
+  // only the acting stand-in gets a "thanks for stepping in" note
+  if(kind === "acting" && email){
+    await notify("appointment_end", email, null, { title, effective: today });
+  }
   loadAppointments(); loadStaff();
 }
 
@@ -521,7 +567,26 @@ async function setStatus(){
   const { error } = await db.rpc("admin_set_status", params);
   btn("st-btn", false, "Update status");
   if(error){ msg("st-msg","err","Could not update", error.message); return; }
-  msg("st-msg","ok","Updated", `Status set to ${status}.`);
+
+  // each status maps to its own email
+  const EVENT = {
+    confirmed:   "confirmation",
+    suspended:   "suspension",
+    terminated:  "termination",
+    resigned:    "resignation_ack",
+    exited:      "exit",
+  };
+  const ev = EVENT[status];
+  let sent = false;
+  if(ev){
+    await notify(ev, email, null, {
+      effective: params.p_effective,
+      exit_date: params.p_exit_date || null,
+    });
+    sent = true;
+  }
+
+  msg("st-msg","ok","Updated", `Status set to ${status}.` + (sent ? " An email has been sent." : ""));
   $("st-email").value=""; $("st-note").value="";
   loadStaff();
 }
@@ -649,6 +714,25 @@ async function deletePolicy(id){
   const { error } = await db.from("policies").update({ is_current:false }).eq("id", id);
   if(error){ alert("Could not remove: " + error.message); return; }
   loadPolicies();
+}
+
+// ---------- notification log ----------
+async function loadNotifications(){
+  const wrap = $("nt-list");
+  const { data, error } = await db.from("notifications").select("*").order("created_at",{ascending:false}).limit(30);
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No emails sent yet.</p>`; return; }
+  wrap.innerHTML = data.map(n => {
+    const when = new Date(n.created_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    const cls = n.status === "sent" ? "confirmed" : "resigned";
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px">
+      <div style="flex:1">
+        <b style="font-family:var(--display-md);font-weight:500">${esc(n.event.replace(/_/g," "))}</b>
+        <div style="font-size:12px;color:var(--muted)">${esc(n.to_email)} · ${when}</div>
+      </div>
+      <span class="tag ${cls}">${esc(n.status)}</span>
+    </div>`;
+  }).join("");
 }
 
 // ---------- helpers ----------
