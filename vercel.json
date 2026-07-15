@@ -5,8 +5,13 @@
       "destination": "/giz/index.html"
     },
     {
+      "source": "/giz/host-an-intern",
+      "destination": "/giz/host-an-intern/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
+
