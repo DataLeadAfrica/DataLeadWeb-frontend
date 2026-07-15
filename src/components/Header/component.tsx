@@ -9,6 +9,7 @@ export default function Header() {
     links,
     group,
     allTo,
+    staticLinks,
   }: {
     title: string;
     links: Record<string, string>;
@@ -16,6 +17,12 @@ export default function Header() {
     group?: { title: string; note?: string; to: string; links: Record<string, string> };
     /** Optional "All X" link, always rendered last. */
     allTo?: string;
+    /**
+     * True when the links point at static pages in /public (e.g. /giz).
+     * Those must be plain <a href> so the browser does a real page load,
+     * instead of react-router trying to match them as SPA routes.
+     */
+    staticLinks?: boolean;
   }) {
     return (
       <div className="nav__dropdown-container" tabIndex={0}>
@@ -36,7 +43,11 @@ export default function Header() {
           <ul className="drop-down__links">
             {Object.keys(links).map((key) => (
               <li className="drop-down__link" key={key}>
-                <Link to={links[key]}>{key}</Link>
+                {staticLinks ? (
+                  <a href={links[key]}>{key}</a>
+                ) : (
+                  <Link to={links[key]}>{key}</Link>
+                )}
               </li>
             ))}
 
@@ -76,11 +87,14 @@ export default function Header() {
     links,
     group,
     allTo,
+    staticLinks,
   }: {
     title: string;
     links: Record<string, string>;
     group?: { title: string; note?: string; to: string; links: Record<string, string> };
     allTo?: string;
+    /** See the note on DropDown above. */
+    staticLinks?: boolean;
   }) {
     return (
       <details className="menu__dropdown">
@@ -93,13 +107,23 @@ export default function Header() {
         <ul className="content">
           {Object.keys(links).map((key) => (
             <li key={key}>
-              <Link
-                className="content__link"
-                to={links[key]}
-                onClick={handleClick}
-              >
-                {key}
-              </Link>
+              {staticLinks ? (
+                <a
+                  className="content__link"
+                  href={links[key]}
+                  onClick={handleClick}
+                >
+                  {key}
+                </a>
+              ) : (
+                <Link
+                  className="content__link"
+                  to={links[key]}
+                  onClick={handleClick}
+                >
+                  {key}
+                </Link>
+              )}
             </li>
           ))}
 
@@ -161,6 +185,13 @@ export default function Header() {
     Training: routes.training,
   };
 
+  // GIZ is running two programmes. Both pages are static files in /public,
+  // so these are plain <a href> links (staticLinks below), not <Link to>.
+  const gizLinks: Record<string, string> = {
+    "Remote Work Training": "/giz",
+    "Host an Intern": "/giz/host-an-intern",
+  };
+
   const courseLinks: Record<string, string> = {
     "Data Analytics": routes.coursesDataAnalytics,
     "AI & Machine Learning": routes.coursesDataScience,
@@ -214,10 +245,8 @@ export default function Header() {
           <Link className="nav__link" to={routes.blog}>
             Blog
           </Link>
-          {/* GIZ-ZME programme lives in /public, so it is a plain <a>, not a <Link>. */}
-          <a className="nav__link" href="/giz">
-            GIZ-ZME Programme
-          </a>
+          {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
+          <DropDown title="GIZ-ZME Programme" links={gizLinks} staticLinks />
           {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
           <a className="btn nav__predict" href="/world-cup-2026/index.html">
             {"⚽ Predict & Win"}
@@ -255,14 +284,12 @@ export default function Header() {
                 group={kidsGroup}
                 allTo={routes.courses}
               />
-              {/* GIZ-ZME programme lives in /public, so it is a plain <a>, not a <Link>. */}
-              <a
-                className="menu__link"
-                href="/giz"
-                onClick={handleClick}
-              >
-                GIZ-ZME Programme
-              </a>
+              {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
+              <MobileDropDown
+                title="GIZ-ZME Programme"
+                links={gizLinks}
+                staticLinks
+              />
               {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
               <a
                 className="menu__predict"
