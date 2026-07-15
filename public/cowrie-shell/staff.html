@@ -154,15 +154,6 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <h2>Set up your account</h2>
       <p class="lede">First time here? Claim the account already made for you.</p>
       <div class="fld"><label>Your Data-Lead email</label><input type="email" id="su-email" autocomplete="username"></div>
-      <div class="grid3">
-        <div class="fld" style="min-width:96px"><label>Title</label>
-          <select id="su-title">
-            <option value="">—</option>
-            <option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option>
-            <option>Dr</option><option>Prof</option><option>Engr</option><option>Barr</option><option>Chief</option>
-          </select></div>
-        <div class="fld"><label>Phone number</label><input id="su-phone" type="tel" inputmode="tel" placeholder="0801 234 5678"></div>
-      </div>
       <div class="fld"><label>Choose a password</label><input type="password" id="su-pass" autocomplete="new-password">
         <p class="hint">Eight characters or more.</p></div>
       <div class="fld"><label>Confirm password</label><input type="password" id="su-pass2" autocomplete="new-password"></div>
@@ -196,8 +187,19 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   <!-- profile -->
   <div id="nudge"></div>
 
+  <div class="section-label">This month</div>
+  <button class="tile" onclick="go('timesheet')">
+    <span class="dot todo" id="ts-dot"></span>
+    <span class="t"><b>My timesheet</b><span id="ts-sub">Log the days you worked</span></span><span class="arr">&rarr;</span>
+  </button>
+  <button class="tile" onclick="go('plans')">
+    <span class="dot todo" id="pl-dot"></span>
+    <span class="t"><b>My plans</b><span id="pl-sub">What you intend to do this week</span></span><span class="arr">&rarr;</span>
+  </button>
+
+  <div class="section-label">You</div>
   <div class="card">
-    <h3>You</h3>
+    <h3>Your details</h3>
     <div id="p-titles"></div>
     <div class="facts" id="p-facts"></div>
     <div style="margin-top:16px"><button onclick="go('profile')">Update my details →</button></div>
@@ -222,12 +224,100 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   </p>
   </section>
 
+
+  <!-- ---------- timesheet ---------- -->
+  <section id="v-timesheet" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow" id="ts-eyebrow">This month</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My timesheet</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Tap a day to log your hours and what you did. Mon to Thu is 7 hours, Friday 5.5.</p>
+
+    <div id="ts-locked"></div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Working days</div><div class="v" id="s-wd">—</div></div>
+      <div class="stat"><div class="k">Days logged</div><div class="v" id="s-logged">0</div></div>
+      <div class="stat"><div class="k">Normal hours</div><div class="v" id="s-normal">0</div></div>
+      <div class="stat accent"><div class="k">Extra hours</div><div class="v" id="s-extra">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="cal" id="cal-head"></div>
+      <div class="cal" id="cal"></div>
+      <div class="legend">
+        <span><i style="background:var(--clr-orange-light);border-color:var(--clr-orange-medium)"></i>Logged</span>
+        <span><i style="background:var(--amber-bg);border-color:var(--amber-line)"></i>Nothing logged</span>
+        <span><i style="background:var(--clr-blue);border-color:#7fbde8"></i>Public holiday</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Monthly activity report</h3>
+      <p class="cardsub">Read by your line manager and kept for donor reporting.</p>
+      <div class="fld"><label>1. Summary of the month</label><textarea id="rp1"></textarea></div>
+      <div class="fld"><label>2. Key achievements and outputs</label><textarea id="rp2"></textarea></div>
+      <div class="fld"><label>3. Challenges</label><textarea id="rp3" placeholder="Write None if there were none."></textarea></div>
+      <div class="fld"><label>4. Plans for next month</label><textarea id="rp4"></textarea></div>
+    </div>
+
+    <div class="card">
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:0;color:var(--clr-gray);font-size:14px">
+        <input type="checkbox" id="ts-certify" style="width:auto;margin-top:4px">
+        <span id="ts-cert-text">I certify that this is a true record of the days and hours I worked.</span>
+      </label>
+      <div id="ts-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:14px" id="ts-btn" onclick="submitTimesheet()">Sign and send to my line manager</button>
+    </div>
+  </section>
+
+  <!-- ---------- plans ---------- -->
+  <section id="v-plans" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Your plans</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My plans</h1>
+    <p style="color:var(--muted);margin-bottom:18px">What you intend to do. Your manager sees it, can comment, and approves it.</p>
+
+    <div class="tabs" style="margin-bottom:18px">
+      <button role="tab" aria-selected="true" id="ptab-week" onclick="planTab('week')">This week</button>
+      <button role="tab" aria-selected="false" id="ptab-month" onclick="planTab('month')">This month</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <h3 style="margin:0" id="pl-title">This week</h3>
+        <span class="st draft" id="pl-status">draft</span>
+      </div>
+      <p class="cardsub" id="pl-dates">—</p>
+      <div id="pl-note"></div>
+      <div class="fld"><label>Headline: your week in one sentence</label><input id="pl-headline" placeholder="Finish the Chad baseline and start the WASH analysis"></div>
+    </div>
+
+    <div class="card">
+      <h3>What you plan to do</h3>
+      <p class="cardsub">Each item can point at one of your targets, so your manager sees how the week serves the quarter.</p>
+      <div id="pl-items"></div>
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+        <div class="fld"><label>Task</label><input id="it-task" placeholder="Clean and validate the Chad baseline"></div>
+        <div class="fld"><label>Expected output</label><input id="it-out" placeholder="A validated dataset with under 2% error"></div>
+        <div class="grid2">
+          <div class="fld"><label>Due by</label><input id="it-due" type="date"></div>
+          <div class="fld"><label>Serves which target? (optional)</label>
+            <select id="it-target"><option value="">—</option></select></div>
+        </div>
+        <button onclick="addItem()" style="width:100%;border-style:dashed">+ Add this item</button>
+      </div>
+      <div id="pl-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:14px" id="pl-btn" onclick="submitPlan()">Submit to my line manager</button>
+    </div>
+  </section>
+
   <!-- ---------- profile ---------- -->
   <section id="v-profile" class="hidden">
     <button class="back" onclick="go('home')">← Back</button>
     <div class="eyebrow">Your details</div>
     <h1 style="font-size:26px;margin-bottom:4px">My details</h1>
     <p style="color:var(--muted);margin-bottom:22px">Save each section as you go. You can come back and finish later.</p>
+    <div id="first-run"></div>
 
     <div class="card">
       <h3>Personal</h3>
@@ -312,6 +402,24 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   </section>
 </div>
 
+<div id="modal" class="modal-bg hidden">
+  <div class="modal">
+    <h3 id="mo-title" style="font-family:var(--display);font-size:18px">Day</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px" id="mo-sub">What did you do, and for how long?</p>
+    <div class="grid2">
+      <div class="fld"><label>Hours worked</label><input id="mo-hours" type="number" step="0.5" min="0.5" max="24"></div>
+      <div class="fld"><label>Standard for this day</label><input id="mo-std" disabled></div>
+    </div>
+    <div class="fld"><label>What you did</label><textarea id="mo-act" placeholder="e.g. Cleaned and coded the Chad baseline dataset, drafted the WASH indicators."></textarea></div>
+    <div id="mo-ai" class="ai-note hidden"></div>
+    <div class="actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="clearDay()" style="color:var(--red)">Clear day</button>
+      <button class="btn-primary" onclick="saveDay()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -323,9 +431,15 @@ const $ = id => document.getElementById(id);
 window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showTab=showTab;
 window.go=go; window.savePersonal=savePersonal; window.saveNok=saveNok; window.saveFinancial=saveFinancial;
 
+window.openDay=openDay; window.saveDay=saveDay; window.clearDay=clearDay; window.closeModal=closeModal;
+window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=addItem;
+window.removeItem=removeItem; window.submitPlan=submitPlan;
+
 function go(v){
-  ["home","profile"].forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  ["home","profile","timesheet","plans"].forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
+  if(v === "timesheet") loadTimesheet();
+  if(v === "plans") loadPlan();
 }
 
 const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
@@ -356,9 +470,7 @@ async function signIn(){
 async function signUp(){
   const email = $("su-email").value.trim();
   const pass  = $("su-pass").value, pass2 = $("su-pass2").value;
-  const phone = $("su-phone").value.trim(), title = $("su-title").value;
   if(!email || !pass){ msg("su-msg","err","Missing details","Enter your email and a password."); return; }
-  if(!phone){ msg("su-msg","err","Phone needed","We need a number to reach you on."); return; }
   if(pass.length < 8){ msg("su-msg","err","Password too short","Use eight characters or more."); return; }
   if(pass !== pass2){ msg("su-msg","err","Passwords do not match","Please retype them."); return; }
 
@@ -377,8 +489,6 @@ async function signUp(){
   const { error } = await db.auth.signUp({ email, password: pass });
   btn("su-btn", false, "Create my account");
   if(error){ msg("su-msg","err","Could not create account", error.message); return; }
-  // stash what they typed; saved once they are actually signed in
-  sessionStorage.setItem("cowrie_signup", JSON.stringify({ phone, title }));
   msg("su-msg","ok","Account created","If a confirmation email is required, check your inbox. Otherwise you can sign in now.");
 }
 
@@ -397,19 +507,6 @@ async function enterApp(){
   }
   PROFILE = data;
 
-  // save anything typed at signup, now that we are authenticated
-  const stash = sessionStorage.getItem("cowrie_signup");
-  if(stash){
-    try{
-      const { phone, title } = JSON.parse(stash);
-      if(phone) await db.rpc("save_my_personal", { p_phone: phone });
-      if(title) await db.rpc("save_my_honorific", { p_honorific: title });
-      sessionStorage.removeItem("cowrie_signup");
-      const { data: fresh } = await db.from("my_full_profile").select("*").maybeSingle();
-      if(fresh) PROFILE = fresh;
-    }catch(e){ /* not fatal */ }
-  }
-
   const first = (PROFILE.full_name || "").trim().split(/\s+/)[0] || "there";
   $("who-name").textContent = PROFILE.display_name || PROFILE.full_name;
   $("who-dept").textContent = PROFILE.department || "\u2014";
@@ -422,6 +519,16 @@ async function enterApp(){
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   loadTitles(); loadTargets(); loadPolicies();
+
+  // First visit: nobody has told us anything about themselves yet.
+  // Land them on the bio form rather than the dashboard.
+  if(!PROFILE.phone){
+    go("profile");
+    $("first-run").innerHTML =
+      '<div class="alert info"><b>Welcome. Before you start, please tell us about yourself.</b>' +
+      'This is the staff bio form. It only needs doing once. Save each section as you go; ' +
+      'you can come back and finish the rest later.</div>';
+  }
 }
 
 function renderFacts(p){
@@ -484,6 +591,7 @@ async function savePersonal(){
   btn("pf-btn", false, "Save personal details");
   if(error){ msg("pf-msg","err","Could not save", error.message); return; }
   msg("pf-msg","ok","Saved","Your personal details are up to date.");
+  const fr = $("first-run"); if(fr) fr.innerHTML = "";
   await refresh();
 }
 
@@ -574,6 +682,259 @@ async function loadPolicies(){
     </div>`;
   }).join("");
 }
+
+
+// ============================================================
+// TIMESHEET
+// ============================================================
+const NOW = new Date();
+let TS_YEAR = NOW.getFullYear(), TS_MONTH = NOW.getMonth() + 1;
+let DAYS = {}, HOLIDAYS = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["Mon","Tue","Wed","Thu","Fri"];
+
+// stands in for Gemini until the AI check is wired; flags thin entries only
+function aiFlag(text){
+  const t = (text||"").trim();
+  if(t.length < 15) return { thin:true, why:"Very short. Add what you actually worked on." };
+  if(t.split(/\s+/).length < 4) return { thin:true, why:"Only a few words. A day usually needs a sentence." };
+  if(/^(worked|busy|tasks|various|office|stuff|admin)\.?$/i.test(t))
+    return { thin:true, why:"Too general to tell what was done." };
+  return { thin:false, why:"Reads like a real day's work." };
+}
+
+async function loadTimesheet(){
+  $("ts-eyebrow").textContent = MONTHS[TS_MONTH-1] + " " + TS_YEAR;
+  const first = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-01";
+  const lastD = new Date(TS_YEAR, TS_MONTH, 0).getDate();
+  const last  = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + lastD;
+
+  HOLIDAYS = {};
+  const { data: hols } = await db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last);
+  (hols||[]).forEach(h => HOLIDAYS[h.holiday] = h.name);
+
+  const { data: wd } = await db.rpc("working_days_in", { p_year: TS_YEAR, p_month: TS_MONTH });
+  WORKING_DAYS = wd ?? 0;
+  $("s-wd").textContent = WORKING_DAYS;
+
+  DAYS = {};
+  const { data: rows } = await db.from("my_timesheet").select("*").gte("work_date", first).lte("work_date", last);
+  (rows||[]).forEach(r => DAYS[r.work_date] = r);
+
+  const pid = await periodId();
+  const { data: sub } = await db.from("submissions")
+    .select("status, report_summary, report_achievements, report_challenges, report_next, manager_note")
+    .eq("period_id", pid).eq("staff_id", PROFILE.id).maybeSingle();
+  SUB_STATUS = sub?.status || "draft";
+  if(sub){
+    set("rp1", sub.report_summary); set("rp2", sub.report_achievements);
+    set("rp3", sub.report_challenges); set("rp4", sub.report_next);
+  }
+  renderLock(sub);
+  buildCal();
+  await refreshHours();
+}
+
+async function periodId(){
+  const { data } = await db.rpc("ensure_period", { p_year: TS_YEAR, p_month: TS_MONTH });
+  return data;
+}
+
+function renderLock(sub){
+  const locked = ["submitted","manager_approved","director_approved"].includes(SUB_STATUS);
+  const box = $("ts-locked");
+  if(SUB_STATUS === "returned"){
+    box.innerHTML = '<div class="alert warn"><b>Returned for a change</b>' +
+      esc(sub && sub.manager_note ? sub.manager_note : "Your manager asked for an update.") +
+      ' You can edit and resubmit.</div>';
+  } else if(locked){
+    const where = SUB_STATUS === "submitted" ? "with your line manager"
+                : SUB_STATUS === "manager_approved" ? "approved by your manager, awaiting the director"
+                : "fully approved";
+    box.innerHTML = '<div class="alert ok"><b>Submitted</b>This month is ' + where +
+      '. It is locked. Ask your manager to return it if you need a change.</div>';
+  } else { box.innerHTML = ""; }
+  $("ts-btn").disabled = locked;
+  ["rp1","rp2","rp3","rp4"].forEach(id => { const e=$(id); if(e) e.disabled = locked; });
+}
+
+function buildCal(){
+  $("cal-head").innerHTML = DOW.map(d => '<div class="dow">' + d + '</div>').join("");
+  const dim = new Date(TS_YEAR, TS_MONTH, 0).getDate();
+  const firstDow = new Date(TS_YEAR, TS_MONTH-1, 1).getDay();
+  const lead = firstDow === 0 ? 4 : (firstDow === 6 ? 5 : firstDow - 1);
+  let html = "";
+  for(let i=0;i<lead;i++) html += "<div></div>";
+  for(let d=1; d<=dim; d++){
+    const w = new Date(TS_YEAR, TS_MONTH-1, d).getDay();
+    if(w === 0 || w === 6) continue;
+    const iso = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    const hol = HOLIDAYS[iso];
+    const rec = DAYS[iso];
+    const cls = hol ? "day hol" : rec ? "day filled" : "day gap";
+    const hrs = hol ? "Holiday" : rec ? rec.hours + "h" : "\u2014";
+    const tick = hol ? esc(hol) : (rec && rec.activity ? esc(rec.activity) : "");
+    const flag = (rec && rec.ai_flag) ? "\u2691 flagged" : "";
+    const click = hol ? "disabled" : 'onclick="openDay(\'' + iso + '\')"';
+    html += '<button class="' + cls + '" ' + click + '>' +
+      '<span class="dn">' + d + " " + MONTHS[TS_MONTH-1].slice(0,3) + '</span>' +
+      '<span class="hrs">' + hrs + '</span><span class="tick">' + tick + '</span>' +
+      '<span class="flag">' + flag + '</span></button>';
+  }
+  $("cal").innerHTML = html;
+}
+
+async function refreshHours(){
+  const { data } = await db.rpc("hours_for", { p_staff: PROFILE.id, p_year: TS_YEAR, p_month: TS_MONTH });
+  const h = Array.isArray(data) ? data[0] : data;
+  if(!h) return;
+  const logged = h.days_logged || 0;
+  $("s-logged").textContent = logged;
+  $("s-normal").textContent = Number(h.normal_hours || 0);
+  $("s-extra").textContent = Number(h.overtime_hours||0) + Number(h.weekend_hours||0) + Number(h.holiday_hours||0);
+  $("ts-sub").textContent = logged === 0 ? "Log the days you worked" : logged + " of " + WORKING_DAYS + " days logged";
+  $("ts-dot").className = "dot " + (logged > 0 ? "done" : "todo");
+}
+
+function openDay(iso){
+  if(["submitted","manager_approved","director_approved"].includes(SUB_STATUS)) return;
+  editing = iso;
+  const dt = new Date(iso + "T00:00:00");
+  const std = dt.getDay() === 5 ? 5.5 : 7;
+  $("mo-title").textContent = dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+  $("mo-std").value = std + " hours";
+  $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
+  $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
+  $("mo-ai").className = "ai-note hidden";
+  $("modal").classList.remove("hidden");
+}
+function closeModal(){ $("modal").classList.add("hidden"); editing = null; }
+
+async function saveDay(){
+  const hours = parseFloat($("mo-hours").value);
+  const act = $("mo-act").value.trim();
+  if(!hours || hours <= 0){ alert("Enter the hours you worked."); return; }
+  const f = aiFlag(act);
+  const ai = $("mo-ai");
+  ai.className = "ai-note " + (f.thin ? "ai-thin" : "ai-ok");
+  ai.innerHTML = "<b>" + (f.thin ? "\u2691 This looks thin" : "\u2713 Looks fine") + "</b>" + f.why;
+  ai.classList.remove("hidden");
+
+  const { error } = await db.rpc("log_day", {
+    p_date: editing, p_hours: hours, p_activity: act || null,
+    p_ai_flag: f.thin, p_ai_note: f.thin ? f.why : null
+  });
+  if(error){ alert("Could not save: " + error.message); return; }
+  await loadTimesheet();
+  setTimeout(closeModal, f.thin ? 1300 : 600);
+}
+
+async function clearDay(){
+  if(!editing) return;
+  const { error } = await db.rpc("clear_day", { p_date: editing });
+  if(error){ alert("Could not clear: " + error.message); return; }
+  closeModal(); await loadTimesheet();
+}
+
+async function submitTimesheet(){
+  if(!$("ts-certify").checked){ msg("ts-msg","err","Please certify","Tick the box to confirm this is a true record."); return; }
+  btn("ts-btn", true, "Submitting");
+  const { error } = await db.rpc("submit_timesheet", {
+    p_year: TS_YEAR, p_month: TS_MONTH,
+    p_summary: val("rp1"), p_achievements: val("rp2"),
+    p_challenges: val("rp3"), p_next: val("rp4")
+  });
+  btn("ts-btn", false, "Sign and send to my line manager");
+  if(error){ msg("ts-msg","err","Could not submit", error.message); return; }
+  msg("ts-msg","ok","Sent","Your timesheet is with your line manager.");
+  await loadTimesheet();
+}
+
+// ============================================================
+// PLANS
+// ============================================================
+let PLAN_PERIOD = "week", PLAN_ID = null;
+
+function planTab(p){
+  PLAN_PERIOD = p;
+  $("ptab-week").setAttribute("aria-selected", p==="week");
+  $("ptab-month").setAttribute("aria-selected", p==="month");
+  loadPlan();
+}
+
+async function loadPlan(){
+  const { data: id, error } = await db.rpc("open_plan", { p_period: PLAN_PERIOD });
+  if(error){ msg("pl-msg","err","Could not open your plan", error.message); return; }
+  PLAN_ID = id;
+
+  const { data: pl } = await db.from("my_plans").select("*").eq("id", id).maybeSingle();
+  if(pl){
+    $("pl-title").textContent = PLAN_PERIOD === "week" ? "This week" : "This month";
+    $("pl-dates").textContent = fmtRange(pl.period_start, pl.period_end);
+    $("pl-status").textContent = pl.status;
+    $("pl-status").className = "st " + pl.status;
+    set("pl-headline", pl.headline);
+    $("pl-btn").disabled = pl.status === "approved";
+    $("pl-note").innerHTML = pl.manager_note
+      ? '<div class="alert ' + (pl.status==="returned"?"warn":"info") + '"><b>' +
+        (pl.status==="returned"?"Returned by ":"Note from ") + esc(pl.reviewed_by||"your manager") +
+        '</b>' + esc(pl.manager_note) + '</div>' : "";
+    $("pl-sub").textContent = pl.item_count > 0
+      ? pl.item_count + " item" + (pl.item_count>1?"s":"") + " \u00b7 " + pl.status
+      : "What you intend to do this week";
+    $("pl-dot").className = "dot " + (pl.status === "draft" ? "todo" : "done");
+  }
+
+  const { data: tg } = await db.from("my_targets").select("id,title,period");
+  $("it-target").innerHTML = '<option value="">\u2014</option>' +
+    (tg||[]).map(t => '<option value="' + t.id + '">' + esc(t.title) + " (" + t.period + ")</option>").join("");
+
+  await loadItems();
+}
+
+async function loadItems(){
+  const { data, error } = await db.rpc("plan_detail", { p_plan_id: PLAN_ID });
+  const wrap = $("pl-items");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing planned yet. Add your first item below.</p>'; return; }
+  wrap.innerHTML = data.map(i => '<div class="item"><div class="t"><b>' + esc(i.task) + '</b>' +
+      (i.expected_output ? '<span>' + esc(i.expected_output) + '</span>' : "") +
+      (i.due_on ? '<span>Due ' + fmtDate(i.due_on) + '</span>' : "") +
+      (i.target_title ? '<div class="serves">Serves: ' + esc(i.target_title) + '</div>' : "") +
+    '</div><button onclick="removeItem(' + i.item_id + ')" style="padding:4px 10px;font-size:12px;color:var(--red)">Remove</button></div>').join("");
+}
+
+async function addItem(){
+  const task = val("it-task");
+  if(!task){ msg("pl-msg","err","No task","Say what you plan to do."); return; }
+  const tid = $("it-target").value;
+  const { error } = await db.rpc("add_plan_item", {
+    p_plan_id: PLAN_ID, p_task: task, p_expected_output: val("it-out"),
+    p_due_on: val("it-due"), p_target_id: tid ? Number(tid) : null
+  });
+  if(error){ msg("pl-msg","err","Could not add", error.message); return; }
+  ["it-task","it-out","it-due"].forEach(id => $(id).value = "");
+  $("it-target").value = ""; $("pl-msg").innerHTML = "";
+  await loadPlan();
+}
+
+async function removeItem(id){
+  const { error } = await db.rpc("remove_plan_item", { p_item_id: id });
+  if(error){ alert("Could not remove: " + error.message); return; }
+  await loadPlan();
+}
+
+async function submitPlan(){
+  btn("pl-btn", true, "Submitting");
+  const { error } = await db.rpc("submit_plan", { p_plan_id: PLAN_ID, p_headline: val("pl-headline") });
+  btn("pl-btn", false, "Submit to my line manager");
+  if(error){ msg("pl-msg","err","Could not submit", error.message); return; }
+  msg("pl-msg","ok","Sent","Your plan is with your line manager.");
+  await loadPlan();
+}
+
+function fmtDate(d){ return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }
+function fmtRange(a,b){ return fmtDate(a) + " to " + fmtDate(b); }
 
 // ---------- helpers ----------
 function msg(id, kind, title, body){
