@@ -94,6 +94,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .door.admin:hover .body{fill:var(--ink)}
 .door.admin:hover .slit,.door.admin:hover .teeth{stroke:#000}
 
+.why{text-align:center;margin-top:26px;font-size:12.5px;color:var(--faint);line-height:1.8;max-width:44ch;margin-left:auto;margin-right:auto}
 .foot{text-align:center;margin-top:32px;font-size:12.5px;color:var(--faint);line-height:1.7}
 .foot button{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:12.5px;padding:0}
 .foot button:hover{color:var(--gray);border:none}
@@ -116,9 +117,10 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     <!-- ============ SIGN IN ============ -->
     <div id="gate">
       <div class="hero">
-        <div class="eyebrow">Data-Lead Africa</div>
-        <h1>One key.<br>Whichever door you need.</h1>
-        <p>Your timesheet, the firm's money, or the register. Sign in once and take the one you came for.</p>
+        <div class="eyebrow">Data-Lead Africa &middot; Abuja</div>
+        <h1>Welcome to<br>Cowrie&nbsp;Shell.</h1>
+        <p>Data-Lead's own. Your days, your plans, your leave and your pay, all in one place.
+           One key, and whichever door you need.</p>
       </div>
       <div class="plate">
         <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
@@ -129,6 +131,10 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
           First time here? <a href="/cowrie-shell/staff.html" style="color:var(--orange)">Set up your account</a>.
         </p>
       </div>
+      <p class="why">
+        A cowrie was West Africa&rsquo;s unit of account. You counted shells to know what you had.<br>
+        Here you count days, and they turn into what you are owed.
+      </p>
     </div>
 
     <!-- ============ THE DOORS ============ -->
@@ -140,7 +146,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
       </div>
       <div class="doors" id="doors"></div>
       <p class="foot">
-        Same key opens all of them. Nothing is hidden from you here that is not hidden from you there.<br>
+        The same key opens all of them.<br>
         <button onclick="signOut()">Sign out</button>
       </p>
     </div>
@@ -203,9 +209,14 @@ async function show(){
   const h = new Date().getHours();
   $("greet").textContent = "Good " + (h < 12 ? "morning" : h < 17 ? "afternoon" : "evening") + ", " +
     (data.full_name||"").trim().split(/\s+/)[0] + ".";
+  // A person with one door does not need to be asked where they are going.
+  const where = data.job_title
+    ? data.job_title + (data.department ? ", " + data.department : "")
+    : null;
   $("sub").textContent = (isFin || isCert)
     ? "Where would you like to go?"
-    : (data.job_title ? data.job_title + (data.department ? " \u00b7 " + data.department : "") : "Welcome back.");
+    : where ? where + ". Everything of yours is through here."
+            : "Everything of yours is through here.";
 
   // what is waiting, so a door can say so before you open it
   let waiting = 0, finJobs = 0;
@@ -226,16 +237,16 @@ async function show(){
 
   const doors = [];
   doors.push({ cls:"staff", href:"/cowrie-shell/staff.html", t:"My portal",
-    s:"Your month, your plan, your leave, your payslip." +
+    s:"Log your day, plan your week, ask for leave, read your payslip." +
       (waiting ? " And " + waiting + " thing" + (waiting===1?"":"s") + " your team is waiting on you for." : ""),
     go:"Open my portal \u2192", badge: waiting ? { cls:"n", txt: waiting + " waiting" } : null });
 
   if(isFin) doors.push({ cls:"fin", href:"/cowrie-shell/finance.html", t:"Finance",
-    s:"Run the month, pay what is cleared, remit the tax, keep the cashbook.",
+    s:"Run the month, pay what is cleared, remit the tax, keep the book.",
     go:"Open Finance \u2192", badge: finJobs ? { cls:"n", txt: finJobs + " to do" } : { cls:"q", txt:"clear" } });
 
   if(isCert) doors.push({ cls:"admin", href:"/cowrie-shell/admin.html", t:"Admin",
-    s:"The register, the money, performance, and everything the firm has agreed.",
+    s:"Everyone on the register, what the firm costs, and what it has agreed.",
     go:"Open Admin \u2192", badge:{ cls:"q", txt: roles.includes("super_admin") ? "CEO" : "COO" } });
 
   $("doors").innerHTML = doors.map(d =>
