@@ -367,6 +367,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <button onclick="go('profile')">My details</button>
       <button onclick="go('finance')">My finance</button>
       <button onclick="go('timesheet')">Sign off the month</button>
+      <button onclick="go('req')">Requisition</button>
       <button onclick="go('policies')">Policies and targets</button>
       <button class="hidden" id="p-roster" onclick="go('roster')">Payroll</button>
       <button class="hidden" id="p-cert" onclick="go('certify')">Certify</button>
@@ -472,7 +473,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
           <div class="fld"><label>Serves which target? (optional)</label>
             <select id="it-target"><option value="">—</option></select></div>
         </div>
-        <button onclick="addItem()" style="width:100%;border-style:dashed">+ Add this item</button>
+        <button onclick="addReqItem()" style="width:100%;border-style:dashed">+ Add this item</button>
       </div>
       <div id="pl-msg"></div>
       <button class="btn-primary" style="width:100%;margin-top:14px" id="pl-btn" onclick="submitPlan()">Submit to my line manager</button>
@@ -760,6 +761,60 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
   </section>
 
+
+  <!-- ---------- requisitions ---------- -->
+  <section id="v-req" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Money</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Requisitions</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Ask for money you need to do the work. A Bolt ride, fuel, a per diem.</p>
+
+    <!-- the basket -->
+    <div class="card">
+      <h3>What do you need?</h3>
+      <p class="cardsub">Add each thing separately. A field trip is fuel, lodging and per diem, not one lump.</p>
+
+      <div class="grid2">
+        <div class="fld"><label>What is it for?</label>
+          <input id="rq-purpose" placeholder="Chad baseline, field visit week 3"></div>
+        <div class="fld"><label>Which project pays for it?</label>
+          <select id="rq-project" onchange="rqProject()"></select>
+          <p class="hint" id="rq-proj-note"></p></div>
+      </div>
+
+      <div id="rq-items"></div>
+
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:8px">
+        <div class="grid3" style="grid-template-columns:2fr 1fr 1fr">
+          <div class="fld"><label>Item</label><input id="it-desc" placeholder="Bolt to the ministry"></div>
+          <div class="fld"><label>Amount (&#8358;)</label><input id="it-amt" type="number"></div>
+          <div class="fld"><label>Needed by</label><input id="it-by" type="date"></div>
+        </div>
+        <button onclick="addReqItem()" style="width:100%;border-style:dashed">+ Add this item</button>
+      </div>
+
+      <div id="rq-total"></div>
+      <div id="rq-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:6px" id="rq-btn" onclick="submitReq()">Send it</button>
+    </div>
+
+    <!-- receipts owed: the thing that gets forgotten -->
+    <div class="card hidden" id="rq-owed-card">
+      <h3>Receipts you owe</h3>
+      <p class="cardsub">Money was paid to you against these. Finance needs the receipt to close them.</p>
+      <div id="rq-owed"></div>
+    </div>
+
+    <!-- history -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Your requisitions</h3>
+        <button class="rowbtn" onclick="loadReq()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="rq-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
   <!-- ---------- profile ---------- -->
   <section id="v-profile" class="hidden">
     <button class="back" onclick="go('home')">← Back</button>
@@ -1017,7 +1072,7 @@ window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openRe
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies","leave"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies","leave","req"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1027,6 +1082,7 @@ function go(v){
   if(v === "approvals") loadApprovals();
   if(v === "team") loadTeam();
   if(v === "leave") loadLeave();
+  if(v === "req") loadReq();
   if(v === "finance") loadMyFinance();
   if(v === "roster") loadRoster();
   if(v === "certify") initCertify();
@@ -2683,6 +2739,180 @@ async function loadLeaveInfo(){
     '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
     fmtRange(l.starts_on, l.ends_on) +
     (l.approved_by ? " \u00b7 granted by " + esc(l.approved_by) : "") + '</span></span></div>').join("");
+}
+
+
+// ============================================================
+// REQUISITIONS
+// The threshold is decided in the database. This screen only tells you
+// what it is about to do, as you build the basket, so nothing is a surprise.
+// ============================================================
+let RQ_ID = null, RQ_ITEMS = [], RQ_THRESHOLD = 0, RQ_MONTH_SO_FAR = 0, PROJECTS = [];
+window.loadReq = loadReq; window.rqProject = rqProject; window.addReqItem = addReqItem;
+window.dropReqItem = dropReqItem; window.submitReq = submitReq; window.uploadReceipt = uploadReceipt;
+
+async function loadReq(){
+  // open (or reuse) a draft
+  const { data: id, error } = await db.rpc("open_requisition");
+  if(oops("Your requisition", error)) return;
+  RQ_ID = id;
+
+  // the threshold, and what you have already raised this month
+  const [cfg, mine] = await Promise.all([
+    db.from("config_list").select("value").eq("key","requisition_threshold").maybeSingle(),
+    db.rpc("my_requisitions_this_month")
+  ]);
+  RQ_THRESHOLD    = Number(cfg.data ? cfg.data.value : 0);
+  RQ_MONTH_SO_FAR = Number(mine.data || 0);
+
+  // which projects can pay for it
+  const { data: pj, error: pe } = await db.from("project_list").select("*");
+  if(oops("The projects", pe)) return;
+  PROJECTS = pj || [];
+  $("rq-project").innerHTML = '<option value="">Choose\u2026</option>' +
+    PROJECTS.map(p => '<option value="' + p.code + '">' + esc(p.code) + " \u00b7 " + esc(p.name) + '</option>').join("");
+  rqProject();
+
+  await loadReqItems();
+  await loadReqList();
+}
+
+function rqProject(){
+  const p = PROJECTS.find(x => x.code === $("rq-project").value);
+  $("rq-proj-note").textContent = !p ? "Every naira has to be attributable. A funder will ask."
+    : p.is_overhead ? "Not chargeable to a funder. For costs that belong to the firm."
+    : p.funder ? "Funded by " + p.funder : "";
+}
+
+async function loadReqItems(){
+  const { data, error } = await db.rpc("requisition_detail", { p_req_id: RQ_ID });
+  if(oops("Your items", error)) return;
+  RQ_ITEMS = data || [];
+  const wrap = $("rq-items");
+  wrap.innerHTML = !RQ_ITEMS.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:6px 0">Nothing in it yet.</p>'
+    : RQ_ITEMS.map(i => '<div class="basket"><span class="t"><b>' + esc(i.description) + '</b>' +
+        (i.needed_by ? '<span>Needed by ' + fmtDate(i.needed_by) + '</span>' : "") + '</span>' +
+        '<span class="amt">' + N(i.amount) + '</span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropReqItem(' + i.item_id + ')">Remove</button></div>').join("");
+  paintTotal();
+}
+
+// as the basket fills, say where it is going. No surprises at submit.
+function paintTotal(){
+  const total = RQ_ITEMS.reduce((a,i) => a + Number(i.amount), 0);
+  if(!RQ_ITEMS.length){ $("rq-total").innerHTML = ""; $("rq-btn").disabled = true; return; }
+  $("rq-btn").disabled = false;
+
+  const overOnOwn  = total > RQ_THRESHOLD;
+  const overWithMonth = !overOnOwn && (RQ_MONTH_SO_FAR + total) > RQ_THRESHOLD;
+  let route;
+  if(overOnOwn){
+    route = '<div class="route up"><b>This needs the CEO or COO first</b>' +
+      N(total) + ' is above the ' + N(RQ_THRESHOLD) + ' line. They approve it, then Finance pays.</div>';
+  } else if(overWithMonth){
+    route = '<div class="route up"><b>This needs the CEO or COO first</b>' +
+      'On its own it is under the line, but you have already raised ' + N(RQ_MONTH_SO_FAR) +
+      ' this month. Together that passes ' + N(RQ_THRESHOLD) + '.</div>';
+  } else {
+    route = '<div class="route direct"><b>Straight to Finance</b>' +
+      N(total) + ' is within the ' + N(RQ_THRESHOLD) + ' line, so it does not need approval first.</div>';
+  }
+  $("rq-total").innerHTML =
+    '<div class="running"><span class="lb">' + RQ_ITEMS.length + ' item' +
+    (RQ_ITEMS.length===1?"":"s") + '</span><span class="v">' + N(total) + '</span></div>' + route;
+}
+
+async function addReqItem(){
+  const d = val("it-desc"), a = Number(val("it-amt") || 0);
+  if(!d){ msg("rq-msg","err","No description","Say what the money is for."); return; }
+  if(!a || a <= 0){ msg("rq-msg","err","No amount","How much?"); return; }
+  const { error } = await db.rpc("add_requisition_item", {
+    p_req_id: RQ_ID, p_description: d, p_amount: a, p_needed_by: val("it-by")
+  });
+  if(error){ msg("rq-msg","err","Not added", error.message); return; }
+  ["it-desc","it-amt","it-by"].forEach(id => set(id,""));
+  $("rq-msg").innerHTML = "";
+  await loadReqItems();
+}
+
+async function dropReqItem(id){
+  const { error } = await db.rpc("remove_requisition_item", { p_item_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  await loadReqItems();
+}
+
+async function submitReq(){
+  const purpose = val("rq-purpose"), code = $("rq-project").value;
+  if(!purpose){ msg("rq-msg","err","What is it for?","A line so the approver knows."); return; }
+  if(!code){ msg("rq-msg","err","Which project?","Every naira has to be attributable. A funder will ask."); return; }
+
+  btn("rq-btn", true, "Sending");
+  const { data, error } = await db.rpc("submit_requisition", {
+    p_req_id: RQ_ID, p_purpose: purpose, p_project_code: code
+  });
+  btn("rq-btn", false, "Send it");
+  if(error){ msg("rq-msg","err","Not sent", error.message); return; }
+
+  msg("rq-msg","ok","Sent", data === "awaiting_approval"
+    ? "It is with the CEO or COO. Once approved it goes to Finance."
+    : "It is with Finance.");
+  set("rq-purpose",""); $("rq-project").value = ""; rqProject();
+  await loadReq();
+}
+
+async function loadReqList(){
+  const { data, error } = await db.from("my_requisitions").select("*");
+  if(oops("Your requisitions", error)) return;
+  const rows = (data||[]).filter(r => r.status !== "draft");
+  const wrap = $("rq-list");
+
+  // receipts owed, up front, because this is what gets forgotten
+  const owed = (data||[]).filter(r => r.status === "disbursed" && r.receipts_owed > 0);
+  $("rq-owed-card").classList.toggle("hidden", !owed.length);
+  if(owed.length){
+    $("rq-owed").innerHTML = owed.map(r =>
+      '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+      '<span>Paid ' + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null) + " \u00b7 " +
+      r.receipts_owed + ' receipt' + (r.receipts_owed===1?"":"s") + ' outstanding</span></span>' +
+      '<button class="rowbtn" onclick="uploadReceipt(' + r.id + ')">Add receipts</button></div>').join("");
+  }
+
+  if(!rows.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not raised any.</p>'; return; }
+  const LB = { awaiting_approval:"With the CEO or COO", with_finance:"With Finance",
+               declined:"Declined", disbursed:"Paid", closed:"Closed" };
+  const CL = { awaiting_approval:"submitted", with_finance:"submitted", declined:"returned",
+               disbursed:"approved", closed:"draft" };
+  wrap.innerHTML = rows.map(r =>
+    '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+    '<span>' + fmtDate(r.raised_on) + " \u00b7 " + r.item_count + ' item' + (r.item_count===1?"":"s") +
+    (r.project_code ? " \u00b7 " + esc(r.project_code) : "") + '</span>' +
+    (r.decision_note ? '<span style="font-style:italic">\u201c' + esc(r.decision_note) + '\u201d</span>' : "") +
+    '</span><span class="st ' + CL[r.status] + '">' + (LB[r.status] || r.status) + '</span></div>').join("");
+}
+
+async function uploadReceipt(reqId){
+  const { data, error } = await db.rpc("requisition_detail", { p_req_id: reqId });
+  if(oops("That requisition", error)) return;
+  const missing = (data||[]).filter(i => !i.has_receipt);
+  if(!missing.length){ toast("Every item already has a receipt."); return; }
+
+  const item = missing[0];
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/pdf,image/*";
+  inp.onchange = async () => {
+    const f = inp.files[0]; if(!f) return;
+    const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("receipts").upload(PROFILE.id + "/" + name, f);
+    if(up.error){ toast("Upload failed. " + up.error.message + " (is the 'receipts' bucket created?)"); return; }
+    const { error: e2 } = await db.rpc("attach_receipt", { p_item_id: item.item_id, p_path: up.data.path });
+    if(e2){ toast("Could not attach. " + e2.message); return; }
+    toast("Receipt added for \u201c" + item.description + "\u201d." +
+          (missing.length > 1 ? " " + (missing.length-1) + " still to go." : " That one is complete."));
+    await loadReqList();
+  };
+  toast("Pick the receipt for: " + item.description + " (" + N(item.amount) + ")");
+  inp.click();
 }
 
 // ---------- helpers ----------
