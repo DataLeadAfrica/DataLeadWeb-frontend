@@ -1,12 +1,13 @@
+/* ============================================================
+   FOOTER
+   The height came from padding on all four sides plus the column gap:
+   it was padded like a hero. Now the horizontal padding still lines up
+   with the rest of the site, and the vertical is set here.
+   ============================================================ */
 .footer {
   position: relative;
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  justify-content: space-between;
-  gap: var(--gap-2);
-
-  padding: var(--padding-4);
+  padding: 2.75rem var(--padding-4) 0;
 
   background-color: var(--clr-gray);
   color: white;
@@ -18,67 +19,218 @@
   transition: var(--transition-1);
 }
 
-.footer__logo {
-  max-width: 10rem;
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr;
+  gap: var(--gap-2);
+  padding-bottom: 2rem;
 }
 
 .footer__col {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-1);
+  gap: 0.55rem;
 }
 
-.footer__follow {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-1);
+/* ---- the mark, said once and smaller ---- */
+.footer__logo {
+  max-width: 7.5rem;
+}
+
+.footer__say {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 34ch;
+  margin: 0.4rem 0 0.3rem;
 }
 
 .footer__col .col__header {
-  font-size: var(--font-md);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.35rem;
 }
 
 .footer__col .get-in-touch {
   display: flex;
   gap: var(--gap-1);
+  align-items: flex-start;
+  font-size: 0.9rem;
 }
 .footer__col .get-in-touch i {
   font-size: var(--font-md);
+  opacity: 0.55;
+  flex: none;
 }
+.footer__col .get-in-touch address {
+  font-style: normal;
+  line-height: 1.55;
+}
+
+/* ---- the numbers say where we are ---- */
+.footer__phones {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 0.9rem;
+  align-items: baseline;
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+}
+.footer__phones dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  white-space: nowrap;
+}
+.footer__phones dd {
+  margin: 0;
+  line-height: 1.5;
+}
+.footer__phones dd span {
+  opacity: 0.35;
+}
+
 .footer .follow-links {
   display: flex;
-  gap: var(--gap-1);
+  gap: 0.5rem;
+  margin-top: 0.2rem;
 }
 .footer .follow-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.5rem;
+
+  color: rgba(255, 255, 255, 0.62);
+  transition: var(--transition-1);
+}
+.footer .follow-links a:hover,
+.footer .follow-links a:focus {
+  border-color: var(--clr-orange);
+  transform: translateY(-2px);
 }
 .footer .follow-links .follow-svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 0.95rem;
+  height: 0.95rem;
   flex: none;
   display: block;
 }
-.footer .phone-list { line-height: 1.7; }
 .footer .follow-links i {
-  font-size: var(--font-md);
+  font-size: 0.95rem;
+}
+
+/* ---- what the firm is, in one line ---- */
+.footer__where {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  font-size: 0.8rem;
+}
+.footer__where .where__label {
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  margin-right: 0.2rem;
+}
+.footer__where .where__country {
+  color: rgba(255, 255, 255, 0.82);
+}
+.footer__where .where__dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--clr-orange);
+  opacity: 0.7;
+  margin: 0 0.55rem;
+  vertical-align: middle;
+}
+
+/* ---- the thin bar ---- */
+.footer__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  padding: 0.9rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+.footer__bar p {
+  margin: 0;
+}
+.footer__bar a {
+  color: rgba(255, 255, 255, 0.45);
+}
+.footer__bar .bar__right {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+/* the way in for staff: quiet, but a real link with a real word */
+.bar__staff {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.bar__shell {
+  width: 0.6rem;
+  height: 0.85rem;
+  flex: none;
+}
+.bar__shell ellipse {
+  fill: rgba(255, 255, 255, 0.35);
+  transition: var(--transition-1);
+}
+.bar__shell .shell__slit {
+  stroke: var(--clr-gray);
+  stroke-width: 1.6;
+}
+.bar__staff:hover .bar__shell ellipse,
+.bar__staff:focus .bar__shell ellipse {
+  fill: var(--clr-orange);
 }
 
 @media (max-width: 1200px) {
-  .footer {
-    grid-template-columns: repeat(2, 1fr);
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer__brand {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 768px) {
   .footer {
-    grid-template-columns: repeat(1, 1fr);
+    padding-top: 2rem;
   }
-}
-
-.footer__copyright {
-  grid-column: 1 / -1;
+  .footer__grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
 }
 
 /* ---- Floating "Chat with us" WhatsApp button (site-wide) ---- */
@@ -146,6 +298,10 @@
 
   .wa-float:hover,
   .wa-float:focus {
+    transform: none;
+  }
+
+  .footer .follow-links a:hover {
     transform: none;
   }
 }
