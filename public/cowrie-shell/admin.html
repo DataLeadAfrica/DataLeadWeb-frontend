@@ -666,6 +666,79 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
       <div class="fld" style="margin:0"><label>Month</label><select id="fin-month" onchange="loadFinance()"></select></div>
     </div>
     <div id="fin-body"></div>
+    <div id="fin-certify"></div>
+  </section>
+
+
+  <!-- ============ REQUISITIONS TO APPROVE ============ -->
+  <section id="v-reqs" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Requisitions</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Only the ones above the line reach you. Anything under it goes straight to Finance.</p>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Waiting on you</h3></div>
+        <button class="rowbtn" onclick="loadReqs()">Refresh</button></div>
+      <div id="rq-wait"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Everything</h3><div class="ps">Every requisition, whatever its state.</div></div></div>
+      <div id="rq-all"></div>
+    </div>
+  </section>
+
+  <!-- ============ PERFORMANCE ============ -->
+  <section id="v-perf" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Performance</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Set the week, the month, the quarter, the year. See how anyone is tracking.</p>
+
+    <div class="panel">
+      <h3>Set a target</h3>
+      <div class="ps">A KPI is required. Make it a yardstick: something you could both point at and agree it was met.</div>
+      <div class="grid2">
+        <div class="fld"><label>For whom</label><select id="tg-who"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Period</label>
+          <select id="tg-period" onchange="tgDates()">
+            <option value="week">This week</option>
+            <option value="month" selected>This month</option>
+            <option value="quarter">This quarter</option>
+            <option value="year">This year</option>
+          </select></div>
+      </div>
+      <div class="fld"><label>The target</label><input id="tg-title" placeholder="Clean and validate the Chad baseline"></div>
+      <div class="fld"><label>KPI: how will you know it was met?</label>
+        <input id="tg-kpi" placeholder="400 households validated with under 2% error">
+        <p class="hint">Required. A target without a yardstick cannot be assessed fairly.</p></div>
+      <div class="grid2">
+        <div class="fld"><label>Measured how</label>
+          <select id="tg-kind" onchange="tgKind()">
+            <option value="qualitative">Judged</option>
+            <option value="quantitative">Counted</option>
+          </select></div>
+        <div class="fld hidden" id="tg-num"><label>Target number</label><input id="tg-value" type="number"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld hidden" id="tg-unit-row"><label>Unit</label><input id="tg-unit" placeholder="households"></div>
+        <div class="fld"><label>Resource link (optional)</label><input id="tg-link" placeholder="https://&hellip;"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>From</label><input id="tg-start" type="date"></div>
+        <div class="fld"><label>To</label><input id="tg-end" type="date"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="tg-email" checked>
+        <span>Tell them<small>They get a note saying a target has been set, and can see it in their portal.</small></span></label>
+      <div id="tg-msg"></div>
+      <button class="btn-primary" id="tg-btn" onclick="setTarget()">Set it</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>How everyone is tracking</h3>
+        <div class="ps">Every target in the firm. Managers set and rate their own; you are looking.</div></div>
+        <button class="rowbtn" onclick="loadTargets()">Refresh</button></div>
+      <div id="tg-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
   </section>
 
   <!-- ============ SETTINGS ============ -->
@@ -680,6 +753,18 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
       <div class="ps">Changing one asks for a reason. A figure that moves silently cannot be audited.</div>
       <div id="cfg-wrap"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
     </div>
+    <div class="panel">
+      <h3>Public holidays</h3>
+      <div class="ps">Declared by the Federal Government. The fixed ones are here already; the Islamic ones move every year and only you or the COO can add them. Until one is here, the system treats it as an ordinary working day.</div>
+      <div class="grid3" style="align-items:end">
+        <div class="fld" style="margin:0"><label>Date</label><input id="hol-date" type="date"></div>
+        <div class="fld" style="margin:0"><label>What it is</label><input id="hol-name" placeholder="Eid al-Fitr"></div>
+        <button class="btn-primary" id="hol-btn" onclick="addHoliday()">Add it</button>
+      </div>
+      <div id="hol-msg"></div>
+      <div id="hol-list" style="margin-top:14px"></div>
+    </div>
+
     <div class="panel">
       <h3>Contributions</h3>
       <div class="ps">Every line shows on the payslip. When off it reads zero. Turn one on only when the remittance is actually set up.</div>
@@ -761,6 +846,248 @@ const val = id => { const e = $(id); const v = e ? String(e.value||"").trim() : 
 const set = (id, v) => { const e = $(id); if(e) e.value = v ?? ""; };
 const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "\u2014";
+
+// ============================================================
+// REQUISITIONS
+// Only the ones above the line reach the CEO or COO. Before this screen
+// existed they reached nobody: they went to 'awaiting_approval' and sat
+// there, and Finance never saw them.
+// ============================================================
+window.loadReqs = loadReqs; window.decideReq = decideReq;
+
+async function loadReqs(){
+  const { data, error } = await db.from("requisitions_to_approve").select("*");
+  if(oops("The requisitions", error)) return;
+  const wrap = $("rq-wait");
+  wrap.innerHTML = !data || !data.length
+    ? '<p style="color:var(--faint);font-size:13px">Nothing waiting on you.</p>'
+    : data.map(r => {
+        const left = r.budget ? Number(r.budget) - Number(r.project_spent||0) : null;
+        const burn = r.budget ? Math.round(Number(r.project_spent||0) / Number(r.budget) * 100) : null;
+        return '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+          '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
+          " \u00b7 " + r.item_count + " item" + (r.item_count===1?"":"s") +
+          (r.department ? " \u00b7 " + esc(r.department) : "") + '</span>' +
+          '<span style="color:var(--amber)">' + esc(r.approval_reason || "") + '</span>' +
+          (r.project_code
+            ? '<span>' + esc(r.project_code) + (r.funder ? " \u00b7 " + esc(r.funder) : "") +
+              (r.budget ? " \u00b7 " + N(r.project_spent) + " of " + N(r.budget) + " spent" +
+                (burn !== null ? " (" + burn + "%)" : "") +
+                (left !== null && left < Number(r.total)
+                  ? ' \u00b7 <b style="color:var(--red)">only ' + N(left) + ' left on that budget</b>' : "") : "") +
+              '</span>'
+            : '<span style="color:var(--red)">No project. It cannot be attributed.</span>') +
+          '</span>' +
+          '<button class="rowbtn" onclick="decideReq(' + r.id + ',false,\'' +
+            esc(r.staff_email) + '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + r.total + ')">Decline</button>' +
+          '<button class="btn-primary rowbtn" style="margin-left:6px" onclick="decideReq(' + r.id + ',true,\'' +
+            esc(r.staff_email) + '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + r.total + ')">Approve</button></div>';
+      }).join("");
+
+  const { data: all, error: ae } = await db.from("requisitions_overview").select("*").limit(40);
+  if(oops("The overview", ae)) return;
+  const LB = { awaiting_approval:"With you", with_finance:"With Finance", declined:"Declined",
+               disbursed:"Paid", closed:"Closed", draft:"Draft" };
+  const CL = { awaiting_approval:"acting", with_finance:"probationary", declined:"suspended",
+               disbursed:"confirmed", closed:"role", draft:"role" };
+  $("rq-all").innerHTML = !all || !all.length
+    ? '<p style="color:var(--faint);font-size:13px">None yet.</p>'
+    : all.map(r => '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+        '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
+        (r.project_code ? " \u00b7 " + esc(r.project_code) : "") +
+        (r.receipts_owed > 0 ? ' \u00b7 <span style="color:var(--amber)">' + r.receipts_owed +
+          " receipt" + (r.receipts_owed===1?"":"s") + " owed</span>" : "") + '</span></span>' +
+        '<span class="tag ' + (CL[r.status]||"role") + '">' + (LB[r.status]||r.status) + '</span></div>').join("");
+}
+
+async function decideReq(id, approve, email, name, total){
+  let note = null;
+  if(!approve){
+    note = prompt("Why are you declining " + name + "'s " + N(total) + " requisition?\n\nThey will see this.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
+  } else {
+    if(!confirm("Approve " + N(total) + " for " + name + "?\n\nIt goes to Finance to pay.")) return;
+    note = prompt("A note for them (optional).") || null;
+  }
+  const { error } = await db.rpc("approve_requisition", { p_req_id: id, p_approve: approve, p_note: note });
+  if(error){ toast("Could not. " + error.message); return; }
+  await notify(approve ? "requisition_approved" : "requisition_declined", email, name,
+               { amount: N(total), reason: note });
+  toast(approve ? "Approved. It is with Finance, and they have been told."
+                : "Declined, and they have your reason.");
+  await loadReqs();
+}
+
+// ============================================================
+// PERFORMANCE
+// ============================================================
+window.setTarget = setTarget; window.loadTargets = loadTargets;
+window.tgDates = tgDates; window.tgKind = tgKind; window.rateTarget = rateTarget;
+
+function initPerf(){
+  $("tg-who").innerHTML = '<option value="">Choose\u2026</option>' +
+    REG.filter(r => !["exited","terminated"].includes(r.employment_status))
+       .map(r => '<option value="' + esc(r.email) + '">' + esc(r.display_name || r.full_name) +
+         (r.department ? " \u00b7 " + esc(r.department) : "") + '</option>').join("");
+  tgDates(); tgKind(); loadTargets();
+}
+
+function tgKind(){
+  const q = $("tg-kind").value === "quantitative";
+  $("tg-num").classList.toggle("hidden", !q);
+  $("tg-unit-row").classList.toggle("hidden", !q);
+}
+
+function tgDates(){
+  const p = $("tg-period").value, d = new Date();
+  let a, b;
+  if(p === "week"){ const dow = (d.getDay()+6)%7; a = new Date(d); a.setDate(d.getDate()-dow); b = new Date(a); b.setDate(a.getDate()+4); }
+  else if(p === "month"){ a = new Date(d.getFullYear(), d.getMonth(), 1); b = new Date(d.getFullYear(), d.getMonth()+1, 0); }
+  else if(p === "quarter"){ const q = Math.floor(d.getMonth()/3); a = new Date(d.getFullYear(), q*3, 1); b = new Date(d.getFullYear(), q*3+3, 0); }
+  else { a = new Date(d.getFullYear(), 0, 1); b = new Date(d.getFullYear(), 11, 31); }
+  set("tg-start", iso(a)); set("tg-end", iso(b));
+}
+
+async function setTarget(){
+  const email = val("tg-who");
+  if(!email){ msg("tg-msg","err","Choose someone","Who is this for?"); return; }
+  if(!val("tg-title")){ msg("tg-msg","err","No target","Say what they must achieve."); return; }
+  if(!val("tg-kpi")){ msg("tg-msg","err","A KPI is needed","A target without a yardstick cannot be assessed fairly."); return; }
+
+  btn("tg-btn", true, "Setting");
+  const { error } = await db.rpc("set_target", {
+    p_staff_email: email, p_title: val("tg-title"), p_kpi: val("tg-kpi"),
+    p_period: $("tg-period").value, p_period_start: val("tg-start"), p_period_end: val("tg-end"),
+    p_kpi_kind: $("tg-kind").value,
+    p_target_value: val("tg-value") ? Number(val("tg-value")) : null,
+    p_unit: val("tg-unit"), p_resource_link: val("tg-link")
+  });
+  btn("tg-btn", false, "Set it");
+  if(error){ msg("tg-msg","err","Not set", error.message); return; }
+
+  const who = REG.find(r => r.email === email);
+  let sent = false;
+  if($("tg-email").checked) sent = await notify("target_set", email, who ? who.full_name : null, {
+    period: $("tg-period").value, title: val("tg-title"), resource: val("tg-link") ? "yes" : null
+  });
+  msg("tg-msg","ok","Set", "They will see it in their portal." + (sent ? " And they have been told." : ""));
+  ["tg-title","tg-kpi","tg-value","tg-unit","tg-link"].forEach(id => set(id,""));
+  await loadTargets();
+}
+
+async function loadTargets(){
+  const { data, error } = await db.from("targets_overview").select("*");
+  if(oops("The targets", error)) return;
+  const wrap = $("tg-list");
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No targets set anywhere yet.</p>'; return; }
+
+  const byStaff = {};
+  data.forEach(t => (byStaff[t.staff] = byStaff[t.staff] || []).push(t));
+  wrap.innerHTML = Object.entries(byStaff).map(([who, ts]) =>
+    '<div style="margin-bottom:18px"><b style="font-family:var(--display-md);font-weight:500;font-size:14px">' +
+    esc(who) + '</b><span style="font-size:12px;color:var(--faint)"> \u00b7 ' +
+    ts.filter(t => !t.rating).length + ' open, ' + ts.filter(t => t.rating).length + ' rated</span>' +
+    ts.map(t => {
+      const pct = t.target_value ? Math.min(100, Math.round(100 * (t.current_value||0) / t.target_value)) : null;
+      const rated = t.rating
+        ? '<span class="tag met">' + esc(t.rating).replace(/_/g," ") + '</span>'
+        : '<select onchange="rateTarget(' + t.id + ', this.value)" style="width:auto;padding:3px 7px;font-size:11px">' +
+          '<option value="">Rate\u2026</option><option value="exceeded">Exceeded</option>' +
+          '<option value="met">Met</option><option value="partly_met">Partly met</option>' +
+          '<option value="not_met">Not met</option></select>';
+      return '<div class="tgt"><div class="tgt-h"><b>' + esc(t.title) + '</b>' +
+        '<span class="tag ' + t.period + '">' + t.period + '</span></div>' +
+        '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' +
+        (pct !== null ? '<div class="pbar"><i style="width:' + pct + '%"></i></div>' : "") +
+        '<div class="tgt-f"><span>' + (pct !== null
+          ? (t.current_value||0) + " of " + t.target_value + (t.unit ? " " + esc(t.unit) : "") + " \u00b7 " + pct + "%"
+          : "Judged" + (t.set_by ? " by " + esc(t.set_by) : "")) + '</span>' + rated + '</div></div>';
+    }).join("") + '</div>').join("");
+}
+
+async function rateTarget(id, rating){
+  if(!rating) return;
+  const { error } = await db.rpc("rate_target", { p_target_id: id, p_rating: rating });
+  if(error){ toast("Could not rate. " + error.message); return; }
+  await loadTargets();
+}
+
+// ============================================================
+// PUBLIC HOLIDAYS
+// The Islamic ones move every year and are declared by proclamation.
+// Until one is in here, the system treats it as an ordinary working day
+// and expects people to log it.
+// ============================================================
+window.addHoliday = addHoliday; window.dropHoliday = dropHoliday;
+
+async function loadHolidays(){
+  const y = new Date().getFullYear();
+  const { data, error } = await db.from("public_holidays").select("*")
+    .gte("holiday", y + "-01-01").lte("holiday", (y+1) + "-12-31").order("holiday");
+  if(oops("The holidays", error)) return;
+  const wrap = $("hol-list"); if(!wrap) return;
+  wrap.innerHTML = !data || !data.length
+    ? '<p style="color:var(--faint);font-size:13px">None.</p>'
+    : data.map(h => '<div class="qrow"><span class="t"><b>' + esc(h.name) + '</b>' +
+        '<span>' + fmtDate(h.holiday) + (h.is_fixed ? " \u00b7 same date every year" : " \u00b7 moves") + '</span></span>' +
+        (h.is_fixed ? '<span class="tag role">fixed</span>' : '<span class="tag acting">moves</span>') +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropHoliday(\'' + h.holiday + '\',\'' +
+          esc(h.name).replace(/'/g,"\\'") + '\')">Remove</button></div>').join("");
+}
+
+async function addHoliday(){
+  const d = val("hol-date"), n = val("hol-name");
+  if(!d || !n){ msg("hol-msg","err","Missing details","A date and what it is."); return; }
+  btn("hol-btn", true, "Adding");
+  const { error } = await db.rpc("add_public_holiday", { p_date: d, p_name: n });
+  btn("hol-btn", false, "Add it");
+  if(error){ msg("hol-msg","err","Not added", error.message); return; }
+  msg("hol-msg","ok","Added", n + " on " + fmtDate(d) + ". Nobody has to log that day, and anyone who works it is paid at the holiday rate.");
+  set("hol-date",""); set("hol-name","");
+  await loadHolidays();
+}
+
+async function dropHoliday(date, name){
+  if(!confirm("Remove " + name + "?\n\nIt becomes an ordinary working day and people will be expected to log it.")) return;
+  const { error } = await db.rpc("remove_public_holiday", { p_date: date });
+  if(error){ toast("Could not. " + error.message); return; }
+  await loadHolidays();
+}
+
+// ============================================================
+// CERTIFY  ·  Finance computes the money, a senior authorises it.
+// Moved here from the staff portal, where it never belonged.
+// ============================================================
+window.doCertify = doCertify;
+
+async function paintCertify(y, m, s){
+  const box = $("fin-certify"); if(!box) return;
+  if(!s){ box.innerHTML = ""; return; }
+  const done = Number(s.certified_count) === Number(s.staff_count);
+  const balanced = Math.abs(Number(s.tally_check||0)) <= 1;
+  box.innerHTML = done
+    ? '<div class="alert ok"><b>Certified</b>All ' + s.staff_count + ' payslips for ' + MONTHS[m-1] +
+      ' are released and Finance is clear to pay.</div>'
+    : '<div class="panel"><h3>Certify ' + MONTHS[m-1] + ' ' + y + '</h3>' +
+      '<div class="ps">Finance computed it. Certifying releases every payslip and clears them to pay. Your name goes against it.</div>' +
+      (balanced ? "" : '<div class="alert err" style="margin-top:0"><b>It does not tally</b>' +
+        'Out by ' + N2(s.tally_check) + '. Nothing can be certified until Finance makes this zero.</div>') +
+      '<button class="btn-primary" style="width:100%" id="cf-btn" onclick="doCertify(' + y + ',' + m + ')"' +
+      (balanced ? "" : " disabled") + '>Certify ' + s.staff_count + ' payslip' +
+      (Number(s.staff_count)===1?"":"s") + '</button></div>';
+}
+
+async function doCertify(y, m){
+  if(!confirm("Certify " + MONTHS[m-1] + " " + y + "?\n\nEvery payslip is released to staff and this locks.")) return;
+  btn("cf-btn", true, "Certifying");
+  const { data, error } = await db.rpc("certify_payroll", { p_year: y, p_month: m });
+  if(error){ btn("cf-btn", false, "Certify"); toast("Could not certify. " + error.message); return; }
+  toast(data + " payslips certified and released.");
+  await loadFinance();
+}
+
+
 function msg(id, kind, title, body){ const e = $(id); if(e) e.innerHTML = '<div class="alert '+kind+'"><b>'+title+'</b>'+esc(body)+'</div>'; }
 function btn(id, busy, label){ const b = $(id); if(!b) return; b.disabled = busy;
   b.innerHTML = busy ? '<span class="spin"></span>'+label+"\u2026" : label; }
@@ -822,7 +1149,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails"];
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -832,9 +1159,11 @@ function go(v){
   if(v === "appoint")  loadAppointForm();
   if(v === "depts")    loadDepts();
   if(v === "finance")  initFinance();
-  if(v === "settings"){ loadConfig(); loadPayrollSettings(); }
+  if(v === "settings"){ loadConfig(); loadPayrollSettings(); loadHolidays(); }
   if(v === "policies") loadPolicies();
   if(v === "emails")   loadEmails();
+  if(v === "reqs")     loadReqs();
+  if(v === "perf")     initPerf();
 }
 
 // ============================================================
@@ -859,6 +1188,13 @@ async function loadHub(){
   const errs = (warns||[]).filter(w => w.severity === "error");
   const finFlag = errs.length ? errs[0].message.split(".")[0] : "Payroll is clean";
 
+  // requisitions waiting on the CEO or COO: before this, they waited on nobody
+  const { data: rq, error: rqe } = await db.from("requisitions_to_approve").select("total");
+  if(oops("The requisitions", rqe)) return;
+  const reqWait = (rq||[]).length;
+  const reqSum  = (rq||[]).reduce((a,r) => a + Number(r.total||0), 0);
+  const reqFlag = reqWait ? reqWait + " waiting on you \u00b7 " + N(reqSum) : "Nothing waiting";
+
   const doors = [
     { v:"register", ic:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
       t:"Staff", s:"The register. Add someone, promote, appoint, change status.",
@@ -866,6 +1202,12 @@ async function loadHub(){
     { v:"finance", ic:'<path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/>',
       t:"Finance", s:"What the firm pays, and what it costs.",
       flag:finFlag, warn:errs.length > 0 },
+    { v:"reqs", ic:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10h8M8 14h5"/>',
+      t:"Requisitions", s:"Money your team is asking for. Only the ones above the line reach you.",
+      flag:reqFlag, warn:reqWait > 0 },
+    { v:"perf", ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
+      t:"Performance", s:"Set the week, the month, the quarter, the year. See how anyone is tracking.",
+      flag:(f.targets_open||0) + " target" + ((f.targets_open||0)===1?"":"s") + " open", warn:false },
     { v:"policies", ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
       t:"Policies", s:"Publish a document and every staff member can download it.",
       flag:(f.policies||0) + " published", warn:false },
@@ -1411,6 +1753,7 @@ async function loadFinance(){
     (w.severity === "error" ? "This needs attention" : "Worth checking") + '</b>' + esc(w.message) + '</div>').join("");
 
   if(!s){
+    paintCertify(y, m, null);
     $("fin-body").innerHTML =
       '<div class="alert info"><b>Nothing computed for ' + MONTHS[m-1] + '</b>Finance runs the month from the staff portal. Once it is run, the whole picture appears here.</div>' +
       (wHtml ? '<div class="panel"><h3>What is not right</h3><div class="ps">The system checking itself.</div>' + wHtml + '</div>' : "");
@@ -1489,6 +1832,8 @@ async function loadFinance(){
   '</div>' +
 
   (wHtml ? '<div class="panel"><h3>What is not right</h3><div class="ps">The system checking itself.</div>' + wHtml + '</div>' : "");
+
+  await paintCertify(y, m, s);
 }
 
 // ============================================================
@@ -1632,4 +1977,3 @@ async function loadEmails(){
 </script>
 </body>
 </html>
-
