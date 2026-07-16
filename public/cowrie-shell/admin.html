@@ -11,101 +11,262 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --clr-gray:#2c2b2d; --clr-gray-light:#dae2e7;
-  --clr-orange:#f56e0f; --clr-orange-medium:#f9a971; --clr-orange-light:#fde9da;
-  --clr-blue:#e7f5fe; --ink:#14232e;
-  --line:#ecebf0; --muted:#5b5b66; --faint:#8b8792;
-  --paper:#fffdfb; --card:#ffffff;
+  --ink:#14232e; --gray:#2c2b2d; --muted:#5b5b66; --faint:#8b8792;
+  --orange:#f56e0f; --orange-med:#f9a971; --orange-light:#fde9da;
+  --line:#ecebf0; --card:#fff; --blue:#e7f5fe;
   --green:#1d6b4c; --green-bg:#e9f5ef;
   --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
   --red:#a32d2d; --red-bg:#fbecec;
-  --radius:12px; --radius-lg:16px;
-  --display:"ClashDisplay-Semibold","ClashDisplay-Regular","Poppins",sans-serif;
-  --display-md:"ClashDisplay-Medium","ClashDisplay-Regular","Poppins",sans-serif;
-  --body:"Poppins",system-ui,sans-serif;
+  --paper:#fdfbf7; --sand:#eee5d8; --clay:#c9541e;
+  --display:"ClashDisplay-Semibold","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","Poppins",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--body);color:var(--clr-gray);background:var(--paper);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
-.num{font-variant-numeric:tabular-nums}
-.hidden{display:none!important}
-button{font:inherit;cursor:pointer;border:1px solid var(--clr-gray-light);background:var(--card);color:var(--clr-gray);border-radius:var(--radius);padding:10px 16px;transition:.15s}
-button:hover{border-color:var(--clr-gray)}
-button:focus-visible{outline:2px solid var(--clr-orange);outline-offset:2px}
-.btn-primary{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500}
+body{font-family:"Poppins",system-ui,sans-serif;color:var(--gray);background:var(--paper);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);
+  color:var(--gray);border-radius:11px;padding:9px 15px;transition:.14s}
+button:hover{border-color:var(--gray)}
+button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:500}
 .btn-primary:hover{background:#e0620c;border-color:#e0620c}
-.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint);cursor:not-allowed}
-input,select{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;background:var(--card);color:var(--clr-gray)}
-input:focus,select:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
-label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint)}
+input,select,textarea{font:inherit;width:100%;padding:9px 11px;border:1px solid #dae2e7;
+  border-radius:8px;background:#fff;color:var(--gray)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:-1px;border-color:var(--orange)}
+input:disabled{background:var(--paper);color:var(--muted)}
+textarea{min-height:64px;resize:vertical}
+label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
+.hidden{display:none!important}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px 80px}
+.banner{background:var(--ink);color:#fff;font-size:12.5px;padding:7px 20px;text-align:center}
 
-.wrap{max-width:960px;margin:0 auto;padding:0 20px 70px}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:24px}
-.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:15px}
-.mark{width:24px;height:24px;flex:none}
-.who{font-size:13px;color:var(--muted);text-align:right;line-height:1.35}
-.who b{color:var(--clr-gray);font-weight:500;font-family:var(--display-md)}
-.who button{padding:3px 10px;font-size:12px;margin-top:3px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:14.5px}
+.brand .chip{background:var(--ink);color:#fff;font-size:9.5px;padding:2px 7px;border-radius:5px;
+  letter-spacing:.09em;font-family:var(--display-md);margin-left:2px}
+.mark{width:22px;height:22px}
+.me{display:flex;align-items:center;gap:11px;font-size:13px}
+.me .nm{text-align:right;line-height:1.3}
+.me .nm b{font-family:var(--display-md);font-weight:500;display:block}
+.me .nm button{padding:3px 10px;font-size:12px;margin-top:3px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--orange-light);border:1px solid var(--orange-med);
+  display:grid;place-items:center;font-family:var(--display-md);font-size:13px;color:var(--clay);flex:none}
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
-.card h3{font-size:16px;font-weight:500;font-family:var(--display-md);margin-bottom:4px}
-.card .cardsub{font-size:13px;color:var(--muted);margin-bottom:18px}
+/* ---------- the hub ---------- */
+.hub{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;
+  padding:14px 0 40px;min-height:min(58vh,480px)}
+.hub-say .eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.16em;
+  font-size:10.5px;color:var(--orange);margin-bottom:10px}
+.hub-say h1{font-size:clamp(29px,4.2vw,40px);letter-spacing:-.025em;margin-bottom:12px}
+.hub-say p{color:var(--muted);font-size:14.5px;max-width:40ch}
+.reach{display:flex;gap:26px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.reach div .v{font-family:var(--display);font-size:26px;line-height:1;letter-spacing:-.02em}
+.reach div .k{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;
+  font-family:var(--display-md);margin-top:5px}
 
-.eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--clr-orange);margin-bottom:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.fld{margin-bottom:14px}
-.hint{font-size:12px;color:var(--faint);margin-top:5px}
+.map-hold{position:relative;display:flex;align-items:center;justify-content:center}
+.afmap{width:100%;max-width:420px;height:auto;overflow:visible}
+.af-cont{fill:#fdeede;stroke:#f0b988;stroke-width:.6;stroke-linejoin:round}
+.af-op{fill:#f9c79b}
+.af-label{fill:#7a5230;font-size:8px;font-weight:600;text-anchor:middle;paint-order:stroke;
+  stroke:var(--paper);stroke-width:2.4px;stroke-linejoin:round;pointer-events:none}
+.af-hub-label{fill:var(--orange);font-size:10px;font-weight:700}
+.af-ln{stroke:var(--orange);stroke-width:1.3;stroke-dasharray:2 5;stroke-linecap:round;opacity:.5;
+  animation:flow 3s linear infinite}
+.af-cd{fill:#fff;stroke:var(--orange);stroke-width:2}
+.af-hub-glow{fill:var(--orange);opacity:.14;transform-origin:177.4px 195.3px;animation:breathe 3.4s ease-in-out infinite}
+.af-hub{fill:var(--orange)}
+.af-hub-ring{fill:none;stroke:var(--orange);stroke-width:2;opacity:.45}
+@keyframes flow{to{stroke-dashoffset:-14}}
+@keyframes breathe{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.22;transform:scale(1.12)}}
 
-.alert{border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.5px;border-left:3px solid}
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.door{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;
+  text-align:left;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:5px;min-height:116px}
+.door:hover{border-color:var(--orange-med);transform:translateY(-2px);box-shadow:0 10px 30px -14px rgba(0,0,0,.16)}
+.door .ic{width:25px;height:25px;color:var(--orange);margin-bottom:6px}
+.door b{font-family:var(--display-md);font-weight:500;font-size:15.5px}
+.door span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.door .flag{margin-top:auto;padding-top:9px;font-size:11.5px;font-family:var(--display-md)}
+.door .flag.warn{color:var(--red)} .door .flag.ok{color:var(--faint)}
+.door.quiet{background:none;border-style:dashed}
+.door.quiet .ic{color:var(--faint)}
+.section-label{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--faint);margin:34px 0 12px}
+
+/* ---------- register ---------- */
+.back{background:none;border:none;color:var(--muted);font-size:13px;padding:0 0 16px;text-decoration:underline}
+.back:hover{color:var(--gray)}
+.reg-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:6px}
+.reg-head h1{font-size:27px}
+.search{max-width:230px}
+.dept{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--faint);margin:24px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:12px;cursor:pointer;
+  transition:.12s;border:1px solid transparent;text-align:left;width:100%;background:none}
+.row:hover{background:var(--card);border-color:var(--line);transform:translateX(2px)}
+.ava{width:36px;height:36px;border-radius:50%;background:var(--orange-light);border:1px solid var(--orange-med);
+  display:grid;place-items:center;font-family:var(--display-md);font-size:12.5px;color:var(--clay);flex:none}
+.ava.corps{background:var(--blue);border-color:#7fbde8;color:#1a4e73}
+.who{flex:1;min-width:0}
+.who b{font-family:var(--display-md);font-weight:500;font-size:14.5px;display:block}
+.who span{font-size:12.5px;color:var(--muted)}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.tag{font-size:10px;padding:2px 7px;border-radius:20px;font-family:var(--display-md);white-space:nowrap}
+.tag.role{background:var(--orange-light);color:var(--clay)}
+.tag.acting{background:var(--amber-bg);color:var(--amber)}
+.tag.confirmed{background:var(--green-bg);color:var(--green)}
+.tag.probationary{background:var(--blue);color:#1a4e73}
+.tag.invited{background:var(--amber-bg);color:var(--amber)}
+.tag.suspended,.tag.resigned,.tag.terminated{background:var(--red-bg);color:var(--red)}
+.tag.exited{background:var(--line);color:var(--muted)}
+.tag.met{background:var(--green-bg);color:var(--green)}
+.tag.week{background:var(--blue);color:#1a4e73}
+.tag.month{background:var(--orange-light);color:var(--clay)}
+.tag.quarter{background:var(--amber-bg);color:var(--amber)}
+.tag.year{background:var(--green-bg);color:var(--green)}
+.chev{color:var(--faint);flex:none}
+.needs{font-size:11px;color:var(--red);font-family:var(--display-md);flex:none;text-align:right;max-width:170px}
+
+/* ---------- person ---------- */
+.person-top{display:flex;align-items:flex-start;gap:18px;margin-bottom:22px}
+.ava-lg{width:64px;height:64px;border-radius:50%;background:var(--orange-light);border:1.5px solid var(--orange-med);
+  display:grid;place-items:center;font-family:var(--display);font-size:21px;color:var(--clay);flex:none}
+.person-top h1{font-size:29px;letter-spacing:-.02em;margin-bottom:3px}
+.person-top .sub{color:var(--muted);font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:14px}
+.panel h3{font-size:14px;font-family:var(--display-md);font-weight:500;margin-bottom:3px}
+.panel .ps{font-size:12.5px;color:var(--muted);margin-bottom:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.panel-head h3{margin:0}
+.glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.glance div{background:var(--card);padding:14px 16px}
+.glance .k{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;
+  font-family:var(--display-md);margin-bottom:5px}
+.glance .v{font-family:var(--display);font-size:20px;line-height:1;letter-spacing:-.02em}
+.glance .v small{font-size:11.5px;color:var(--faint);font-family:var(--display-md)}
+.glance .s{font-size:11px;color:var(--muted);margin-top:4px}
+.facts{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.fact{padding:11px 0;border-bottom:1px solid var(--line)}
+.fact:nth-child(odd){padding-right:16px}
+.fact .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:2px}
+.fact .v{font-size:13.5px;font-family:var(--display-md);font-weight:500}
+.money{font-family:var(--display);font-size:30px;letter-spacing:-.02em;line-height:1}
+.money small{font-size:13px;color:var(--faint);font-family:var(--display-md)}
+.hist{font-size:12.5px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.hist div{display:flex;justify-content:space-between;padding:4px 0;gap:12px}
+.up{color:var(--green);font-family:var(--display-md)}
+.down{color:var(--red);font-family:var(--display-md)}
+
+/* the shells, so the console speaks the same language as their portal */
+.strip{display:flex;flex-wrap:wrap;gap:6px}
+.shell{width:22px;height:31px;position:relative}
+.shell svg{width:100%;height:100%;display:block}
+.shell .sb{fill:var(--sand)} .shell .sl{stroke:#d6c8b4;stroke-width:1.2}
+.shell.on .sb{fill:var(--orange)} .shell.on .sl{stroke:#a8410f}
+.shell.leave .sb{fill:var(--green-bg)} .shell.leave .sl{stroke:var(--green)}
+.shell.hol .sb{fill:var(--blue)} .shell.hol .sl{stroke:#7fbde8}
+.shell.flag::before{content:"";position:absolute;top:-2px;right:-1px;width:5px;height:5px;
+  border-radius:50%;background:var(--amber);border:1.5px solid var(--card)}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--faint);margin-top:13px;flex-wrap:wrap}
+.legend i{width:9px;height:12px;border-radius:50% 50% 45% 45%;display:inline-block;margin-right:5px;vertical-align:-2px}
+
+.tgt{border-top:1px solid var(--line);padding:13px 0}
+.tgt:first-child{border-top:none;padding-top:0}
+.tgt-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.tgt-h b{font-family:var(--display-md);font-weight:500;font-size:14px}
+.kpi{font-size:12px;color:var(--muted);margin-top:3px}
+.kpi span{color:var(--gray)}
+.pbar{height:5px;border-radius:3px;background:var(--sand);overflow:hidden;margin-top:8px}
+.pbar i{display:block;height:100%;background:var(--orange)}
+.tgt-f{display:flex;justify-content:space-between;font-size:11.5px;color:var(--faint);margin-top:6px}
+
+/* forms */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fld{margin-bottom:12px}
+.hint{font-size:11.5px;color:var(--faint);margin-top:4px}
+.alert{border-radius:8px;padding:11px 14px;margin:12px 0;font-size:12.5px;border-left:3px solid}
 .alert.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
 .alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.alert.info{background:var(--clr-blue);border-color:#7fbde8;color:#1a4e73}
-.alert b{display:block;font-weight:600;margin-bottom:2px;font-family:var(--display-md)}
+.alert.info{background:var(--blue);border-color:#7fbde8;color:#1a4e73}
+.alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.alert b{display:block;font-family:var(--display-md);margin-bottom:2px}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;margin:14px 0;color:var(--gray)}
+.check input{width:auto;margin-top:3px;flex:none}
+.check span small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:500;padding:0 10px 8px 0}
-td{padding:11px 10px 11px 0;border-top:1px solid var(--line);vertical-align:top}
-td.n{font-variant-numeric:tabular-nums;text-align:right;padding-right:0}
-th.n{text-align:right;padding-right:0}
-.tag{font-size:11px;padding:2px 9px;border-radius:20px;font-family:var(--display-md);display:inline-block}
-.tag.invited{background:var(--amber-bg);color:var(--amber)}
-.tag.active{background:var(--green-bg);color:var(--green)}
-.tag.confirmed{background:var(--green-bg);color:var(--green)}
-.tag.probationary{background:var(--clr-blue);color:#1a4e73}
-.tag.suspended{background:var(--amber-bg);color:var(--amber)}
-.tag.resigned{background:var(--red-bg);color:var(--red)}
-.tag.terminated{background:var(--red-bg);color:var(--red)}
-.tag.exited{background:var(--line);color:var(--muted)}
-.tag.role{background:var(--clr-orange-light);color:#7a5230;margin-left:4px}
+/* finance */
+.split{display:flex;height:46px;border-radius:9px;overflow:hidden;margin-top:4px}
+.split i{display:flex;align-items:center;justify-content:center;font-family:var(--display-md);
+  font-size:12.5px;color:#fff;min-width:0}
+.split i span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+.bars{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.bar-row{display:flex;align-items:center;gap:12px;font-size:12.5px}
+.bar-row .nm{width:130px;flex:none;color:var(--muted)}
+.bar-row .tr{flex:1;height:20px;background:var(--sand);border-radius:5px;overflow:hidden;display:flex}
+.bar-row .tr i{display:block;height:100%}
+.bar-row .amt{width:60px;text-align:right;font-variant-numeric:tabular-nums;font-family:var(--display-md);flex:none}
+.spark{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:8px;margin-bottom:24px}
+.spark div{flex:1;background:var(--sand);border-radius:4px 4px 0 0;position:relative;transition:.15s}
+.spark div:hover{background:var(--orange-med)}
+.spark div.now{background:var(--orange)}
+.spark div em{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-style:normal;font-size:9.5px;color:var(--faint)}
+.spark div b{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10px;
+  font-family:var(--display-md);opacity:0;transition:.15s;white-space:nowrap}
+.spark div:hover b{opacity:1}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.big div{background:var(--card);padding:16px 18px}
+.big .k{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;font-family:var(--display-md);margin-bottom:6px}
+.big .v{font-family:var(--display);font-size:24px;line-height:1;letter-spacing:-.02em}
+.big .v small{font-size:12px;color:var(--faint);font-family:var(--display-md)}
+.big .s{font-size:11.5px;color:var(--muted);margin-top:4px}
+
+.qrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.qrow:last-child{border:none}
+.qrow .t{flex:1}
+.qrow .t b{font-family:var(--display-md);font-weight:500;font-size:14px;display:block}
+.qrow .t span{font-size:12px;color:var(--muted);display:block}
 .rowbtn{padding:5px 11px;font-size:12px}
 
-/* login gate */
 .gate{min-height:100vh;display:grid;place-items:center;padding:24px}
-.plate{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px}
+.plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
 .plate h2{font-size:24px;margin-bottom:4px}
-.plate .lede{font-size:13.5px;color:var(--muted);margin-bottom:22px}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+.plate .lede{font-size:13.5px;color:var(--muted);margin-bottom:20px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;
+  border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media (max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation:none}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;
+  background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
+  padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:.22s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){ .hub{grid-template-columns:1fr;gap:24px} .map-hold{order:-1} }
+@media (max-width:640px){ .facts,.grid2,.grid3{grid-template-columns:1fr} .fact:nth-child(odd){padding-right:0} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="banner">Admin. Everything here is recorded against your name.</div>
 
-<!-- ============ LOGIN GATE ============ -->
 <div id="gate" class="gate">
   <div class="plate">
-    <div class="logo" style="margin-bottom:20px">
+    <div class="brand" style="margin-bottom:20px">
       <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
         <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
         <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
       </svg>
-      Cowrie Shell
+      Cowrie Shell <span class="chip">ADMIN</span>
     </div>
-    <h2>Admin sign in</h2>
-    <p class="lede">Super-admin only. This is where staff and salaries are managed.</p>
+    <h2>Sign in</h2>
+    <p class="lede">For the CEO and the COO.</p>
     <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
     <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
     <div id="li-msg"></div>
@@ -113,637 +274,1361 @@ th.n{text-align:right;padding-right:0}
   </div>
 </div>
 
-<!-- ============ CONSOLE ============ -->
 <div id="app" class="wrap hidden">
-  <div class="topbar">
-    <div class="logo">
+  <div class="top">
+    <div class="brand">
       <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
         <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
         <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
       </svg>
-      Cowrie Shell · Admin
+      Cowrie Shell <span class="chip">ADMIN</span>
     </div>
-    <div class="who"><b id="who-name">—</b><br><span id="who-role">super admin</span><br>
-      <button onclick="signOut()">Sign out</button></div>
+    <div class="me">
+      <div class="nm"><b id="who-name">—</b><br><span id="who-role">—</span><br>
+        <button onclick="signOut()">Sign out</button></div>
+      <div class="av" id="who-av">—</div>
+    </div>
   </div>
 
-  <div class="eyebrow">Staff register</div>
-  <h1 style="font-size:26px;margin-bottom:6px">Manage staff</h1>
-  <p style="color:var(--muted);margin-bottom:22px">Add a person here and they can create their account. Until then, they cannot sign in.</p>
-
-  <!-- add staff -->
-  <div class="card">
-    <h3>Add a staff member</h3>
-    <p class="cardsub">Their email must be exact. It is the key they sign up with.</p>
-    <div class="grid2">
-      <div class="fld"><label>Full name</label><input id="f-name" placeholder="e.g. first and last name"></div>
-      <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="name@example.com"></div>
-    </div>
-    <div class="grid3">
-      <div class="fld"><label>Department</label>
-        <select id="f-dept"><option value="">Choose…</option></select></div>
-      <div class="fld"><label>Staff ID</label><input id="f-code" placeholder="DLA-0012"></div>
-      <div class="fld"><label>Job title</label><input id="f-job" placeholder="e.g. Data Analyst"></div>
-    </div>
-    <div class="grid3">
-      <div class="fld"><label>Employment type</label>
-        <select id="f-emptype" onchange="onTypeChange()">
-          <option value="full_time">Full-time employee</option>
-          <option value="part_time">Part-time employee</option>
-          <option value="fixed_term">Fixed-term employee</option>
-          <option value="temporary">Temporary hire</option>
-          <option value="intern">Intern</option>
-          <option value="nysc">NYSC (corps member)</option>
-        </select></div>
-      <div class="fld"><label>Employment status</label>
-        <select id="f-status">
-          <option value="probationary">Probationary</option>
-          <option value="confirmed">Confirmed</option>
-        </select></div>
-      <div class="fld"><label id="lbl-gross">Monthly gross (₦)</label><input id="f-gross" type="number" placeholder="e.g. 250000"></div>
-    </div>
-    <div class="grid2">
-      <div class="fld"><label>Salary effective from</label><input id="f-eff" type="date"></div>
-      <div class="fld"><label>Employed from (optional)</label><input id="f-employed" type="date"></div>
-    </div>
-    <div id="corps-note" class="alert info hidden">
-      <b>NYSC corps member</b>Marked outside PAYE per the Employee Handbook §3.13 (organisation stipend is tax-exempt). No annual leave; sick leave allowed.
-    </div>
-    <div id="add-msg"></div>
-    <button class="btn-primary" id="add-btn" onclick="addStaff()">Add to register</button>
-  </div>
-
-  <!-- staff list -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px">
-      <div><h3 style="margin:0">Everyone on the register</h3></div>
-      <button class="rowbtn" onclick="loadStaff()">Refresh</button>
-    </div>
-    <div id="list-wrap"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-  </div>
-
-  <!-- set department head -->
-  <div class="card">
-    <h3>Set a department head</h3>
-    <p class="cardsub">Adds the head role and points that department's staff at them as line manager. Add the person first, then set them here.</p>
-    <div class="grid2">
-      <div class="fld"><label>Department</label>
-        <select id="h-dept"><option value="">Choose…</option></select></div>
-      <div class="fld"><label>Head's email</label><input id="h-email" type="email" placeholder="name@example.com"></div>
-    </div>
-    <div id="head-msg"></div>
-    <button class="btn-primary" id="head-btn" onclick="setHead()">Make department head</button>
-  </div>
-
-  <!-- appointments -->
-  <div class="card">
-    <h3>Appointments</h3>
-    <p class="cardsub">Appoint someone as COO, Director, Department Head, Finance Manager, or Deputy. Substantive is the real post; acting is a stand-in (with an optional end date that auto-expires).</p>
-    <div class="grid2">
-      <div class="fld"><label>Person's email</label><input id="ap-email" type="email" placeholder="name@example.com"></div>
-      <div class="fld"><label>Position</label>
-        <select id="ap-pos" onchange="onPosChange()">
-          <option value="coo">Chief Operating Officer</option>
-          <option value="director">Director</option>
-          <option value="head">Department Head</option>
-          <option value="finance">Finance Manager</option>
-          <option value="deputy">Deputy</option>
-        </select></div>
-    </div>
-    <div class="grid2">
-      <div class="fld"><label>Display title</label><input id="ap-title" placeholder="e.g. Chief Operating Officer"></div>
-      <div class="fld"><label>Kind</label>
-        <select id="ap-kind" onchange="onKindChange()">
-          <option value="substantive">Substantive (holds the post)</option>
-          <option value="acting">Acting (standing in)</option>
-        </select></div>
-    </div>
-    <div class="grid2" id="ap-dept-row">
-      <div class="fld"><label>Department (for a Head)</label>
-        <select id="ap-dept"><option value="">—</option></select></div>
-      <div class="fld" id="ap-portfolio-row"><label>Portfolio / pillar (for a Director)</label><input id="ap-portfolio" placeholder="e.g. Research & Analytics"></div>
-    </div>
-    <div class="grid2" id="ap-acting-row" style="display:none">
-      <div class="fld"><label>Acting from</label><input id="ap-start" type="date"></div>
-      <div class="fld"><label>Acting until (blank = open-ended)</label><input id="ap-end" type="date"></div>
-    </div>
-    <div id="ap-msg"></div>
-    <button class="btn-primary" id="ap-btn" onclick="appoint()">Appoint</button>
-
-    <div style="margin-top:20px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
-        <h3 style="margin:0;font-size:14px">Current appointments</h3>
-        <button class="rowbtn" onclick="loadAppointments()">Refresh</button>
+  <!-- ============ HUB ============ -->
+  <section id="v-hub">
+    <div class="hub">
+      <div class="hub-say">
+        <div class="eyebrow" id="hub-eyebrow">Data-Lead Africa · Abuja</div>
+        <h1 id="hub-greet">Good afternoon.</h1>
+        <p id="hub-say">One place the numbers come from.</p>
+        <div class="reach">
+          <div><div class="v" id="r-people">—</div><div class="k">People</div></div>
+          <div><div class="v">5</div><div class="k">Countries</div></div>
+          <div><div class="v" id="r-depts">—</div><div class="k">Departments</div></div>
+        </div>
       </div>
-      <div id="ap-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-    </div>
-  </div>
-
-  <!-- employment status -->
-  <div class="card">
-    <h3>Employment status</h3>
-    <p class="cardsub">Confirm, suspend, or record an exit. Suspension asks whether it is with pay, half pay, or no pay, per the Handbook §12.1.</p>
-    <div class="grid2">
-      <div class="fld"><label>Person's email</label><input id="st-email" type="email" placeholder="name@example.com"></div>
-      <div class="fld"><label>New status</label>
-        <select id="st-status" onchange="onStatusChange()">
-          <option value="confirmed">Confirmed</option>
-          <option value="probationary">Probationary</option>
-          <option value="suspended">Suspended</option>
-          <option value="resigned">Resigned</option>
-          <option value="terminated">Terminated</option>
-          <option value="exited">Exited</option>
-        </select></div>
-    </div>
-    <div class="grid2">
-      <div class="fld"><label>Effective date</label><input id="st-eff" type="date"></div>
-      <div class="fld" id="st-exit-row" style="display:none"><label>Last working day</label><input id="st-exit" type="date"></div>
-    </div>
-    <div class="grid2" id="st-susp-row" style="display:none">
-      <div class="fld"><label>Suspension pay</label>
-        <select id="st-susp-pay">
-          <option value="with_pay">With full pay</option>
-          <option value="half_pay">Half pay</option>
-          <option value="no_pay">No pay</option>
-        </select></div>
-      <div class="fld"><label>Suspension ends (optional)</label><input id="st-susp-end" type="date"></div>
-    </div>
-    <div class="fld"><label>Note / reason (optional)</label><input id="st-note" placeholder="Kept private; visible to you and directors only"></div>
-    <div class="alert info" id="st-legal" style="display:none"><b>A reminder, not legal advice</b>Suspension, resignation and termination carry legal requirements under Nigerian labour law. The system records your decision; confirm the process with an HR or legal adviser before acting.</div>
-    <div id="st-msg"></div>
-    <button class="btn-primary" id="st-btn" onclick="setStatus()">Update status</button>
-  </div>
-
-  <!-- payroll settings -->
-  <div class="card">
-    <h3>Payroll settings</h3>
-    <p class="cardsub">Statutory and benefit lines. Every one shows on the payslip; when off it reads ₦0. Turn a line on only when the remittance is actually set up.</p>
-    <div id="ps-wrap"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-    <div class="alert info" style="margin-bottom:0"><b>Pre-tax lines reduce PAYE</b>Pension and NHF come out before tax, so switching them on lowers taxable pay too. HMO, NSITF and group life are employer-borne, shown for transparency, and never reduce staff net pay.</div>
-  </div>
-
-  <!-- policies -->
-  <div class="card">
-    <h3>Policies</h3>
-    <p class="cardsub">Upload a policy document. Every staff member can then download it. Each carries the date it was uploaded.</p>
-    <div class="grid2">
-      <div class="fld"><label>Title</label><input id="pol-title" placeholder="Employee Handbook"></div>
-      <div class="fld"><label>Version (optional)</label><input id="pol-version" placeholder="v2.0"></div>
-    </div>
-    <div class="fld"><label>Short description (optional)</label><input id="pol-desc" placeholder="HR policy manual, effective 2026"></div>
-    <div class="fld"><label>Document file (PDF)</label><input id="pol-file" type="file" accept="application/pdf"></div>
-    <div id="pol-msg"></div>
-    <button class="btn-primary" id="pol-btn" onclick="uploadPolicy()">Upload policy</button>
-    <div style="margin-top:20px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
-        <h3 style="margin:0;font-size:14px">Uploaded policies</h3>
-        <button class="rowbtn" onclick="loadPolicies()">Refresh</button>
+      <div class="map-hold">
+        <svg class="afmap" viewBox="0 0 470 490" role="img" aria-label="Data-Lead Africa's reach, radiating from Abuja">
+<path class="af-cont" d="M346.3,259.0L347.4,259.7L370.6,272.7L371.0,276.3L380.2,282.7L377.2,290.5L377.6,294.2L381.7,296.5L381.9,298.1L380.1,302.0L380.5,303.9L380.1,306.9L382.3,310.9L384.9,317.2L387.3,318.6L387.3,318.6L382.2,322.3L375.2,324.8L371.4,324.6L369.1,326.6L364.6,326.7L363.0,327.5L355.3,325.7L350.5,326.2L348.7,317.6L346.5,314.6L345.2,312.9L339.0,311.7L335.3,309.8L331.3,308.7L328.7,307.6L326.1,306.0L326.1,306.0L322.6,298.0L318.9,294.4L317.6,290.7L318.3,287.4L317.1,281.6L319.7,281.3L322.1,279.0L324.6,275.7L326.1,274.3L326.1,272.3L324.7,270.8L324.3,268.3L324.3,268.3L326.2,267.5L326.5,263.8L324.0,260.2L326.2,259.4L333.3,259.5L346.3,259.0Z"><title>Tanzania</title></path>
+      <path class="af-cont" d="M74.1,77.0L74.1,77.4L74.0,78.6L73.9,88.3L53.0,88.0L53.2,104.2L47.2,104.8L45.6,108.1L46.8,117.3L21.8,117.2L20.4,119.3L20.7,116.7L20.8,116.7L35.2,116.2L35.9,113.9L38.6,111.0L40.7,102.2L49.6,95.4L52.6,87.3L54.6,86.9L56.6,81.9L62.0,81.2L64.3,82.1L67.2,82.1L69.3,80.6L73.3,80.4L73.1,77.0L74.1,77.0Z"><title>W. Sahara</title></path>
+      <path class="af-cont" d="M317.1,281.6L318.3,287.4L317.6,290.7L318.9,294.4L322.6,298.0L326.1,306.0L326.1,306.0L323.5,305.4L314.9,306.4L313.2,307.2L311.4,311.3L312.8,314.1L311.7,321.6L310.9,328.0L312.6,329.1L317.1,331.6L318.9,330.4L319.4,337.3L314.5,337.2L311.9,333.7L309.5,331.0L304.6,330.1L303.2,326.8L299.3,328.8L294.2,327.9L292.0,325.0L288.0,324.5L285.0,324.6L284.6,322.6L282.4,322.5L279.5,322.1L275.5,323.1L272.7,322.9L271.2,323.5L271.5,315.9L269.4,313.5L268.9,309.6L269.8,305.8L268.5,303.3L268.4,299.3L260.7,299.4L261.2,297.1L258.0,297.1L257.6,298.2L253.7,298.5L252.1,302.2L251.1,303.8L247.6,302.9L245.4,303.8L241.2,304.3L238.8,301.0L237.3,298.9L235.5,295.1L233.9,290.3L215.0,290.3L212.8,291.0L210.9,290.9L208.3,291.8L207.4,289.8L209.0,289.1L209.2,286.3L210.3,284.7L212.6,283.4L214.3,284.0L216.5,281.6L219.9,281.6L220.4,283.4L222.7,284.6L226.5,280.6L230.2,277.5L231.8,275.4L231.6,270.2L234.4,264.0L237.3,260.8L241.5,257.7L242.3,255.7L242.4,253.3L243.5,251.1L243.1,247.5L243.9,241.9L245.2,237.9L247.1,234.5L247.5,230.7L248.1,226.2L250.6,223.0L254.0,220.9L259.2,223.1L263.3,225.4L268.0,226.1L272.8,227.3L274.7,223.5L275.5,223.0L278.5,223.6L285.6,220.4L288.1,221.8L290.2,221.6L291.1,220.1L293.5,219.5L298.3,220.2L302.4,220.3L304.5,219.7L308.4,224.9L311.3,225.7L313.0,224.6L315.9,225.0L319.5,223.7L321.0,226.4L326.7,230.6L326.7,230.6L326.3,238.1L328.8,238.9L326.8,241.2L324.3,242.9L321.9,246.2L320.5,249.2L320.2,254.3L318.7,256.7L318.6,261.5L316.8,263.3L316.6,267.0L315.7,267.5L315.1,271.0L316.7,273.9L317.1,281.6Z"><title>Dem. Rep. Congo</title></path>
+      <path class="af-cont" d="M395.4,263.7L391.6,258.4L391.5,235.2L397.1,228.0L398.9,226.0L403.0,225.9L408.7,221.4L417.0,221.1L435.1,202.0L439.5,196.7L442.4,192.8L442.4,189.5L442.4,183.1L442.4,180.5L442.5,180.4L442.5,180.4L444.5,180.2L447.5,179.3L450.9,178.6L453.9,176.5L456.3,176.4L456.5,178.2L455.9,181.9L455.9,185.3L454.5,187.5L452.7,194.4L449.7,201.5L445.7,209.7L440.2,219.0L434.8,226.1L427.2,234.8L420.8,239.9L411.3,246.3L405.3,251.1L398.3,258.8L396.8,262.2L395.4,263.7Z"><title>Somalia</title></path>
+      <path class="af-cont" d="M380.2,282.7L371.0,276.3L370.6,272.7L347.4,259.7L346.3,259.0L346.2,252.3L348.1,249.7L351.2,245.5L353.5,240.8L350.7,233.5L350.0,230.3L346.9,225.9L350.9,222.1L355.2,217.9L358.5,219.0L358.5,222.6L360.7,224.7L365.2,224.7L373.3,230.1L375.3,230.1L376.8,229.9L378.2,230.7L382.5,231.2L384.3,228.5L390.2,225.9L392.8,228.0L397.1,228.0L391.5,235.2L391.6,258.4L395.4,263.7L390.9,266.2L389.3,268.9L386.9,269.3L386.0,273.8L384.0,276.4L382.7,280.6L380.2,282.7Z"><title>Kenya</title></path>
+      <path class="af-cont" d="M286.6,200.6L281.7,197.8L279.5,196.0L279.1,194.0L280.1,191.4L280.1,188.8L276.4,184.8L275.7,182.1L275.8,180.5L273.4,178.6L273.4,174.9L272.0,172.5L269.8,172.9L270.4,170.5L272.1,167.9L271.3,165.2L273.4,163.3L272.1,161.8L273.8,157.9L276.7,153.2L282.2,153.6L281.9,128.4L282.0,125.7L289.4,125.7L289.4,113.0L315.1,113.0L339.9,113.0L365.2,113.0L367.3,119.2L365.9,120.4L366.8,126.9L369.2,134.5L371.6,136.1L375.1,138.4L371.9,142.1L367.2,143.1L365.1,145.1L364.5,149.3L361.8,158.6L362.4,161.2L361.4,166.7L358.8,172.9L355.0,176.1L352.2,180.9L351.6,183.5L348.5,185.3L346.7,192.0L346.7,197.7L346.7,192.7L345.8,192.6L345.9,189.4L345.1,187.3L341.8,184.7L341.1,180.2L341.8,175.5L338.9,175.0L338.4,176.4L334.6,176.8L336.1,178.6L336.7,182.5L333.2,185.9L330.0,190.5L326.7,191.2L321.3,187.5L318.9,188.8L318.2,190.6L314.9,191.8L314.7,193.2L308.3,193.2L307.5,191.8L302.9,191.6L300.6,192.7L298.8,192.2L295.5,188.5L294.4,186.7L289.8,187.6L288.0,190.5L286.4,196.2L284.2,197.4L282.2,198.1L286.6,200.6Z"><title>Sudan</title></path>
+      <path class="af-cont af-op" d="M281.9,128.4L282.2,153.6L276.7,153.2L273.8,157.9L272.1,161.8L273.4,163.3L271.3,165.2L272.1,167.9L270.4,170.5L269.8,172.9L272.0,172.5L273.4,174.9L273.4,178.6L275.8,180.5L275.7,182.1L271.6,183.1L268.4,185.7L263.8,192.7L257.8,195.6L251.6,195.2L249.8,195.8L250.4,198.0L247.1,200.3L244.4,202.7L236.3,205.2L234.7,203.7L233.7,203.6L232.5,205.3L227.2,205.7L228.2,204.0L226.2,199.6L225.3,197.0L222.5,195.9L218.7,192.2L220.1,189.2L223.0,189.8L224.8,189.4L228.4,189.4L224.9,183.7L225.2,179.4L224.7,175.2L222.2,171.1L222.8,168.1L218.7,168.0L218.7,163.9L216.1,161.5L218.8,153.2L227.0,147.2L227.3,138.9L229.8,126.0L231.2,123.2L228.5,121.1L228.4,119.0L226.0,117.4L224.5,107.5L230.9,104.0L256.4,116.2L281.9,128.4Z"><title>Chad</title></path>
+      <path class="af-cont" d="M234.0,434.8L237.1,431.6L239.6,433.4L240.7,436.1L243.5,436.5L247.6,437.8L251.0,437.3L256.7,434.0L256.7,410.5L258.4,411.5L262.2,417.5L261.6,421.4L263.1,423.6L267.6,423.0L270.8,420.2L273.9,418.2L275.4,415.2L278.6,413.7L281.3,414.5L284.3,416.3L289.5,416.6L293.6,415.1L294.2,413.1L295.4,410.1L298.9,409.6L300.8,407.2L302.9,402.9L308.6,398.2L317.7,393.5L320.3,393.6L323.4,394.7L325.5,393.9L328.9,394.5L332.0,403.5L333.7,408.0L332.5,415.1L333.1,417.4L329.8,416.2L328.0,416.7L327.4,418.5L325.7,420.9L325.7,423.1L329.5,426.6L333.3,425.9L334.6,423.0L339.4,423.1L337.8,427.7L337.1,433.0L335.4,435.9L331.0,439.1L329.8,440.0L327.1,443.3L325.3,446.5L321.7,451.1L314.5,457.6L309.9,461.5L305.1,464.4L298.4,466.8L295.2,467.2L294.3,468.9L290.5,468.0L287.3,469.2L280.4,468.0L276.5,468.7L273.8,468.4L267.2,470.9L261.8,471.9L257.8,474.3L254.9,474.5L252.2,472.2L250.1,472.1L247.3,469.3L247.0,470.1L246.2,468.4L246.2,464.7L244.1,460.4L246.2,459.3L246.0,454.4L241.8,448.4L238.6,443.1L238.6,443.0L234.0,434.8Z"><title>South Africa</title></path>
+      <path class="af-cont" d="M314.8,437.2L317.0,439.1L315.0,442.2L314.0,444.3L310.4,445.3L309.2,447.3L306.9,447.9L302.1,443.0L305.5,439.0L309.0,436.5L312.0,435.2L314.8,437.2Z"><title>Lesotho</title></path>
+      <path class="af-cont" d="M328.9,394.5L325.5,393.9L323.4,394.7L320.3,393.6L317.7,393.5L313.6,390.6L308.7,389.7L306.8,385.6L306.8,383.4L304.0,382.7L296.8,375.7L294.8,372.0L293.5,370.9L291.0,365.8L298.2,366.5L300.3,367.2L302.4,367.1L306.0,363.0L311.5,357.7L313.8,357.2L314.6,355.0L318.2,352.5L323.1,351.6L323.5,354.0L328.8,353.9L331.8,355.2L333.2,356.8L336.2,357.2L339.5,359.3L339.5,367.3L338.3,371.8L338.0,376.5L339.1,378.4L338.3,382.1L337.4,382.7L335.7,387.3L328.9,394.5Z"><title>Zimbabwe</title></path>
+      <path class="af-cont" d="M317.7,393.5L308.6,398.2L302.9,402.9L300.8,407.2L298.9,409.6L295.4,410.1L294.2,413.1L293.6,415.1L289.5,416.6L284.3,416.3L281.3,414.5L278.6,413.7L275.4,415.2L273.9,418.2L270.8,420.2L267.6,423.0L263.1,423.6L261.6,421.4L262.2,417.5L258.4,411.5L256.7,410.5L256.7,392.0L263.0,391.7L263.2,369.1L268.0,368.9L277.8,366.6L280.3,369.3L284.3,366.8L286.3,366.8L289.9,365.3L291.0,365.8L293.5,370.9L294.8,372.0L296.8,375.7L304.0,382.7L306.8,383.4L306.8,385.6L308.7,389.7L313.6,390.6L317.7,393.5Z"><title>Botswana</title></path>
+      <path class="af-cont" d="M256.7,410.5L256.7,434.0L251.0,437.3L247.6,437.8L243.5,436.5L240.7,436.1L239.6,433.4L237.1,431.6L234.0,434.8L229.3,430.0L226.8,425.3L225.3,419.1L223.8,414.5L221.6,404.7L221.5,397.1L220.7,393.6L218.2,391.0L214.9,385.8L211.5,378.1L210.1,374.1L204.9,367.9L204.5,363.0L207.6,361.8L211.4,360.7L215.6,360.9L219.4,363.8L220.4,363.4L246.3,363.1L250.7,366.1L266.2,367.0L277.9,364.4L283.2,363.0L287.3,363.4L289.8,364.8L289.9,365.3L286.3,366.8L284.3,366.8L280.3,369.3L277.8,366.6L268.0,368.9L263.2,369.1L263.0,391.7L256.7,392.0L256.7,410.5Z"><title>Namibia</title></path>
+      <path class="af-cont" d="M22.6,166.5L20.0,161.5L16.8,159.2L19.6,158.0L22.7,153.6L24.2,150.3L26.4,148.3L29.6,148.8L32.7,147.4L36.3,147.3L39.3,149.2L43.6,150.9L47.4,155.6L51.7,160.0L52.0,163.9L53.2,167.6L55.6,169.3L56.2,171.8L55.9,173.8L54.9,174.1L51.5,173.6L51.0,174.3L49.6,174.5L45.0,172.9L41.9,172.9L30.1,172.6L28.4,173.3L26.2,173.1L22.9,174.2L21.8,169.3L27.6,169.4L29.2,168.5L30.3,168.5L32.7,167.0L35.4,168.3L38.2,168.5L41.0,167.0L39.7,165.2L37.6,166.3L35.6,166.2L33.1,164.7L31.0,164.8L29.6,166.3L22.6,166.5Z"><title>Senegal</title></path>
+      <path class="af-cont" d="M55.9,173.8L56.2,171.8L55.6,169.3L53.2,167.6L52.0,163.9L51.7,160.0L53.8,158.8L54.9,155.0L56.9,154.9L61.4,156.7L65.0,155.4L67.5,155.8L68.4,154.4L94.1,154.3L95.5,149.9L94.4,149.1L91.3,121.6L88.2,94.2L98.0,94.1L119.6,107.9L141.2,121.8L142.7,124.8L146.7,126.6L149.6,127.7L149.7,131.7L156.8,131.1L156.8,145.7L153.3,150.0L152.8,153.9L147.1,154.9L138.4,155.5L136.0,157.7L131.9,158.0L127.8,158.0L126.2,156.8L122.7,157.7L116.7,160.3L115.5,162.3L110.5,165.2L109.6,166.8L107.0,168.1L103.9,167.2L102.1,168.8L101.2,173.2L96.1,178.4L96.3,180.6L94.5,183.3L94.9,187.0L92.3,187.9L90.8,188.7L89.8,186.0L88.0,186.7L86.9,186.6L85.7,188.4L80.8,188.4L79.0,187.4L78.1,188.0L76.2,186.2L76.5,184.3L75.7,183.5L74.4,184.2L74.6,182.1L75.9,180.5L73.3,177.8L72.5,176.0L71.1,174.6L69.8,174.5L68.3,175.4L66.2,176.2L64.5,177.6L61.8,177.1L60.0,175.5L58.9,175.3L57.3,176.1L56.2,176.1L55.9,173.8Z"><title>Mali</title></path>
+      <path class="af-cont" d="M20.4,119.3L21.8,117.2L46.8,117.3L45.6,108.1L47.2,104.8L53.2,104.2L53.0,88.0L73.9,88.3L74.0,78.6L98.0,94.1L88.2,94.2L91.3,121.6L94.4,149.1L95.5,149.9L94.1,154.3L68.4,154.4L67.5,155.8L65.0,155.4L61.4,156.7L56.9,154.9L54.9,155.0L53.8,158.8L51.7,160.0L47.4,155.6L43.6,150.9L39.3,149.2L36.3,147.3L32.7,147.4L29.6,148.8L26.4,148.3L24.2,150.3L23.7,146.9L25.5,143.7L26.2,137.7L25.5,131.5L24.8,128.3L25.4,125.1L23.8,122.1L20.4,119.3Z"><title>Mauritania</title></path>
+      <path class="af-cont af-op" d="M146.7,213.1L141.4,213.9L139.8,209.5L140.1,194.9L138.8,193.6L138.6,190.4L136.4,188.2L134.4,186.3L135.2,183.0L137.4,182.3L138.7,179.5L141.9,178.9L143.3,177.0L145.4,175.1L147.7,175.1L152.6,178.8L152.3,180.9L153.8,184.7L152.5,187.2L153.2,188.9L150.1,192.9L148.1,194.8L146.9,198.8L147.1,202.9L146.7,213.1Z"><title>Benin</title></path>
+      <path class="af-cont" d="M224.5,107.5L226.0,117.4L228.4,119.0L228.5,121.1L231.2,123.2L229.8,126.0L227.3,138.9L227.0,147.2L218.8,153.2L216.1,161.5L218.7,163.9L218.7,168.0L222.8,168.1L222.2,171.1L220.4,171.5L220.2,173.5L219.0,173.7L214.7,166.7L213.2,166.4L208.2,170.0L203.2,168.1L199.8,167.8L197.9,168.7L194.2,168.5L190.4,171.2L187.1,171.3L179.4,168.1L176.4,169.6L173.1,169.5L170.7,167.1L164.3,164.7L157.4,165.5L155.8,166.9L154.9,170.5L153.0,173.1L152.6,178.8L147.7,175.1L145.4,175.1L143.3,177.0L143.4,172.6L136.0,171.2L135.8,168.1L132.2,164.0L131.4,161.1L131.9,158.0L136.0,157.7L138.4,155.5L147.1,154.9L152.8,153.9L153.3,150.0L156.8,145.7L156.8,131.1L165.8,128.2L184.3,115.7L206.2,103.6L216.3,106.4L219.9,109.9L224.5,107.5Z"><title>Niger</title></path>
+      <path class="af-cont af-op" d="M146.7,213.1L147.1,202.9L146.9,198.8L148.1,194.8L150.1,192.9L153.2,188.9L152.5,187.2L153.8,184.7L152.3,180.9L152.6,178.8L153.0,173.1L154.9,170.5L155.8,166.9L157.4,165.5L164.3,164.7L170.7,167.1L173.1,169.5L176.4,169.6L179.4,168.1L187.1,171.3L190.4,171.2L194.2,168.5L197.9,168.7L199.8,167.8L203.2,168.1L208.2,170.0L213.2,166.4L214.7,166.7L219.0,173.7L220.2,173.5L222.7,176.1L222.0,177.2L221.7,179.3L216.3,184.2L214.6,188.3L213.7,191.6L212.3,193.0L211.0,197.5L207.6,200.1L206.6,203.3L205.2,205.9L204.6,208.5L200.2,210.7L196.6,208.1L194.2,208.2L190.4,211.9L188.5,212.0L185.5,218.1L183.8,222.6L177.2,224.9L174.8,224.5L172.3,226.0L167.2,225.8L163.8,221.9L161.7,217.2L157.2,213.1L152.3,213.1L146.7,213.1Z"><title>Nigeria</title></path>
+      <path class="af-cont" d="M222.2,171.1L224.7,175.2L225.2,179.4L224.9,183.7L228.4,189.4L224.8,189.4L223.0,189.8L220.1,189.2L218.7,192.2L222.5,195.9L225.3,197.0L226.2,199.6L228.2,204.0L227.2,205.7L224.0,212.2L222.4,213.3L222.0,218.3L222.6,220.9L222.1,222.8L225.1,226.2L225.6,228.4L228.0,231.7L230.9,233.8L231.2,236.7L231.9,238.5L231.4,242.0L226.3,240.5L221.2,238.8L213.1,238.5L212.3,238.2L208.5,239.0L204.6,238.1L201.6,238.6L191.2,238.4L192.1,233.4L189.6,229.2L186.7,228.1L185.4,225.3L183.8,224.4L183.8,222.6L185.5,218.1L188.5,212.0L190.4,211.9L194.2,208.2L196.6,208.1L200.2,210.7L204.6,208.5L205.2,205.9L206.6,203.3L207.6,200.1L211.0,197.5L212.3,193.0L213.7,191.6L214.6,188.3L216.3,184.2L221.7,179.3L222.0,177.2L222.7,176.1L220.2,173.5L220.4,171.5L222.2,171.1Z"><title>Cameroon</title></path>
+      <path class="af-cont af-op" d="M135.2,183.0L134.4,186.3L136.4,188.2L138.6,190.4L138.8,193.6L140.1,194.9L139.8,209.5L141.4,213.9L136.3,215.2L134.8,213.0L133.1,209.0L132.6,205.8L134.0,200.1L132.4,197.7L131.8,192.7L131.8,188.1L129.2,184.8L129.6,182.8L135.2,183.0Z"><title>Togo</title></path>
+      <path class="af-cont" d="M129.6,182.8L129.2,184.8L131.8,188.1L131.8,192.7L132.4,197.7L134.0,200.1L132.6,205.8L133.1,209.0L134.8,213.0L136.3,215.2L126.2,219.0L122.7,221.1L116.9,223.0L111.2,221.2L111.5,218.7L108.7,213.2L110.4,206.0L113.1,200.7L111.4,191.6L110.5,186.8L110.7,183.2L121.8,182.9L124.6,183.4L126.7,182.3L129.6,182.8Z"><title>Ghana</title></path>
+      <path class="af-cont" d="M78.1,188.0L79.0,187.4L80.8,188.4L85.7,188.4L86.9,186.6L88.0,186.7L89.8,186.0L90.8,188.7L92.3,187.9L94.9,187.0L97.8,188.4L98.9,190.5L101.8,191.8L104.0,190.2L107.0,190.0L111.4,191.6L113.1,200.7L110.4,206.0L108.7,213.2L111.5,218.7L111.2,221.2L108.3,221.2L103.9,220.0L99.8,220.1L92.2,221.2L87.7,223.0L81.4,225.4L80.2,225.2L80.7,219.9L81.3,219.1L81.1,216.6L78.4,214.0L76.3,213.6L74.5,211.8L75.9,209.0L75.2,205.9L75.5,204.1L76.5,204.0L76.9,201.3L76.4,200.0L77.0,199.2L79.4,198.4L77.8,193.3L76.4,190.7L76.9,188.5L78.1,188.0Z"><title>Côte d'Ivoire</title></path>
+      <path class="af-cont" d="M41.9,172.9L45.0,172.9L49.6,174.5L51.0,174.3L51.5,173.6L54.9,174.1L55.9,173.8L56.2,176.1L57.3,176.1L58.9,175.3L60.0,175.5L61.8,177.1L64.5,177.6L66.2,176.2L68.3,175.4L69.8,174.5L71.1,174.6L72.5,176.0L73.3,177.8L75.9,180.5L74.6,182.1L74.4,184.2L75.7,183.5L76.5,184.3L76.2,186.2L78.1,188.0L76.9,188.5L76.4,190.7L77.8,193.3L79.4,198.4L77.0,199.2L76.4,200.0L76.9,201.3L76.5,204.0L75.5,204.1L73.7,203.9L72.4,206.4L70.6,206.4L69.4,205.1L69.8,202.5L67.1,198.6L65.4,199.3L64.1,199.5L62.3,199.8L62.4,197.5L61.4,195.8L61.6,194.0L60.2,191.3L58.4,189.0L53.3,189.0L51.8,190.2L50.0,190.4L48.9,191.7L48.2,193.5L44.8,196.3L42.0,192.5L39.5,190.1L37.9,189.2L36.3,188.0L35.5,185.2L34.6,183.8L32.7,182.7L35.6,179.6L37.5,179.7L39.2,178.7L40.6,178.6L41.6,177.8L41.1,175.7L41.8,175.0L41.9,172.9Z"><title>Guinea</title></path>
+      <path class="af-cont af-op" d="M22.9,174.2L26.2,173.1L28.4,173.3L30.1,172.6L41.9,172.9L41.8,175.0L41.1,175.7L41.6,177.8L40.6,178.6L39.2,178.7L37.5,179.7L35.6,179.6L32.7,182.7L29.3,180.0L26.6,179.6L25.2,177.8L25.2,176.9L23.3,175.5L22.9,174.2Z"><title>Guinea-Bissau</title></path>
+      <path class="af-cont" d="M75.5,204.1L75.2,205.9L75.9,209.0L74.5,211.8L76.3,213.6L78.4,214.0L81.1,216.6L81.3,219.1L80.7,219.9L80.2,225.2L78.5,225.2L71.9,222.2L66.1,217.4L60.7,213.9L56.3,209.8L57.9,207.7L58.2,205.9L61.1,202.4L64.1,199.5L65.4,199.3L67.1,198.6L69.8,202.5L69.4,205.1L70.6,206.4L72.4,206.4L73.7,203.9L75.5,204.1Z"><title>Liberia</title></path>
+      <path class="af-cont" d="M44.8,196.3L48.2,193.5L48.9,191.7L50.0,190.4L51.8,190.2L53.3,189.0L58.4,189.0L60.2,191.3L61.6,194.0L61.4,195.8L62.4,197.5L62.3,199.8L64.1,199.5L61.1,202.4L58.2,205.9L57.9,207.7L56.3,209.8L54.6,209.3L50.0,206.7L46.7,203.3L45.6,201.0L44.8,196.3Z"><title>Sierra Leone</title></path>
+      <path class="af-cont" d="M94.9,187.0L94.5,183.3L96.3,180.6L96.1,178.4L101.2,173.2L102.1,168.8L103.9,167.2L107.0,168.1L109.6,166.8L110.5,165.2L115.5,162.3L116.7,160.3L122.7,157.7L126.2,156.8L127.8,158.0L131.9,158.0L131.4,161.1L132.2,164.0L135.8,168.1L136.0,171.2L143.4,172.6L143.3,177.0L141.9,178.9L138.7,179.5L137.4,182.3L135.2,183.0L129.6,182.8L126.7,182.3L124.6,183.4L121.8,182.9L110.7,183.2L110.5,186.8L111.4,191.6L107.0,190.0L104.0,190.2L101.8,191.8L98.9,190.5L97.8,188.4L94.9,187.0Z"><title>Burkina Faso</title></path>
+      <path class="af-cont" d="M304.5,219.7L302.4,220.3L298.3,220.2L293.5,219.5L291.1,220.1L290.2,221.6L288.1,221.8L285.6,220.4L278.5,223.6L275.5,223.0L274.7,223.5L272.8,227.3L268.0,226.1L263.3,225.4L259.2,223.1L254.0,220.9L250.6,223.0L248.1,226.2L247.5,230.7L243.4,230.3L239.0,229.2L235.2,232.6L231.9,238.5L231.2,236.7L230.9,233.8L228.0,231.7L225.6,228.4L225.1,226.2L222.1,222.8L222.6,220.9L222.0,218.3L222.4,213.3L224.0,212.2L227.2,205.7L232.5,205.3L233.7,203.6L234.7,203.7L236.3,205.2L244.4,202.7L247.1,200.3L250.4,198.0L249.8,195.8L251.6,195.2L257.8,195.6L263.8,192.7L268.4,185.7L271.6,183.1L275.7,182.1L276.4,184.8L280.1,188.8L280.1,191.4L279.1,194.0L279.5,196.0L281.7,197.8L286.6,200.6L290.1,203.2L290.1,205.2L294.4,208.5L297.1,211.3L298.7,215.1L303.5,217.6L304.5,219.7Z"><title>Central African Rep.</title></path>
+      <path class="af-cont" d="M247.5,230.7L247.1,234.5L245.2,237.9L243.9,241.9L243.1,247.5L243.5,251.1L242.4,253.3L242.3,255.7L241.5,257.7L237.3,260.8L234.4,264.0L231.6,270.2L231.8,275.4L230.2,277.5L226.5,280.6L222.7,284.6L220.4,283.4L219.9,281.6L216.5,281.6L214.3,284.0L212.6,283.4L210.2,281.2L208.3,282.3L205.7,285.0L200.4,278.3L205.3,274.8L202.9,270.5L205.1,268.9L209.4,268.2L209.9,265.4L213.3,268.4L219.0,268.7L220.9,265.7L221.7,261.4L221.0,256.5L218.0,252.7L220.8,245.3L219.2,244.1L214.4,244.6L212.6,241.3L213.1,238.5L221.2,238.8L226.3,240.5L231.4,242.0L231.9,238.5L235.2,232.6L239.0,229.2L243.4,230.3L247.5,230.7Z"><title>Congo</title></path>
+      <path class="af-cont" d="M201.6,238.6L204.6,238.1L208.5,239.0L212.3,238.2L213.1,238.5L212.6,241.3L214.4,244.6L219.2,244.1L220.8,245.3L218.0,252.7L221.0,256.5L221.7,261.4L220.9,265.7L219.0,268.7L213.3,268.4L209.9,265.4L209.4,268.2L205.1,268.9L202.9,270.5L205.3,274.8L200.4,278.3L193.9,271.8L189.6,266.6L185.8,260.0L186.0,257.9L187.4,255.9L188.9,251.2L190.2,246.5L192.4,246.2L201.7,246.2L201.6,238.6Z"><title>Gabon</title></path>
+      <path class="af-cont" d="M191.2,238.4L201.6,238.6L201.7,246.2L192.4,246.2L190.2,246.5L189.0,245.6L191.2,238.4Z"><title>Eq. Guinea</title></path>
+      <path class="af-cont" d="M326.1,306.0L328.7,307.6L331.3,308.7L335.3,309.8L339.0,311.7L342.0,314.5L343.6,319.9L342.5,321.6L341.2,326.8L342.5,332.1L340.5,334.3L338.5,340.2L341.9,341.8L322.5,347.1L323.1,351.6L318.2,352.5L314.6,355.0L313.8,357.2L311.5,357.7L306.0,363.0L302.4,367.1L300.3,367.2L298.2,366.5L291.0,365.8L289.9,365.3L289.8,364.8L287.3,363.4L283.2,363.0L277.9,364.4L273.8,360.5L269.5,355.3L269.7,335.0L283.1,335.1L282.5,332.9L283.5,330.5L282.3,327.5L283.1,324.4L282.4,322.5L284.6,322.6L285.0,324.6L288.0,324.5L292.0,325.0L294.2,327.9L299.3,328.8L303.2,326.8L304.6,330.1L309.5,331.0L311.9,333.7L314.5,337.2L319.4,337.3L318.9,330.4L317.1,331.6L312.6,329.1L310.9,328.0L311.7,321.6L312.8,314.1L311.4,311.3L313.2,307.2L314.9,306.4L323.5,305.4L326.1,306.0Z"><title>Zambia</title></path>
+      <path class="af-cont" d="M339.0,311.7L345.2,312.9L346.5,314.6L348.7,317.6L350.5,326.2L348.7,331.1L350.5,339.4L352.7,339.3L355.0,341.3L357.7,345.9L358.2,354.1L355.5,355.4L353.5,359.8L349.3,355.9L348.9,351.4L350.2,348.5L349.8,345.9L347.3,344.3L345.6,344.9L341.9,341.8L338.5,340.2L340.5,334.3L342.5,332.1L341.2,326.8L342.5,321.6L343.6,319.9L342.0,314.5L339.0,311.7Z"><title>Malawi</title></path>
+      <path class="af-cont" d="M350.5,326.2L355.3,325.7L363.0,327.5L364.6,326.7L369.1,326.6L371.4,324.6L375.2,324.8L382.2,322.3L387.3,318.6L387.3,318.6L387.3,318.6L388.3,321.4L388.1,327.8L388.9,333.4L389.1,343.3L390.2,346.4L388.3,351.0L385.8,355.4L381.8,359.3L375.9,361.8L368.7,364.8L361.5,371.7L359.0,372.8L354.6,377.4L351.9,378.8L351.4,383.4L354.4,388.2L355.7,391.9L355.8,393.8L356.9,393.5L356.7,399.7L355.7,402.7L357.2,403.8L356.2,406.4L353.6,408.7L348.3,410.8L340.6,414.3L337.8,416.6L338.3,419.3L340.0,419.7L339.4,423.1L334.6,423.0L334.0,420.2L333.1,417.4L332.5,415.1L333.7,408.0L332.0,403.5L328.9,394.5L335.7,387.3L337.4,382.7L338.3,382.1L339.1,378.4L338.0,376.5L338.3,371.8L339.5,367.3L339.5,359.3L336.2,357.2L333.2,356.8L331.8,355.2L328.8,353.9L323.5,354.0L323.1,351.6L322.5,347.1L341.9,341.8L345.6,344.9L347.3,344.3L349.8,345.9L350.2,348.5L348.9,351.4L349.3,355.9L353.5,359.8L355.5,355.4L358.2,354.1L357.7,345.9L355.0,341.3L352.7,339.3L350.5,339.4L348.7,331.1L350.5,326.2Z"><title>Mozambique</title></path>
+      <path class="af-cont" d="M334.6,423.0L333.3,425.9L329.5,426.6L325.7,423.1L325.7,420.9L327.4,418.5L328.0,416.7L329.8,416.2L333.1,417.4L334.0,420.2L334.6,423.0Z"><title>eSwatini</title></path>
+      <path class="af-cont" d="M212.6,283.4L210.3,284.7L209.2,286.3L209.0,289.1L207.4,289.8L205.7,285.0L208.3,282.3L210.2,281.2L212.6,283.4ZM208.3,291.8L210.9,290.9L212.8,291.0L215.0,290.3L233.9,290.3L235.5,295.1L237.3,298.9L238.8,301.0L241.2,304.3L245.4,303.8L247.6,302.9L251.1,303.8L252.1,302.2L253.7,298.5L257.6,298.2L258.0,297.1L261.2,297.1L260.7,299.4L268.4,299.3L268.5,303.3L269.8,305.8L268.9,309.6L269.4,313.5L271.5,315.9L271.2,323.5L272.7,322.9L275.5,323.1L279.5,322.1L282.4,322.5L283.1,324.4L282.3,327.5L283.5,330.5L282.5,332.9L283.1,335.1L269.7,335.0L269.5,355.3L273.8,360.5L277.9,364.4L266.2,367.0L250.7,366.1L246.3,363.1L220.4,363.4L219.4,363.8L215.6,360.9L211.4,360.7L207.6,361.8L204.5,363.0L203.9,359.0L204.8,353.4L207.0,347.6L207.3,344.9L209.4,339.1L210.9,336.5L214.6,332.4L216.7,329.5L217.3,324.8L217.0,321.2L215.1,319.0L213.4,315.1L211.8,311.3L212.2,310.0L214.1,307.4L212.2,301.3L210.9,297.0L207.7,293.0L208.3,291.8Z"><title>Angola</title></path>
+      <path class="af-cont" d="M324.3,268.3L324.7,270.8L326.1,272.3L326.1,274.3L324.6,275.7L322.1,279.0L319.7,281.3L317.1,281.6L316.7,273.9L315.1,271.0L319.0,271.5L320.9,267.9L324.3,268.3Z"><title>Burundi</title></path>
+      <path class="af-cont" d="M446.3,332.3L448.0,335.0L449.6,339.2L450.6,346.9L452.3,349.8L451.6,352.9L450.5,354.8L448.3,351.0L447.1,352.9L448.3,357.6L447.8,360.3L446.0,361.8L445.6,367.2L443.1,374.6L439.9,383.4L436.0,395.4L433.5,404.3L430.6,411.6L425.4,413.1L419.9,415.8L416.2,414.2L411.1,411.9L409.3,408.6L408.9,402.9L406.7,397.9L406.1,393.3L407.2,388.7L410.2,387.6L410.2,385.5L413.2,380.7L413.8,376.6L412.3,373.6L411.1,369.6L410.6,363.7L412.8,360.2L413.7,356.1L416.9,355.9L420.5,354.6L422.8,353.4L425.6,353.4L429.3,349.7L434.5,345.8L436.5,342.6L435.6,339.9L438.3,340.7L441.8,336.2L441.9,332.4L444.1,329.6L446.3,332.3Z"><title>Madagascar</title></path>
+      <path class="af-cont" d="M22.6,166.5L29.6,166.3L31.0,164.8L33.1,164.7L35.6,166.2L37.6,166.3L39.7,165.2L41.0,167.0L38.2,168.5L35.4,168.3L32.7,167.0L30.3,168.5L29.2,168.5L27.6,169.4L21.8,169.3L22.6,166.5Z"><title>Gambia</title></path>
+      <path class="af-cont" d="M190.1,60.1L187.4,48.7L183.5,46.1L183.4,44.6L178.2,40.8L177.6,36.0L181.5,32.5L183.1,27.2L182.0,21.1L183.3,17.9L190.3,15.3L194.8,16.1L194.6,19.3L200.0,17.0L200.5,18.2L197.3,21.3L197.2,24.2L199.4,25.8L198.6,31.3L194.4,34.5L195.6,38.0L198.9,38.1L200.5,41.1L203.0,42.1L202.6,47.0L199.5,48.8L197.5,50.9L193.1,53.3L193.8,56.0L193.2,58.6L190.1,60.1Z"><title>Tunisia</title></path>
+      <path class="af-cont" d="M74.0,78.6L74.1,77.4L74.1,77.0L74.0,69.5L84.4,64.8L90.7,63.8L96.0,62.1L98.4,58.9L105.9,56.4L106.2,51.7L109.9,51.1L112.8,48.8L121.1,47.7L122.3,45.2L120.6,43.9L118.4,37.1L118.0,33.3L115.6,29.2L121.8,25.7L128.7,24.6L132.7,22.0L138.9,20.1L149.7,18.9L160.3,18.4L163.5,19.3L169.5,16.8L176.4,16.8L179.0,18.3L183.3,17.9L182.0,21.1L183.1,27.2L181.5,32.5L177.6,36.0L178.2,40.8L183.4,44.6L183.5,46.1L187.4,48.7L190.1,60.1L192.2,65.7L192.5,68.7L191.4,73.9L191.9,76.8L191.1,80.3L191.6,84.3L189.1,86.9L192.9,91.6L193.1,94.3L195.4,97.8L198.4,96.7L203.4,99.6L206.2,103.6L184.3,115.7L165.8,128.2L156.8,131.1L149.7,131.7L149.6,127.7L146.7,126.6L142.7,124.8L141.2,121.8L119.6,107.9L98.0,94.1L74.0,78.6Z"><title>Algeria</title></path>
+      <path class="af-cont" d="M362.4,161.2L361.8,158.6L364.5,149.3L365.1,145.1L367.2,143.1L371.9,142.1L375.1,138.4L378.8,145.8L380.6,151.6L384.1,154.7L392.8,160.8L396.4,164.4L399.8,168.1L401.8,170.2L405.0,172.2L403.0,173.7L400.3,173.2L398.1,171.1L395.5,167.4L392.7,165.3L391.0,163.1L385.4,160.6L381.1,160.5L379.5,159.2L375.8,160.7L371.9,157.8L369.9,162.5L362.4,161.2Z"><title>Eritrea</title></path>
+      <path class="af-cont" d="M115.6,29.2L118.0,33.3L118.4,37.1L120.6,43.9L122.3,45.2L121.1,47.7L112.8,48.8L109.9,51.1L106.2,51.7L105.9,56.4L98.4,58.9L96.0,62.1L90.7,63.8L84.4,64.8L74.0,69.5L74.1,77.0L73.1,77.0L73.3,80.4L69.3,80.6L67.2,82.1L64.3,82.1L62.0,81.2L56.6,81.9L54.6,86.9L52.6,87.3L49.6,95.4L40.7,102.2L38.6,111.0L35.9,113.9L35.2,116.2L20.8,116.7L20.7,116.7L21.0,113.7L23.4,112.0L25.5,108.7L25.1,106.5L27.3,102.0L30.9,98.0L33.0,96.9L34.7,93.2L34.9,89.8L37.2,85.9L41.4,83.6L45.5,77.1L45.6,77.0L48.8,74.6L54.7,73.9L59.8,69.5L63.0,67.8L68.3,62.5L66.7,54.6L69.2,49.1L70.0,45.8L74.1,41.5L80.5,38.6L85.3,35.9L89.6,29.3L91.6,25.4L96.3,25.5L100.1,28.2L106.2,27.7L112.8,29.1L115.6,29.2Z"><title>Morocco</title></path>
+      <path class="af-cont" d="M365.2,113.0L339.9,113.0L315.1,113.0L289.4,113.0L289.4,89.6L289.4,66.9L287.4,61.8L289.1,57.9L288.1,55.2L290.4,52.1L298.9,52.0L305.1,53.7L311.4,55.6L314.4,56.5L319.3,54.5L321.9,52.7L327.6,52.2L332.1,53.0L333.9,56.1L335.3,54.1L340.5,55.6L345.5,55.9L348.6,54.3L348.6,54.3L352.2,63.6L352.8,65.3L351.0,67.8L349.6,72.6L347.9,75.9L346.4,77.0L344.3,75.0L341.4,72.1L336.8,63.0L336.2,63.6L338.8,70.3L342.7,76.7L347.6,86.6L349.9,90.1L352.0,93.7L357.7,100.7L356.5,101.8L356.7,106.0L364.1,111.7L365.2,113.0Z"><title>Egypt</title></path>
+      <path class="af-cont" d="M289.4,113.0L289.4,125.7L282.0,125.7L281.9,128.4L256.4,116.2L230.9,104.0L224.5,107.5L219.9,109.9L216.3,106.4L206.2,103.6L203.4,99.6L198.4,96.7L195.4,97.8L193.1,94.3L192.9,91.6L189.1,86.9L191.6,84.3L191.1,80.3L191.9,76.8L191.4,73.9L192.5,68.7L192.2,65.7L190.1,60.1L193.2,58.6L193.8,56.0L193.1,53.3L197.5,50.9L199.5,48.8L202.6,47.0L203.0,42.1L210.5,44.3L213.2,43.8L218.5,44.8L227.0,47.7L230.0,53.3L235.7,54.6L244.7,57.2L251.5,60.4L254.7,58.7L257.7,55.8L256.2,50.9L258.2,47.8L262.8,44.9L267.2,44.0L275.9,45.3L278.1,48.1L280.5,48.2L282.5,49.2L288.8,50.0L290.4,52.1L288.1,55.2L289.1,57.9L287.4,61.8L289.4,66.9L289.4,89.6L289.4,113.0Z"><title>Libya</title></path>
+      <path class="af-cont" d="M435.1,202.0L417.0,221.1L408.7,221.4L403.0,225.9L398.9,226.0L397.1,228.0L392.8,228.0L390.2,225.9L384.3,228.5L382.5,231.2L378.2,230.7L376.8,229.9L375.3,230.1L373.3,230.1L365.2,224.7L360.7,224.7L358.5,222.6L358.5,219.0L355.2,217.9L351.4,211.0L348.5,209.5L347.4,207.0L344.1,203.9L340.2,203.4L342.4,199.8L345.8,199.6L346.7,197.7L346.7,192.0L348.5,185.3L351.6,183.5L352.2,180.9L355.0,176.1L358.8,172.9L361.4,166.7L362.4,161.2L369.9,162.5L371.9,157.8L375.8,160.7L379.5,159.2L381.1,160.5L385.4,160.6L391.0,163.1L392.7,165.3L395.5,167.4L398.1,171.1L400.3,173.2L398.1,176.0L395.9,179.0L396.4,180.7L396.5,182.6L400.1,182.7L401.6,182.3L403.0,183.4L401.6,185.7L404.0,189.2L406.3,192.3L408.8,194.5L429.7,202.1L435.1,202.0Z"><title>Ethiopia</title></path>
+      <path class="af-cont" d="M400.3,173.2L403.0,173.7L405.0,172.2L406.5,174.1L406.3,176.8L402.6,178.3L405.4,180.0L403.0,183.4L401.6,182.3L400.1,182.7L396.5,182.6L396.4,180.7L395.9,179.0L398.1,176.0L400.3,173.2Z"><title>Djibouti</title></path>
+      <path class="af-cont" d="M442.5,180.4L442.5,180.4L442.4,180.5L442.4,183.1L442.4,189.5L442.4,192.8L439.5,196.7L435.1,202.0L429.7,202.1L408.8,194.5L406.3,192.3L404.0,189.2L401.6,185.7L403.0,183.4L405.4,180.0L407.5,181.2L408.7,183.8L411.6,186.5L414.8,186.5L420.8,184.9L427.8,184.1L433.4,182.2L436.6,181.7L438.8,180.6L442.5,180.4L442.5,180.4Z"><title>Somaliland</title></path>
+      <path class="af-cont" d="M346.3,259.0L333.3,259.5L326.2,259.4L324.0,260.2L320.2,262.1L318.6,261.5L318.7,256.7L320.2,254.3L320.5,249.2L321.9,246.2L324.3,242.9L326.8,241.2L328.8,238.9L326.3,238.1L326.7,230.6L326.7,230.6L329.3,228.9L333.4,230.3L338.5,228.8L343.0,228.8L346.9,225.9L350.0,230.3L350.7,233.5L353.5,240.8L351.2,245.5L348.1,249.7L346.2,252.3L346.3,259.0Z"><title>Uganda</title></path>
+      <path class="af-cont" d="M324.0,260.2L326.5,263.8L326.2,267.5L324.3,268.3L324.3,268.3L320.9,267.9L319.0,271.5L315.1,271.0L315.7,267.5L316.6,267.0L316.8,263.3L318.6,261.5L320.2,262.1L324.0,260.2Z"><title>Rwanda</title></path>
+      <path class="af-cont" d="M326.7,230.6L321.0,226.4L319.5,223.7L315.9,225.0L313.0,224.6L311.3,225.7L308.4,224.9L304.5,219.7L303.5,217.6L298.7,215.1L297.1,211.3L294.4,208.5L290.1,205.2L290.1,203.2L286.6,200.6L282.2,198.1L284.2,197.4L286.4,196.2L288.0,190.5L289.8,187.6L294.4,186.7L295.5,188.5L298.8,192.2L300.6,192.7L302.9,191.6L307.5,191.8L308.3,193.2L314.7,193.2L314.9,191.8L318.2,190.6L318.9,188.8L321.3,187.5L326.7,191.2L330.0,190.5L333.2,185.9L336.7,182.5L336.1,178.6L334.6,176.8L338.4,176.4L338.9,175.0L341.8,175.5L341.1,180.2L341.8,184.7L345.1,187.3L345.9,189.4L345.8,192.6L346.7,192.7L346.7,197.7L345.8,199.6L342.4,199.8L340.2,203.4L344.1,203.9L347.4,207.0L348.5,209.5L351.4,211.0L355.2,217.9L350.9,222.1L346.9,225.9L343.0,228.8L338.5,228.8L333.4,230.3L329.3,228.9L326.7,230.6Z"><title>S. Sudan</title></path>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="144.4" y2="191.6"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="32.9" y2="176.5"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="135.8" y2="199.2"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="248.3" y2="155.4"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="121.6" y2="202.5"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="210.1" y2="216.9"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="69.3" y2="212.0"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="54.1" y2="198.7"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="371.1" y2="249.2"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="336.4" y2="244.7"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="351.7" y2="292.8"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="306.8" y2="338.2"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="320.0" y2="373.2"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="281.5" y2="393.6"/>
+      <line class="af-ln" x1="177.4" y1="195.3" x2="290.1" y2="437.2"/>
+      <circle class="af-cd" cx="144.4" cy="191.6" r="2.6"/>
+      <circle class="af-cd" cx="32.9" cy="176.5" r="2.6"/>
+      <circle class="af-cd" cx="135.8" cy="199.2" r="2.6"/>
+      <circle class="af-cd" cx="248.3" cy="155.4" r="2.6"/>
+      <circle class="af-cd" cx="121.6" cy="202.5" r="2.6"/>
+      <circle class="af-cd" cx="210.1" cy="216.9" r="2.6"/>
+      <circle class="af-cd" cx="69.3" cy="212.0" r="2.6"/>
+      <circle class="af-cd" cx="54.1" cy="198.7" r="2.6"/>
+      <circle class="af-cd" cx="371.1" cy="249.2" r="2.6"/>
+      <circle class="af-cd" cx="336.4" cy="244.7" r="2.6"/>
+      <circle class="af-cd" cx="351.7" cy="292.8" r="2.6"/>
+      <circle class="af-cd" cx="306.8" cy="338.2" r="2.6"/>
+      <circle class="af-cd" cx="320.0" cy="373.2" r="2.6"/>
+      <circle class="af-cd" cx="281.5" cy="393.6" r="2.6"/>
+      <circle class="af-cd" cx="290.1" cy="437.2" r="2.6"/>
+      <text class="af-label" x="180.6" y="192.2">Nigeria</text>
+      <text class="af-label" x="248.3" y="155.4">Chad</text>
+      <text class="af-label" x="210.1" y="216.9">Cameroon</text>
+      <text class="af-label" x="121.6" y="202.5">Ghana</text>
+      <text class="af-label" x="69.3" y="212.0">Liberia</text>
+      <text class="af-label" x="32.9" y="176.5">Guinea-Bissau</text>
+      <text class="af-label" x="371.1" y="249.2">Kenya</text>
+      <text class="af-label" x="336.4" y="244.7">Uganda</text>
+      <text class="af-label" x="351.7" y="292.8">Tanzania</text>
+      <text class="af-label" x="306.8" y="338.2">Zambia</text>
+      <text class="af-label" x="320.0" y="373.2">Zimbabwe</text>
+      <text class="af-label" x="281.5" y="393.6">Botswana</text>
+      <text class="af-label" x="290.1" y="437.2">South Africa</text>
+      <circle class="af-hub-glow" cx="177.4" cy="195.3" r="14"/>
+      <circle class="af-hub-ring" cx="177.4" cy="195.3" r="9"/>
+      <circle class="af-hub" cx="177.4" cy="195.3" r="5"/>
+      <text class="af-label af-hub-label" x="177.4" y="184.3">Abuja</text>
+        </svg>
       </div>
-      <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
     </div>
-  </div>
 
-  <!-- notification log -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-      <h3 style="margin:0">Emails sent</h3>
-      <button class="rowbtn" onclick="loadNotifications()">Refresh</button>
+    <div class="section-label">Where to</div>
+    <div class="doors" id="doors"></div>
+  </section>
+
+  <!-- ============ REGISTER ============ -->
+  <section id="v-register" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <div class="reg-head">
+      <h1>Everyone</h1>
+      <input class="search" id="q" placeholder="Find someone&hellip;" oninput="paintRegister()">
     </div>
-    <p class="cardsub">A permanent record of every notification the system has sent. A copy of each also lands in the operations inbox.</p>
-    <div id="nt-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-  </div>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px" id="reg-lede">
+      Click a person to see their pay and act on it.</p>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px">
+      <button class="btn-primary" style="border-radius:20px;font-size:13px;padding:8px 14px" onclick="go('add')">+ Add someone</button>
+      <button style="border-radius:20px;font-size:13px;padding:8px 14px" onclick="go('appoint')">Appoint</button>
+      <button style="border-radius:20px;font-size:13px;padding:8px 14px" onclick="go('depts')">Departments</button>
+    </div>
+    <div id="reg-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+  </section>
+
+  <!-- ============ ONE PERSON ============ -->
+  <section id="v-person" class="hidden">
+    <button class="back" onclick="go('register')">&larr; Everyone</button>
+    <div class="person-top">
+      <div class="ava-lg" id="p-av">&mdash;</div>
+      <div>
+        <h1 id="p-name">&mdash;</h1>
+        <div class="sub" id="p-sub">&mdash;</div>
+        <div class="badges" style="margin-top:8px" id="p-badges"></div>
+      </div>
+    </div>
+
+    <div id="p-alert"></div>
+    <div class="glance" id="p-glance"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3 id="p-month-h">This month</h3><div class="ps" id="p-month-s">&mdash;</div></div>
+      </div>
+      <div class="strip" id="p-strip"></div>
+      <div class="legend">
+        <span><i style="background:var(--orange)"></i>Logged</span>
+        <span><i style="background:var(--sand)"></i>Not yet</span>
+        <span><i style="background:var(--green-bg);border:1px solid var(--green)"></i>Leave</span>
+        <span><i style="background:var(--blue)"></i>Holiday</span>
+        <span style="color:var(--amber)">&#9873; Flagged</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Performance</h3><div class="ps">Set and rated by their manager. You are looking, not deciding.</div></div>
+      </div>
+      <div id="p-targets"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Pay</h3><div class="ps">A change writes a new record. The old one is never overwritten.</div></div>
+        <button class="btn-primary" onclick="togglePromo()">Promote or change pay</button>
+      </div>
+      <div class="money" id="p-money">&mdash;</div>
+      <div class="hist" id="p-hist"></div>
+
+      <div id="promo" class="hidden" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--line)">
+        <div class="grid2">
+          <div class="fld"><label>New job title (leave blank if pay only)</label><input id="pr-title"></div>
+          <div class="fld"><label>New monthly gross</label><input id="pr-gross" type="number" oninput="promoCalc()"></div>
+        </div>
+        <div class="grid2">
+          <div class="fld"><label>Effective from</label><input id="pr-eff" type="date"></div>
+          <div class="fld"><label>Change</label><input id="pr-delta" disabled></div>
+        </div>
+        <div class="fld"><label>Reason (required, recorded against your name)</label>
+          <input id="pr-reason" placeholder="Annual review, exceeded targets in Q2"></div>
+        <div id="pr-note"></div>
+        <label class="check">
+          <input type="checkbox" id="pr-email" checked>
+          <span id="pr-email-lab">Email them now
+            <small id="pr-email-hint">Leave it unticked if you would rather tell them yourself first, and send it after.</small></span>
+        </label>
+        <div id="pr-msg"></div>
+        <button class="btn-primary" style="width:100%" id="pr-btn" onclick="changeSalary()">Record the change</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Employment</h3></div>
+        <button onclick="toggleStatus()">Change status</button></div>
+      <div class="facts" id="p-facts"></div>
+
+      <div id="stat" class="hidden" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+        <div class="grid2">
+          <div class="fld"><label>New status</label>
+            <select id="st-status" onchange="statusChange()">
+              <option value="confirmed">Confirmed</option>
+              <option value="probationary">Probationary</option>
+              <option value="suspended">Suspended</option>
+              <option value="resigned">Resigned</option>
+              <option value="terminated">Terminated</option>
+              <option value="exited">Exited</option>
+            </select></div>
+          <div class="fld"><label>Effective from</label><input id="st-eff" type="date"></div>
+        </div>
+        <div class="grid2 hidden" id="st-susp">
+          <div class="fld"><label>Suspension pay</label>
+            <select id="st-pay">
+              <option value="with_pay">With full pay</option>
+              <option value="half_pay">Half pay</option>
+              <option value="no_pay">No pay</option>
+            </select></div>
+          <div class="fld"><label>Until (optional)</label><input id="st-until" type="date"></div>
+        </div>
+        <div class="fld hidden" id="st-exit-row"><label>Last working day</label><input id="st-exit" type="date"></div>
+        <div class="fld"><label>Note or reason</label><input id="st-note"></div>
+        <div id="st-legal"></div>
+        <div id="st-msg"></div>
+        <button class="btn-primary" style="width:100%" id="st-btn" onclick="setStatus()">Update status</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Appointments</h3><div class="ps" id="p-appt-s">Positions held.</div></div>
+        <button onclick="go('appoint')">Appoint</button></div>
+      <div id="p-appts"></div>
+    </div>
+
+    <div class="panel">
+      <h3>What they have given us</h3>
+      <div class="ps">Whether it is there, not what it says. Their bank account is theirs and Finance's.</div>
+      <div class="facts" id="p-complete"></div>
+    </div>
+  </section>
+
+  <!-- ============ ADD SOMEONE ============ -->
+  <section id="v-add" class="hidden">
+    <button class="back" onclick="go('register')">&larr; Everyone</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Add someone</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Their email is the key. Until it is here, they cannot create an account.</p>
+    <div class="panel">
+      <div class="grid2">
+        <div class="fld"><label>Title</label>
+          <select id="f-title"><option value="">&mdash;</option>
+            <option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option>
+            <option>Dr</option><option>Prof</option><option>Engr</option><option>Barr</option><option>Chief</option>
+          </select></div>
+        <div class="fld"><label>Full name</label><input id="f-name" placeholder="First and last name"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Official email</label><input id="f-email" type="email" placeholder="name@example.com"></div>
+        <div class="fld"><label>Staff ID</label><input id="f-code" placeholder="DLA-0012"></div>
+      </div>
+      <div class="grid3">
+        <div class="fld"><label>Department</label><select id="f-dept"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Job title</label><input id="f-job" placeholder="Data Analyst"></div>
+        <div class="fld"><label>Employment type</label>
+          <select id="f-type" onchange="typeChange()">
+            <option value="full_time">Full-time employee</option>
+            <option value="part_time">Part-time employee</option>
+            <option value="fixed_term">Fixed-term employee</option>
+            <option value="temporary">Temporary hire</option>
+            <option value="intern">Intern</option>
+            <option value="nysc">NYSC (corps member)</option>
+          </select></div>
+      </div>
+      <div class="grid3">
+        <div class="fld"><label id="f-gross-lab">Monthly gross (&#8358;)</label><input id="f-gross" type="number"></div>
+        <div class="fld"><label>Salary from</label><input id="f-eff" type="date"></div>
+        <div class="fld"><label>Employed from</label><input id="f-employed" type="date"></div>
+      </div>
+      <div id="f-corps" class="alert info hidden">
+        <b>NYSC corps member</b>Marked outside PAYE per the Employee Handbook §3.13. No annual leave; sick leave allowed.
+      </div>
+      <label class="check">
+        <input type="checkbox" id="f-email-now" checked>
+        <span>Email them the invite now<small>They get a note saying they can set up their account.</small></span>
+      </label>
+      <div id="f-msg"></div>
+      <button class="btn-primary" style="width:100%" id="f-btn" onclick="addStaff()">Add to the register</button>
+    </div>
+  </section>
+
+  <!-- ============ APPOINT ============ -->
+  <section id="v-appoint" class="hidden">
+    <button class="back" onclick="go('register')">&larr; Everyone</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Appointments</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      COO, Director, Head, Finance or Deputy. Substantive is the post; acting is standing in.</p>
+    <div class="panel">
+      <div class="grid2">
+        <div class="fld"><label>Who</label><select id="ap-who"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Position</label>
+          <select id="ap-pos" onchange="posChange()">
+            <option value="coo">Chief Operating Officer</option>
+            <option value="director">Director</option>
+            <option value="head">Department Head</option>
+            <option value="finance">Finance Manager</option>
+            <option value="deputy">Deputy</option>
+          </select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Display title</label><input id="ap-title"></div>
+        <div class="fld"><label>Kind</label>
+          <select id="ap-kind" onchange="kindChange()">
+            <option value="substantive">Substantive</option>
+            <option value="acting">Acting</option>
+          </select></div>
+      </div>
+      <div class="grid2" id="ap-extra">
+        <div class="fld" id="ap-dept-row"><label>Department</label><select id="ap-dept"><option value="">&mdash;</option></select></div>
+        <div class="fld hidden" id="ap-port-row"><label>Portfolio or pillar</label><input id="ap-port" placeholder="Research &amp; Analytics"></div>
+      </div>
+      <div class="grid2 hidden" id="ap-acting">
+        <div class="fld"><label>Acting from</label><input id="ap-start" type="date"></div>
+        <div class="fld"><label>Until (blank = open-ended)</label><input id="ap-end" type="date"></div>
+      </div>
+      <label class="check">
+        <input type="checkbox" id="ap-email" checked>
+        <span>Email them now<small>They get: "You have been appointed [title], effective [date]."</small></span>
+      </label>
+      <div id="ap-msg"></div>
+      <button class="btn-primary" style="width:100%" id="ap-btn" onclick="appoint()">Appoint</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Current appointments</h3></div>
+        <button class="rowbtn" onclick="loadAppts()">Refresh</button></div>
+      <div id="ap-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ============ DEPARTMENTS ============ -->
+  <section id="v-depts" class="hidden">
+    <button class="back" onclick="go('register')">&larr; Everyone</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Departments</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Setting a head points that department's staff at them as line manager.</p>
+    <div class="panel">
+      <div class="grid2">
+        <div class="fld"><label>Department</label><select id="d-dept"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Head</label><select id="d-head"><option value="">Choose&hellip;</option></select></div>
+      </div>
+      <div id="d-msg"></div>
+      <button class="btn-primary" id="d-btn" onclick="setHead()">Make department head</button>
+    </div>
+  </section>
+
+  <!-- ============ FINANCE ============ -->
+  <section id="v-finance" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Finance</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px" id="fin-when">&mdash;</p>
+    <div class="grid2" style="max-width:320px;margin-bottom:18px">
+      <div class="fld" style="margin:0"><label>Year</label><input id="fin-year" type="number" onchange="loadFinance()"></div>
+      <div class="fld" style="margin:0"><label>Month</label><select id="fin-month" onchange="loadFinance()"></select></div>
+    </div>
+    <div id="fin-body"></div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="v-settings" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Payroll settings</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      What the payroll runs on. Your decisions, not fixed in the code.</p>
+    <div id="cfg-warn"></div>
+    <div class="panel">
+      <h3>The numbers</h3>
+      <div class="ps">Changing one asks for a reason. A figure that moves silently cannot be audited.</div>
+      <div id="cfg-wrap"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="panel">
+      <h3>Contributions</h3>
+      <div class="ps">Every line shows on the payslip. When off it reads zero. Turn one on only when the remittance is actually set up.</div>
+      <div id="ps-wrap"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ============ POLICIES ============ -->
+  <section id="v-policies" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Policies</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Publish a document and every staff member can download it.</p>
+    <div class="panel">
+      <div class="grid2">
+        <div class="fld"><label>Title</label><input id="pol-title" placeholder="Employee Handbook"></div>
+        <div class="fld"><label>Version</label><input id="pol-version" placeholder="v2.0"></div>
+      </div>
+      <div class="fld"><label>Description</label><input id="pol-desc"></div>
+      <div class="fld"><label>The document (PDF)</label><input id="pol-file" type="file" accept="application/pdf"></div>
+      <div id="pol-msg"></div>
+      <button class="btn-primary" id="pol-btn" onclick="uploadPolicy()">Publish</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Published</h3></div>
+        <button class="rowbtn" onclick="loadPolicies()">Refresh</button></div>
+      <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ============ EMAILS ============ -->
+  <section id="v-emails" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Emails sent</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Every notification the system has sent, and to whom. A copy of each is in the operations inbox.</p>
+    <div class="panel">
+      <div id="em-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
 </div>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// ---- your live project ----
-const SUPABASE_URL = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
 const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
+const $ = id => document.getElementById(id);
+
+// ---- nothing fails silently ----
+function oops(where, error){
+  if(!error) return false;
+  console.error(where + ":", error);
+  toast(where + " could not load. " + (error.message || ""));
+  return true;
+}
+let toastTimer;
+function toast(text){
+  let t = $("toast");
+  if(!t){ t = document.createElement("div"); t.id = "toast"; t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = text; t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 6000);
+}
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DEPTS = ["Operations","Communications","Programmes","Deaf-in-Tech"];
+const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
+              temporary:"Temporary hire", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
+const N = v => v === null || v === undefined ? "\u2014" : "\u20a6" + Number(v).toLocaleString("en-NG",{maximumFractionDigits:0});
+const N2 = v => v === null || v === undefined ? "\u2014" : "\u20a6" + Number(v).toLocaleString("en-NG",{maximumFractionDigits:2});
+const ini = n => String(n||"").replace(/^(Dr|Prof|Mr|Mrs|Ms|Miss|Engr|Barr|Chief)\.?\s+/i,"")
+                  .split(/\s+/).map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const val = id => { const e = $(id); const v = e ? String(e.value||"").trim() : ""; return v || null; };
+const set = (id, v) => { const e = $(id); if(e) e.value = v ?? ""; };
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "\u2014";
+function msg(id, kind, title, body){ const e = $(id); if(e) e.innerHTML = '<div class="alert '+kind+'"><b>'+title+'</b>'+esc(body)+'</div>'; }
+function btn(id, busy, label){ const b = $(id); if(!b) return; b.disabled = busy;
+  b.innerHTML = busy ? '<span class="spin"></span>'+label+"\u2026" : label; }
+
 // ============================================================
-// NOTIFICATIONS
-// This page holds NO secret. It calls the 'notify' Edge Function,
-// which checks you are the signed-in super-admin and then talks to
-// Apps Script using a secret stored in Supabase. Nothing sensitive
-// ships to the browser.
+// NOTIFICATIONS  ·  no secret in this page. The Edge Function holds it.
 // ============================================================
 async function notify(event, toEmail, toName, extra = {}){
   try {
-    const { data, error } = await db.functions.invoke("notify", {
+    const { error } = await db.functions.invoke("notify", {
       body: { event, to_email: toEmail, to_name: toName, ...extra }
     });
-    if(error) console.warn("notify failed:", error.message);
-    return !error;
-  } catch(e){
-    console.warn("notify error:", e);
-    return false;
-  }
-  // The Edge Function logs every attempt, so there is no separate log call here.
+    if(error){ console.warn("notify:", error.message); return false; }
+    return true;
+  } catch(e){ console.warn("notify:", e); return false; }
 }
 
-const $ = id => document.getElementById(id);
-const DEPTS = ["Operations","Communications","Programmes","Deaf-in-Tech"];
-const naira = v => v==null ? "—" : "₦" + Number(v).toLocaleString("en-NG");
+// ============================================================
+// SESSION
+// ============================================================
+let ME = null;
+window.signIn = signIn; window.signOut = signOut; window.go = go;
 
-// expose handlers to inline onclick
-window.signIn = signIn; window.signOut = signOut;
-window.addStaff = addStaff; window.setHead = setHead;
-window.loadStaff = loadStaff; window.onTypeChange = onTypeChange;
-window.togglePS = togglePS; window.uploadPolicy = uploadPolicy;
-window.loadPolicies = loadPolicies; window.deletePolicy = deletePolicy;
-window.appoint = appoint; window.loadAppointments = loadAppointments;
-window.revokeAppointment = revokeAppointment; window.setStatus = setStatus;
-window.onPosChange = onPosChange; window.onKindChange = onKindChange;
-window.onStatusChange = onStatusChange;
-window.loadNotifications = loadNotifications;
-
-// default effective-from = today
-$("f-eff").value = new Date().toISOString().slice(0,10);
-
-// fill department dropdowns
-for(const d of DEPTS){
-  $("f-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
-  $("h-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
-  $("ap-dept").insertAdjacentHTML("beforeend", `<option>${d}</option>`);
-}
-const today = new Date().toISOString().slice(0,10);
-$("ap-start").value = today;
-$("st-eff").value = today;
-onPosChange();
-
-// ---------- session ----------
-db.auth.onAuthStateChange((_e, session) => { if(session) enterApp(); });
-(async () => {
-  const { data:{ session } } = await db.auth.getSession();
-  if(session) enterApp();
-})();
+db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
 
 async function signIn(){
-  const email = $("li-email").value.trim();
-  const pass = $("li-pass").value;
+  const email = val("li-email"), pass = $("li-pass").value;
   if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
   btn("li-btn", true, "Signing in");
   const { error } = await db.auth.signInWithPassword({ email, password: pass });
   btn("li-btn", false, "Sign in");
-  if(error){ msg("li-msg","err","Could not sign in", error.message); return; }
-  // enterApp fires via onAuthStateChange
+  if(error) msg("li-msg","err","Could not sign in", error.message);
 }
-
 async function signOut(){ await db.auth.signOut(); location.reload(); }
 
 async function enterApp(){
-  // confirm this account is actually super-admin before showing the console
-  const { data, error } = await db.from("my_profile").select("full_name, roles").maybeSingle();
-  if(error || !data){ msg("li-msg","err","Profile not found","Your account is not linked to a staff row."); return; }
-  const roles = data.roles || [];
-  if(!roles.includes("super_admin")){
-    msg("li-msg","err","Not an admin","This screen is for the super-admin only.");
-    await db.auth.signOut();
-    return;
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(error || !data){
+    msg("li-msg","err","Profile not found","Your login is not linked to a staff record.");
+    await db.auth.signOut(); return;
   }
-  $("who-name").textContent = data.full_name;
+  ME = data;
+  const roles = ME.roles || [];
+  if(!roles.includes("super_admin") && !roles.includes("coo")){
+    msg("li-msg","err","Not for you","This console is for the CEO and the COO. Your portal is the staff one.");
+    await db.auth.signOut(); return;
+  }
+  $("who-name").textContent = ME.display_name || ME.full_name;
+  $("who-role").textContent = roles.includes("super_admin") ? "Lead Partner" : "Chief Operating Officer";
+  $("who-av").textContent = ini(ME.full_name);
+
+  const h = new Date().getHours();
+  $("hub-greet").textContent = "Good " + (h < 12 ? "morning" : h < 17 ? "afternoon" : "evening") + ", " +
+    (ME.honorific ? ME.honorific + " " : "") + (ME.full_name||"").trim().split(/\s+/).pop() + ".";
+
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
-  loadStaff();
-  loadPayrollSettings();
-  loadPolicies();
-  loadAppointments();
-  loadNotifications();
+  loadHub();
 }
 
-// ---------- add staff ----------
-function onTypeChange(){
-  const corps = $("f-emptype").value === "nysc";
-  $("corps-note").classList.toggle("hidden", !corps);
-  $("lbl-gross").textContent = corps ? "Monthly stipend (₦)" : "Monthly gross (₦)";
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails"];
+function go(v){
+  VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  window.scrollTo(0,0);
+  if(v === "hub")      loadHub();
+  if(v === "register") loadRegister();
+  if(v === "add")      loadAddForm();
+  if(v === "appoint")  loadAppointForm();
+  if(v === "depts")    loadDepts();
+  if(v === "finance")  initFinance();
+  if(v === "settings"){ loadConfig(); loadPayrollSettings(); }
+  if(v === "policies") loadPolicies();
+  if(v === "emails")   loadEmails();
 }
 
+// ============================================================
+// THE HUB  ·  the firm, and what needs attention. No money on it.
+// ============================================================
+async function loadHub(){
+  const { data, error } = await db.from("firm_at_a_glance").select("*").maybeSingle();
+  if(oops("The firm", error)) return;
+  const f = data || {};
+  $("r-people").textContent = f.people ?? "\u2014";
+  $("r-depts").textContent  = f.departments ?? "\u2014";
+  $("hub-say").textContent  = (f.people || 0) + " people, five countries, one place the numbers come from.";
+
+  // what is wrong, said before you have to ask
+  const staffFlag = f.not_claimed > 0 ? f.not_claimed + " have not claimed an account"
+                  : f.no_bank > 0 ? f.no_bank + " have no bank details"
+                  : (f.people || 0) + " on the register";
+  const staffWarn = (f.not_claimed > 0 || f.no_bank > 0);
+
+  const { data: warns, error: we } = await db.rpc("config_warnings");
+  if(oops("The checks", we)) return;
+  const errs = (warns||[]).filter(w => w.severity === "error");
+  const finFlag = errs.length ? errs[0].message.split(".")[0] : "Payroll is clean";
+
+  const doors = [
+    { v:"register", ic:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+      t:"Staff", s:"The register. Add someone, promote, appoint, change status.",
+      flag:staffFlag, warn:staffWarn },
+    { v:"finance", ic:'<path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/>',
+      t:"Finance", s:"What the firm pays, and what it costs.",
+      flag:finFlag, warn:errs.length > 0 },
+    { v:"policies", ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+      t:"Policies", s:"Publish a document and every staff member can download it.",
+      flag:(f.policies||0) + " published", warn:false },
+    { v:"settings", quiet:true, ic:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.09A1.65 1.65 0 0 0 10.1 3.09V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1.01H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+      t:"Payroll settings", s:"The bands, the splits, the thresholds.",
+      flag:(warns||[]).length ? (warns||[]).length + " to look at" : "All set", warn:errs.length > 0 },
+    { v:"emails", quiet:true, ic:'<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M22 6l-10 7L2 6"/>',
+      t:"Emails sent", s:"Every notification the system has sent, and to whom.",
+      flag:(f.emails_this_month||0) + " this month", warn:false },
+  ];
+
+  $("doors").innerHTML = doors.map(d =>
+    '<button class="door' + (d.quiet ? " quiet" : "") + '" onclick="go(\'' + d.v + '\')">' +
+    '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + d.ic + '</svg>' +
+    '<b>' + d.t + '</b><span>' + d.s + '</span>' +
+    '<span class="flag ' + (d.warn ? "warn" : "ok") + '">' + esc(d.flag) + '</span></button>').join("");
+}
+
+// ============================================================
+// THE REGISTER  ·  no money on it
+// ============================================================
+let REG = [];
+window.paintRegister = paintRegister; window.openPerson = openPerson;
+
+async function loadRegister(){
+  const { data, error } = await db.from("admin_register").select("*");
+  if(oops("The register", error)) return;
+  REG = data || [];
+  const flags = REG.filter(r => r.not_claimed || r.no_bank).length;
+  $("reg-lede").textContent = REG.length + " on the register. Click a person to see their pay and act on it." +
+    (flags ? " " + flags + " need attention." : "");
+  paintRegister();
+}
+
+function paintRegister(){
+  const q = ($("q").value || "").toLowerCase();
+  const rows = REG.filter(r => !q ||
+    (r.full_name||"").toLowerCase().includes(q) ||
+    (r.job_title||"").toLowerCase().includes(q) ||
+    (r.department||"").toLowerCase().includes(q) ||
+    (r.email||"").toLowerCase().includes(q));
+
+  if(!rows.length){ $("reg-list").innerHTML = '<p style="color:var(--faint);font-size:13px">Nobody matches that.</p>'; return; }
+
+  const groups = {};
+  rows.forEach(r => { const d = r.department || "Office of the CEO"; (groups[d] = groups[d] || []).push(r); });
+  const order = ["Office of the CEO", ...DEPTS.filter(d => groups[d])];
+  Object.keys(groups).forEach(d => { if(!order.includes(d)) order.push(d); });
+
+  $("reg-list").innerHTML = order.filter(d => groups[d]).map(d =>
+    '<div class="dept">' + esc(d) + '</div>' +
+    groups[d].map(r => {
+      const need = r.not_claimed ? "Not claimed" : r.no_bank ? "No bank details" : "";
+      return '<button class="row" onclick="openPerson(\'' + r.id + '\')">' +
+        '<span class="ava ' + (r.employment_type === "nysc" ? "corps" : "") + '">' + ini(r.full_name) + '</span>' +
+        '<span class="who"><b>' + esc(r.display_name || r.full_name) + '</b>' +
+        '<span>' + esc(r.job_title || EMP[r.employment_type] || "\u2014") + '</span>' +
+        '<span class="badges"><span class="tag ' + (r.employment_status||"") + '">' +
+        esc((r.employment_status||"").replace(/^./, c => c.toUpperCase())) + '</span>' +
+        (r.appointments ? '<span class="tag ' + (r.is_acting ? "acting" : "role") + '">' +
+          (r.is_acting ? "Acting " : "") + esc(r.appointments) + '</span>' : "") +
+        '</span></span>' +
+        (need ? '<span class="needs">' + need + '</span>' : "") +
+        '<span class="chev">\u2192</span></button>';
+    }).join("")).join("");
+}
+
+// ============================================================
+// ONE PERSON
+// ============================================================
+let P = null, P_PAY = [];
+window.togglePromo = togglePromo; window.promoCalc = promoCalc; window.changeSalary = changeSalary;
+window.toggleStatus = toggleStatus; window.statusChange = statusChange; window.setStatus = setStatus;
+
+async function openPerson(id){
+  P = REG.find(r => r.id === id);
+  if(!P) return;
+  go("person");
+  const now = new Date(), Y = now.getFullYear(), M = now.getMonth() + 1;
+
+  $("p-av").textContent   = ini(P.full_name);
+  $("p-name").textContent = P.display_name || P.full_name;
+  $("p-sub").textContent  = [P.job_title, P.department, P.line_manager ? "reports to " + P.line_manager : null]
+    .filter(Boolean).join(" \u00b7 ") || P.email;
+  $("p-badges").innerHTML =
+    '<span class="tag ' + (P.employment_status||"") + '">' +
+    esc((P.employment_status||"").replace(/^./, c => c.toUpperCase())) + '</span>' +
+    '<span class="tag role">' + esc(EMP[P.employment_type] || "\u2014") + '</span>' +
+    (P.appointments ? '<span class="tag ' + (P.is_acting?"acting":"role") + '">' +
+      (P.is_acting?"Acting ":"") + esc(P.appointments) + '</span>' : "");
+
+  // what is blocking, up front
+  const blocks = [];
+  if(P.not_claimed) blocks.push("They have not claimed their account, so they cannot log in.");
+  if(P.no_bank)     blocks.push("No bank details on file, so they cannot be paid.");
+  $("p-alert").innerHTML = blocks.length
+    ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
+
+  await Promise.all([ pGlance(id, Y, M), pMonth(id, Y, M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id) ]);
+  set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
+  set("st-eff", iso(now));
+  $("promo").classList.add("hidden"); $("stat").classList.add("hidden");
+}
+
+async function pGlance(id, Y, M){
+  const { data, error } = await db.rpc("staff_glance", { p_staff: id, p_year: Y, p_month: M });
+  if(oops("Their glance", error)) return;
+  const g = Array.isArray(data) ? data[0] : data; if(!g) return;
+  const STATE = { draft:"Not submitted", submitted:"With their manager", manager_approved:"With the director",
+                  director_approved:"Approved", returned:"Returned to them" };
+  $("p-glance").innerHTML =
+    '<div><div class="k">This month</div><div class="v">' + (g.days_logged||0) +
+      ' <small>/ ' + (g.working_days||0) + ' days</small></div>' +
+      '<div class="s">' + (STATE[g.submission_state] || "Nothing yet") +
+      ((g.days_flagged||0) > 0 ? " \u00b7 " + g.days_flagged + " flagged" : "") + '</div></div>' +
+    '<div><div class="k">Targets</div><div class="v">' + (g.targets_open||0) + ' <small>open</small></div>' +
+      '<div class="s">' + (g.targets_met||0) + ' met, ' + (g.targets_missed||0) + ' missed</div></div>' +
+    '<div><div class="k">Annual leave</div><div class="v">' + (Number(g.annual_left||0)) +
+      ' <small>of ' + (Number(g.annual_earned||0)) + '</small></div>' +
+      '<div class="s">' + (g.annual_accruing ? "First year, still accruing" : (Number(g.annual_taken||0)) + " taken") + '</div></div>' +
+    '<div><div class="k">Last payslip</div><div class="v">' + esc(g.last_payslip || "None") + '</div>' +
+      '<div class="s">' + esc(g.last_payslip_state || "Nothing run yet") + '</div></div>';
+}
+
+async function pMonth(id, Y, M){
+  const first = Y + "-" + String(M).padStart(2,"0") + "-01";
+  const lastD = new Date(Y, M, 0).getDate();
+  const last  = Y + "-" + String(M).padStart(2,"0") + "-" + lastD;
+
+  const [dRes, lRes, hRes] = await Promise.all([
+    db.rpc("staff_month", { p_staff: id, p_year: Y, p_month: M }),
+    db.rpc("staff_leave_days", { p_staff: id, p_from: first, p_to: last }),
+    db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last)
+  ]);
+  if(oops("Their month", dRes.error) || oops("Their leave", lRes.error) || oops("Holidays", hRes.error)) return;
+
+  const DAYS = {}, LEAVE = {}, HOL = {};
+  (dRes.data||[]).forEach(r => DAYS[r.work_date] = r);
+  (lRes.data||[]).forEach(r => LEAVE[r.day] = r);
+  (hRes.data||[]).forEach(h => HOL[h.holiday] = h.name);
+
+  let html = "", logged = 0, flagged = 0, working = 0;
+  for(let d = 1; d <= lastD; d++){
+    const dt = new Date(Y, M-1, d), w = dt.getDay();
+    if(w === 0 || w === 6) continue;
+    const i = Y + "-" + String(M).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    const hol = HOL[i], lev = LEAVE[i], rec = DAYS[i];
+    if(!hol) working++;
+    if(rec){ logged++; if(rec.ai_flag) flagged++; }
+    let cls = "shell";
+    if(hol) cls += " hol"; else if(lev) cls += " leave"; else if(rec) cls += " on";
+    if(rec && rec.ai_flag) cls += " flag";
+    const lab = DOWFULL[w] + " " + d + " " + MONTHS[M-1] + " \u00b7 " +
+      (hol ? hol : lev ? lev.label : rec ? rec.hours + "h" + (rec.activity ? ": " + rec.activity : "") : "not logged");
+    html += '<span class="shell ' + cls.replace("shell ","") + '" title="' + esc(lab) + '">' +
+      '<svg viewBox="0 0 22 31"><ellipse class="sb" cx="11" cy="15.5" rx="8.5" ry="13.5"/>' +
+      '<path class="sl" d="M11 4v23" fill="none" stroke-linecap="round"/></svg></span>';
+  }
+  $("p-strip").innerHTML = html;
+  $("p-month-h").textContent = MONTHS[M-1] + " " + Y;
+  $("p-month-s").textContent = logged + " of " + working + " working days logged" +
+    (flagged ? " \u00b7 " + flagged + " the assistant flagged as thin" : "");
+}
+
+async function pTargets(id){
+  const { data, error } = await db.from("targets_overview").select("*").eq("staff_email", P.email);
+  if(oops("Their targets", error)) return;
+  const wrap = $("p-targets");
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No targets set for them.</p>'; return; }
+  wrap.innerHTML = data.map(t => {
+    const pct = t.target_value ? Math.min(100, Math.round(100 * (t.current_value||0) / t.target_value)) : null;
+    return '<div class="tgt"><div class="tgt-h"><b>' + esc(t.title) + '</b>' +
+      '<span class="tag ' + (t.rating ? "met" : t.period) + '">' + esc(t.rating || t.period) + '</span></div>' +
+      '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' +
+      (pct !== null ? '<div class="pbar"><i style="width:' + pct + '%"></i></div>' : "") +
+      '<div class="tgt-f"><span>' + (pct !== null
+        ? (t.current_value||0) + " of " + t.target_value + (t.unit ? " " + esc(t.unit) : "")
+        : "Judged by " + esc(t.set_by || "their manager")) + '</span>' +
+      '<span>' + (pct !== null ? pct + "%" : esc(t.status||"").replace(/_/g," ")) + '</span></div></div>';
+  }).join("");
+}
+
+async function pPay(id){
+  const { data, error } = await db.rpc("pay_history_for", { p_staff: id });
+  if(error){
+    $("p-money").textContent = "\u2014";
+    $("p-hist").innerHTML = '<div class="alert info" style="margin:0"><b>Only the CEO sees pay</b>' + esc(error.message) + '</div>';
+    $("promo").previousElementSibling; return;
+  }
+  P_PAY = data || [];
+  if(!P_PAY.length){
+    $("p-money").innerHTML = 'Nothing on record';
+    $("p-hist").innerHTML = ""; return;
+  }
+  const cur = P_PAY[0];
+  $("p-money").innerHTML = N(cur.monthly_gross) + ' <small>a month</small>' +
+    (Number(cur.monthly_data_claim) > 0 ? ' <small>+ ' + N(cur.monthly_data_claim) + ' data claim</small>' : "");
+  $("p-hist").innerHTML = P_PAY.map(h =>
+    '<div><span>From ' + fmtDate(h.effective_from) +
+    (h.previous_gross ? " \u00b7 was " + N(h.previous_gross) : "") +
+    (h.recorded_by ? " \u00b7 " + esc(h.recorded_by) : "") + '</span>' +
+    (h.change_pct !== null && h.change_pct !== undefined
+      ? '<span class="' + (h.change_pct >= 0 ? "up" : "down") + '">' +
+        (h.change_pct > 0 ? "+" : "") + h.change_pct + '%</span>' : '<span></span>') + '</div>').join("") +
+    (cur.rent_evidenced === false
+      ? '<div style="margin-top:8px;color:var(--amber)">No tenancy agreement. Their rent relief is computed on an assumption.</div>' : "");
+}
+
+function pFacts(){
+  const rows = [
+    ["Staff ID", P.staff_code || "\u2014"], ["Email", P.email],
+    ["Type", EMP[P.employment_type] || "\u2014"],
+    ["Status", (P.employment_status||"\u2014").replace(/^./, c=>c.toUpperCase())],
+    ["Department", P.department || "\u2014"], ["Reports to", P.line_manager || "\u2014"],
+    ["Overtime", P.overtime_eligible ? "Eligible" : "Not eligible"],
+    ["Account", P.not_claimed ? "Not claimed" : "Active"],
+  ];
+  $("p-facts").innerHTML = rows.map(([k,v]) =>
+    '<div class="fact"><div class="k">' + k + '</div><div class="v">' + esc(v) + '</div></div>').join("");
+}
+
+async function pAppts(id){
+  const { data, error } = await db.from("appointments_list").select("*").eq("staff_email", P.email);
+  if(oops("Their appointments", error)) return;
+  const wrap = $("p-appts");
+  if(!data || !data.length){ $("p-appt-s").textContent = "None at the moment."; wrap.innerHTML = ""; return; }
+  $("p-appt-s").textContent = "Positions held.";
+  wrap.innerHTML = data.map(a =>
+    '<div class="qrow"><span class="t"><b>' + esc(a.title) +
+    (a.kind === "acting" ? ' <span class="tag acting">Acting</span>' : "") + '</b>' +
+    '<span>' + [a.department, a.portfolio].filter(Boolean).map(esc).join(" \u00b7 ") +
+    (a.ends_on ? " \u00b7 until " + fmtDate(a.ends_on) : "") + '</span></span>' +
+    '<button class="rowbtn" style="color:var(--red)" onclick="revokeAppt(' + a.id + ',\'' +
+      esc(a.staff_email) + '\',\'' + esc(a.title).replace(/'/g,"\\'") + '\',\'' + a.kind + '\')">Remove</button></div>').join("");
+}
+
+async function pComplete(id){
+  const { data, error } = await db.rpc("staff_completeness", { p_staff: id });
+  if(oops("What they have given", error)) return;
+  const c = Array.isArray(data) ? data[0] : data; if(!c) return;
+  const yn = (ok, no, mid) => ok ? '<span style="color:var(--green)">Given</span>'
+    : mid ? '<span style="color:var(--amber)">' + no + '</span>'
+          : '<span style="color:var(--red)">' + no + '</span>';
+  $("p-complete").innerHTML =
+    '<div class="fact"><div class="k">Account</div><div class="v">' + yn(c.claimed_account, "Not claimed") + '</div></div>' +
+    '<div class="fact"><div class="k">Personal</div><div class="v">' + yn(c.personal_done, "Missing") + '</div></div>' +
+    '<div class="fact"><div class="k">Next of kin</div><div class="v">' + yn(c.nok_done, "Missing") + '</div></div>' +
+    '<div class="fact"><div class="k">Bank details</div><div class="v">' + yn(c.bank_done, "Missing, cannot be paid") + '</div></div>' +
+    '<div class="fact"><div class="k">Tenancy agreement</div><div class="v">' + yn(c.tenancy_given, "Not given, rent assumed", true) + '</div></div>' +
+    '<div class="fact"><div class="k">Photograph</div><div class="v">' + yn(c.photo_given, "Not given", true) + '</div></div>';
+}
+
+// ============================================================
+// PROMOTE OR CHANGE PAY
+// The one place in this console where money is written.
+// ============================================================
+function togglePromo(){
+  const el = $("promo"); el.classList.toggle("hidden");
+  if(!el.classList.contains("hidden")){
+    set("pr-title", ""); set("pr-gross", P_PAY[0] ? P_PAY[0].monthly_gross : ""); set("pr-reason", "");
+    $("pr-msg").innerHTML = ""; promoCalc();
+  }
+}
+
+function promoCalc(){
+  const old = P_PAY[0] ? Number(P_PAY[0].monthly_gross) : 0;
+  const now = Number(val("pr-gross") || 0);
+  const note = $("pr-note");
+
+  if(!old || !now){ set("pr-delta", ""); note.innerHTML = ""; return; }
+  const pct = ((now - old) / old * 100);
+  const diff = now - old;
+  set("pr-delta", (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%  \u00b7  " +
+      N(Math.abs(diff)) + (diff >= 0 ? " more" : " less"));
+
+  // the Handbook's own guidance, offered not enforced
+  let html = "";
+  if(diff < 0){
+    html = '<div class="alert err"><b>This is a reduction</b>' +
+      'You are lowering their pay by ' + N(Math.abs(diff)) + ' a month. Reducing someone\'s salary has real ' +
+      'legal weight in Nigeria and normally needs their written agreement. The system will record it, and the ' +
+      'email will be plain, not a congratulation. Be sure this is right.</div>';
+  } else if(diff === 0){
+    html = '<div class="alert info"><b>No change to pay</b>Only the job title will change.</div>';
+  } else if(val("pr-title")){
+    html = pct >= 5 && pct <= 10
+      ? '<div class="alert info"><b>Within the Handbook\'s range</b>' +
+        '§5.6 says an increase of 5% to 10% is normally granted on promotion. This is ' + pct.toFixed(1) + '%.</div>'
+      : '<div class="alert warn"><b>The Handbook says 5% to 10% on promotion (§5.6)</b>' +
+        'This is ' + pct.toFixed(1) + '%, ' + (pct < 5 ? "below" : "above") + ' that range. ' +
+        'That is fine, it is your call, but worth knowing.</div>';
+  }
+  note.innerHTML = html;
+
+  // the email must match what actually happened
+  const promoting = !!val("pr-title");
+  $("pr-email-lab").firstChild.textContent = "Email them now ";
+  $("pr-email-hint").textContent = diff < 0
+    ? "They get a plain note saying their pay has changed, and to raise it if it is not what they expected. Never a congratulation."
+    : promoting
+      ? "They get: \u201cYou have been promoted to " + (val("pr-title")||"\u2026") + ", effective " +
+        (val("pr-eff") ? fmtDate(val("pr-eff")) : "\u2026") + ".\u201d Leave it unticked if you would rather tell them yourself first."
+      : "They get a note saying their pay has been reviewed and increased. Leave it unticked if you would rather tell them yourself first.";
+}
+
+async function changeSalary(){
+  const gross = Number(val("pr-gross") || 0);
+  const reason = val("pr-reason");
+  const title = val("pr-title");
+  const eff = val("pr-eff");
+  if(!gross || gross <= 0){ msg("pr-msg","err","No figure","Enter the new monthly gross."); return; }
+  if(!eff){ msg("pr-msg","err","No date","When does it take effect?"); return; }
+  if(!reason){ msg("pr-msg","err","A reason is needed","A pay change with no recorded reason cannot be audited."); return; }
+
+  const old = P_PAY[0] ? Number(P_PAY[0].monthly_gross) : 0;
+  const diff = gross - old;
+  if(diff < 0 && !confirm("This lowers " + P.full_name + "'s pay by " + N(Math.abs(diff)) +
+      " a month.\n\nReducing someone's salary normally needs their written agreement. Record it anyway?")) return;
+
+  btn("pr-btn", true, "Recording");
+  const { error } = await db.rpc("admin_change_salary", {
+    p_email: P.email, p_new_gross: gross, p_effective_from: eff,
+    p_reason: reason, p_new_job_title: title
+  });
+  if(error){ btn("pr-btn", false, "Record the change"); msg("pr-msg","err","Not recorded", error.message); return; }
+
+  // the template must match reality: a cut is never a congratulation
+  let sent = false;
+  if($("pr-email").checked){
+    const event = diff < 0 ? "salary_change" : title ? "promotion" : "salary_increase";
+    sent = await notify(event, P.email, P.full_name, {
+      title: title || null, amount: N(gross), effective: fmtDate(eff)
+    });
+  }
+  btn("pr-btn", false, "Record the change");
+  msg("pr-msg","ok", title ? "Promoted" : "Pay changed",
+    (title ? P.full_name + " is now " + title + ". " : "") +
+    (sent ? "They have been emailed." : $("pr-email").checked ? "The email did not send; tell them yourself." : "No email sent, as you asked."));
+  await loadRegister();
+  P = REG.find(r => r.id === P.id) || P;
+  await pPay(P.id); pFacts();
+  $("p-sub").textContent = [P.job_title, P.department, P.line_manager ? "reports to " + P.line_manager : null].filter(Boolean).join(" \u00b7 ");
+}
+
+// ============================================================
+// EMPLOYMENT STATUS
+// ============================================================
+function toggleStatus(){
+  const el = $("stat"); el.classList.toggle("hidden");
+  if(!el.classList.contains("hidden")){ $("st-msg").innerHTML = ""; statusChange(); }
+}
+function statusChange(){
+  const s = $("st-status").value;
+  $("st-susp").classList.toggle("hidden", s !== "suspended");
+  $("st-exit-row").classList.toggle("hidden", !["resigned","terminated","exited"].includes(s));
+  $("st-legal").innerHTML = ["suspended","terminated"].includes(s)
+    ? '<div class="alert warn"><b>A reminder, not legal advice</b>Suspension and termination carry real requirements under Nigerian labour law and your own Handbook (§12, §13): the person is told in writing, invited to respond, and informed of the outcome. This records your decision; it is not the process.</div>'
+    : "";
+}
+async function setStatus(){
+  const s = $("st-status").value;
+  const params = { p_email: P.email, p_status: s, p_effective: val("st-eff"), p_note: val("st-note") };
+  if(["resigned","terminated","exited"].includes(s)) params.p_exit_date = val("st-exit");
+  if(s === "suspended"){ params.p_susp_pay = $("st-pay").value; params.p_susp_ends = val("st-until"); }
+
+  btn("st-btn", true, "Updating");
+  const { error } = await db.rpc("admin_set_status", params);
+  if(error){ btn("st-btn", false, "Update status"); msg("st-msg","err","Not updated", error.message); return; }
+
+  const EV = { confirmed:"confirmation", suspended:"suspension", terminated:"termination",
+               resigned:"resignation_ack", exited:"exit" };
+  let sent = false;
+  if(EV[s]) sent = await notify(EV[s], P.email, P.full_name, { effective: fmtDate(val("st-eff")) });
+  btn("st-btn", false, "Update status");
+  msg("st-msg","ok","Updated","Status set to " + s + (sent ? ". They have been emailed." : "."));
+  await loadRegister();
+  P = REG.find(r => r.id === P.id) || P;
+  pFacts();
+}
+
+// ============================================================
+// ADD SOMEONE
+// ============================================================
+window.addStaff = addStaff; window.typeChange = typeChange;
+function fillDepts(id){ const e = $(id); if(e) e.innerHTML = e.innerHTML.split("</option>")[0] + "</option>" +
+  DEPTS.map(d => '<option>' + d + '</option>').join(""); }
+function loadAddForm(){
+  fillDepts("f-dept");
+  if(!val("f-eff")) set("f-eff", iso(new Date()));
+  typeChange();
+}
+function typeChange(){
+  const corps = $("f-type").value === "nysc";
+  $("f-corps").classList.toggle("hidden", !corps);
+  $("f-gross-lab").textContent = corps ? "Monthly stipend (\u20a6)" : "Monthly gross (\u20a6)";
+}
 async function addStaff(){
-  const name = $("f-name").value.trim();
-  const email = $("f-email").value.trim();
-  const dept = $("f-dept").value || null;
-  const code = $("f-code").value.trim() || null;
-  const empType = $("f-emptype").value;
-  const status = $("f-status").value;
-  const job = $("f-job").value.trim() || null;
-  const gross = $("f-gross").value ? Number($("f-gross").value) : null;
-  const eff = $("f-eff").value || null;
-  const employed = $("f-employed").value || null;
-
-  if(!name || !email){ msg("add-msg","err","Missing details","Full name and email are required."); return; }
-
-  // map the rich employment type onto the person_type the add function expects
-  const personType = empType === "nysc" ? "corps_member" : "employee";
+  const name = val("f-name"), email = val("f-email");
+  if(!name || !email){ msg("f-msg","err","Missing details","A name and an email are required."); return; }
+  const type = $("f-type").value;
   const params = {
-    p_email: email, p_full_name: name, p_staff_code: code,
-    p_department: dept, p_person_type: personType,
-    p_monthly_gross: gross, p_effective_from: eff, p_employed_from: employed,
+    p_email: email, p_full_name: name, p_staff_code: val("f-code"),
+    p_department: val("f-dept"), p_person_type: type === "nysc" ? "corps_member" : "employee",
+    p_monthly_gross: val("f-gross") ? Number(val("f-gross")) : null,
+    p_effective_from: val("f-eff"), p_employed_from: val("f-employed"),
   };
-  if(empType === "nysc"){
+  if(type === "nysc"){
     params.p_paye_exempt = true;
-    params.p_paye_exempt_basis = "NYSC corps member. Organisation stipend is tax-exempt per DLA Employee Handbook §3.13. No tax computed.";
+    params.p_paye_exempt_basis = "NYSC corps member. The organisation stipend is tax-exempt per DLA Employee Handbook §3.13. No tax computed.";
   }
-
-  btn("add-btn", true, "Adding");
-  const { data, error } = await db.rpc("admin_add_staff", params);
-  if(error){ btn("add-btn", false, "Add to register"); msg("add-msg","err","Could not add", error.message); return; }
-
-  // set the richer employment fields + status
-  await db.rpc("admin_set_employment", { p_email: email, p_employment_type: empType, p_job_title: job });
-  if(status && status !== "probationary"){
-    await db.rpc("admin_set_status", { p_email: email, p_status: status, p_effective: eff || today });
-  }
-  btn("add-btn", false, "Add to register");
-
-  await notify("invite", email, name, { department: dept });
-
-  msg("add-msg","ok","Added", `${name} is on the register and can sign up. An invite email has been sent.`);
-  ["f-name","f-email","f-code","f-job","f-gross"].forEach(id=>$(id).value="");
-  $("f-dept").value=""; $("f-emptype").value="full_time"; $("f-status").value="probationary"; onTypeChange();
-  loadStaff();
+  btn("f-btn", true, "Adding");
+  const { error } = await db.rpc("admin_add_staff", params);
+  if(error){ btn("f-btn", false, "Add to the register"); msg("f-msg","err","Not added", error.message); return; }
+  await db.rpc("admin_set_employment", {
+    p_email: email, p_employment_type: type, p_job_title: val("f-job"), p_honorific: val("f-title")
+  });
+  let sent = false;
+  if($("f-email-now").checked) sent = await notify("invite", email, name, { department: val("f-dept") });
+  btn("f-btn", false, "Add to the register");
+  msg("f-msg","ok","Added", name + " is on the register." + (sent ? " The invite has been emailed." : " No email sent."));
+  ["f-name","f-email","f-code","f-job","f-gross"].forEach(id => set(id, ""));
+  set("f-title",""); set("f-dept",""); $("f-type").value = "full_time"; typeChange();
+  await loadRegister();
 }
 
-// ---------- appointments ----------
-function onPosChange(){
-  const pos = $("ap-pos").value;
-  // sensible default title
+// ============================================================
+// APPOINTMENTS
+// ============================================================
+window.appoint = appoint; window.posChange = posChange; window.kindChange = kindChange;
+window.loadAppts = loadAppts; window.revokeAppt = revokeAppt;
+
+function loadAppointForm(){
+  fillDepts("ap-dept");
+  $("ap-who").innerHTML = '<option value="">Choose\u2026</option>' +
+    REG.filter(r => !["exited","terminated"].includes(r.employment_status))
+       .map(r => '<option value="' + esc(r.email) + '">' + esc(r.display_name || r.full_name) +
+         (r.department ? " \u00b7 " + esc(r.department) : "") + '</option>').join("");
+  if(!val("ap-start")) set("ap-start", iso(new Date()));
+  posChange(); loadAppts();
+}
+function posChange(){
+  const p = $("ap-pos").value;
   const titles = { coo:"Chief Operating Officer", director:"Director", head:"", finance:"Finance Manager", deputy:"Deputy" };
-  $("ap-title").value = titles[pos] ?? "";
-  // show department only for head; portfolio only for director
-  $("ap-dept-row").style.display = (pos==="head"||pos==="director") ? "grid" : "none";
-  $("ap-portfolio-row").style.display = pos==="director" ? "block" : "none";
-  document.querySelector('label[for]') ; // noop
+  set("ap-title", titles[p] ?? "");
+  $("ap-dept-row").classList.toggle("hidden", p !== "head");
+  $("ap-port-row").classList.toggle("hidden", p !== "director");
+  $("ap-extra").classList.toggle("hidden", p !== "head" && p !== "director");
 }
-function onKindChange(){
-  $("ap-acting-row").style.display = $("ap-kind").value === "acting" ? "grid" : "none";
-}
-async function appoint(){
-  const email = $("ap-email").value.trim();
-  const pos = $("ap-pos").value;
-  const title = $("ap-title").value.trim();
-  const kind = $("ap-kind").value;
-  const dept = (pos==="head") ? ($("ap-dept").value || null) : null;
-  const portfolio = (pos==="director") ? ($("ap-portfolio").value.trim() || null) : null;
-  if(!email || !title){ msg("ap-msg","err","Missing details","Email and a display title are required."); return; }
+function kindChange(){ $("ap-acting").classList.toggle("hidden", $("ap-kind").value !== "acting"); }
 
-  const params = {
-    p_email: email, p_position: pos, p_title: title,
-    p_department: dept, p_kind: kind, p_portfolio: portfolio,
-  };
-  if(kind === "acting"){
-    params.p_starts_on = $("ap-start").value || today;
-    params.p_ends_on = $("ap-end").value || null;
-  }
+async function appoint(){
+  const email = val("ap-who"), title = val("ap-title"), pos = $("ap-pos").value, kind = $("ap-kind").value;
+  if(!email || !title){ msg("ap-msg","err","Missing details","Choose who, and give a display title."); return; }
+  const params = { p_email: email, p_position: pos, p_title: title, p_kind: kind,
+    p_department: pos === "head" ? val("ap-dept") : null,
+    p_portfolio: pos === "director" ? val("ap-port") : null };
+  if(kind === "acting"){ params.p_starts_on = val("ap-start") || iso(new Date()); params.p_ends_on = val("ap-end"); }
 
   btn("ap-btn", true, "Appointing");
   const { error } = await db.rpc("admin_appoint", params);
-  btn("ap-btn", false, "Appoint");
-  if(error){ msg("ap-msg","err","Could not appoint", error.message); return; }
-
-  await notify("appointment", email, null, {
-    title, kind, department: dept || null,
-    effective: (kind==="acting" ? ($("ap-start").value || today) : today),
-    ends: (kind==="acting" ? ($("ap-end").value || null) : null)
-  });
-
-  msg("ap-msg","ok","Appointed", `${email} is now ${title}${kind==="acting"?" (acting)":""}. An email has been sent.`);
-  $("ap-email").value=""; $("ap-portfolio").value=""; onPosChange();
-  loadAppointments(); loadStaff();
-}
-async function loadAppointments(){
-  const wrap = $("ap-list");
-  const { data, error } = await db.from("appointments_list").select("*");
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
-  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No appointments yet.</p>`; return; }
-  wrap.innerHTML = data.map(a => {
-    const extra = [a.department, a.portfolio].filter(Boolean).join(" · ");
-    const until = a.ends_on ? ` · until ${new Date(a.ends_on).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}` : "";
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)">
-      <div style="flex:1">
-        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(a.staff)}</b>
-        ${a.kind==="acting"?'<span class="tag" style="background:var(--amber-bg);color:var(--amber);margin-left:4px">Acting</span>':""}
-        <div style="font-size:12px;color:var(--muted)">${esc(a.title)}${extra?" · "+esc(extra):""}${until}</div>
-      </div>
-      <button class="rowbtn" onclick="revokeAppointment(${a.id}, '${esc(a.staff_email)}', '${esc(a.title).replace(/'/g,"\\'")}', '${a.kind}')" style="color:var(--red)">Remove</button>
-    </div>`;
-  }).join("");
-}
-async function revokeAppointment(id, email, title, kind){
-  if(!confirm("Remove this appointment? Their access for this role will end.")) return;
-  const { error } = await db.rpc("admin_revoke_appointment", { p_id: id });
-  if(error){ alert("Could not remove: " + error.message); return; }
-  // only the acting stand-in gets a "thanks for stepping in" note
-  if(kind === "acting" && email){
-    await notify("appointment_end", email, null, { title, effective: today });
-  }
-  loadAppointments(); loadStaff();
-}
-
-// ---------- employment status ----------
-function onStatusChange(){
-  const s = $("st-status").value;
-  $("st-susp-row").style.display = s === "suspended" ? "grid" : "none";
-  $("st-exit-row").style.display = (s==="resigned"||s==="terminated"||s==="exited") ? "block" : "none";
-  $("st-legal").style.display = (s==="suspended"||s==="resigned"||s==="terminated") ? "block" : "none";
-}
-async function setStatus(){
-  const email = $("st-email").value.trim();
-  const status = $("st-status").value;
-  if(!email){ msg("st-msg","err","Missing email","Enter the person's email."); return; }
-  const params = {
-    p_email: email, p_status: status,
-    p_effective: $("st-eff").value || today,
-    p_note: $("st-note").value.trim() || null,
-  };
-  if(status==="resigned"||status==="terminated"||status==="exited") params.p_exit_date = $("st-exit").value || null;
-  if(status==="suspended"){
-    params.p_susp_pay = $("st-susp-pay").value;
-    params.p_susp_ends = $("st-susp-end").value || null;
-  }
-  btn("st-btn", true, "Updating");
-  const { error } = await db.rpc("admin_set_status", params);
-  btn("st-btn", false, "Update status");
-  if(error){ msg("st-msg","err","Could not update", error.message); return; }
-
-  // each status maps to its own email
-  const EVENT = {
-    confirmed:   "confirmation",
-    suspended:   "suspension",
-    terminated:  "termination",
-    resigned:    "resignation_ack",
-    exited:      "exit",
-  };
-  const ev = EVENT[status];
+  if(error){ btn("ap-btn", false, "Appoint"); msg("ap-msg","err","Not appointed", error.message); return; }
+  const who = REG.find(r => r.email === email);
   let sent = false;
-  if(ev){
-    await notify(ev, email, null, {
-      effective: params.p_effective,
-      exit_date: params.p_exit_date || null,
-    });
-    sent = true;
+  if($("ap-email").checked) sent = await notify("appointment", email, who ? who.full_name : null, {
+    title, kind, department: pos === "head" ? val("ap-dept") : null,
+    effective: fmtDate(kind === "acting" ? (val("ap-start") || iso(new Date())) : iso(new Date())),
+    ends: kind === "acting" ? (val("ap-end") ? fmtDate(val("ap-end")) : null) : null
+  });
+  btn("ap-btn", false, "Appoint");
+  msg("ap-msg","ok","Appointed", (who ? who.full_name : email) + " is now " + title +
+    (kind === "acting" ? " (acting)" : "") + (sent ? ". They have been emailed." : "."));
+  set("ap-port",""); await loadAppts(); await loadRegister();
+}
+
+async function loadAppts(){
+  const { data, error } = await db.from("appointments_list").select("*");
+  if(oops("Appointments", error)) return;
+  const wrap = $("ap-list");
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nobody is appointed yet.</p>'; return; }
+  wrap.innerHTML = data.map(a =>
+    '<div class="qrow"><span class="t"><b>' + esc(a.staff) +
+    (a.kind === "acting" ? ' <span class="tag acting">Acting</span>' : "") + '</b>' +
+    '<span>' + esc(a.title) + [a.department, a.portfolio].filter(Boolean).map(x => " \u00b7 " + esc(x)).join("") +
+    (a.ends_on ? " \u00b7 until " + fmtDate(a.ends_on) : "") + '</span></span>' +
+    '<button class="rowbtn" style="color:var(--red)" onclick="revokeAppt(' + a.id + ',\'' +
+      esc(a.staff_email) + '\',\'' + esc(a.title).replace(/'/g,"\\'") + '\',\'' + a.kind + '\')">Remove</button></div>').join("");
+}
+
+async function revokeAppt(id, email, title, kind){
+  if(!confirm("Remove this appointment? Their access for that role ends.")) return;
+  const { error } = await db.rpc("admin_revoke_appointment", { p_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  if(kind === "acting") await notify("appointment_end", email, null, { title, effective: fmtDate(iso(new Date())) });
+  await loadAppts(); await loadRegister();
+  if(P) await pAppts(P.id);
+}
+
+// ============================================================
+// DEPARTMENTS
+// ============================================================
+window.setHead = setHead;
+function loadDepts(){
+  fillDepts("d-dept");
+  $("d-head").innerHTML = '<option value="">Choose\u2026</option>' +
+    REG.filter(r => !["exited","terminated"].includes(r.employment_status))
+       .map(r => '<option value="' + esc(r.email) + '">' + esc(r.display_name || r.full_name) + '</option>').join("");
+}
+async function setHead(){
+  const d = val("d-dept"), e = val("d-head");
+  if(!d || !e){ msg("d-msg","err","Missing details","Choose a department and a person."); return; }
+  btn("d-btn", true, "Setting");
+  const { error } = await db.rpc("admin_set_department_head", { p_department: d, p_head_email: e });
+  btn("d-btn", false, "Make department head");
+  if(error){ msg("d-msg","err","Not set", error.message); return; }
+  msg("d-msg","ok","Done", e + " now heads " + d + ". That department reports to them.");
+  await loadRegister();
+}
+
+// ============================================================
+// FINANCE  ·  aggregate only. No names. No individual figures.
+// Nothing on this screen lets you work out what anyone earns.
+// ============================================================
+window.loadFinance = loadFinance;
+function initFinance(){
+  const now = new Date();
+  if(!val("fin-year")) set("fin-year", now.getFullYear());
+  $("fin-month").innerHTML = MONTHS.map((m,i) =>
+    '<option value="' + (i+1) + '"' + (i+1 === now.getMonth()+1 ? " selected" : "") + '>' + m + '</option>').join("");
+  loadFinance();
+}
+
+async function loadFinance(){
+  const y = Number(val("fin-year")), m = Number($("fin-month").value);
+  $("fin-when").textContent = MONTHS[m-1] + " " + y;
+
+  const { data: s, error } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  if(oops("The month", error)) return;
+
+  const { data: warns, error: we } = await db.rpc("config_warnings");
+  if(oops("The checks", we)) return;
+  const wHtml = (warns||[]).map(w =>
+    '<div class="alert ' + (w.severity === "error" ? "err" : "warn") + '"><b>' +
+    (w.severity === "error" ? "This needs attention" : "Worth checking") + '</b>' + esc(w.message) + '</div>').join("");
+
+  if(!s){
+    $("fin-body").innerHTML =
+      '<div class="alert info"><b>Nothing computed for ' + MONTHS[m-1] + '</b>Finance runs the month from the staff portal. Once it is run, the whole picture appears here.</div>' +
+      (wHtml ? '<div class="panel"><h3>What is not right</h3><div class="ps">The system checking itself.</div>' + wHtml + '</div>' : "");
+    return;
   }
 
-  msg("st-msg","ok","Updated", `Status set to ${status}.` + (sent ? " An email has been sent." : ""));
-  $("st-email").value=""; $("st-note").value="";
-  loadStaff();
+  const tally = Math.abs(Number(s.tally_check || 0)) <= 1;
+  const total = Number(s.total_net_pay) + Number(s.total_paye) + Number(s.total_claims) + Number(s.total_employer_addon);
+  const pc = v => total > 0 ? (Number(v) / total * 100) : 0;
+  const seg = [
+    ["Take home", s.total_net_pay,        "var(--orange)",     "#fff"],
+    ["PAYE",      s.total_paye,           "var(--ink)",        "#fff"],
+    ["Claims",    s.total_claims,         "var(--orange-med)", "#4a2a10"],
+    ["Employer",  s.total_employer_addon, "var(--sand)",       "#6b5a44"],
+  ];
+
+  const [{ data: roster }, { data: spark }] = await Promise.all([
+    db.from("payroll_roster").select("department,gross_salary").eq("year", y).eq("month", m),
+    db.from("payroll_summary").select("year,month,total_employer_cost").order("year").order("month")
+  ]);
+
+  // share of payroll by department. percentages, so no salary can be read off it.
+  const byDept = {};
+  (roster||[]).forEach(r => { const d = r.department || "Office of the CEO";
+    byDept[d] = (byDept[d]||0) + Number(r.gross_salary||0); });
+  const dTotal = Object.values(byDept).reduce((a,b)=>a+b, 0) || 1;
+  const dMax = Math.max(...Object.values(byDept), 1);
+
+  const last12 = (spark||[]).slice(-12);
+  const sMax = Math.max(...last12.map(x => Number(x.total_employer_cost||0)), 1);
+
+  $("fin-body").innerHTML =
+  '<div class="big">' +
+    '<div><div class="k">Gross payroll</div><div class="v">' + N(s.total_gross) + '</div>' +
+      '<div class="s">' + s.staff_count + ' people \u00b7 ' + s.working_days + ' working days</div></div>' +
+    '<div><div class="k">PAYE to FCT-IRS</div><div class="v">' + N(s.total_paye) + '</div>' +
+      '<div class="s">due by the 10th</div></div>' +
+    '<div><div class="k">To transfer</div><div class="v">' + N(s.total_to_transfer) + '</div>' +
+      '<div class="s">net plus claims</div></div>' +
+    '<div><div class="k">Cost to Data-Lead</div><div class="v">' + N(s.total_employer_cost) + '</div>' +
+      '<div class="s">with employer add-ons</div></div>' +
+  '</div>' +
+
+  '<div class="panel"><h3>Where the money goes</h3>' +
+    '<div class="ps">The whole firm. Every naira of gross payroll, and who ends up with it.</div>' +
+    '<div class="split">' + seg.map(([k,v,bg,fg]) =>
+      '<i style="width:' + pc(v) + '%;background:' + bg + ';color:' + fg + '" title="' + k + ': ' + pc(v).toFixed(1) + '%">' +
+      '<span>' + (pc(v) > 7 ? k + " " + pc(v).toFixed(0) + "%" : (pc(v) > 2 ? pc(v).toFixed(0) + "%" : "")) + '</span></i>').join("") +
+    '</div>' +
+    '<div class="legend">' + seg.map(([k,,bg]) => '<span><i style="background:' + bg + ';border-radius:2px;height:9px"></i>' + k + '</span>').join("") + '</div>' +
+    '<p class="ps" style="margin:14px 0 0">Individual pay is on each person\u2019s page. It is not shown here, so this screen is safe to have open in a room.</p>' +
+  '</div>' +
+
+  '<div class="panel"><h3>By department</h3><div class="ps">Share of the payroll. Percentages, not figures.</div>' +
+    '<div class="bars">' + Object.entries(byDept).sort((a,b)=>b[1]-a[1]).map(([d,v]) =>
+      '<div class="bar-row"><span class="nm">' + esc(d) + '</span>' +
+      '<span class="tr"><i style="background:var(--orange);width:' + (v/dMax*100) + '%"></i></span>' +
+      '<span class="amt">' + (v/dTotal*100).toFixed(1) + '%</span></div>').join("") +
+    '</div></div>' +
+
+  (last12.length > 1 ? '<div class="panel"><h3>Twelve months</h3>' +
+    '<div class="ps">Total cost to Data-Lead, month by month.</div>' +
+    '<div class="spark">' + last12.map((x,i) =>
+      '<div class="' + (i === last12.length-1 ? "now" : "") + '" style="height:' +
+      (Number(x.total_employer_cost)/sMax*100) + '%"><b>' + N(x.total_employer_cost) + '</b>' +
+      '<em>' + MONTHS[x.month-1].slice(0,3) + '</em></div>').join("") + '</div></div>' : "") +
+
+  '<div class="panel"><h3>The month tallies</h3>' +
+    '<div class="ps">The package must equal what staff get plus what government gets.</div>' +
+    '<div class="alert ' + (tally ? "ok" : "err") + '" style="margin-bottom:0"><b>' +
+      (tally ? "It balances" : "It does NOT balance, out by " + N2(s.tally_check)) + '</b>' +
+      'Package ' + N(s.package) + ' = to staff ' + N(s.to_staff) + ' + to government ' + N(s.to_government) + '.' +
+      (tally ? "" : " Nothing can be certified until this is zero.") + '</div>' +
+    (Number(s.rent_assumed_count) > 0 ? '<div class="alert warn" style="margin-bottom:0"><b>' +
+      s.rent_assumed_count + ' on assumed rent</b>Their relief is computed on a guess. It is only claimable on real, evidenced rent.</div>' : "") +
+  '</div>' +
+
+  (wHtml ? '<div class="panel"><h3>What is not right</h3><div class="ps">The system checking itself.</div>' + wHtml + '</div>' : "");
 }
 
-// ---------- list ----------
-async function loadStaff(){
-  const wrap = $("list-wrap");
-  wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">Loading…</p>`;
-  const { data, error } = await db.from("admin_staff_list").select("*");
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${error.message}</div>`; return; }
-  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No one added yet.</p>`; return; }
+// ============================================================
+// PAYROLL SETTINGS
+// ============================================================
+window.loadConfig = loadConfig; window.saveConfig = saveConfig;
+window.loadPayrollSettings = loadPayrollSettings; window.togglePS = togglePS;
 
-  const EMP = { full_time:"Full-time", part_time:"Part-time", fixed_term:"Fixed-term", temporary:"Temporary", intern:"Intern", nysc:"NYSC", consultant:"Consultant" };
-  const rows = data.map(s => {
-    const roleTags = (s.roles||[]).filter(r=>r!=="staff")
-      .map(r=>`<span class="tag role">${r.replace("_"," ")}</span>`).join("");
-    const appt = s.appointments ? `<div style="font-size:11px;color:var(--clr-orange);font-family:var(--display-md)">${esc(s.appointments)}</div>` : "";
-    const empLine = [EMP[s.employment_type]||"", s.job_title||""].filter(Boolean).join(" · ");
-    return `<tr>
-      <td><b style="font-family:var(--display-md);font-weight:500">${esc(s.full_name)}</b>${roleTags}${appt}
-          <div style="font-size:12px;color:var(--muted)">${esc(s.email)}</div>
-          ${empLine?`<div style="font-size:11px;color:var(--faint)">${esc(empLine)}</div>`:""}</td>
-      <td>${esc(s.department||"—")}<div style="font-size:12px;color:var(--faint)">${s.line_manager?"↳ "+esc(s.line_manager):""}</div></td>
-      <td><span class="tag ${s.employment_status||s.status}">${esc(s.employment_status||s.status)}</span></td>
-      <td class="n">${naira(s.current_gross)}</td>
-    </tr>`;
+async function loadConfig(){
+  const { data, error } = await db.from("config_list").select("*");
+  if(oops("The settings", error)) return;
+  $("cfg-wrap").innerHTML = (data||[]).map(c => {
+    const shown = c.kind === "percent" ? Number(c.value) * 100 : Number(c.value);
+    const unit  = c.kind === "percent" ? "%" : c.kind === "amount" ? "\u20a6" : "\u00d7";
+    const who   = c.updated_by ? "Last set by " + esc(c.updated_by) : "Never changed";
+    return '<div style="padding:14px 0;border-top:1px solid var(--line)">' +
+      '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">' +
+        '<div style="flex:1;min-width:200px"><b style="font-family:var(--display-md);font-weight:500;font-size:14px">' +
+        esc(c.label) + '</b>' +
+        (c.is_assumption ? '<span class="tag acting" style="margin-left:6px">assumption</span>' : "") +
+        '<div style="font-size:12px;color:var(--muted);margin-top:3px">' + esc(c.note || "") + '</div>' +
+        '<div style="font-size:11px;color:var(--faint);margin-top:4px">' + who + '</div></div>' +
+        '<div style="display:flex;gap:6px;align-items:center;flex:none">' +
+          (c.kind === "amount" ? '<span style="color:var(--faint);font-size:13px">' + unit + '</span>' : "") +
+          '<input id="cfg-' + c.key + '" type="number" step="' + (c.kind === "percent" ? "0.1" : "1") +
+          '" value="' + shown + '" style="width:110px;text-align:right">' +
+          (c.kind !== "amount" ? '<span style="color:var(--faint);font-size:13px">' + unit + '</span>' : "") +
+          '<button class="rowbtn" onclick="saveConfig(\'' + c.key + '\',\'' +
+            esc(c.label).replace(/'/g,"\\'") + '\',\'' + c.kind + '\')">Set</button>' +
+        '</div></div><div id="cfg-msg-' + c.key + '"></div></div>';
   }).join("");
 
-  wrap.innerHTML = `<table>
-    <thead><tr><th>Name &amp; role</th><th>Department</th><th>Status</th><th class="n">Monthly</th></tr></thead>
-    <tbody>${rows}</tbody></table>
-    <p class="hint" style="margin-top:14px">Salary is visible here because you are the super-admin. Department heads never see it.</p>`;
+  const { data: warns, error: we } = await db.rpc("config_warnings");
+  if(oops("The checks", we)) return;
+  $("cfg-warn").innerHTML = (warns||[]).map(w =>
+    '<div class="alert ' + (w.severity === "error" ? "err" : "warn") + '"><b>' +
+    (w.severity === "error" ? "This needs attention" : "Worth checking") + '</b>' + esc(w.message) + '</div>').join("");
 }
 
-// ---------- set head ----------
-async function setHead(){
-  const dept = $("h-dept").value;
-  const email = $("h-email").value.trim();
-  if(!dept || !email){ msg("head-msg","err","Missing details","Choose a department and enter the head's email."); return; }
-  btn("head-btn", true, "Setting");
-  const { error } = await db.rpc("admin_set_department_head", { p_department: dept, p_head_email: email });
-  btn("head-btn", false, "Make department head");
-  if(error){ msg("head-msg","err","Could not set head", error.message); return; }
-  msg("head-msg","ok","Done", `${email} now heads ${dept}. Their department reports to them.`);
-  $("h-email").value=""; $("h-dept").value="";
-  loadStaff();
+async function saveConfig(key, label, kind){
+  const raw = Number($("cfg-" + key).value);
+  if(isNaN(raw)){ msg("cfg-msg-" + key, "err", "Not a number", "Enter a figure."); return; }
+  const reason = prompt("Why are you changing " + label + "?\n\nThis is recorded against your name.");
+  if(reason === null) return;
+  if(!reason.trim()){ msg("cfg-msg-" + key, "err", "A reason is needed", "It cannot be audited without one."); return; }
+  const { error } = await db.rpc("admin_set_config", {
+    p_key: key, p_value: kind === "percent" ? raw/100 : raw, p_reason: reason.trim()
+  });
+  if(error){ msg("cfg-msg-" + key, "err", "Not set", error.message); return; }
+  msg("cfg-msg-" + key, "ok", "Set", label + " is now " + (kind === "percent" ? raw + "%" : raw) + ".");
+  loadConfig();
 }
 
-// ---------- payroll settings ----------
 async function loadPayrollSettings(){
-  const wrap = $("ps-wrap");
   const { data, error } = await db.from("payroll_settings").select("*").order("key");
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
-  wrap.innerHTML = data.map(s => {
-    const kind = s.scope === "employee_deduction" ? "Staff deduction"
-               : s.scope === "employer_cost" ? "Employer cost" : "Staff + employer";
+  if(oops("The contributions", error)) return;
+  $("ps-wrap").innerHTML = (data||[]).map(s => {
+    const kind = s.scope === "employee_deduction" ? "Comes out of staff pay"
+               : s.scope === "employer_cost" ? "The company pays it, shown for transparency"
+               : "Staff and employer both";
     const rates = [];
-    if(s.employee_pct>0) rates.push(`${s.employee_pct}% staff`);
-    if(s.employer_pct>0) rates.push(`${s.employer_pct}% employer`);
-    const pretax = s.reduces_paye ? ` · pre-tax` : "";
-    return `<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)">
-      <div style="flex:1">
-        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(s.label)}</b>
-        <div style="font-size:12px;color:var(--muted)">${kind}${rates.length?" · "+rates.join(", "):""}${pretax}</div>
-      </div>
-      <button class="rowbtn ${s.enabled?'btn-primary':''}" onclick="togglePS('${s.key}', ${!s.enabled})">
-        ${s.enabled ? "On" : "Off"}
-      </button>
-    </div>`;
+    if(s.employee_pct > 0) rates.push(s.employee_pct + "% staff");
+    if(s.employer_pct > 0) rates.push(s.employer_pct + "% employer");
+    return '<div style="display:flex;align-items:flex-start;gap:14px;padding:13px 0;border-top:1px solid var(--line)">' +
+      '<div style="flex:1"><b style="font-family:var(--display-md);font-weight:500;font-size:14px">' + esc(s.label) + '</b>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + kind +
+      (rates.length ? " \u00b7 " + rates.join(", ") : "") + (s.reduces_paye ? " \u00b7 pre-tax" : "") + '</div>' +
+      (s.note ? '<div style="font-size:11.5px;color:var(--faint);margin-top:4px">' + esc(s.note) + '</div>' : "") + '</div>' +
+      '<button class="rowbtn ' + (s.enabled ? "btn-primary" : "") + '" style="flex:none" onclick="togglePS(\'' +
+        s.key + '\',' + (!s.enabled) + ')">' + (s.enabled ? "On" : "Off") + '</button></div>';
   }).join("");
 }
+
 async function togglePS(key, enable){
   const { error } = await db.rpc("admin_set_payroll_setting", { p_key: key, p_enabled: enable });
-  if(error){ alert("Could not change: " + error.message); return; }
-  loadPayrollSettings();
+  if(error){ toast("Could not change. " + error.message); return; }
+  loadPayrollSettings(); loadConfig();
 }
 
-// ---------- policies ----------
+// ============================================================
+// POLICIES
+// ============================================================
+window.uploadPolicy = uploadPolicy; window.loadPolicies = loadPolicies; window.deletePolicy = deletePolicy;
+
 async function uploadPolicy(){
-  const title = $("pol-title").value.trim();
-  const file = $("pol-file").files[0];
-  if(!title){ msg("pol-msg","err","Missing title","Give the policy a title."); return; }
-  if(!file){ msg("pol-msg","err","No file","Choose a PDF to upload."); return; }
-
-  btn("pol-btn", true, "Uploading");
-  // upload the file to the 'policies' storage bucket
-  const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
-  const up = await db.storage.from("policies").upload(path, file, { upsert: false });
-  if(up.error){ btn("pol-btn", false, "Upload policy"); msg("pol-msg","err","Upload failed", up.error.message + " (is the 'policies' bucket created?)"); return; }
-
-  // record it
+  const title = val("pol-title"), file = $("pol-file").files[0];
+  if(!title){ msg("pol-msg","err","No title","Give the policy a title."); return; }
+  if(!file){ msg("pol-msg","err","No file","Choose a PDF."); return; }
+  btn("pol-btn", true, "Publishing");
+  const path = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const up = await db.storage.from("policies").upload(path, file);
+  if(up.error){ btn("pol-btn", false, "Publish"); msg("pol-msg","err","Upload failed", up.error.message); return; }
   const { error } = await db.rpc("admin_add_policy", {
-    p_title: title,
-    p_storage_path: path,
-    p_description: $("pol-desc").value.trim() || null,
-    p_version: $("pol-version").value.trim() || null,
+    p_title: title, p_storage_path: path, p_description: val("pol-desc"), p_version: val("pol-version")
   });
-  btn("pol-btn", false, "Upload policy");
-  if(error){ msg("pol-msg","err","Could not save", error.message); return; }
-  msg("pol-msg","ok","Uploaded", `${title} is now available to all staff.`);
-  $("pol-title").value=""; $("pol-version").value=""; $("pol-desc").value=""; $("pol-file").value="";
+  btn("pol-btn", false, "Publish");
+  if(error){ msg("pol-msg","err","Not published", error.message); return; }
+  msg("pol-msg","ok","Published", title + " is now available to every staff member.");
+  ["pol-title","pol-version","pol-desc"].forEach(id => set(id,"")); $("pol-file").value = "";
   loadPolicies();
 }
+
 async function loadPolicies(){
+  const { data, error } = await db.from("policies").select("*").eq("is_current", true).order("uploaded_at",{ascending:false});
+  if(oops("The policies", error)) return;
   const wrap = $("pol-list");
-  const { data, error } = await db.from("policies").select("*").eq("is_current", true).order("uploaded_at", { ascending:false });
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
-  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No policies uploaded yet.</p>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing published yet.</p>'; return; }
   wrap.innerHTML = data.map(p => {
     const url = db.storage.from("policies").getPublicUrl(p.storage_path).data.publicUrl;
-    const when = new Date(p.uploaded_at).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)">
-      <div style="flex:1">
-        <b style="font-family:var(--display-md);font-weight:500;font-size:14px">${esc(p.title)}</b>
-        ${p.version?`<span class="tag role">${esc(p.version)}</span>`:""}
-        <div style="font-size:12px;color:var(--muted)">Uploaded ${when}${p.description?" · "+esc(p.description):""}</div>
-      </div>
-      <a href="${url}" target="_blank" rel="noopener"><button class="rowbtn">View</button></a>
-      <button class="rowbtn" onclick="deletePolicy(${p.id})" style="color:var(--red)">Remove</button>
-    </div>`;
+    return '<div class="qrow"><span class="t"><b>' + esc(p.title) +
+      (p.version ? ' <span class="tag role">' + esc(p.version) + '</span>' : "") + '</b>' +
+      '<span>' + (p.description ? esc(p.description) + " \u00b7 " : "") + "added " +
+      new Date(p.uploaded_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) + '</span></span>' +
+      '<a href="' + url + '" target="_blank" rel="noopener"><button class="rowbtn">View</button></a>' +
+      '<button class="rowbtn" style="color:var(--red)" onclick="deletePolicy(' + p.id + ')">Remove</button></div>';
   }).join("");
 }
+
 async function deletePolicy(id){
-  if(!confirm("Remove this policy from the staff download list?")) return;
+  if(!confirm("Take this off the staff download list?")) return;
   const { error } = await db.from("policies").update({ is_current:false }).eq("id", id);
-  if(error){ alert("Could not remove: " + error.message); return; }
+  if(error){ toast("Could not remove. " + error.message); return; }
   loadPolicies();
 }
 
-// ---------- notification log ----------
-async function loadNotifications(){
-  const wrap = $("nt-list");
-  const { data, error } = await db.from("notifications").select("*").order("created_at",{ascending:false}).limit(30);
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
-  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No emails sent yet.</p>`; return; }
-  wrap.innerHTML = data.map(n => {
-    const when = new Date(n.created_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-    const cls = n.status === "sent" ? "confirmed" : "resigned";
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px">
-      <div style="flex:1">
-        <b style="font-family:var(--display-md);font-weight:500">${esc(n.event.replace(/_/g," "))}</b>
-        <div style="font-size:12px;color:var(--muted)">${esc(n.to_email)} · ${when}</div>
-      </div>
-      <span class="tag ${cls}">${esc(n.status)}</span>
-    </div>`;
-  }).join("");
+// ============================================================
+// EMAILS SENT
+// ============================================================
+async function loadEmails(){
+  const { data, error } = await db.from("notifications").select("*").order("created_at",{ascending:false}).limit(60);
+  if(oops("The email log", error)) return;
+  const wrap = $("em-list");
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing sent yet.</p>'; return; }
+  wrap.innerHTML = data.map(n =>
+    '<div class="qrow"><span class="t"><b>' + esc((n.event||"").replace(/_/g," ")) + '</b>' +
+    '<span>' + esc(n.to_email) + ' \u00b7 ' +
+    new Date(n.created_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) +
+    '</span></span><span class="tag ' + (n.status === "sent" ? "confirmed" : "suspended") + '">' +
+    esc(n.status) + '</span></div>').join("");
 }
-
-// ---------- helpers ----------
-function msg(id, kind, title, body){
-  $(id).innerHTML = `<div class="alert ${kind}"><b>${title}</b>${esc(body)}</div>`;
-}
-function btn(id, busy, label){
-  const b = $(id); b.disabled = busy;
-  b.innerHTML = busy ? `<span class="spin"></span>${label}…` : label;
-}
-function esc(s){ return String(s).replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
 </script>
 </body>
 </html>
