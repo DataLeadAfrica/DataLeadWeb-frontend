@@ -2218,6 +2218,384 @@ async function loadPayHistory(){
 }
 
 // ============================================================
+// THE ONE THING NOW
+// The portal knows the date and what state the month is in, and shows
+// the single thing that matters. Everything else stays quiet.
+// ============================================================
+let MONTH_LOGGED = 0, MONTH_GAP = 0;
+
+function renderNow(){
+  const el = $("now"); if(!el) return;
+  const today = new Date();
+  const dom = today.getDate();
+  const dow = today.getDay();
+  const isWorkday = dow !== 0 && dow !== 6;
+  const todayISO = isoOf(today);
+  const todayLogged = !!DAYS[todayISO];
+  const todayHoliday = HOLIDAYS[todayISO];
+  const mgr = PROFILE.line_manager ? PROFILE.line_manager.split(" ")[0] : "your line manager";
+  const monthName = MONTHS[TS_MONTH-1];
+  let st;
+
+  if(SUB_STATUS === "director_approved"){
+    st = { ey:"Approved", h:monthName + " is signed off",
+           p:"Both approvals are in. Finance will run payroll and your payslip will follow.", done:true };
+  } else if(SUB_STATUS === "manager_approved"){
+    st = { ey:"With the Director", h:mgr + " approved your " + monthName,
+           p:"It is waiting on a final approval. Nothing for you to do.", done:true };
+  } else if(SUB_STATUS === "submitted"){
+    st = { ey:"With your line manager", h:monthName + " is with " + mgr,
+           p:"Signed and sent. You will be told as soon as it is approved.", done:true };
+  } else if(SUB_STATUS === "returned"){
+    st = { ey:"Returned for a change", h:mgr + " sent " + monthName + " back",
+           p:"Have a look at what they asked for, put it right, and send it again.",
+           cta:"See what to change", go:"timesheet" };
+  } else if(todayHoliday){
+    st = { ey:"Today", h:todayHoliday,
+           p:"A public holiday. Nothing to log. If you did work today, tap the shell and it pays at the holiday rate.",
+           done:true };
+  } else if(LEAVE[todayISO]){
+    st = { ey:"Today", h:"You are on " + LEAVE[todayISO].label.toLowerCase(),
+           p:"Nothing to log. Enjoy it, or get well, whichever applies.", done:true };
+  } else if(isWorkday && !todayLogged){
+    st = { ey:"Right now", h:"Log today",
+           p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
+             (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
+             " Say what you worked on and it takes half a minute.",
+           cta:"Log today", act:"today" };
+  } else if(MONTH_GAP > 0 && dom >= 24){
+    st = { ey:monthName + " closes soon", h:MONTH_GAP + " day" + (MONTH_GAP>1?"s":"") + " still unlogged",
+           p:"A day with nothing against it is unpaid. Fill the sand-coloured shells before the month ends.",
+           cta:"Show me", act:"first-gap" };
+  } else if(MONTH_GAP === 0){
+    st = { ey:"Every day is logged", h:"Send " + monthName + " to " + mgr,
+           p:"Write the month up, sign it, and it goes for approval.",
+           cta:"Review and sign", go:"timesheet" };
+  } else {
+    st = { ey:"Today", h:"Nothing to log today",
+           p:todayLogged ? "Today is logged. " + MONTH_GAP + " other day" + (MONTH_GAP>1?"s":"") +
+                           " still need doing when you get to them."
+                         : "It is the weekend. Enjoy it.", done:true };
+  }
+
+  el.className = "now" + (st.done ? " done" : "");
+  el.innerHTML = '<div class="txt"><div class="ey">' + esc(st.ey) + '</div>' +
+    '<h2>' + esc(st.h) + '</h2><p>' + esc(st.p) + '</p></div>' +
+    (st.cta ? '<button class="go" id="now-go">' + esc(st.cta) + ' \u2192</button>' : "");
+
+  const g = $("now-go");
+  if(g) g.onclick = () => {
+    if(st.go) go(st.go);
+    else if(st.act === "today") openDay(todayISO);
+    else if(st.act === "first-gap"){
+      const first = document.querySelector(".shell:not(.on):not(.half):not(.hol)");
+      if(first){ first.scrollIntoView({behavior:"smooth", block:"center"}); first.click(); }
+    }
+  };
+}
+
+// ---- payday takes the card over, once a month ----
+async function checkPayday(){
+  const { data, error } = await db.from("my_payslip").select("*").limit(1);
+  if(error || !data || !data.length) return;
+  const p = data[0];
+  if(p.status !== "certified" && p.status !== "paid") return;
+  const days = (Date.now() - new Date(p.certified_at)) / 86400000;
+  if(days > 3) return;                        // only while it is news
+  const el = $("now");
+  el.className = "now pay";
+  el.innerHTML = '<div class="txt"><div class="ey">Certified ' +
+    (days < 1 ? "today" : Math.round(days) + " days ago") + '</div>' +
+    '<h2>Your ' + MONTHS[p.month-1] + ' payslip is ready</h2>' +
+    '<p>' + N(p.transfer_amount) + ' is on its way to your account. The full breakdown is in My finance.</p></div>' +
+    '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
+}
+
+// ---- someone else's clock ----
+async function loadWaiting(){
+  if(!isManager()) return;
+  const [pl, ts] = await Promise.all([
+    db.from("plans_to_review").select("staff,submitted_at"),
+    db.from("timesheets_to_review").select("staff,signed_at")
+  ]);
+  const n = (pl.data?.length || 0) + (ts.data?.length || 0);
+  const w = $("waiting");
+  if(!n){ w.classList.add("hidden"); return; }
+  w.classList.remove("hidden");
+
+  // Name who has waited longest. A number is a nag; a name is a reason.
+  const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
+               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"}))]
+              .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
+  let tail = "";
+  if(all.length){
+    const d = Math.floor((Date.now() - new Date(all[0].at)) / 86400000);
+    tail = d >= 1 ? " " + all[0].who.split(" ")[0] + "'s has been waiting " +
+           (d === 1 ? "since yesterday." : d + " days.") : "";
+  }
+  const bits = [];
+  if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
+  if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
+
+  w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
+    bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
+}
+
+// ---- the quiet stats ----
+async function loadMinis(){
+  const { data: pl, error: ple } = await db.from("my_plans").select("*").eq("period","week").limit(1);
+  if(oops("Your plan", ple)) return;
+  if(pl && pl.length){
+    $("m-plan").innerHTML = pl[0].item_count + ' <small>item' + (pl[0].item_count===1?"":"s") + '</small>';
+    $("m-plan-s").textContent = pl[0].status === "approved" ? "Approved by " + (pl[0].reviewed_by || "your manager")
+      : pl[0].status === "submitted" ? "With your line manager"
+      : pl[0].status === "returned" ? "Returned, needs a change" : "Still a draft";
+  } else { $("m-plan").innerHTML = '0 <small>items</small>'; }
+
+  const { data: tg, error: tge } = await db.from("my_targets").select("id,status,rating");
+  if(oops("Your targets", tge)) return;
+  if(tg){
+    const open = tg.filter(t => !t.rating).length;
+    $("m-tg").innerHTML = tg.length + ' <small>set</small>';
+    $("m-tg-s").textContent = tg.length === 0 ? "None set yet"
+      : open + " still open, " + (tg.length - open) + " rated";
+  }
+
+  // corps members have no annual leave (Handbook §3.13), so do not offer it
+  if(PROFILE.employment_type !== "nysc"){
+    $("m-leave-btn").classList.remove("hidden");
+    $("m-leave").innerHTML = '14 <small>days a year</small>';
+    $("m-leave-s").textContent = "Leave is coming to this portal shortly";
+  }
+}
+
+
+// ============================================================
+// LEAVE
+// Every rule below is enforced in the database. The screen only
+// explains them; it never decides.
+// ============================================================
+let BAL = [];
+
+async function loadLeave(){
+  const { data, error } = await db.from("my_leave_balance").select("*");
+  if(oops("Your leave", error)) return;
+  BAL = data || [];
+
+  // the pots worth showing: the ones with a yearly figure and available to you
+  const pots = BAL.filter(b => b.days_per_year && b.available_to_me);
+  $("lv-balances").innerHTML = pots.map(b => {
+    const left = Number(b.remaining || 0);
+    return '<button class="mini" onclick="pickKind(\'' + b.kind + '\')">' +
+      '<div class="k">' + esc(b.label) + '</div>' +
+      '<div class="v">' + left + ' <small>of ' + (b.earned || b.days_per_year) + '</small></div>' +
+      '<div class="s">' + (Number(b.taken || 0) > 0 ? b.taken + " taken" : "None taken") +
+        (b.pay_rate < 1 ? " \u00b7 " + Math.round(b.pay_rate * 100) + "% pay" : "") + '</div></button>';
+  }).join("");
+
+  // the picker: only what this person may actually ask for
+  const can = BAL.filter(b => b.available_to_me);
+  $("lv-kind").innerHTML = '<option value="">Choose\u2026</option>' +
+    can.map(b => '<option value="' + b.kind + '">' + esc(b.label) + '</option>').join("");
+
+  // and say plainly what they cannot have, and why
+  const cannot = BAL.filter(b => !b.available_to_me && b.staff_can_request);
+  $("lv-lede").innerHTML = cannot.length
+    ? "What you have, and how to ask for it. " +
+      esc(cannot.map(c => c.label.replace(" leave","")).join(" and ")) +
+      " is not open to you at the moment."
+    : "What you have, and how to ask for it.";
+
+  lvKind();
+  await loadMyLeaveList();
+}
+
+window.pickKind = k => { $("lv-kind").value = k; lvKind(); $("lv-kind").scrollIntoView({behavior:"smooth", block:"center"}); };
+
+function lvKind(){
+  const k = $("lv-kind").value;
+  const b = BAL.find(x => x.kind === k);
+  if(!b){ $("lv-note").textContent = ""; $("lv-evi-row").classList.add("hidden"); lvCount(); return; }
+
+  // the handbook's own words, and why the number is what it is
+  $("lv-note").textContent = b.explain ? b.explain : (b.note || "");
+
+  // evidence, only when the rule says so
+  const needs = b.needs_evidence_over !== null && b.needs_evidence_over !== undefined;
+  $("lv-evi-row").classList.toggle("hidden", !needs);
+  if(needs){
+    $("lv-evi-lab").textContent = b.evidence_label || "Evidence";
+    $("lv-evi-hint").textContent = b.needs_evidence_over === 0
+      ? "Required."
+      : "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over===1?"":"s") + ".";
+  }
+  $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
+  $("lv-btn").textContent = b.needs_senior
+    ? "Send to my line manager" : "Send to my line manager";
+  lvCount();
+}
+
+async function lvCount(){
+  const f = val("lv-from"), t = val("lv-to"), k = $("lv-kind").value;
+  const box = $("lv-count");
+  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }
+  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
+
+  const { data, error } = await db.rpc("leave_days_in", { p_from: f, p_to: t });
+  if(oops("The day count", error)) return;
+  const days = Number(data || 0);
+  const b = BAL.find(x => x.kind === k);
+  const left = b && b.remaining !== null ? Number(b.remaining) : null;
+
+  let msg = "<b>" + days + " working day" + (days===1?"":"s") + "</b>";
+  if(days === 0){ box.className = "alert warn"; box.innerHTML = msg + "Weekends and public holidays are not leave. Pick working days."; return; }
+
+  const bits = [];
+  if(left !== null) bits.push(left - days >= 0
+    ? "You would have " + (left - days).toFixed(1).replace(/\.0$/,"") + " left."
+    : "That is " + (days - left).toFixed(1).replace(/\.0$/,"") + " more than you have.");
+  if(b && b.pay_rate < 1) bits.push(b.pay_rate === 0
+    ? "Unpaid."
+    : "Paid at " + Math.round(b.pay_rate*100) + "% (Employee Handbook)." );
+  if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
+    bits.push("Needs " + (b.evidence_label||"evidence").toLowerCase() + ".");
+  if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
+  else if(b) bits.push("Your manager decides. It stops there.");
+
+  box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
+  box.innerHTML = msg + bits.join(" ");
+}
+
+async function askLeave(){
+  const k = $("lv-kind").value, f = val("lv-from"), t = val("lv-to");
+  if(!k){ msg("lv-msg","err","Pick the kind","Which sort of leave is this?"); return; }
+  if(!f || !t){ msg("lv-msg","err","Pick the dates","From and to."); return; }
+
+  btn("lv-btn", true, "Sending");
+
+  // upload the evidence first, if there is any
+  let path = null;
+  const file = $("lv-evi").files[0];
+  if(file){
+    const name = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("leave-evidence").upload(PROFILE.id + "/" + name, file);
+    if(up.error){
+      btn("lv-btn", false, "Send to my line manager");
+      msg("lv-msg","err","Could not upload", up.error.message + " (is the 'leave-evidence' bucket created?)");
+      return;
+    }
+    path = up.data.path;
+  }
+
+  const { error } = await db.rpc("request_leave", {
+    p_kind: k, p_from: f, p_to: t, p_reason: val("lv-reason"), p_evidence_path: path
+  });
+  btn("lv-btn", false, "Send to my line manager");
+  if(error){ msg("lv-msg","err","Not sent", error.message); return; }
+
+  const b = BAL.find(x => x.kind === k);
+  msg("lv-msg","ok","Sent", b && b.needs_senior
+    ? "Your line manager sees it first, then the COO or the CEO. You will be told either way."
+    : "Your line manager decides this one. You will be told either way.");
+  ["lv-from","lv-to","lv-reason"].forEach(id => $(id).value = "");
+  $("lv-evi").value = "";
+  await loadLeave();
+  await loadTimesheet();          // approved leave changes the shells
+}
+
+async function loadMyLeaveList(){
+  const { data, error } = await db.from("my_leave").select("*");
+  const wrap = $("lv-list");
+  if(oops("Your leave history", error)) return;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not asked for any leave.</p>'; return; }
+
+  const STATE = { with_manager:"With your manager", with_senior:"With the COO or CEO",
+                  approved:"Approved", declined:"Declined", cancelled:"Cancelled" };
+  const CLS = { with_manager:"submitted", with_senior:"submitted", approved:"approved",
+                declined:"returned", cancelled:"draft" };
+
+  wrap.innerHTML = data.map(l => {
+    const note = l.senior_note || l.manager_note;
+    const who  = l.senior || l.manager;
+    return '<div class="qrow"><span class="t"><b>' + esc(l.label) + ' \u00b7 ' + l.days +
+      ' day' + (Number(l.days)===1?"":"s") + '</b><span>' + fmtRange(l.starts_on, l.ends_on) +
+      (l.pay_rate < 1 ? " \u00b7 " + (l.pay_rate === 0 ? "unpaid" : Math.round(l.pay_rate*100) + "% pay") : "") +
+      (who ? " \u00b7 " + esc(who) : "") + '</span>' +
+      (note ? '<span style="color:var(--muted);font-style:italic">\u201c' + esc(note) + '\u201d</span>' : "") +
+      '</span>' +
+      '<span class="st ' + CLS[l.state] + '">' + STATE[l.state] + '</span>' +
+      (["with_manager","with_senior"].includes(l.state) || (l.state === "approved" && l.starts_on > new Date().toISOString().slice(0,10))
+        ? '<button onclick="cancelLeave(' + l.id + ')" style="padding:4px 10px;font-size:12px;margin-left:8px">Cancel</button>' : "") +
+      '</div>';
+  }).join("");
+}
+
+async function cancelLeave(id){
+  if(!confirm("Cancel this leave request?")) return;
+  const { error } = await db.rpc("cancel_leave", { p_id: id });
+  if(error){ toast("Could not cancel. " + error.message); return; }
+  await loadLeave(); await loadTimesheet();
+}
+
+// ---- the manager's side ----
+async function loadLeaveQueue(){
+  const { data, error } = await db.from("leave_to_approve").select("*");
+  const wrap = $("ap-lv");
+  if(!wrap) return 0;
+  if(oops("Leave to approve", error)) return 0;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No leave waiting.</p>'; return 0; }
+
+  wrap.innerHTML = data.map(l => {
+    const stage = l.state === "with_manager" ? "awaiting you" : "awaiting a senior";
+    const pot = l.days_per_year ? " \u00b7 " + l.taken_this_year + " of " + l.days_per_year + " used this year" : "";
+    const evi = l.needs_evidence_over !== null && l.days > l.needs_evidence_over
+      ? (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">evidence attached</span>'
+                        : ' \u00b7 <span style="color:var(--red)">no evidence</span>') : "";
+    return '<div class="qrow"><span class="dot todo"></span>' +
+      '<span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+      '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + evi + '</span>' +
+      (l.reason ? '<span style="font-style:italic">\u201c' + esc(l.reason) + '\u201d</span>' : "") +
+      '</span>' +
+      '<button onclick="decideLeave(' + l.id + ', false)">Decline</button>' +
+      '<button class="btn-primary" style="margin-left:6px" onclick="decideLeave(' + l.id + ', true)">' +
+      (l.state === "with_manager" ? "Approve" : "Grant") + '</button></div>';
+  }).join("");
+  return data.length;
+}
+
+async function decideLeave(id, approve){
+  let note = null;
+  if(!approve){
+    note = prompt("Why are you declining? They will see this.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
+  } else {
+    note = prompt("A note for them (optional). Leave blank to just approve.") || null;
+  }
+  const { data, error } = await db.rpc("decide_leave", { p_id: id, p_approve: approve, p_note: note });
+  if(error){ toast("Could not do that. " + error.message); return; }
+  toast(data === "approved" ? "Approved. They have been told."
+       : data === "with_senior" ? "Approved and passed to the COO or CEO."
+       : "Returned to them with your reason.");
+  await loadApprovals();
+}
+
+// ---- sick and bereavement a manager already granted: the CEO/COO are told ----
+async function loadLeaveInfo(){
+  if(!isCertifier()) return;
+  const { data, error } = await db.from("leave_for_information").select("*").limit(8);
+  if(error || !data || !data.length) return;
+  $("ap-info-card").classList.remove("hidden");
+  $("ap-info").innerHTML = data.map(l =>
+    '<div class="qrow"><span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+    '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+    fmtRange(l.starts_on, l.ends_on) +
+    (l.approved_by ? " \u00b7 granted by " + esc(l.approved_by) : "") + '</span></span></div>').join("");
+}
+
+
+// ============================================================
 // REQUISITIONS
 // The threshold is decided in the database. This screen only tells you
 // what it is about to do, as you build the basket, so nothing is a surprise.
