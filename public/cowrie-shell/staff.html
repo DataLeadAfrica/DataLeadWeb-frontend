@@ -77,6 +77,11 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .back:hover{color:var(--clr-gray)}
 .alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
 .hint{font-size:12px;color:var(--faint);margin-top:5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;
+  background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
+  padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:.22s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -766,7 +771,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <div class="actions">
       <button onclick="closeModal()">Cancel</button>
       <button onclick="clearDay()" style="color:var(--red)">Clear day</button>
-      <button class="btn-primary" onclick="saveDay()">Save</button>
+      <button class="btn-primary" id="mo-save" onclick="saveDay()">Save</button>
     </div>
   </div>
 </div>
@@ -779,6 +784,29 @@ const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const $ = id => document.getElementById(id);
+
+// ---- nothing fails silently ----
+// Every background call routes its error through here. If it returns true,
+// the caller stops. The person sees what broke, in words, not a dead screen.
+function oops(where, error){
+  if(!error) return false;
+  console.error(where + ":", error);
+  toast(where + " could not load. " + (error.message || ""));
+  return true;
+}
+let toastTimer;
+function toast(text){
+  let t = $("toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "toast"; t.className = "toast";
+    document.body.appendChild(t);
+  }
+  t.textContent = text;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 6000);
+}
 window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showTab=showTab;
 window.go=go; window.savePersonal=savePersonal; window.saveNok=saveNok; window.saveFinancial=saveFinancial;
 
@@ -1025,13 +1053,15 @@ async function saveFinancial(){
 }
 
 async function refresh(){
-  const { data } = await db.from("my_full_profile").select("*").maybeSingle();
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(oops("Your profile", error)) return;
   if(data){ PROFILE = data; renderFacts(data); renderNudge(data);
     $("who-name").textContent = data.display_name || data.full_name; }
 }
 
 async function loadTitles(){
-  const { data } = await db.from("my_appointments").select("*");
+  const { data, error } = await db.from("my_appointments").select("*");
+  if(oops("Your appointments", error)) return;
   if(!data || !data.length){ $("p-titles").innerHTML = ""; return; }
   $("p-titles").innerHTML = data.map(a => {
     const acting = a.kind === "acting";
@@ -1096,11 +1126,14 @@ const DOW = ["Mon","Tue","Wed","Thu","Fri"];
 // stands in for Gemini until the AI check is wired; flags thin entries only
 function aiFlag(text){
   const t = (text||"").trim();
-  if(t.length < 15) return { thin:true, why:"Very short. Add what you actually worked on." };
-  if(t.split(/\s+/).length < 4) return { thin:true, why:"Only a few words. A day usually needs a sentence." };
-  if(/^(worked|busy|tasks|various|office|stuff|admin)\.?$/i.test(t))
-    return { thin:true, why:"Too general to tell what was done." };
-  return { thin:false, why:"Reads like a real day's work." };
+  // The assistant never decides. It only says what a manager is likely to ask.
+  if(t.length < 15)
+    return { thin:true, why:"That is very brief for a day's work. Your manager may ask what else you did." };
+  if(t.split(/\s+/).length < 4)
+    return { thin:true, why:"A few words rarely tell your manager what a day involved. They may query it." };
+  if(/^(worked|busy|tasks|various|office|stuff|admin|meetings?)\.?$/i.test(t))
+    return { thin:true, why:"Words like this do not say what was actually done. Your manager may query the day." };
+  return { thin:false, why:"That reads like a day's work." };
 }
 
 async function loadTimesheet(){
@@ -1154,7 +1187,8 @@ async function loadTimesheet(){
 }
 
 async function periodId(){
-  const { data } = await db.rpc("ensure_period", { p_year: TS_YEAR, p_month: TS_MONTH });
+  const { data, error } = await db.rpc("ensure_period", { p_year: TS_YEAR, p_month: TS_MONTH });
+  if(error) throw new Error("Opening the month: " + error.message);
   return data;
 }
 
@@ -1204,7 +1238,7 @@ function buildCal(){
 
 async function refreshHours(){
   const { data, error } = await db.rpc("hours_for", { p_staff: PROFILE.id, p_year: TS_YEAR, p_month: TS_MONTH });
-  if(error){ console.error("hours_for:", error.message); return; }
+  if(oops("Your hours", error)) return;
   const h = Array.isArray(data) ? data[0] : data;
   if(!h) return;
   const logged = h.days_logged || 0;
@@ -1228,18 +1262,52 @@ function openDay(iso){
   $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
   $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
   $("mo-ai").className = "ai-note hidden";
+  thinAcknowledged = false;
+  const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
   $("modal").classList.remove("hidden");
 }
 function closeModal(){ $("modal").classList.add("hidden"); editing = null; }
+
+// Typing more after a warning means they took the hint: re-check on the next save.
+document.addEventListener("input", e => {
+  if(e.target && e.target.id === "mo-act" && thinAcknowledged){
+    thinAcknowledged = false;
+    const b = $("mo-save"); if(b){ b.textContent = "Save"; b.className = "btn-primary"; }
+    const ai = $("mo-ai"); if(ai) ai.className = "ai-note hidden";
+  }
+});
+
+let thinAcknowledged = false;
 
 async function saveDay(){
   const hours = parseFloat($("mo-hours").value);
   const act = $("mo-act").value.trim();
   if(!hours || hours <= 0){ alert("Enter the hours you worked."); return; }
+
   const f = aiFlag(act);
   const ai = $("mo-ai");
+  const btnEl = $("mo-save");
+
+  // Thin, and they have not yet said "yes, that was the day".
+  // Warn, name the consequence, and hand the decision back to them.
+  if(f.thin && !thinAcknowledged){
+    ai.className = "ai-note ai-thin";
+    ai.innerHTML = "<b>\u2691 This looks thin for " + hours + " hours</b>" + f.why +
+      "<div style='margin-top:7px'>If that is genuinely all you did today, save it anyway. " +
+      "It will be flagged for your manager either way.</div>";
+    ai.classList.remove("hidden");
+    thinAcknowledged = true;
+    btnEl.textContent = "Save it anyway";
+    btnEl.className = "";                   // step it down from primary: adding detail is the better path
+    $("mo-act").focus();
+    return;                                 // nothing is saved on this click
+  }
+
+  // Either it reads fine, or they have looked at the warning and meant it.
   ai.className = "ai-note " + (f.thin ? "ai-thin" : "ai-ok");
-  ai.innerHTML = "<b>" + (f.thin ? "\u2691 This looks thin" : "\u2713 Looks fine") + "</b>" + f.why;
+  ai.innerHTML = f.thin
+    ? "<b>Saved, and flagged</b>Your manager will see this day marked for a look."
+    : "<b>\u2713 " + f.why + "</b>";
   ai.classList.remove("hidden");
 
   const { error } = await db.rpc("log_day", {
@@ -1248,7 +1316,7 @@ async function saveDay(){
   });
   if(error){ alert("Could not save: " + error.message); return; }
   await loadTimesheet();
-  setTimeout(closeModal, f.thin ? 1300 : 600);
+  setTimeout(closeModal, f.thin ? 1100 : 600);
 }
 
 async function clearDay(){
@@ -1289,7 +1357,8 @@ async function loadPlan(){
   if(error){ msg("pl-msg","err","Could not open your plan", error.message); return; }
   PLAN_ID = id;
 
-  const { data: pl } = await db.from("my_plans").select("*").eq("id", id).maybeSingle();
+  const { data: pl, error: pe } = await db.from("my_plans").select("*").eq("id", id).maybeSingle();
+  if(oops("Your plan", pe)) return;
   if(pl){
     $("pl-title").textContent = PLAN_PERIOD === "week" ? "This week" : "This month";
     $("pl-dates").textContent = fmtRange(pl.period_start, pl.period_end);
@@ -1307,7 +1376,8 @@ async function loadPlan(){
     $("pl-dot").className = "dot " + (pl.status === "draft" ? "todo" : "done");
   }
 
-  const { data: tg } = await db.from("my_targets").select("id,title,period");
+  const { data: tg, error: te } = await db.from("my_targets").select("id,title,period");
+  if(oops("Your targets", te)) return;
   $("it-target").innerHTML = '<option value="">\u2014</option>' +
     (tg||[]).map(t => '<option value="' + t.id + '">' + esc(t.title) + " (" + t.period + ")</option>").join("");
 
@@ -1410,7 +1480,8 @@ async function loadApprovals(){
 async function openReview(id){
   RV_SUB = id;
   go("review");
-  const { data: rows } = await db.from("timesheets_to_review").select("*").eq("id", id).maybeSingle();
+  const { data: rows, error: re } = await db.from("timesheets_to_review").select("*").eq("id", id).maybeSingle();
+  if(oops("That submission", re)) return;
   if(rows){
     $("rv-name").textContent = rows.staff;
     $("rv-eyebrow").textContent = MONTHS[rows.month-1] + " " + rows.year +
@@ -1421,7 +1492,8 @@ async function openReview(id){
     $("rv-ok").textContent = rows.status === "submitted" ? "Approve and pass up" : "Give final approval";
   }
 
-  const { data: h } = await db.rpc("submission_hours", { p_submission_id: id });
+  const { data: h, error: he } = await db.rpc("submission_hours", { p_submission_id: id });
+  if(oops("The hours", he)) return;
   const hh = Array.isArray(h) ? h[0] : h;
   if(hh){
     $("rv-wd").textContent = hh.working_days;
@@ -1468,7 +1540,8 @@ async function reviewTs(approve){
 async function openPlanReview(id){
   PR_PLAN = id;
   go("planreview");
-  const { data: p } = await db.from("plans_to_review").select("*").eq("id", id).maybeSingle();
+  const { data: p, error: pe2 } = await db.from("plans_to_review").select("*").eq("id", id).maybeSingle();
+  if(oops("That plan", pe2)) return;
   if(p){
     $("pr-name").textContent = p.staff;
     $("pr-dates").textContent = p.period + " \u00b7 " + fmtRange(p.period_start, p.period_end);
@@ -1486,9 +1559,14 @@ async function openPlanReview(id){
 }
 
 async function reviewPlan(approve){
+  const note = val("pr-note");
+  if(!approve && !note){
+    msg("pr-msg","err","Say what to change","Returning a plan without a reason leaves them guessing.");
+    return;
+  }
   btn("pr-ok", true, "Working");
   const { error } = await db.rpc("review_plan", {
-    p_plan_id: PR_PLAN, p_approve: approve, p_note: val("pr-note")
+    p_plan_id: PR_PLAN, p_approve: approve, p_note: note
   });
   btn("pr-ok", false, "Approve");
   if(error){ msg("pr-msg","err","Could not do that", error.message); return; }
@@ -1498,7 +1576,8 @@ async function reviewPlan(approve){
 
 // ---- team targets ----
 async function loadTeam(){
-  const { data } = await db.from("my_team").select("*");
+  const { data, error } = await db.from("my_team").select("*");
+  if(oops("Your team", error)) return;
   $("tg-staff").innerHTML = '<option value="">Choose\u2026</option>' +
     (data||[]).map(t => '<option value="' + esc(t.email) + '">' + esc(t.display_name) +
       (t.department ? " \u00b7 " + esc(t.department) : "") + '</option>').join("");
@@ -1845,7 +1924,8 @@ function isCertifier(){ const r = PROFILE.roles || []; return r.includes("super_
 
 async function loadRoster(){
   monthOptions("rn-month", new Date().getMonth() + 1);
-  const { data: team } = await db.from("admin_staff_list").select("full_name,email").order("full_name");
+  const { data: team, error: tme } = await db.from("admin_staff_list").select("full_name,email").order("full_name");
+  if(oops("The staff list", tme)) return;
   if(team) $("aj-staff").innerHTML = '<option value="">Choose\u2026</option>' +
     team.map(t => '<option value="' + esc(t.email) + '">' + esc(t.full_name) + '</option>').join("");
   await paintRoster();
@@ -1869,7 +1949,8 @@ async function runPayroll(){
 async function paintRoster(){
   const y = Number($("rn-year").value), m = Number($("rn-month").value);
 
-  const { data: sum } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  const { data: sum, error: se } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  if(oops("The summary", se)) return;
   $("sum-body").innerHTML = sum ? summaryCard(sum, y, m) : "";
 
   const { data, error } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
@@ -1938,15 +2019,30 @@ async function addAdjustment(){
 async function exportSchedule(){
   const y = Number($("rn-year").value), m = Number($("rn-month").value);
   const { data, error } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
-  if(error || !data || !data.length){ alert("Nothing to export for this month."); return; }
+  if(oops("The roster", error)) return;
+  if(!data || !data.length){ toast("Nothing to export for " + MONTHS[m-1] + " " + y + " yet."); return; }
+
+  // Anyone without bank details cannot be paid. Say so before the file is made,
+  // not after the transfer fails.
+  const missing = data.filter(r => !r.account_number || !r.bank_name);
+  if(missing.length){
+    const names = missing.map(r => r.staff).join(", ");
+    if(!confirm(missing.length + " of " + data.length + " have no bank details on file:\n\n" +
+                names + "\n\nThey cannot be paid. Export the rest anyway?")) return;
+  }
+  const payable = data.filter(r => r.account_number && r.bank_name);
+  if(!payable.length){ toast("Nobody on this run has bank details. Nothing to export."); return; }
+
   const head = ["Staff","Staff ID","Bank","Account name","Account number","Amount"];
-  const rows = data.map(r => [r.staff, r.staff_code || "", r.bank_name || "", r.account_name || "",
-    "'" + (r.account_number || ""), Number(r.transfer_amount).toFixed(2)]);
+  const rows = payable.map(r => [r.staff, r.staff_code || "", r.bank_name, r.account_name || "",
+    "'" + r.account_number, Number(r.transfer_amount).toFixed(2)]);
   const csv = [head, ...rows].map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
   const url = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
   const a = document.createElement("a");
   a.href = url; a.download = "bank-schedule-" + y + "-" + String(m).padStart(2,"0") + ".csv";
   a.click(); URL.revokeObjectURL(url);
+  toast(payable.length + " line" + (payable.length>1?"s":"") + " exported" +
+        (missing.length ? ", " + missing.length + " left out for want of bank details." : "."));
 }
 
 // ---------- certify ----------
@@ -1954,7 +2050,8 @@ function initCertify(){ monthOptions("cf-month", new Date().getMonth() + 1); loa
 
 async function loadCertify(){
   const y = Number($("cf-year").value), m = Number($("cf-month").value);
-  const { data: s } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  const { data: s, error: sce } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  if(oops("The month", sce)) return;
   if(!s){ $("cf-body").innerHTML = '<div class="alert info"><b>Nothing to certify</b>Finance has not run this month yet.</div>'; return; }
   const done = Number(s.certified_count) === Number(s.staff_count);
   const balanced = Math.abs(Number(s.tally_check)) <= 1;
