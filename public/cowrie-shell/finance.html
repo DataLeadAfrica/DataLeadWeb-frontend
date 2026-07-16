@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Finance · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14232e; --gray:#2c2b2d; --muted:#5b5b66; --faint:#8b8792;
+  --orange:#f56e0f; --orange-med:#f9a971; --orange-light:#fde9da;
+  --line:#ecebf0; --card:#fff; --blue:#e7f5fe;
+  --green:#1d6b4c; --green-bg:#e9f5ef;
+  --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
+  --red:#a32d2d; --red-bg:#fbecec;
+  --paper:#fdfbf7; --sand:#eee5d8; --clay:#c9541e;
+  --display:"ClashDisplay-Semibold","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Poppins",system-ui,sans-serif;color:var(--gray);background:var(--paper);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--gray);
+  border-radius:11px;padding:9px 15px;transition:.14s}
+button:hover{border-color:var(--gray)}
+button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:500}
+.btn-primary:hover{background:#e0620c;border-color:#e0620c}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint)}
+input,select,textarea{font:inherit;width:100%;padding:9px 11px;border:1px solid #dae2e7;border-radius:8px;background:#fff;color:var(--gray)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:-1px;border-color:var(--orange)}
+input:disabled{background:var(--paper);color:var(--muted)}
+label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
+.hidden{display:none!important}
+.wrap{max-width:1020px;margin:0 auto;padding:0 22px 80px}
+.banner{background:var(--ink);color:#fff;font-size:12.5px;padding:7px 20px;text-align:center}
+
+.top{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:14.5px}
+.brand .chip{background:var(--green);color:#fff;font-size:9.5px;padding:2px 7px;border-radius:5px;
+  letter-spacing:.09em;font-family:var(--display-md);margin-left:2px}
+.mark{width:22px;height:22px}
+.me{display:flex;align-items:center;gap:11px;font-size:13px}
+.me .nm{text-align:right;line-height:1.3}
+.me .nm b{font-family:var(--display-md);font-weight:500;display:block}
+.me .nm button{padding:3px 10px;font-size:12px;margin-top:3px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--green-bg);border:1px solid var(--green);
+  display:grid;place-items:center;font-family:var(--display-md);font-size:13px;color:var(--green);flex:none}
+
+/* ---------- the queue: what has to be done ---------- */
+.lede{margin-bottom:24px}
+.lede .eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.16em;
+  font-size:10.5px;color:var(--orange);margin-bottom:8px}
+.lede h1{font-size:clamp(27px,3.8vw,36px);letter-spacing:-.025em;margin-bottom:6px}
+.lede p{color:var(--muted);font-size:14px}
+
+.todo{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+.job{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--faint);border-radius:14px;padding:16px 20px;cursor:pointer;
+  transition:.14s;text-align:left;width:100%}
+.job:hover{transform:translateX(2px);border-color:var(--orange-med);border-left-color:var(--orange)}
+.job.urgent{border-left-color:var(--red);background:linear-gradient(90deg,var(--red-bg) 0%,var(--card) 40%)}
+.job.urgent .n{color:var(--red)}
+.job.soon{border-left-color:var(--amber)}
+.job.soon .n{color:var(--amber)}
+.job .n{font-family:var(--display);font-size:28px;line-height:1;color:var(--orange);flex:none;
+  min-width:38px;font-variant-numeric:tabular-nums}
+.job .t{flex:1}
+.job .t b{font-family:var(--display-md);font-weight:500;font-size:15px;display:block}
+.job .t span{font-size:12.5px;color:var(--muted)}
+.job .arr{color:var(--faint)}
+.clear{background:var(--green-bg);border:1px solid var(--green);border-radius:14px;padding:18px 22px;
+  color:var(--green);font-size:14px;margin-bottom:26px}
+.clear b{font-family:var(--display-md);display:block;margin-bottom:2px}
+
+/* ---------- money in, money out ---------- */
+.inout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.inout div{background:var(--card);padding:18px 20px}
+.inout .k{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;
+  font-family:var(--display-md);margin-bottom:6px}
+.inout .v{font-family:var(--display);font-size:25px;line-height:1;letter-spacing:-.02em}
+.inout .v.in{color:var(--green)} .inout .v.out{color:var(--clay)}
+.inout .v.neg{color:var(--red)}
+.inout .s{font-size:11.5px;color:var(--muted);margin-top:4px}
+
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.door{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:19px 21px;
+  text-align:left;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:5px;min-height:108px}
+.door:hover{border-color:var(--orange-med);transform:translateY(-2px);box-shadow:0 10px 30px -14px rgba(0,0,0,.16)}
+.door .ic{width:24px;height:24px;color:var(--orange);margin-bottom:5px}
+.door b{font-family:var(--display-md);font-weight:500;font-size:15px}
+.door span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.section-label{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--faint);margin:30px 0 12px}
+
+.back{background:none;border:none;color:var(--muted);font-size:13px;padding:0 0 16px;text-decoration:underline}
+.back:hover{color:var(--gray)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:14px}
+.panel h3{font-size:14px;font-family:var(--display-md);font-weight:500;margin-bottom:3px}
+.panel .ps{font-size:12.5px;color:var(--muted);margin-bottom:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.panel-head h3{margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fld{margin-bottom:12px}
+.hint{font-size:11.5px;color:var(--faint);margin-top:4px}
+.alert{border-radius:8px;padding:11px 14px;margin:12px 0;font-size:12.5px;border-left:3px solid}
+.alert.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.alert.info{background:var(--blue);border-color:#7fbde8;color:#1a4e73}
+.alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.alert b{display:block;font-family:var(--display-md);margin-bottom:2px}
+.qrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.qrow:last-child{border:none}
+.qrow .t{flex:1;min-width:0}
+.qrow .t b{font-family:var(--display-md);font-weight:500;font-size:14px;display:block}
+.qrow .t span{font-size:12px;color:var(--muted);display:block}
+.qrow .amt{font-family:var(--display-md);font-variant-numeric:tabular-nums;flex:none}
+.rowbtn{padding:5px 11px;font-size:12px}
+.tag{font-size:10px;padding:2px 7px;border-radius:20px;font-family:var(--display-md);white-space:nowrap}
+.tag.ok{background:var(--green-bg);color:var(--green)}
+.tag.wait{background:var(--amber-bg);color:var(--amber)}
+.tag.bad{background:var(--red-bg);color:var(--red)}
+.tag.calm{background:var(--line);color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);
+  font-weight:500;padding:0 10px 8px 0;font-family:var(--display-md)}
+td{padding:10px 10px 10px 0;border-top:1px solid var(--line);vertical-align:top}
+td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums}
+.split{display:flex;height:42px;border-radius:9px;overflow:hidden;margin-top:4px}
+.split i{display:flex;align-items:center;justify-content:center;font-family:var(--display-md);
+  font-size:12px;color:#fff;min-width:0}
+.split i span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--faint);margin-top:12px;flex-wrap:wrap}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px}
+.spark{display:flex;align-items:flex-end;gap:4px;height:120px;margin:10px 0 26px}
+.spark div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;position:relative;gap:2px}
+.spark i{display:block;border-radius:3px 3px 0 0;transition:.15s}
+.spark i.in{background:var(--green)} .spark i.out{background:var(--clay)}
+.spark div em{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-style:normal;
+  font-size:9.5px;color:var(--faint)}
+.spark div b{position:absolute;top:-34px;left:50%;transform:translateX(-50%);font-size:10px;
+  font-family:var(--display-md);opacity:0;transition:.15s;white-space:nowrap;background:var(--ink);
+  color:#fff;padding:3px 6px;border-radius:5px;z-index:3;line-height:1.4}
+.spark div:hover b{opacity:1}
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+.plate h2{font-size:24px;margin-bottom:4px}
+.plate .lede2{font-size:13.5px;color:var(--muted);margin-bottom:20px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;
+  border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;
+  background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
+  padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);
+  box-shadow:0 8px 30px -8px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.22s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.good{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+@media (max-width:700px){ .inout{grid-template-columns:1fr} .grid2,.grid3{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="banner">Finance. Everything here is recorded against your name.</div>
+
+<div id="gate" class="gate">
+  <div class="plate">
+    <div class="brand" style="margin-bottom:20px">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell <span class="chip">FINANCE</span>
+    </div>
+    <h2>Sign in</h2>
+    <p class="lede2">Same login as your staff portal. This is the other door.</p>
+    <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
+    <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+    <div id="li-msg"></div>
+    <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell <span class="chip">FINANCE</span>
+    </div>
+    <div class="me">
+      <div class="nm"><b id="who-name">—</b><br><span>Finance</span><br>
+        <button onclick="signOut()">Sign out</button></div>
+      <div class="av" id="who-av">—</div>
+    </div>
+  </div>
+
+  <!-- ============ THE QUEUE ============ -->
+  <section id="v-hub">
+    <div class="lede">
+      <div class="eyebrow">Data-Lead Africa · Finance</div>
+      <h1 id="hub-greet">Good afternoon.</h1>
+      <p id="hub-say">What needs doing, and what the money is doing.</p>
+    </div>
+
+    <div class="todo" id="todo"></div>
+
+    <div class="section-label">This year so far</div>
+    <div class="inout" id="inout"></div>
+
+    <div class="section-label">Where to</div>
+    <div class="doors" id="doors"></div>
+  </section>
+
+  <!-- ============ PAYROLL ============ -->
+  <section id="v-payroll" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Payroll</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      You compute it. The CEO or COO certifies it. Different people, deliberately.</p>
+
+    <div class="panel" style="padding:16px 20px">
+      <div class="grid3" style="grid-template-columns:1fr 1fr auto;align-items:end">
+        <div class="fld" style="margin:0"><label>Year</label><input id="pr-year" type="number" onchange="paintPayroll()"></div>
+        <div class="fld" style="margin:0"><label>Month</label><select id="pr-month" onchange="paintPayroll()"></select></div>
+        <button class="btn-primary" id="run-btn" onclick="runPayroll()">Run the month</button>
+      </div>
+      <div id="run-msg"></div>
+    </div>
+
+    <div id="pay-sum"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>The roster</h3><div class="ps">Every line. This is the only screen in Finance that names figures against people.</div></div>
+        <button onclick="exportSchedule()">Export bank schedule</button>
+      </div>
+      <div id="roster"><p style="color:var(--faint);font-size:13px">Run the month to see it.</p></div>
+    </div>
+
+    <div class="panel">
+      <h3>Add a reimbursement or a deduction</h3>
+      <p class="cardsub" style="font-size:12.5px;color:var(--muted);margin-bottom:16px">
+        Start a deduction with Loan, Advance or Union, or a claim with Travel, and it lands in that column of the model. Anything else is "other".</p>
+      <div class="grid2">
+        <div class="fld"><label>Who</label><select id="aj-staff"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Kind</label>
+          <select id="aj-kind">
+            <option value="reimbursement">Reimbursement &middot; added after tax</option>
+            <option value="deduction">Deduction &middot; taken after tax</option>
+          </select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Description</label><input id="aj-desc" placeholder="Travel claim, Chad field visit"></div>
+        <div class="fld"><label>Amount (&#8358;)</label><input id="aj-amt" type="number"></div>
+      </div>
+      <div class="alert warn" style="margin-top:0"><b>A claim without a receipt is taxable</b>
+        Your payroll model says it plainly: a fixed monthly sum paid with no receipt is an allowance, not a reimbursement, and is fully taxable. Pay only against a receipt, and only the amount claimed.</div>
+      <div id="aj-msg"></div>
+      <button class="btn-primary" id="aj-btn" onclick="addAdjustment()">Add it</button>
+      <div id="aj-list" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- ============ REQUISITIONS ============ -->
+  <section id="v-reqs" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Requisitions</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Cleared and waiting for money. Anything above the line has already been approved.</p>
+    <div class="panel">
+      <div class="panel-head"><div><h3>To pay</h3></div>
+        <button class="rowbtn" onclick="loadReqs()">Refresh</button></div>
+      <div id="req-pay"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="panel hidden" id="req-close-card">
+      <h3>Ready to close</h3>
+      <div class="ps">Every receipt is in. Closing one says the money was accounted for, not just handed over.</div>
+      <div id="req-close"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Receipts outstanding</h3>
+      <div class="ps">Money already handed out with nothing to show for it yet. This is what an auditor asks about.</div>
+      <div id="req-owed"></div>
+    </div>
+  </section>
+
+  <!-- ============ CASHBOOK ============ -->
+  <section id="v-cash" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Cashbook</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:6px">
+      What came in, what went out.</p>
+    <div class="alert info" style="margin-bottom:18px"><b>This is a cashbook, not your books</b>
+      No double entry, no trial balance, no reconciliation. It tells you what happened and it informs your accountant. It does not replace them.</div>
+
+    <div class="grid3" style="max-width:520px;margin-bottom:18px">
+      <div class="fld" style="margin:0"><label>From</label><input id="cb-from" type="date" onchange="loadCash()"></div>
+      <div class="fld" style="margin:0"><label>To</label><input id="cb-to" type="date" onchange="loadCash()"></div>
+      <div class="fld" style="margin:0"><label>&nbsp;</label>
+        <select id="cb-quick" onchange="cbQuick()">
+          <option value="ytd">This year</option>
+          <option value="month">This month</option>
+          <option value="week">This week</option>
+          <option value="last">Last year</option>
+        </select></div>
+    </div>
+
+    <div id="cash-body"></div>
+
+    <div class="panel">
+      <h3>Record money</h3>
+      <div class="ps">Only what the system cannot already know. Payroll and requisitions are read from where they happened; do not type them here.</div>
+      <div class="grid3">
+        <div class="fld"><label>In or out</label>
+          <select id="cs-dir" onchange="csDir()">
+            <option value="income">Money in</option>
+            <option value="expense">Money out</option>
+          </select></div>
+        <div class="fld"><label>Category</label><select id="cs-cat"></select></div>
+        <div class="fld"><label id="cs-proj-lab">Which project</label><select id="cs-proj" onchange="csProj()"></select>
+          <p class="hint" id="cs-proj-note"></p></div>
+      </div>
+      <div class="grid3">
+        <div class="fld"><label>Description</label><input id="cs-desc" placeholder="Second tranche, Chad baseline"></div>
+        <div class="fld"><label>Amount (&#8358;)</label><input id="cs-amt" type="number"></div>
+        <div class="fld"><label>When</label><input id="cs-on" type="date"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label id="cs-cp-lab">Who paid us</label><input id="cs-cp" placeholder="UNICEF Nigeria"></div>
+        <div class="fld"><label>Evidence (optional)</label><input id="cs-file" type="file" accept="application/pdf,image/*"></div>
+      </div>
+      <div id="cs-msg"></div>
+      <button class="btn-primary" id="cs-btn" onclick="addCash()">Record it</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Everything</h3><div class="ps">Typed entries, plus payroll and requisitions read from where they happened.</div></div></div>
+      <div id="cash-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ PAYE ============ -->
+  <section id="v-paye" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">PAYE to FCT-IRS</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      What you deducted from staff must reach the revenue service by the 10th of the following month.</p>
+    <div class="panel">
+      <div id="paye-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div id="paye-form"></div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="v-projects" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Projects</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Every naira is charged to one of these. Did a project make money, or lose it?</p>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Add a project</h3></div></div>
+      <div class="grid3">
+        <div class="fld"><label>Code</label><input id="pj-code" placeholder="CHAD-26"></div>
+        <div class="fld"><label>Name</label><input id="pj-name" placeholder="Chad baseline survey"></div>
+        <div class="fld"><label>Funder</label><input id="pj-funder" placeholder="UNICEF"></div>
+      </div>
+      <div class="grid3">
+        <div class="fld"><label>Budget (&#8358;, optional)</label><input id="pj-budget" type="number"></div>
+        <div class="fld"><label>Starts</label><input id="pj-start" type="date"></div>
+        <div class="fld"><label>Ends</label><input id="pj-end" type="date"></div>
+      </div>
+      <div id="pj-msg"></div>
+      <button class="btn-primary" id="pj-btn" onclick="addProject()">Add it</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>The projects</h3></div>
+        <button class="rowbtn" onclick="loadProjects()">Refresh</button></div>
+      <div id="pj-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+function oops(where, error){
+  if(!error) return false;
+  console.error(where + ":", error);
+  toast(where + " could not load. " + (error.message || ""));
+  return true;
+}
+let toastTimer;
+function toast(text, good){
+  let t = $("toast");
+  if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.className = "toast on" + (good ? " good" : "");
+  t.textContent = text;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 6000);
+}
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const N  = v => v === null || v === undefined ? "\u2014" : "\u20a6" + Number(v).toLocaleString("en-NG",{maximumFractionDigits:0});
+const N2 = v => v === null || v === undefined ? "\u2014" : "\u20a6" + Number(v).toLocaleString("en-NG",{maximumFractionDigits:2});
+const K  = v => { const n = Math.abs(Number(v||0));
+  return (Number(v) < 0 ? "-" : "") + "\u20a6" + (n >= 1e6 ? (n/1e6).toFixed(2)+"m" : n >= 1e3 ? (n/1e3).toFixed(0)+"k" : n.toFixed(0)); };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const val = id => { const e = $(id); const v = e ? String(e.value||"").trim() : ""; return v || null; };
+const set = (id, v) => { const e = $(id); if(e) e.value = v ?? ""; };
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmtDate = d => d ? new Date(String(d).slice(0,10)+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "\u2014";
+const ini = n => String(n||"").replace(/^(Dr|Prof|Mr|Mrs|Ms|Miss|Engr|Barr|Chief)\.?\s+/i,"")
+                  .split(/\s+/).map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
+function msg(id, kind, title, body){ const e = $(id); if(e) e.innerHTML = '<div class="alert '+kind+'"><b>'+title+'</b>'+esc(body)+'</div>'; }
+function btn(id, busy, label){ const b = $(id); if(!b) return; b.disabled = busy;
+  b.innerHTML = busy ? '<span class="spin"></span>'+label+"\u2026" : label; }
+
+async function notify(event, toEmail, toName, extra = {}){
+  try {
+    const { error } = await db.functions.invoke("notify", { body: { event, to_email: toEmail, to_name: toName, ...extra } });
+    if(error){ console.warn("notify:", error.message); return false; }
+    return true;
+  } catch(e){ console.warn("notify:", e); return false; }
+}
+
+// ============================================================
+// SESSION
+// ============================================================
+let ME = null;
+window.signIn = signIn; window.signOut = signOut; window.go = go;
+
+db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
+
+async function signIn(){
+  const email = val("li-email"), pass = $("li-pass").value;
+  if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
+  btn("li-btn", true, "Signing in");
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  btn("li-btn", false, "Sign in");
+  if(error) msg("li-msg","err","Could not sign in", error.message);
+}
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+async function enterApp(){
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(error || !data){ msg("li-msg","err","Profile not found","Your login is not linked to a staff record."); await db.auth.signOut(); return; }
+  ME = data;
+  const roles = ME.roles || [];
+  if(!roles.includes("finance") && !roles.includes("super_admin")){
+    msg("li-msg","err","Not for you","This door is for Finance. Your own portal is the staff one.");
+    await db.auth.signOut(); return;
+  }
+  $("who-name").textContent = ME.display_name || ME.full_name;
+  $("who-av").textContent = ini(ME.full_name);
+  const h = new Date().getHours();
+  $("hub-greet").textContent = "Good " + (h < 12 ? "morning" : h < 17 ? "afternoon" : "evening") + ", " +
+    (ME.full_name||"").trim().split(/\s+/)[0] + ".";
+  $("gate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  loadHub();
+}
+
+const VIEWS = ["hub","payroll","reqs","cash","paye","projects"];
+function go(v){
+  VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  window.scrollTo(0,0);
+  if(v === "hub")      loadHub();
+  if(v === "payroll")  initPayroll();
+  if(v === "reqs")     loadReqs();
+  if(v === "cash")     initCash();
+  if(v === "paye")     loadPaye();
+  if(v === "projects") loadProjects();
+}
+
+// ============================================================
+// THE QUEUE  ·  Finance's job is a list of things to do
+// ============================================================
+async function loadHub(){
+  const { data, error } = await db.from("finance_glance").select("*").maybeSingle();
+  if(oops("The queue", error)) return;
+  const g = data || {};
+
+  const jobs = [];
+  if(g.paye_late > 0) jobs.push({ n:g.paye_late, cls:"urgent", v:"paye",
+    t:"PAYE is late", s:K(g.paye_late_total) + " was deducted from staff and has not reached FCT-IRS. It was due by the 10th." });
+  if(g.months_to_run > 0) jobs.push({ n:g.months_to_run, cls:"soon", v:"payroll",
+    t:(g.months_to_run === 1 ? "A month" : "Months") + " to run",
+    s:g.people_to_pay + " approved timesheet" + (g.people_to_pay===1?"":"s") + " with no pay computed yet." });
+  if(g.reqs_to_pay > 0) jobs.push({ n:g.reqs_to_pay, cls:"", v:"reqs",
+    t:"Requisitions to pay", s:K(g.reqs_to_pay_total) + " cleared and waiting for the money to move." });
+  if(g.paye_due > 0) jobs.push({ n:g.paye_due, cls:"soon", v:"paye",
+    t:"PAYE to remit", s:K(g.paye_due_total) + " due to FCT-IRS." });
+  if(g.paye_untold > 0) jobs.push({ n:g.paye_untold, cls:"", v:"paye",
+    t:"Staff not told about their PAYE", s:"Remitted, but nobody has been told it was paid on their behalf." });
+  if(g.receipts_owed > 0) jobs.push({ n:g.receipts_owed, cls:"", v:"reqs",
+    t:"Receipts outstanding", s:K(g.receipts_owed_value) + " went out with nothing to show for it yet." });
+  if(g.no_bank > 0) jobs.push({ n:g.no_bank, cls:"soon", v:"payroll",
+    t:"Cannot be paid", s:(g.no_bank===1?"One person has":g.no_bank + " people have") + " no bank details on file." });
+
+  $("todo").innerHTML = jobs.length
+    ? jobs.map(j => '<button class="job ' + j.cls + '" onclick="go(\'' + j.v + '\')">' +
+        '<span class="n">' + j.n + '</span><span class="t"><b>' + j.t + '</b><span>' + j.s + '</span></span>' +
+        '<span class="arr">\u2192</span></button>').join("")
+    : '<div class="clear"><b>Nothing is waiting</b>Payroll is run, requisitions are paid, PAYE is remitted, and every receipt is in. Rare, and worth noticing.</div>';
+
+  const inn = Number(g.money_in_ytd||0), out = Number(g.money_out_ytd||0), net = Number(g.net_ytd||0);
+  $("inout").innerHTML =
+    '<div><div class="k">Money in</div><div class="v in">' + K(inn) + '</div><div class="s">this year</div></div>' +
+    '<div><div class="k">Money out</div><div class="v out">' + K(out) + '</div><div class="s">payroll, PAYE, requisitions and the rest</div></div>' +
+    '<div><div class="k">Net</div><div class="v ' + (net < 0 ? "neg" : "in") + '">' + K(net) + '</div>' +
+      '<div class="s">' + (net < 0 ? "More has gone out than came in" : "More came in than went out") + '</div></div>';
+
+  const doors = [
+    { v:"payroll", t:"Payroll", s:"Run the month, adjust it, export the bank schedule.",
+      ic:'<path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/>' },
+    { v:"reqs", t:"Requisitions", s:"Pay what has been cleared. Chase the receipts.",
+      ic:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10h8M8 14h5"/>' },
+    { v:"cash", t:"Cashbook", s:"What came in, what went out, and what is left.",
+      ic:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>' },
+    { v:"paye", t:"PAYE", s:"What is owed to FCT-IRS, and telling staff it was paid.",
+      ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/>' },
+    { v:"projects", t:"Projects", s:"Where the money comes from, and whether it made any.",
+      ic:'<path d="M3 7h18M3 12h18M3 17h10"/>' },
+  ];
+  $("doors").innerHTML = doors.map(d =>
+    '<button class="door" onclick="go(\'' + d.v + '\')">' +
+    '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + d.ic + '</svg>' +
+    '<b>' + d.t + '</b><span>' + d.s + '</span></button>').join("");
+}
+
+// ============================================================
+// PAYROLL
+// ============================================================
+window.runPayroll = runPayroll; window.paintPayroll = paintPayroll;
+window.addAdjustment = addAdjustment; window.dropAdjustment = dropAdjustment;
+window.exportSchedule = exportSchedule;
+
+async function initPayroll(){
+  const now = new Date();
+  if(!val("pr-year")) set("pr-year", now.getFullYear());
+  $("pr-month").innerHTML = MONTHS.map((m,i) =>
+    '<option value="' + (i+1) + '"' + (i+1 === now.getMonth()+1 ? " selected" : "") + '>' + m + '</option>').join("");
+  const { data, error } = await db.from("admin_staff_list").select("full_name,email").order("full_name");
+  if(!oops("The staff list", error) && data)
+    $("aj-staff").innerHTML = '<option value="">Choose\u2026</option>' +
+      data.map(t => '<option value="' + esc(t.email) + '">' + esc(t.full_name) + '</option>').join("");
+  await paintPayroll();
+}
+
+async function runPayroll(){
+  const y = Number(val("pr-year")), m = Number($("pr-month").value);
+  btn("run-btn", true, "Running");
+  const { data, error } = await db.rpc("compute_payroll", { p_year: y, p_month: m });
+  btn("run-btn", false, "Run the month");
+  if(error){ msg("run-msg","err","Could not run", error.message); return; }
+  const ok  = (data||[]).filter(r => r.outcome === "computed");
+  const bad = (data||[]).filter(r => r.outcome !== "computed");
+  $("run-msg").innerHTML = '<div class="alert ' + (bad.length ? "warn" : "ok") + '"><b>' +
+    ok.length + ' computed' + (bad.length ? ", " + bad.length + " could not be" : "") + '</b>' +
+    (bad.length ? bad.map(b => esc(b.staff) + ": " + esc(b.outcome)).join("<br>")
+                : "Every line is ready for the CEO or COO to certify.") + '</div>';
+  await paintPayroll();
+}
+
+async function paintPayroll(){
+  const y = Number(val("pr-year")), m = Number($("pr-month").value);
+  if(!y || !m) return;
+
+  const { data: s, error } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
+  if(oops("The month", error)) return;
+
+  if(!s){
+    $("pay-sum").innerHTML = '<div class="alert info"><b>Nothing computed for ' + MONTHS[m-1] + ' ' + y + '</b>Run it above. Anyone whose timesheet is not fully approved will be named, and why.</div>';
+    $("roster").innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing yet.</p>';
+    $("aj-list").innerHTML = ""; return;
+  }
+
+  const tally = Math.abs(Number(s.tally_check||0)) <= 1;
+  $("pay-sum").innerHTML =
+    '<div class="inout" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">' +
+      '<div><div class="k">Gross</div><div class="v">' + K(s.total_gross) + '</div><div class="s">' + s.staff_count + ' people</div></div>' +
+      '<div><div class="k">PAYE</div><div class="v">' + K(s.total_paye) + '</div><div class="s">due to FCT-IRS by the 10th</div></div>' +
+      '<div><div class="k">To transfer</div><div class="v in">' + K(s.total_to_transfer) + '</div><div class="s">net plus claims</div></div>' +
+      '<div><div class="k">Cost to Data-Lead</div><div class="v out">' + K(s.total_employer_cost) + '</div><div class="s">with employer add-ons</div></div>' +
+    '</div>' +
+    '<div class="alert ' + (tally ? "ok" : "err") + '"><b>' +
+      (tally ? "The month tallies" : "It does NOT tally, out by " + N2(s.tally_check)) + '</b>' +
+      'Package ' + N(s.package) + ' = to staff ' + N(s.to_staff) + ' + to government ' + N(s.to_government) + '.' +
+      (tally ? " It can be certified." : " It cannot be certified until this is zero.") + '</div>' +
+    (Number(s.rent_assumed_count) > 0 ? '<div class="alert warn"><b>' + s.rent_assumed_count +
+      ' on assumed rent</b>Their relief rests on a guess. It is only claimable on real, evidenced rent.</div>' : "");
+
+  const { data: r, error: re } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
+  if(oops("The roster", re)) return;
+  $("roster").innerHTML = !r || !r.length
+    ? '<p style="color:var(--faint);font-size:13px">Nothing computed.</p>'
+    : '<div style="overflow-x:auto"><table style="min-width:660px"><thead><tr>' +
+      '<th>Staff</th><th class="n">Gross</th><th class="n">PAYE</th><th class="n">Net</th>' +
+      '<th class="n">Claims</th><th class="n">Transfer</th><th>Bank</th></tr></thead><tbody>' +
+      r.map(x => '<tr><td><b style="font-family:var(--display-md);font-weight:500">' + esc(x.staff) + '</b>' +
+        '<div style="font-size:11px;color:var(--faint)">' + esc(x.kind) +
+        (x.rent_is_assumed ? ' \u00b7 <span style="color:var(--amber)">rent assumed</span>' : "") + '</div></td>' +
+        '<td class="n">' + N(x.gross_salary) + '</td><td class="n">' + N(x.paye) + '</td>' +
+        '<td class="n">' + N(x.net_pay) + '</td><td class="n">' + N(x.total_claims) + '</td>' +
+        '<td class="n"><b>' + N(x.transfer_amount) + '</b></td>' +
+        '<td>' + (x.account_number ? esc(x.bank_name || "") : '<span class="tag bad">no details</span>') + '</td></tr>').join("") +
+      '</tbody></table></div>';
+
+  const { data: a, error: ae } = await db.rpc("adjustments_for", { p_year: y, p_month: m });
+  if(oops("The adjustments", ae)) return;
+  $("aj-list").innerHTML = !a || !a.length ? ""
+    : '<div style="border-top:1px solid var(--line);padding-top:14px"><b style="font-family:var(--display-md);font-size:13px">This month\u2019s adjustments</b>' +
+      a.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.staff) + '</b><span>' +
+        esc(x.description) + " \u00b7 " + (x.kind === "reimbursement" ? "claim" : "deduction") +
+        (x.added_by ? " \u00b7 " + esc(x.added_by) : "") + '</span></span>' +
+        '<span class="amt" style="color:' + (x.kind === "reimbursement" ? "var(--green)" : "var(--red)") + '">' +
+        (x.kind === "reimbursement" ? "+" : "\u2212") + N(x.amount) + '</span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropAdjustment(' + x.id + ')">Remove</button></div>').join("") + '</div>';
+}
+
+async function addAdjustment(){
+  const email = val("aj-staff"), desc = val("aj-desc"), amt = Number(val("aj-amt")||0);
+  if(!email){ msg("aj-msg","err","Choose someone","Who is it for?"); return; }
+  if(!desc || !amt || amt <= 0){ msg("aj-msg","err","Missing details","A description and a positive amount."); return; }
+  btn("aj-btn", true, "Adding");
+  const { error } = await db.rpc("add_adjustment", {
+    p_staff_email: email, p_year: Number(val("pr-year")), p_month: Number($("pr-month").value),
+    p_kind: $("aj-kind").value, p_description: desc, p_amount: amt
+  });
+  btn("aj-btn", false, "Add it");
+  if(error){ msg("aj-msg","err","Not added", error.message); return; }
+  msg("aj-msg","ok","Added","The line has been recomputed.");
+  set("aj-desc",""); set("aj-amt","");
+  await paintPayroll();
+}
+
+async function dropAdjustment(id){
+  if(!confirm("Remove this adjustment? The line will be recomputed.")) return;
+  const { error } = await db.rpc("remove_adjustment", { p_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  await paintPayroll();
+}
+
+async function exportSchedule(){
+  const y = Number(val("pr-year")), m = Number($("pr-month").value);
+  const { data, error } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
+  if(oops("The roster", error)) return;
+  if(!data || !data.length){ toast("Nothing to export for " + MONTHS[m-1] + "."); return; }
+
+  const missing = data.filter(r => !r.account_number || !r.bank_name);
+  if(missing.length && !confirm(missing.length + " of " + data.length + " have no bank details:\n\n" +
+      missing.map(r => r.staff).join(", ") + "\n\nThey cannot be paid. Export the rest anyway?")) return;
+  const pay = data.filter(r => r.account_number && r.bank_name);
+  if(!pay.length){ toast("Nobody on this run has bank details. Nothing to export."); return; }
+
+  const rows = [["Staff","Staff ID","Bank","Account name","Account number","Amount"],
+    ...pay.map(r => [r.staff, r.staff_code||"", r.bank_name, r.account_name||"",
+                     "'" + r.account_number, Number(r.transfer_amount).toFixed(2)])];
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "bank-schedule-" + y + "-" + String(m).padStart(2,"0") + ".csv";
+  a.click(); URL.revokeObjectURL(url);
+  toast(pay.length + " line" + (pay.length>1?"s":"") + " exported" +
+        (missing.length ? ", " + missing.length + " left out for want of bank details." : "."), true);
+}
+
+// ============================================================
+// REQUISITIONS
+// ============================================================
+window.loadReqs = loadReqs; window.disburse = disburse; window.closeReq = closeReq;
+window.setProjState = setProjState;
+
+async function loadReqs(){
+  const { data, error } = await db.from("requisitions_to_disburse").select("*");
+  if(oops("The requisitions", error)) return;
+  $("req-pay").innerHTML = !data || !data.length
+    ? '<p style="color:var(--faint);font-size:13px">Nothing waiting to be paid.</p>'
+    : data.map(r => {
+      const noBank = !r.account_number;
+      return '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+        '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
+        (r.project_code ? " \u00b7 " + esc(r.project_code) : "") +
+        (r.needs_approval ? " \u00b7 approved by " + esc(r.approved_by || "a senior") : " \u00b7 within the line") + '</span>' +
+        (noBank ? '<span style="color:var(--red)">No bank details on file. They cannot be paid.</span>'
+                : '<span>' + esc(r.bank_name) + " \u00b7 " + esc(r.account_number) + '</span>') + '</span>' +
+        '<button class="btn-primary rowbtn" onclick="disburse(' + r.id + ',\'' + esc(r.staff_email) +
+        '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + r.total + ')"' + (noBank ? " disabled" : "") + '>Mark paid</button></div>';
+    }).join("");
+
+  // disbursed, every receipt in, but never closed. Nothing moved them on.
+  const { data: done, error: de } = await db.from("requisitions_overview").select("*")
+    .eq("status", "disbursed").eq("receipts_owed", 0);
+  if(oops("Requisitions to close", de)) return;
+  $("req-close-card").classList.toggle("hidden", !done || !done.length);
+  if(done && done.length)
+    $("req-close").innerHTML = done.map(r =>
+      '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+      '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
+      (r.project_code ? " \u00b7 " + esc(r.project_code) : "") + ' \u00b7 every receipt in</span></span>' +
+      '<button class="btn-primary rowbtn" onclick="closeReq(' + r.id + ')">Close it</button></div>').join("");
+
+  const { data: o, error: oe } = await db.rpc("receipts_outstanding");
+  if(oops("The receipts", oe)) return;
+  $("req-owed").innerHTML = !o || !o.length
+    ? '<p style="color:var(--faint);font-size:13px">Every receipt is in.</p>'
+    : o.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.staff) + ' \u00b7 ' + N(x.amount) + '</b>' +
+        '<span>' + esc(x.description) + (x.project_code ? " \u00b7 " + esc(x.project_code) : "") +
+        ' \u00b7 paid ' + fmtDate(x.disbursed_on) + '</span></span>' +
+        '<span class="tag ' + (x.days_since > 30 ? "bad" : x.days_since > 14 ? "wait" : "calm") + '">' +
+        x.days_since + ' day' + (x.days_since===1?"":"s") + '</span></div>').join("") +
+      '<p class="hint" style="margin-top:10px">They upload these from their own portal. Anything past 30 days is worth a word.</p>';
+}
+
+async function disburse(id, email, name, total){
+  if(!confirm("Mark " + N(total) + " as paid to " + name + "?\n\nDo this once the transfer has actually gone.")) return;
+  const { error } = await db.rpc("disburse_requisition", { p_req_id: id });
+  if(error){ toast("Could not. " + error.message); return; }
+  await notify("requisition_disbursed", email, name, { amount: N(total) });
+  toast("Marked paid. " + name.split(" ")[0] + " has been told, and asked for receipts.", true);
+  await loadReqs(); 
+}
+
+async function closeReq(id){
+  const { error } = await db.rpc("close_requisition", { p_req_id: id });
+  if(error){ toast(error.message); return; }
+  toast("Closed.", true); await loadReqs();
+}
+
+// ============================================================
+// CASHBOOK
+// ============================================================
+window.loadCash = loadCash; window.cbQuick = cbQuick; window.csDir = csDir; window.csProj = csProj;
+window.addCash = addCash; window.dropCash = dropCash;
+
+const CATS = {
+  income:  ["Client payment","Grant tranche","Training fee","Consultancy fee","Refund","Other income"],
+  expense: ["Rent","Utilities","Internet and data","Equipment","Software","Travel","Fieldwork",
+            "Professional fees","Bank charges","Staff welfare","Marketing","Other"],
+};
+
+let PROJECTS = [];
+async function initCash(){
+  cbQuick();
+  set("cs-on", iso(new Date()));
+  const { data, error } = await db.from("project_list").select("*");
+  if(oops("The projects", error)) return;
+  PROJECTS = data || [];
+  csDir();
+}
+
+// The choice means a different thing in each direction.
+//   Money out -> which project PAYS for this? Overhead is a fair default:
+//                rent and the kettle belong to the firm.
+//   Money in  -> which project does this money BELONG to? There is no fair
+//                default. UNICEF paying for the Chad baseline is not overhead,
+//                and calling it that would make Chad look like it earned
+//                nothing and cost a fortune.
+function fillProjects(){
+  const income = $("cs-dir").value === "income";
+  const real = PROJECTS.filter(p => !p.is_overhead);
+
+  $("cs-proj-lab").textContent = income ? "Which project is this money for?" : "Which project pays for it?";
+  $("cs-proj").innerHTML =
+    (income ? '<option value="">Choose\u2026</option>' : "") +
+    PROJECTS.map(p => '<option value="' + p.code + '"' +
+      (!income && p.is_overhead ? " selected" : "") + '>' +
+      esc(p.code) + " \u00b7 " + esc(p.name) + '</option>').join("");
+  csProj();
+
+  // one project means no real projects: say so rather than let them tag
+  // a UNICEF payment as overhead and wonder why Chad looks unprofitable
+  if(income && !real.length){
+    $("cs-proj-note").innerHTML =
+      '<span style="color:var(--amber)">You have not added any projects yet. ' +
+      'Add them under Projects, or this income cannot be attributed to the work it paid for.</span>';
+  }
+}
+
+function csProj(){
+  const income = $("cs-dir").value === "income";
+  const p = PROJECTS.find(x => x.code === $("cs-proj").value);
+  const note = $("cs-proj-note");
+  if(!p){
+    note.textContent = income
+      ? "Say which engagement this money is for. Without it you cannot tell whether a project made money."
+      : "";
+    return;
+  }
+  note.textContent = p.is_overhead
+    ? (income ? "Only for income that belongs to no project: interest, a refund, a rebate."
+              : "The firm\u2019s own cost. Not chargeable to a funder.")
+    : (p.funder ? (income ? "From " + p.funder : "Charged to " + p.funder + "\u2019s budget") : "");
+}
+
+function cbQuick(){
+  const now = new Date(), q = $("cb-quick").value;
+  let f, t = now;
+  if(q === "ytd")        f = new Date(now.getFullYear(), 0, 1);
+  else if(q === "month") f = new Date(now.getFullYear(), now.getMonth(), 1);
+  else if(q === "week"){ const d = (now.getDay()+6)%7; f = new Date(now); f.setDate(now.getDate()-d); }
+  else { f = new Date(now.getFullYear()-1, 0, 1); t = new Date(now.getFullYear()-1, 11, 31); }
+  set("cb-from", iso(f)); set("cb-to", iso(t));
+  loadCash();
+}
+
+function csDir(){
+  const d = $("cs-dir").value;
+  $("cs-cat").innerHTML = CATS[d].map(c => '<option>' + c + '</option>').join("");
+  $("cs-cp-lab").textContent = d === "income" ? "Who paid us" : "Who we paid";
+  $("cs-cp").placeholder = d === "income" ? "UNICEF Nigeria" : "Ikeja Electric";
+  fillProjects();
+}
+
+async function loadCash(){
+  const f = val("cb-from"), t = val("cb-to");
+  if(!f || !t) return;
+
+  const [sum, byCat, byMonth, flow] = await Promise.all([
+    db.rpc("cash_summary", { p_from: f, p_to: t }),
+    db.rpc("cash_by_category", { p_direction: "expense", p_from: f, p_to: t }),
+    db.rpc("cash_by_month", { p_year: new Date(f).getFullYear() }),
+    db.from("cashflow").select("*").gte("occurred_on", f).lte("occurred_on", t).order("occurred_on", { ascending:false }).limit(80),
+  ]);
+  if(oops("The cashbook", sum.error) || oops("The categories", byCat.error) ||
+     oops("The months", byMonth.error) || oops("The entries", flow.error)) return;
+
+  const s = Array.isArray(sum.data) ? sum.data[0] : sum.data;
+  if(!s) return;
+  const out = Number(s.money_out||0);
+  const pc = v => out > 0 ? Number(v)/out*100 : 0;
+  const seg = [
+    ["Payroll",      s.payroll_out,      "var(--ink)",    "#fff"],
+    ["PAYE",         s.paye_out,         "var(--clay)",   "#fff"],
+    ["Requisitions", s.requisitions_out, "var(--orange)", "#fff"],
+    ["Everything else", s.other_out,     "var(--sand)",   "#6b5a44"],
+  ];
+  const m12 = byMonth.data || [];
+  const mMax = Math.max(...m12.flatMap(x => [Number(x.money_in), Number(x.money_out)]), 1);
+
+  $("cash-body").innerHTML =
+    '<div class="inout">' +
+      '<div><div class="k">Money in</div><div class="v in">' + K(s.money_in) + '</div><div class="s">' + s.entries + ' entries in the window</div></div>' +
+      '<div><div class="k">Money out</div><div class="v out">' + K(s.money_out) + '</div>' +
+        '<div class="s">' + (Number(s.unreceipted) > 0 ? s.unreceipted + " with no evidence" : "all evidenced") + '</div></div>' +
+      '<div><div class="k">Net</div><div class="v ' + (Number(s.net) < 0 ? "neg" : "in") + '">' + K(s.net) + '</div>' +
+        '<div class="s">' + (Number(s.net) < 0 ? "spending more than came in" : "in the black") + '</div></div>' +
+    '</div>' +
+
+    (out > 0 ? '<div class="panel"><h3>Where it went</h3><div class="ps">Only "everything else" is typed. Payroll and requisitions are read from where they happened.</div>' +
+      '<div class="split">' + seg.filter(x => Number(x[1]) > 0).map(([k,v,bg,fg]) =>
+        '<i style="width:' + pc(v) + '%;background:' + bg + ';color:' + fg + '" title="' + k + ': ' + K(v) + '">' +
+        '<span>' + (pc(v) > 12 ? k + " " + pc(v).toFixed(0) + "%" : pc(v) > 4 ? pc(v).toFixed(0)+"%" : "") + '</span></i>').join("") +
+      '</div><div class="legend">' + seg.filter(x => Number(x[1]) > 0).map(([k,v,bg]) =>
+        '<span><i style="background:' + bg + '"></i>' + k + " " + K(v) + '</span>').join("") + '</div></div>' : "") +
+
+    (m12.length ? '<div class="panel"><h3>Month by month</h3><div class="ps">Green in, clay out.</div>' +
+      '<div class="spark">' + m12.map(x =>
+        '<div><b>' + MONTHS[x.month-1] + '<br>in ' + K(x.money_in) + '<br>out ' + K(x.money_out) + '</b>' +
+        '<i class="in" style="height:' + (Number(x.money_in)/mMax*52) + '%"></i>' +
+        '<i class="out" style="height:' + (Number(x.money_out)/mMax*52) + '%"></i>' +
+        '<em>' + MONTHS[x.month-1].slice(0,3) + '</em></div>').join("") + '</div></div>' : "") +
+
+    ((byCat.data||[]).length ? '<div class="panel"><h3>What we spent it on</h3>' +
+      (byCat.data).map(c => '<div class="qrow"><span class="t"><b>' + esc(c.category) + '</b>' +
+        '<span>' + c.entries + ' entr' + (c.entries===1?"y":"ies") + '</span></span>' +
+        '<span class="amt">' + K(c.total) + '</span>' +
+        '<span class="tag calm" style="min-width:48px;text-align:right">' + c.share + '%</span></div>').join("") +
+      '</div>' : "");
+
+  const rows = flow.data || [];
+  $("cash-list").innerHTML = !rows.length
+    ? '<p style="color:var(--faint);font-size:13px">Nothing in this window.</p>'
+    : rows.map(c => '<div class="qrow"><span class="t"><b>' + esc(c.description) + '</b>' +
+        '<span>' + fmtDate(c.occurred_on) + " \u00b7 " + esc(c.category) +
+        (c.project_code ? " \u00b7 " + esc(c.project_code) : "") +
+        (c.counterparty ? " \u00b7 " + esc(c.counterparty) : "") +
+        (c.source !== "manual" ? " \u00b7 from " + c.source : "") + '</span></span>' +
+        (!c.has_evidence && c.direction === "expense" ? '<span class="tag wait">no evidence</span>' : "") +
+        '<span class="amt" style="color:' + (c.direction === "income" ? "var(--green)" : "var(--clay)") + '">' +
+        (c.direction === "income" ? "+" : "\u2212") + N(c.amount) + '</span>' +
+        (c.source === "manual" ? '<button class="rowbtn" style="color:var(--red)" onclick="dropCash(' +
+          c.ref + ')">Remove</button>' : '<span style="width:64px"></span>') + '</div>').join("");
+}
+
+async function addCash(){
+  const desc = val("cs-desc"), amt = Number(val("cs-amt")||0);
+  if(!desc){ msg("cs-msg","err","No description","Say what it was."); return; }
+  if(!amt || amt <= 0){ msg("cs-msg","err","No amount","How much?"); return; }
+  if($("cs-dir").value === "income" && !$("cs-proj").value){
+    msg("cs-msg","err","Which project is it for?",
+        "Money in has to be attributed to the work it paid for, or you can never tell whether a project made money. If it truly belongs to no project, choose Overhead.");
+    return;
+  }
+
+  btn("cs-btn", true, "Recording");
+  let path = null;
+  const f = $("cs-file").files[0];
+  if(f){
+    const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("receipts").upload("cashbook/" + name, f);
+    if(up.error){ btn("cs-btn", false, "Record it"); msg("cs-msg","err","Upload failed", up.error.message); return; }
+    path = up.data.path;
+  }
+  const { error } = await db.rpc("add_cash", {
+    p_direction: $("cs-dir").value, p_category: $("cs-cat").value, p_description: desc,
+    p_amount: amt, p_occurred_on: val("cs-on"), p_project_code: $("cs-proj").value || null,
+    p_counterparty: val("cs-cp"), p_evidence_path: path
+  });
+  btn("cs-btn", false, "Record it");
+  if(error){ msg("cs-msg","err","Not recorded", error.message); return; }
+  msg("cs-msg","ok","Recorded", N(amt) + " " + ($("cs-dir").value === "income" ? "in" : "out") + ".");
+  set("cs-desc",""); set("cs-amt",""); $("cs-file").value = "";
+  await loadCash();
+}
+
+async function dropCash(id){
+  const reason = prompt("Why are you removing this?\n\nMoney that disappears with no note cannot be explained later.");
+  if(reason === null) return;
+  if(!reason.trim()){ toast("A reason is needed."); return; }
+  const { error } = await db.rpc("remove_cash", { p_id: id, p_reason: reason.trim() });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  toast("Removed, and the reason is in the audit log.", true);
+  await loadCash();
+}
+
+// ============================================================
+// PAYE
+// ============================================================
+window.loadPaye = loadPaye; window.openRemit = openRemit; window.recordRemit = recordRemit;
+window.tellStaff = tellStaff;
+
+async function loadPaye(){
+  const { data, error } = await db.from("paye_due").select("*");
+  if(oops("PAYE", error)) return;
+  const wrap = $("paye-list");
+  if(!data || !data.length){
+    wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing certified yet, so no PAYE is due.</p>';
+    $("paye-form").innerHTML = ""; return;
+  }
+  wrap.innerHTML = data.map(p => {
+    const cls = p.state === "LATE" ? "bad" : p.state === "paid" ? "ok" : "wait";
+    const lb  = p.state === "LATE" ? "LATE" : p.state === "paid" ? "Paid" : "Due";
+    return '<div class="qrow"><span class="t"><b>' + esc(p.period) + ' \u00b7 ' + N(p.amount_due) + '</b>' +
+      '<span>' + p.staff_count + ' people \u00b7 due by ' + fmtDate(p.due_by) +
+      (p.remitted_on ? " \u00b7 paid " + fmtDate(p.remitted_on) + (p.reference ? " \u00b7 ref " + esc(p.reference) : "") +
+        (p.remitted_by ? " \u00b7 " + esc(p.remitted_by) : "") : "") + '</span>' +
+      (p.state === "LATE" ? '<span style="color:var(--red)">This was deducted from staff and has not reached FCT-IRS.</span>' : "") +
+      '</span><span class="tag ' + cls + '">' + lb + '</span>' +
+      (p.state === "paid"
+        ? (p.staff_told ? '<span class="tag calm">staff told</span>'
+           : '<button class="rowbtn" onclick="tellStaff(' + p.year + ',' + p.month + ')">Tell staff</button>')
+        : '<button class="btn-primary rowbtn" onclick="openRemit(' + p.year + ',' + p.month + ',' +
+          p.amount_due + ',\'' + esc(p.period) + '\')">Record it</button>') + '</div>';
+  }).join("");
+}
+
+function openRemit(y, m, due, period){
+  $("paye-form").innerHTML =
+    '<div class="panel"><h3>Record the remittance for ' + esc(period) + '</h3>' +
+    '<div class="ps">What you deducted from staff must match what reached FCT-IRS. If it does not, the system will say so.</div>' +
+    '<div class="grid3">' +
+      '<div class="fld"><label>Amount</label><input id="rm-amt" type="number" step="0.01" value="' + due + '"></div>' +
+      '<div class="fld"><label>Paid on</label><input id="rm-on" type="date" value="' + iso(new Date()) + '"></div>' +
+      '<div class="fld"><label>Reference</label><input id="rm-ref" placeholder="FCTIRS receipt no."></div>' +
+    '</div>' +
+    '<div class="fld"><label>Note (optional)</label><input id="rm-note"></div>' +
+    '<div class="alert info" style="margin-top:0"><b>Staff will be told</b>' +
+      'Each person gets a note saying their own PAYE was paid on their behalf, with their own figure. Not a company total.</div>' +
+    '<div id="rm-msg"></div>' +
+    '<button class="btn-primary" style="width:100%" id="rm-btn" onclick="recordRemit(' + y + ',' + m + ')">Record it and tell staff</button>' +
+    '</div>';
+  $("paye-form").scrollIntoView({ behavior:"smooth", block:"center" });
+}
+
+async function recordRemit(y, m){
+  const amt = Number(val("rm-amt")||0);
+  if(!amt || amt <= 0){ msg("rm-msg","err","No amount","How much reached FCT-IRS?"); return; }
+  btn("rm-btn", true, "Recording");
+  const { error } = await db.rpc("record_remittance", {
+    p_year: y, p_month: m, p_amount: amt, p_remitted_on: val("rm-on"),
+    p_reference: val("rm-ref"), p_note: val("rm-note")
+  });
+  if(error){ btn("rm-btn", false, "Record it and tell staff"); msg("rm-msg","err","Not recorded", error.message); return; }
+  msg("rm-msg","ok","Recorded","Now telling staff\u2026");
+  await tellStaff(y, m, true);
+  btn("rm-btn", false, "Record it and tell staff");
+  $("paye-form").innerHTML = "";
+  await loadPaye();
+}
+
+async function tellStaff(y, m, quiet){
+  const { data, error } = await db.rpc("remittance_recipients", { p_year: y, p_month: m });
+  if(oops("The recipients", error)) return;
+  if(!data || !data.length){ toast("Nobody to tell for that month."); return; }
+  if(!quiet && !confirm("Email " + data.length + " people to say their PAYE was paid on their behalf?")) return;
+
+  let sent = 0;
+  for(const r of data){
+    // each person hears their own figure, never the company total
+    const ok = await notify("paye_remitted", r.email, r.full_name, {
+      month: MONTHS[m-1] + " " + y, amount: N2(r.paye), ref: val("rm-ref") || null
+    });
+    if(ok) sent++;
+  }
+  await db.rpc("mark_remittance_told", { p_year: y, p_month: m });
+  toast(sent + " of " + data.length + " told their PAYE was paid on their behalf.", true);
+  await loadPaye();
+}
+
+// ============================================================
+// PROJECTS
+// ============================================================
+window.loadProjects = loadProjects; window.addProject = addProject; window.setProjState = setProjState;
+
+async function addProject(){
+  const code = val("pj-code"), name = val("pj-name");
+  if(!code || !name){ msg("pj-msg","err","Missing details","A code and a name."); return; }
+  btn("pj-btn", true, "Adding");
+  const { error } = await db.rpc("admin_add_project", {
+    p_code: code, p_name: name, p_funder: val("pj-funder"),
+    p_budget: val("pj-budget") ? Number(val("pj-budget")) : null,
+    p_starts_on: val("pj-start"), p_ends_on: val("pj-end")
+  });
+  btn("pj-btn", false, "Add it");
+  if(error){ msg("pj-msg","err","Not added", error.message); return; }
+  msg("pj-msg","ok","Added", code + " can now be charged against.");
+  ["pj-code","pj-name","pj-funder","pj-budget"].forEach(id => set(id,""));
+  await loadProjects();
+}
+
+async function loadProjects(){
+  const { data, error } = await db.from("project_money").select("*");
+  if(oops("The projects", error)) return;
+  const wrap = $("pj-list");
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No projects yet.</p>'; return; }
+  wrap.innerHTML = data.map(p => {
+    const net = Number(p.net||0);
+    const burn = p.budget_used_pct;
+    const states = p.is_overhead ? "" :
+      '<select onchange="setProjState(\'' + p.code + '\', this.value)" style="width:auto;padding:3px 7px;font-size:11px">' +
+      ['active','on_hold','closed'].map(x => '<option value="' + x + '"' + (p.state === x ? " selected" : "") + '>' +
+        (x === "active" ? "Active" : x === "on_hold" ? "On hold" : "Closed") + '</option>').join("") + '</select>';
+    return '<div class="qrow"><span class="t"><b>' + esc(p.code) + ' \u00b7 ' + esc(p.name) +
+      (p.is_overhead ? ' <span class="tag calm">not chargeable</span>' : "") +
+      (p.state !== "active" ? ' <span class="tag calm">' + p.state + '</span>' : "") + '</b>' +
+      '<span>' + (p.funder ? esc(p.funder) + " \u00b7 " : "") +
+      (p.budget ? "budget " + K(p.budget) + (burn !== null ? " \u00b7 " + burn + "% used" : "") + " \u00b7 " : "") +
+      "in " + K(p.money_in) + " \u00b7 out " + K(p.money_out) + '</span>' +
+      (Number(p.no_receipt) > 0 ? '<span style="color:var(--amber)">' + p.no_receipt +
+        ' expense' + (p.no_receipt===1?"":"s") + ' with no receipt</span>' : "") + '</span>' +
+      (p.is_overhead ? '<span class="amt" style="color:var(--muted)">' + K(p.money_out) + ' out</span>'
+        : '<span class="amt" style="color:' + (net < 0 ? "var(--red)" : "var(--green)") + '">' +
+          (net >= 0 ? "+" : "") + K(net) + '</span>') +
+      (burn !== null && burn > 100 ? '<span class="tag bad">over budget</span>' : "") + states + '</div>';
+  }).join("") +
+  '<p class="hint" style="margin-top:10px">Payroll and PAYE sit under overhead. Only requisitions and typed entries carry a project.</p>';
+}
+
+async function setProjState(code, state){
+  if(state === "closed" && !confirm("Close " + code + "?\n\nNo new requisition can be charged to it. Anything already spent stays where it is.")) {
+    await loadProjects(); return;
+  }
+  const { error } = await db.rpc("admin_set_project_state", { p_code: code, p_state: state });
+  if(error){ toast("Could not. " + error.message); await loadProjects(); return; }
+  toast(code + " is now " + (state === "on_hold" ? "on hold" : state) + ".", true);
+  await loadProjects();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14232e; --gray:#2c2b2d; --muted:#5b5b66; --faint:#8b8792;
+  --orange:#f56e0f; --orange-med:#f9a971; --orange-light:#fde9da;
+  --line:#ecebf0; --card:#fff; --blue:#e7f5fe;
+  --green:#1d6b4c; --green-bg:#e9f5ef;
+  --red:#a32d2d; --red-bg:#fbecec;
+  --paper:#fdfbf7; --sand:#eee5d8; --clay:#c9541e;
+  --display:"ClashDisplay-Semibold","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Poppins",system-ui,sans-serif;color:var(--gray);background:var(--paper);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+h1,h2{font-family:var(--display);font-weight:600;line-height:1.05}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--gray);
+  border-radius:11px;padding:10px 16px;transition:.14s}
+button:hover{border-color:var(--gray)}
+button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.btn-primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:500}
+.btn-primary:hover{background:#e0620c;border-color:#e0620c}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint);cursor:not-allowed}
+input{font:inherit;width:100%;padding:10px 12px;border:1px solid #dae2e7;border-radius:8px;background:#fff}
+input:focus{outline:2px solid var(--orange);outline-offset:-1px;border-color:var(--orange)}
+label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
+.hidden{display:none!important}
+.wrap{min-height:100vh;display:grid;place-items:center;padding:32px 22px}
+.inner{width:100%;max-width:920px}
+
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--display);
+  font-size:16px;margin-bottom:30px}
+.mark{width:26px;height:26px}
+
+/* ---------- the shell, drawn once, large and quiet ---------- */
+.hero{text-align:center;margin-bottom:34px}
+.hero h1{font-size:clamp(30px,5vw,44px);letter-spacing:-.03em;margin-bottom:10px}
+.hero p{color:var(--muted);font-size:14.5px;max-width:46ch;margin:0 auto}
+.hero .eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.18em;
+  font-size:10.5px;color:var(--orange);margin-bottom:12px}
+
+/* ---------- sign in ---------- */
+.plate{max-width:380px;margin:0 auto;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;padding:28px}
+.fld{margin-bottom:14px}
+.msg{border-radius:8px;padding:11px 14px;margin:12px 0;font-size:12.5px;border-left:3px solid}
+.msg.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.msg b{display:block;font-family:var(--display-md);margin-bottom:2px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;
+  border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- the doors ---------- */
+.who{text-align:center;margin-bottom:26px}
+.who .av{width:52px;height:52px;border-radius:50%;background:var(--orange-light);
+  border:1.5px solid var(--orange-med);display:grid;place-items:center;font-family:var(--display);
+  font-size:18px;color:var(--clay);margin:0 auto 14px}
+.who h1{font-size:clamp(26px,4vw,34px);letter-spacing:-.025em;margin-bottom:6px}
+.who p{color:var(--muted);font-size:14px}
+
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;max-width:760px;margin:0 auto}
+.door{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 24px;
+  text-align:left;cursor:pointer;transition:.18s;display:flex;flex-direction:column;gap:6px;
+  min-height:190px;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.door:hover{transform:translateY(-3px);box-shadow:0 16px 40px -18px rgba(0,0,0,.22);border-color:var(--orange-med)}
+.door .shell{width:34px;height:46px;margin-bottom:10px}
+.door b{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.01em}
+.door span{font-size:13px;color:var(--muted);line-height:1.5}
+.door .go{margin-top:auto;padding-top:12px;font-family:var(--display-md);font-size:12.5px;color:var(--orange)}
+.door .badge{position:absolute;top:16px;right:16px;font-size:10px;padding:3px 9px;border-radius:20px;
+  font-family:var(--display-md)}
+.door .badge.n{background:var(--red);color:#fff}
+.door .badge.q{background:var(--line);color:var(--muted)}
+/* each door tinted by whose it is */
+.door.staff:hover  .shell .body{fill:var(--orange)}
+.door.fin   .badge.q{background:var(--green-bg);color:var(--green)}
+.door.admin .badge.q{background:var(--ink);color:#fff}
+.door .body{fill:var(--sand);transition:fill .2s}
+.door .slit,.door .teeth{stroke:#d6c8b4;transition:stroke .2s}
+.door:hover .body{fill:var(--orange)}
+.door:hover .slit,.door:hover .teeth{stroke:#a8410f}
+.door.fin:hover .body{fill:var(--green)}
+.door.fin:hover .slit,.door.fin:hover .teeth{stroke:#0f4530}
+.door.admin:hover .body{fill:var(--ink)}
+.door.admin:hover .slit,.door.admin:hover .teeth{stroke:#000}
+
+.why{text-align:center;margin-top:26px;font-size:12.5px;color:var(--faint);line-height:1.8;max-width:44ch;margin-left:auto;margin-right:auto}
+.foot{text-align:center;margin-top:32px;font-size:12.5px;color:var(--faint);line-height:1.7}
+.foot button{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:12.5px;padding:0}
+.foot button:hover{color:var(--gray);border:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="inner">
+
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+
+    <!-- ============ SIGN IN ============ -->
+    <div id="gate">
+      <div class="hero">
+        <div class="eyebrow">Data-Lead Africa &middot; Abuja</div>
+        <h1>Welcome to<br>Cowrie&nbsp;Shell.</h1>
+        <p>Data-Lead's own. Your days, your plans, your leave and your pay, all in one place.
+           One key, and whichever door you need.</p>
+      </div>
+      <div class="plate">
+        <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
+        <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+        <div id="li-msg"></div>
+        <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+        <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:14px">
+          First time here? <a href="/cowrie-shell/staff.html" style="color:var(--orange)">Set up your account</a>.
+        </p>
+      </div>
+      <p class="why">
+        A cowrie was West Africa&rsquo;s unit of account. You counted shells to know what you had.<br>
+        Here you count days, and they turn into what you are owed.
+      </p>
+    </div>
+
+    <!-- ============ THE DOORS ============ -->
+    <div id="doors-view" class="hidden">
+      <div class="who">
+        <div class="av" id="av">&mdash;</div>
+        <h1 id="greet">&mdash;</h1>
+        <p id="sub">&mdash;</p>
+      </div>
+      <div class="doors" id="doors"></div>
+      <p class="foot">
+        The same key opens all of them.<br>
+        <button onclick="signOut()">Sign out</button>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const ini = n => String(n||"").replace(/^(Dr|Prof|Mr|Mrs|Ms|Miss|Engr|Barr|Chief)\.?\s+/i,"")
+                  .split(/\s+/).map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
+window.signIn = signIn; window.signOut = signOut;
+
+function msg(kind, title, body){
+  $("li-msg").innerHTML = '<div class="msg ' + kind + '"><b>' + title + '</b>' + esc(body) + '</div>';
+}
+
+db.auth.onAuthStateChange((_e, s) => { if(s) show(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) show(); })();
+
+async function signIn(){
+  const email = ($("li-email").value||"").trim(), pass = $("li-pass").value;
+  if(!email || !pass){ msg("err","Missing details","Enter your email and password."); return; }
+  const b = $("li-btn"); b.disabled = true; b.innerHTML = '<span class="spin"></span>Signing in\u2026';
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  b.disabled = false; b.textContent = "Sign in";
+  if(error) msg("err","Could not sign in", error.message);
+}
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+const SHELL = '<svg class="shell" viewBox="0 0 26 36" aria-hidden="true">' +
+  '<ellipse class="body" cx="13" cy="18" rx="10" ry="15.5"/>' +
+  '<path class="slit" d="M13 4.5v27" fill="none" stroke-width="1.3" stroke-linecap="round"/>' +
+  '<path class="teeth" d="M10.6 9h4.8M10.1 14h5.8M10.1 22h5.8M10.6 27h4.8" fill="none" stroke-width=".8" stroke-linecap="round" opacity=".7"/>' +
+  '</svg>';
+
+// ============================================================
+// You only see the doors you can actually open. Showing a door that
+// refuses you is worse than not showing it: it tells you there is a room
+// you are not allowed into, which is nobody's business but yours.
+// ============================================================
+async function show(){
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(error || !data){
+    msg("err","Profile not found","Your login is not linked to a staff record. Contact the Head of Operations.");
+    await db.auth.signOut(); return;
+  }
+  const roles = data.roles || [];
+  const isFin  = roles.includes("finance");
+  const isCert = roles.includes("super_admin") || roles.includes("coo");
+
+  $("av").textContent = ini(data.full_name);
+  const h = new Date().getHours();
+  $("greet").textContent = "Good " + (h < 12 ? "morning" : h < 17 ? "afternoon" : "evening") + ", " +
+    (data.full_name||"").trim().split(/\s+/)[0] + ".";
+  // A person with one door does not need to be asked where they are going.
+  const where = data.job_title
+    ? data.job_title + (data.department ? ", " + data.department : "")
+    : null;
+  $("sub").textContent = (isFin || isCert)
+    ? "Where would you like to go?"
+    : where ? where + ". Everything of yours is through here."
+            : "Everything of yours is through here.";
+
+  // what is waiting, so a door can say so before you open it
+  let waiting = 0, finJobs = 0;
+  try {
+    const [pl, ts, lv] = await Promise.all([
+      db.from("plans_to_review").select("id"),
+      db.from("timesheets_to_review").select("id"),
+      db.from("leave_to_approve").select("id"),
+    ]);
+    waiting = (pl.data?.length||0) + (ts.data?.length||0) + (lv.data?.length||0);
+  } catch(e){ /* a count is not worth blocking a door for */ }
+  if(isFin){
+    try {
+      const { data: g } = await db.from("finance_glance").select("*").maybeSingle();
+      if(g) finJobs = (g.months_to_run||0) + (g.reqs_to_pay||0) + (g.paye_late||0) + (g.paye_due||0);
+    } catch(e){ /* same */ }
+  }
+
+  const doors = [];
+  doors.push({ cls:"staff", href:"/cowrie-shell/staff.html", t:"My portal",
+    s:"Log your day, plan your week, ask for leave, read your payslip." +
+      (waiting ? " And " + waiting + " thing" + (waiting===1?"":"s") + " your team is waiting on you for." : ""),
+    go:"Open my portal \u2192", badge: waiting ? { cls:"n", txt: waiting + " waiting" } : null });
+
+  if(isFin) doors.push({ cls:"fin", href:"/cowrie-shell/finance.html", t:"Finance",
+    s:"Run the month, pay what is cleared, remit the tax, keep the book.",
+    go:"Open Finance \u2192", badge: finJobs ? { cls:"n", txt: finJobs + " to do" } : { cls:"q", txt:"clear" } });
+
+  if(isCert) doors.push({ cls:"admin", href:"/cowrie-shell/admin.html", t:"Admin",
+    s:"Everyone on the register, what the firm costs, and what it has agreed.",
+    go:"Open Admin \u2192", badge:{ cls:"q", txt: roles.includes("super_admin") ? "CEO" : "COO" } });
+
+  $("doors").innerHTML = doors.map(d =>
+    '<a class="door ' + d.cls + '" href="' + d.href + '">' +
+    (d.badge ? '<span class="badge ' + d.badge.cls + '">' + esc(d.badge.txt) + '</span>' : "") +
+    SHELL + '<b>' + d.t + '</b><span>' + d.s + '</span>' +
+    '<span class="go">' + d.go + '</span></a>').join("");
+
+  $("gate").classList.add("hidden");
+  $("doors-view").classList.remove("hidden");
+}
+</script>
+</body>
+</html>

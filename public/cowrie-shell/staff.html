@@ -1,0 +1,3108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clr-gray:#2c2b2d; --clr-gray-light:#dae2e7;
+  --clr-orange:#f56e0f; --clr-orange-medium:#f9a971; --clr-orange-light:#fde9da;
+  --clr-blue:#e7f5fe; --ink:#14232e;
+  --line:#ecebf0; --muted:#5b5b66; --faint:#8b8792;
+  --paper:#fdfbf7; --card:#ffffff; --sand:#eee5d8; --clay:#c9541e;
+  --green:#1d6b4c; --green-bg:#e9f5ef;
+  --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
+  --red:#a32d2d; --red-bg:#fbecec;
+  --radius:12px; --radius-lg:16px;
+  --display:"ClashDisplay-Semibold","ClashDisplay-Regular","Poppins",sans-serif;
+  --display-md:"ClashDisplay-Medium","ClashDisplay-Regular","Poppins",sans-serif;
+  --body:"Poppins",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--clr-gray);background:var(--paper);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
+.num{font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer;border:1px solid var(--clr-gray-light);background:var(--card);color:var(--clr-gray);border-radius:var(--radius);padding:10px 16px;transition:.15s}
+button:hover{border-color:var(--clr-gray)}
+button:focus-visible{outline:2px solid var(--clr-orange);outline-offset:2px}
+.btn-primary{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500}
+.btn-primary:hover{background:#e0620c;border-color:#e0620c}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--faint);cursor:not-allowed}
+input{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;background:var(--card);color:var(--clr-gray)}
+input:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
+
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 70px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:26px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:15px}
+.mark{width:24px;height:24px;flex:none}
+.who{font-size:13px;color:var(--muted);text-align:right;line-height:1.35}
+.who b{color:var(--clr-gray);font-weight:500;font-family:var(--display-md)}
+.who button{padding:3px 10px;font-size:12px;margin-top:3px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:500;font-family:var(--display-md);margin-bottom:4px}
+.card .cardsub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.eyebrow{font-family:var(--display-md);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--clr-orange);margin-bottom:6px}
+
+.alert{border-radius:8px;padding:12px 15px;margin:14px 0;font-size:13.5px;border-left:3px solid}
+.alert.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.alert.info{background:var(--clr-blue);border-color:#7fbde8;color:#1a4e73}
+.alert b{display:block;font-weight:600;margin-bottom:2px;font-family:var(--display-md)}
+
+/* login */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px}
+.plate h2{font-size:24px;margin-bottom:4px}
+.plate .lede{font-size:13.5px;color:var(--muted);margin-bottom:20px}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs button{flex:1;background:none;border:none;padding:9px 0;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;border-radius:0}
+.tabs button[aria-selected="true"]{color:var(--clr-gray);font-weight:600;border-bottom-color:var(--clr-orange);font-family:var(--display-md)}
+.tabs button:hover{border-color:transparent;border-bottom-color:var(--clr-gray-light)}
+.tabs button[aria-selected="true"]:hover{border-bottom-color:var(--clr-orange)}
+.fld{margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:auto 1fr;gap:14px}
+textarea{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--clr-gray-light);border-radius:8px;min-height:64px;resize:vertical}
+textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-color:var(--clr-orange)}
+.back{background:none;border:none;color:var(--muted);font-size:13px;padding:0 0 16px;text-decoration:underline}
+.back:hover{color:var(--clr-gray)}
+.alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.hint{font-size:12px;color:var(--faint);margin-top:5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;
+  background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
+  padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:.22s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.good{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* profile */
+
+/* ============================================================
+   THE SHELL STRIP  ·  one cowrie per working day.
+   A cowrie was West Africa's unit of account: you counted shells
+   to know what you had. Here you count days. That is the whole idea.
+   ============================================================ */
+.hero{margin-bottom:32px}
+.hero-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}
+.hero-month{font-family:var(--display);font-size:clamp(42px,8.5vw,64px);line-height:.86;letter-spacing:-.035em}
+.hero-month em{font-style:normal;color:var(--faint);font-size:.42em;letter-spacing:-.01em;
+  display:block;margin-top:8px;font-family:var(--display-md)}
+.hero-count{text-align:right;flex:none}
+.hero-count b{font-family:var(--display);font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.hero-count .of{color:var(--faint);font-size:15px}
+.hero-count span{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;
+  letter-spacing:.1em;margin-top:5px;font-family:var(--display-md)}
+
+.strip{display:flex;flex-wrap:wrap;gap:7px}
+.shell{width:26px;height:36px;border:none;background:none;padding:0;border-radius:0;
+  position:relative;cursor:pointer;transition:transform .14s}
+.shell:hover{transform:translateY(-3px)}
+.shell:hover .tip{opacity:1;transform:translate(-50%,0)}
+.shell:focus-visible{outline:2px solid var(--clr-orange);outline-offset:3px;border-radius:6px}
+.shell svg{width:100%;height:100%;display:block}
+.shell .sbody{fill:var(--sand);transition:fill .25s}
+.shell .slit{stroke:#d6c8b4;stroke-width:1.3;transition:stroke .25s}
+.shell .teeth{stroke:#d6c8b4;stroke-width:.8;opacity:.7;transition:stroke .25s}
+.shell.on .sbody{fill:var(--clr-orange)}
+.shell.on .slit{stroke:#a8410f}
+.shell.on .teeth{stroke:#a8410f;opacity:.55}
+.shell.half .sbody{fill:url(#halfgrad)}
+.shell.today .sbody{fill:#fff;stroke:var(--clr-orange);stroke-width:1.6}
+.shell.today::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid var(--clr-orange);opacity:0;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{opacity:.7;transform:scale(.85)}70%{opacity:0;transform:scale(1.15)}100%{opacity:0}}
+.shell.leave .sbody{fill:var(--green-bg)}
+.shell.leave .slit,.shell.leave .teeth{stroke:var(--green)}
+.shell.leave{cursor:default}
+.shell.leave:hover{transform:none}
+.shell.hol .sbody{fill:var(--clr-blue)}
+.shell.hol .slit,.shell.hol .teeth{stroke:#7fbde8}
+.shell.hol{cursor:default}
+.shell.hol:hover{transform:none}
+.shell.flag::before{content:"";position:absolute;top:-2px;right:-1px;width:6px;height:6px;
+  border-radius:50%;background:var(--amber);border:1.5px solid var(--paper)}
+/* the moment a day is logged: it fills from the base up */
+@keyframes fillup{0%{transform:scaleY(0);transform-origin:13px 33.5px;opacity:.4}
+  60%{opacity:1}100%{transform:scaleY(1);transform-origin:13px 33.5px;opacity:1}}
+@keyframes nudge{0%{transform:scale(1)}45%{transform:scale(1.14)}100%{transform:scale(1)}}
+.shell.just .sbody{animation:fillup .42s cubic-bezier(.2,.9,.3,1.2)}
+.shell.just{animation:nudge .42s ease-out}
+
+.tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translate(-50%,4px);
+  background:var(--ink);color:#fff;font-size:11px;padding:5px 9px;border-radius:7px;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:.16s;z-index:5}
+.tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-4px;
+  border:4px solid transparent;border-top-color:var(--ink)}
+.key{display:flex;gap:15px;margin-top:15px;font-size:11.5px;color:var(--faint);flex-wrap:wrap}
+.key i{width:9px;height:12px;border-radius:50% 50% 45% 45%;display:inline-block;margin-right:6px;vertical-align:-2px}
+
+/* ---------- the one thing to do now ---------- */
+.now{background:var(--ink);color:#fff;border-radius:18px;padding:24px 26px;margin-bottom:14px;
+  display:flex;align-items:center;gap:20px}
+.now .txt{flex:1}
+.now .ey{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.16em;color:var(--clr-orange-medium);margin-bottom:6px}
+.now h2{font-size:21px;color:#fff;margin-bottom:4px;letter-spacing:-.01em;font-family:var(--display)}
+.now p{font-size:13px;color:#a9b4bd;max-width:46ch}
+.now .go{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500;
+  padding:12px 22px;border-radius:12px;white-space:nowrap;flex:none}
+.now .go:hover{background:#e0620c;border-color:#e0620c}
+.now.done{background:var(--green-bg);color:var(--green)}
+.now.done .ey,.now.done h2{color:var(--green)}
+.now.done p{color:#3d7a5f}
+.now.pay{background:linear-gradient(135deg,#1d2f3d 0%,var(--ink) 55%);position:relative;overflow:hidden}
+.now.pay::before{content:"";position:absolute;right:-30px;top:-40px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle,rgba(245,110,15,.28),transparent 68%)}
+.now.pay .ey{color:var(--clr-orange-medium)}
+
+/* ---------- someone else's clock ---------- */
+.waiting{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--clr-orange);border-radius:14px;padding:18px 22px;margin-bottom:14px;
+  display:flex;align-items:center;gap:16px;cursor:pointer;transition:.14s}
+.waiting:hover{border-color:var(--clr-orange-medium);border-left-color:var(--clr-orange);transform:translateX(2px)}
+.waiting .n{font-family:var(--display);font-size:30px;line-height:1;color:var(--clr-orange);
+  flex:none;font-variant-numeric:tabular-nums}
+.waiting .t{flex:1}
+.waiting .t b{font-family:var(--display-md);font-weight:500;font-size:15px;display:block}
+.waiting .t span{font-size:12.5px;color:var(--muted)}
+.waiting .arr{color:var(--faint)}
+
+/* ---------- quiet stats ---------- */
+.strap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  text-align:left;cursor:pointer;transition:.14s}
+.mini:hover{border-color:var(--clr-orange-medium);transform:translateY(-1px)}
+.mini .k{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;
+  font-family:var(--display-md);margin-bottom:7px}
+.mini .v{font-family:var(--display);font-size:22px;line-height:1;letter-spacing:-.02em}
+.mini .v small{font-size:12.5px;color:var(--faint);font-family:var(--display-md)}
+.mini .s{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ---------- everything else, small ---------- */
+.more{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.more button{font-size:13px;padding:8px 14px;border-radius:20px;color:var(--muted);background:none;border:1px solid var(--line)}
+.more button:hover{border-color:var(--clr-gray);color:var(--clr-gray)}
+.foot{margin-top:34px;font-size:12px;color:var(--faint);text-align:center;line-height:1.7}
+
+/* ---------- header ---------- */
+.av{width:34px;height:34px;border-radius:50%;background:var(--clr-orange-light);
+  border:1px solid var(--clr-orange-medium);display:grid;place-items:center;
+  font-family:var(--display-md);font-size:13px;color:var(--clay);flex:none}
+
+/* thumbs need 44px; on a phone the shells grow and hover goes away */
+@media (max-width:600px){
+  .strip{gap:10px}
+  .shell{width:38px;height:50px}
+  .shell:hover{transform:none}
+  .tip{display:none}
+  .now{flex-direction:column;align-items:flex-start;gap:16px}
+  .now .go{width:100%}
+  .hero-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .hero-count{text-align:left}
+}
+
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line);margin-top:16px}
+.fact{padding:12px 0;border-bottom:1px solid var(--line)}
+.fact:nth-child(odd){padding-right:16px}
+.fact .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:3px}
+.fact .v{font-size:14px;font-family:var(--display-md);font-weight:500}
+.title-badge{display:inline-block;background:var(--clr-orange-light);color:#7a5230;border:1px solid var(--clr-orange-medium);
+  font-family:var(--display-md);font-size:13px;padding:4px 12px;border-radius:20px;margin-top:8px}
+.title-badge.acting{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+
+/* targets */
+.tgt{border-top:1px solid var(--line);padding:14px 0}
+.tgt:first-child{border-top:none;padding-top:0}
+.tgt-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.tgt-head b{font-family:var(--display-md);font-weight:500;font-size:14.5px}
+.tag{font-size:11px;padding:2px 9px;border-radius:20px;font-family:var(--display-md);white-space:nowrap}
+.tag.week{background:var(--clr-blue);color:#1a4e73}
+.tag.month{background:var(--clr-orange-light);color:#7a5230}
+.tag.quarter{background:var(--amber-bg);color:var(--amber)}
+.tag.year{background:var(--green-bg);color:var(--green)}
+.kpi{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi span{color:var(--clr-gray)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;background:var(--clr-orange)}
+.tgt-foot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:12px;color:var(--faint)}
+.tgt-foot a{color:var(--clr-orange)}
+
+/* policies */
+.pol{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.pol:first-child{border-top:none}
+.pol .t{flex:1}
+.pol .t b{font-family:var(--display-md);font-weight:500;font-size:14px}
+.pol .t div{font-size:12px;color:var(--muted)}
+.pol a button{padding:6px 14px;font-size:12.5px}
+.doc{width:22px;height:22px;flex:none;color:var(--clr-orange)}
+
+@media (max-width:560px){.facts{grid-template-columns:1fr}.fact:nth-child(odd){padding-right:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN / FIRST VISIT ============ -->
+<div id="gate" class="gate">
+  <div class="plate">
+    <div class="logo" style="margin-bottom:20px">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" id="tab-in" onclick="showTab('in')">Sign in</button>
+      <button role="tab" aria-selected="false" id="tab-up" onclick="showTab('up')">First visit</button>
+    </div>
+
+    <!-- sign in -->
+    <div id="pane-in">
+      <h2>Welcome back</h2>
+      <p class="lede">Sign in with your Data-Lead email.</p>
+      <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
+      <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+      <div id="li-msg"></div>
+      <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+    </div>
+
+    <!-- first visit -->
+    <div id="pane-up" class="hidden">
+      <h2>Set up your account</h2>
+      <p class="lede">First time here? Claim the account already made for you.</p>
+      <div class="fld"><label>Your Data-Lead email</label><input type="email" id="su-email" autocomplete="username"></div>
+      <div class="fld"><label>Choose a password</label><input type="password" id="su-pass" autocomplete="new-password">
+        <p class="hint">Eight characters or more.</p></div>
+      <div class="fld"><label>Confirm password</label><input type="password" id="su-pass2" autocomplete="new-password"></div>
+      <div id="su-msg"></div>
+      <button class="btn-primary" style="width:100%" id="su-btn" onclick="signUp()">Create my account</button>
+      <div class="alert info" style="margin-bottom:0"><b>Already on the register</b>Your account only works if the office has added your email. If it says you are not on the register, contact the Head of Operations.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="halfgrad" x1="0" y1="1" x2="0" y2="0">
+    <stop offset="50%" stop-color="#f56e0f"/><stop offset="50%" stop-color="#eee5d8"/>
+  </linearGradient>
+</defs></svg>
+
+<div id="app" class="wrap hidden">
+  <div class="topbar">
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/>
+        <path d="M10.3 7h3.4M10 10h4M10 14h4M10.3 17h3.4" stroke="#f56e0f" stroke-width=".9" opacity=".5"/>
+      </svg>
+      Cowrie Shell
+    </div>
+    <div style="display:flex;align-items:center;gap:11px">
+      <div class="who" style="text-align:right">
+        <b id="who-name">&mdash;</b><br><span id="who-dept">&mdash;</span><br>
+        <button onclick="signOut()">Sign out</button>
+      </div>
+      <div class="av" id="who-av">&mdash;</div>
+    </div>
+  </div>
+
+  <section id="v-home">
+    <div id="nudge"></div>
+
+    <section class="hero">
+      <div class="hero-head">
+        <h1 class="hero-month" id="h-month">&mdash;<em id="h-year"></em></h1>
+        <div class="hero-count">
+          <b id="h-logged">0</b><span class="of" id="h-of"> / 0</span>
+          <span>Days logged</span>
+        </div>
+      </div>
+      <div class="strip" id="strip"></div>
+      <div class="key">
+        <span><i style="background:var(--clr-orange)"></i>Logged</span>
+        <span><i style="background:#fff;border:1.5px solid var(--clr-orange)"></i>Today</span>
+        <span><i style="background:var(--sand)"></i>Not yet</span>
+        <span><i style="background:var(--green-bg);border:1px solid var(--green)"></i>Leave</span>
+        <span><i style="background:var(--clr-blue)"></i>Holiday</span>
+      </div>
+    </section>
+
+    <div class="now" id="now"></div>
+
+    <button class="waiting hidden" id="waiting" onclick="go('approvals')"></button>
+
+    <div class="strap">
+      <button class="mini" onclick="go('plans')">
+        <div class="k">This week's plan</div>
+        <div class="v" id="m-plan">&mdash;</div>
+        <div class="s" id="m-plan-s">Nothing planned yet</div>
+      </button>
+      <button class="mini" onclick="go('policies')">
+        <div class="k">Your targets</div>
+        <div class="v" id="m-tg">&mdash;</div>
+        <div class="s" id="m-tg-s">None set</div>
+      </button>
+      <button class="mini hidden" id="m-leave-btn" onclick="go('leave')">
+        <div class="k">Annual leave</div>
+        <div class="v" id="m-leave">&mdash;</div>
+        <div class="s" id="m-leave-s">&mdash;</div>
+      </button>
+    </div>
+
+    <div class="more">
+      <button onclick="go('profile')">My details</button>
+      <button onclick="go('finance')">My finance</button>
+      <button onclick="go('timesheet')">Sign off the month</button>
+      <button onclick="go('req')">Requisition</button>
+      <button onclick="go('policies')">Policies and targets</button>
+    </div>
+
+    <div id="other-doors"></div>
+
+    <p class="foot">
+      Each shell is a working day. Tap one to log it.<br>
+      A cowrie was West Africa&rsquo;s unit of account: you counted shells to know what you had.
+    </p>
+  </section>
+
+  <!-- ---------- policies + targets + who you are ---------- -->
+  <section id="v-policies" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Company</div>
+    <h1 style="font-size:26px;margin-bottom:18px">Policies and targets</h1>
+    <div class="card">
+      <h3>Policies</h3>
+      <p class="cardsub">Download and keep them somewhere you can find them again.</p>
+      <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="card">
+      <h3>Your targets</h3>
+      <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against. Say where you have got to; they cannot rate you fairly on a blank.</p>
+      <div id="t-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="card">
+      <h3>You</h3>
+      <div id="p-titles"></div>
+      <div class="facts" id="p-facts"></div>
+    </div>
+  </section>
+
+  <!-- ---------- sign off the month ---------- -->
+  <section id="v-timesheet" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow" id="ts-eyebrow">This month</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Sign off the month</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Your days are logged on the home screen. This is where you write the month up and send it to your line manager.</p>
+
+    <div id="ts-locked"></div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Working days</div><div class="v" id="s-wd">&mdash;</div></div>
+      <div class="stat"><div class="k">Days logged</div><div class="v" id="s-logged">0</div></div>
+      <div class="stat"><div class="k">Normal hours</div><div class="v" id="s-normal">0</div></div>
+      <div class="stat accent"><div class="k">Extra hours</div><div class="v" id="s-extra">0</div></div>
+    </div>
+
+    <div id="ts-gap"></div>
+
+    <div class="card">
+      <h3>Monthly activity report</h3>
+      <p class="cardsub">Read by your line manager and kept for donor reporting. The summary is required.</p>
+      <div class="fld"><label>1. Summary of the month</label><textarea id="rp1"></textarea></div>
+      <div class="fld"><label>2. Key achievements and outputs</label><textarea id="rp2"></textarea></div>
+      <div class="fld"><label>3. Challenges</label><textarea id="rp3" placeholder="Write None if there were none."></textarea></div>
+      <div class="fld"><label>4. Plans for next month</label><textarea id="rp4"></textarea></div>
+    </div>
+
+    <div class="card">
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:0;color:var(--clr-gray);font-size:14px">
+        <input type="checkbox" id="ts-certify" style="width:auto;margin-top:4px">
+        <span>I certify that this is a true record of the days and hours I worked.</span>
+      </label>
+      <div id="ts-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:14px" id="ts-btn" onclick="submitTimesheet()">Sign and send to my line manager</button>
+    </div>
+  </section>
+
+
+  <!-- ---------- plans ---------- -->
+  <section id="v-plans" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Your plans</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My plans</h1>
+    <p style="color:var(--muted);margin-bottom:18px">What you intend to do. Your manager sees it, can comment, and approves it.</p>
+
+    <div class="tabs" style="margin-bottom:18px">
+      <button role="tab" aria-selected="true" id="ptab-week" onclick="planTab('week')">This week</button>
+      <button role="tab" aria-selected="false" id="ptab-month" onclick="planTab('month')">This month</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <h3 style="margin:0" id="pl-title">This week</h3>
+        <span class="st draft" id="pl-status">draft</span>
+      </div>
+      <p class="cardsub" id="pl-dates">—</p>
+      <div id="pl-note"></div>
+      <div class="fld"><label>Headline: your week in one sentence</label><input id="pl-headline" placeholder="Finish the Chad baseline and start the WASH analysis"></div>
+    </div>
+
+    <div class="card">
+      <h3>What you plan to do</h3>
+      <p class="cardsub">Each item can point at one of your targets, so your manager sees how the week serves the quarter.</p>
+      <div id="pl-items"></div>
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+        <div class="fld"><label>Task</label><input id="it-task" placeholder="Clean and validate the Chad baseline"></div>
+        <div class="fld"><label>Expected output</label><input id="it-out" placeholder="A validated dataset with under 2% error"></div>
+        <div class="grid2">
+          <div class="fld"><label>Due by</label><input id="it-due" type="date"></div>
+          <div class="fld"><label>Serves which target? (optional)</label>
+            <select id="it-target"><option value="">—</option></select></div>
+        </div>
+        <button onclick="addReqItem()" style="width:100%;border-style:dashed">+ Add this item</button>
+      </div>
+      <div id="pl-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:14px" id="pl-btn" onclick="submitPlan()">Submit to my line manager</button>
+    </div>
+  </section>
+
+
+  <!-- ---------- approvals ---------- -->
+  <section id="v-approvals" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow" id="mgr-eyebrow">Your team</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Approvals</h1>
+    <p style="color:var(--muted);margin-bottom:18px">You approve whether the work was done. You never see anyone's salary.</p>
+
+    <div class="card">
+      <h3>Plans awaiting you</h3>
+      <div id="ap-plans"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Timesheets awaiting you</h3>
+      <div id="ap-ts"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Leave awaiting you</h3>
+      <p class="cardsub">Sick and bereavement stop with you. Everything else goes on to the COO or the CEO after you.</p>
+      <div id="ap-lv"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card hidden" id="ap-info-card">
+      <h3>For your information</h3>
+      <p class="cardsub">Sick and bereavement leave a manager has already granted. You are being told, not asked.</p>
+      <div id="ap-info"></div>
+    </div>
+  </section>
+
+  <!-- ---------- review one submission ---------- -->
+  <section id="v-review" class="hidden">
+    <button class="back" onclick="go('approvals')">&larr; Approvals</button>
+    <div class="eyebrow" id="rv-eyebrow">Reviewing</div>
+    <h1 style="font-size:26px;margin-bottom:18px" id="rv-name">&mdash;</h1>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Working days</div><div class="v" id="rv-wd">&mdash;</div></div>
+      <div class="stat"><div class="k">Days logged</div><div class="v" id="rv-logged">&mdash;</div></div>
+      <div class="stat"><div class="k">Normal hours</div><div class="v" id="rv-normal">&mdash;</div></div>
+      <div class="stat accent"><div class="k">Extra hours</div><div class="v" id="rv-extra">&mdash;</div></div>
+    </div>
+
+    <div id="rv-flags"></div>
+
+    <div class="card">
+      <h3>The days</h3>
+      <div id="rv-days"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Their monthly report</h3>
+      <div id="rv-report" style="font-size:13.5px;color:var(--muted);white-space:pre-line">&mdash;</div>
+    </div>
+
+    <div class="card">
+      <div class="alert info" style="margin-top:0"><b>No salary shown</b>You are approving whether the work was done, not what it pays. Pay is private to the person and Finance.</div>
+      <div class="fld"><label>Note (optional, required if returning)</label><textarea id="rv-note"></textarea></div>
+      <div id="rv-msg"></div>
+      <div class="actions">
+        <button onclick="reviewTs(false)">Return for a change</button>
+        <button class="btn-primary" id="rv-ok" onclick="reviewTs(true)">Approve</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- review one plan ---------- -->
+  <section id="v-planreview" class="hidden">
+    <button class="back" onclick="go('approvals')">&larr; Approvals</button>
+    <div class="eyebrow">Reviewing a plan</div>
+    <h1 style="font-size:26px;margin-bottom:4px" id="pr-name">&mdash;</h1>
+    <p style="color:var(--muted);margin-bottom:18px" id="pr-dates">&mdash;</p>
+
+    <div class="card">
+      <h3 id="pr-headline">&mdash;</h3>
+      <div id="pr-items" style="margin-top:12px"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <div class="fld"><label>Note to them (optional)</label><textarea id="pr-note"></textarea></div>
+      <div id="pr-msg"></div>
+      <div class="actions">
+        <button onclick="reviewPlan(false)">Return with a note</button>
+        <button class="btn-primary" id="pr-ok" onclick="reviewPlan(true)">Approve</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- team targets ---------- -->
+  <section id="v-team" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Your team</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Targets</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Set what someone must achieve, and the KPI it is measured against. Rate it at the end of the period.</p>
+
+    <div class="card hidden" id="acc-card">
+      <h3>What your team needs from you</h3>
+      <p class="cardsub">They chose to tell you. You are seeing what they need, never why they need it, that is theirs and the Handbook keeps it that way (§1.2, §14).</p>
+      <div id="acc-list"></div>
+    </div>
+
+    <div class="card">
+      <h3>Set a target</h3>
+      <p class="cardsub">A KPI is required. Make it a yardstick, something you could both point at and agree it was met.</p>
+      <div class="grid2">
+        <div class="fld"><label>For whom</label><select id="tg-staff"><option value="">Choose&hellip;</option></select></div>
+        <div class="fld"><label>Period</label>
+          <select id="tg-period" onchange="tgDates()">
+            <option value="week">This week</option>
+            <option value="month" selected>This month</option>
+            <option value="quarter">This quarter</option>
+            <option value="year">This year</option>
+          </select></div>
+      </div>
+      <div class="fld"><label>Target</label><input id="tg-title" placeholder="Clean and validate the Chad baseline"></div>
+      <div class="fld"><label>KPI: how will you know it was met?</label><input id="tg-kpi" placeholder="400 households validated with under 2% error">
+        <p class="hint">Required. This is the yardstick.</p></div>
+      <div class="grid2">
+        <div class="fld"><label>Measured how?</label>
+          <select id="tg-kind" onchange="tgKind()">
+            <option value="qualitative">Judged by me</option>
+            <option value="quantitative">Counted (a number)</option>
+          </select></div>
+        <div class="fld hidden" id="tg-num-row"><label>Target number</label><input id="tg-value" type="number"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld hidden" id="tg-unit-row"><label>Unit</label><input id="tg-unit" placeholder="households, dashboards, %"></div>
+        <div class="fld"><label>Resource link (optional)</label><input id="tg-link" placeholder="https://&hellip;"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>From</label><input id="tg-start" type="date"></div>
+        <div class="fld"><label>To</label><input id="tg-end" type="date"></div>
+      </div>
+      <div class="fld"><label>Description (optional)</label><textarea id="tg-desc"></textarea></div>
+      <div id="tg-msg"></div>
+      <button class="btn-primary" id="tg-btn" onclick="setTarget()">Set this target</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Targets you have set</h3>
+        <button class="rowbtn" onclick="loadTeamTargets()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="tg-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+
+  <!-- ---------- my finance ---------- -->
+  <section id="v-finance" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Private to you and Finance</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My finance</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Your payslip and how your pay has changed. Your manager cannot see any of this.</p>
+
+    <div class="card" id="ps-picker" style="padding:16px 20px">
+      <label style="margin:0">Month</label>
+      <select id="ps-month" onchange="loadPayslip()"></select>
+    </div>
+
+    <div id="ps-body"></div>
+    <div id="ind-body"></div>
+
+    <div class="card">
+      <h3>Your pay history</h3>
+      <p class="cardsub">Every change to your pay, when it took effect, and who recorded it.</p>
+      <div id="ph-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ---------- leave ---------- -->
+  <section id="v-leave" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Time off</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Leave</h1>
+    <p style="color:var(--muted);margin-bottom:18px" id="lv-lede">What you have, and how to ask for it.</p>
+
+    <!-- what you have -->
+    <div class="strap" id="lv-balances"></div>
+
+    <!-- ask -->
+    <div class="card">
+      <h3>Ask for leave</h3>
+      <p class="cardsub" id="lv-sub">Pick the kind first. The rules for each are different, and they are the Handbook's, not mine.</p>
+
+      <div class="fld"><label>What kind</label>
+        <select id="lv-kind" onchange="lvKind()"></select>
+        <p class="hint" id="lv-note"></p>
+      </div>
+
+      <div class="grid2">
+        <div class="fld"><label>From</label><input type="date" id="lv-from" onchange="lvCount()"></div>
+        <div class="fld"><label>To</label><input type="date" id="lv-to" onchange="lvCount()"></div>
+      </div>
+
+      <div id="lv-count" class="alert info" style="margin-top:0"></div>
+
+      <div class="fld"><label id="lv-reason-lab">Reason</label>
+        <textarea id="lv-reason" placeholder="A short note for your manager."></textarea></div>
+
+      <div class="fld hidden" id="lv-evi-row">
+        <label id="lv-evi-lab">Evidence</label>
+        <input type="file" id="lv-evi" accept="application/pdf,image/*">
+        <p class="hint" id="lv-evi-hint"></p>
+      </div>
+
+      <div id="lv-msg"></div>
+      <button class="btn-primary" style="width:100%" id="lv-btn" onclick="askLeave()">Send to my line manager</button>
+    </div>
+
+    <!-- history -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Your leave</h3>
+        <button class="rowbtn" onclick="loadLeave()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="lv-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+
+  <!-- ---------- requisitions ---------- -->
+  <section id="v-req" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Money</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Requisitions</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Ask for money you need to do the work. A Bolt ride, fuel, a per diem.</p>
+
+    <!-- the basket -->
+    <div class="card">
+      <h3>What do you need?</h3>
+      <p class="cardsub">Add each thing separately. A field trip is fuel, lodging and per diem, not one lump.</p>
+
+      <div class="grid2">
+        <div class="fld"><label>What is it for?</label>
+          <input id="rq-purpose" placeholder="Chad baseline, field visit week 3"></div>
+        <div class="fld"><label>Which project pays for it?</label>
+          <select id="rq-project" onchange="rqProject()"></select>
+          <p class="hint" id="rq-proj-note"></p></div>
+      </div>
+
+      <div id="rq-items"></div>
+
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:8px">
+        <div class="grid3" style="grid-template-columns:2fr 1fr 1fr">
+          <div class="fld"><label>Item</label><input id="it-desc" placeholder="Bolt to the ministry"></div>
+          <div class="fld"><label>Amount (&#8358;)</label><input id="it-amt" type="number"></div>
+          <div class="fld"><label>Needed by</label><input id="it-by" type="date"></div>
+        </div>
+        <button onclick="addReqItem()" style="width:100%;border-style:dashed">+ Add this item</button>
+      </div>
+
+      <div id="rq-total"></div>
+      <div id="rq-msg"></div>
+      <button class="btn-primary" style="width:100%;margin-top:6px" id="rq-btn" onclick="submitReq()">Send it</button>
+    </div>
+
+    <!-- receipts owed: the thing that gets forgotten -->
+    <div class="card hidden" id="rq-owed-card">
+      <h3>Receipts you owe</h3>
+      <p class="cardsub">Money was paid to you against these. Finance needs the receipt to close them.</p>
+      <div id="rq-owed"></div>
+    </div>
+
+    <!-- history -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Your requisitions</h3>
+        <button class="rowbtn" onclick="loadReq()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="rq-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
+  <!-- ---------- profile ---------- -->
+  <section id="v-profile" class="hidden">
+    <button class="back" onclick="go('home')">← Back</button>
+    <div class="eyebrow">Your details</div>
+    <h1 style="font-size:26px;margin-bottom:4px">My details</h1>
+    <p style="color:var(--muted);margin-bottom:22px" id="pf-lede">Four steps. Each one saves as you go.</p>
+    <div id="first-run"></div>
+
+    <div class="stepper" id="stepper"></div>
+
+    <div class="step" id="step-personal">
+    <div class="card">
+      <h3>Personal</h3>
+      <p class="cardsub">Who you are, and how we reach you. Only your phone number, date of birth and address are required. The rest is optional.</p>
+      <div class="grid3">
+        <div class="fld" style="min-width:96px"><label>Title</label>
+          <select id="pf-title">
+            <option value="">—</option>
+            <option>Mr</option><option>Mrs</option><option>Ms</option><option>Miss</option>
+            <option>Dr</option><option>Prof</option><option>Engr</option><option>Barr</option><option>Chief</option>
+          </select></div>
+        <div class="fld"><label>Full name</label><input id="pf-name" disabled>
+          <p class="hint">Set by the office. Contact the Head of Operations if it is wrong.</p></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Phone number</label><input id="pf-phone" type="tel" inputmode="tel"></div>
+        <div class="fld"><label>Alternate phone</label><input id="pf-phone2" type="tel" inputmode="tel"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Date of birth</label><input id="pf-dob" type="date"></div>
+        <div class="fld"><label>Gender</label>
+          <select id="pf-gender"><option value="">—</option>
+            <option value="female">Female</option><option value="male">Male</option>
+            <option value="prefer_not_to_say">Prefer not to say</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Marital status</label>
+          <select id="pf-marital"><option value="">&mdash;</option>
+            <option value="single">Single</option><option value="married">Married</option>
+            <option value="divorced">Divorced</option><option value="widowed">Widowed</option>
+            <option value="prefer_not_to_say">Prefer not to say</option></select></div>
+        <div class="fld"><label>Nationality</label>
+          <select id="pf-nat" onchange="natChange()"></select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld" id="pf-origin-row"><label>State of origin</label>
+          <select id="pf-origin"></select></div>
+        <div class="fld" id="pf-lga-row"><label>Local government area of origin</label>
+          <input id="pf-lga" placeholder="Optional"></div>
+      </div>
+      <div class="fld"><label>Race or ethnic origin</label>
+        <select id="pf-race">
+          <option value="">&mdash;</option>
+          <option>Black African</option>
+          <option>White / Caucasian</option>
+          <option>Asian</option>
+          <option>Middle Eastern / North African</option>
+          <option>Mixed or multiple</option>
+          <option>Other</option>
+          <option>Prefer not to say</option>
+        </select>
+        <p class="hint">Optional. Held only for demographic reporting some donors require. It plays no part in any employment decision (Employee Handbook 1.2).</p></div>
+      <div class="grid2">
+        <div class="fld"><label>State of residence</label>
+          <select id="pf-state"></select></div>
+        <div class="fld"><label>City or town</label><input id="pf-city"></div>
+      </div>
+      <div class="fld"><label>Residential address</label><textarea id="pf-addr"></textarea></div>
+      <div id="pf-msg"></div>
+      <button class="btn-primary" id="pf-btn" onclick="savePersonal()" style="width:100%">Save and continue &rarr;</button>
+    </div>
+
+
+    </div>
+    <div class="step" id="step-disability">
+    <div class="card">
+      <h3>Disability and workplace adjustments</h3>
+      <p class="cardsub">So we can make the adjustments you need. Every part of this is optional, and you choose who sees it.</p>
+      <div class="alert info" style="margin-top:0"><b>Why we ask</b>We cannot provide an adjustment we do not know about. This is held for that reason only. It plays no part in any employment decision (Employee Handbook 1.2), and the Handbook commits us to reasonable adjustments (8.6, 9.22).</div>
+
+      <div class="fld"><label>Do you have a disability or long-term condition?</label>
+        <select id="ds-has" onchange="dsChange()">
+          <option value="">&mdash;</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+          <option value="prefer_not_to_say">Prefer not to say</option>
+        </select></div>
+
+      <div id="ds-detail" class="hidden">
+        <div class="fld"><label>Which apply? Tick any that do.</label>
+          <div id="ds-types" class="checks"></div></div>
+        <div class="fld"><label>Anything else about it you want us to know (optional)</label>
+          <textarea id="ds-notes"></textarea>
+          <p class="hint">Seen only by you, the COO and the CEO. Never by your line manager.</p></div>
+      </div>
+
+      <div id="ds-acc" class="hidden">
+        <div class="fld"><label>What adjustments would help you work well?</label>
+          <div id="ds-accs" class="checks"></div></div>
+        <div class="fld"><label>Anything else you need (optional)</label>
+          <textarea id="ds-acc-notes" placeholder="e.g. meetings captioned, desk near a window, printed handouts in advance"></textarea></div>
+
+        <label style="display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;color:var(--clr-gray);font-size:14px">
+          <input type="checkbox" id="ds-share" style="width:auto;margin-top:4px">
+          <span>My line manager may see the adjustments I need (not my condition), so they can arrange them.
+            <span style="display:block;font-size:12px;color:var(--muted);margin-top:3px">If you leave this unticked, only the COO and the CEO see them, and they will arrange things with you directly.</span></span>
+        </label>
+      </div>
+
+      <div id="ds-msg"></div>
+      <div class="step-nav" style="margin-top:14px">
+        <button onclick="goStep(0)">&larr; Back</button>
+        <button class="btn-primary" id="ds-btn" onclick="saveDisability()">Save and continue &rarr;</button>
+      </div>
+    </div>
+
+    </div>
+    <div class="step" id="step-nok">
+    <div class="card">
+      <h3>Next of kin</h3>
+      <p class="cardsub">Who we contact in an emergency. Please keep this current. Their name and phone number are required; the rest is optional.</p>
+      <div class="grid2">
+        <div class="fld"><label>Full name</label><input id="nk-name"></div>
+        <div class="fld"><label>Relationship</label>
+          <select id="nk-rel">
+            <option value="">&mdash;</option>
+            <option>Spouse</option><option>Parent</option><option>Child</option>
+            <option>Sibling</option><option>Uncle</option><option>Aunt</option>
+            <option>Cousin</option><option>Nephew</option><option>Niece</option>
+            <option>Grandparent</option><option>In-law</option>
+            <option>Guardian</option><option>Friend</option><option>Other</option>
+          </select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Phone number</label><input id="nk-phone" type="tel" inputmode="tel"></div>
+        <div class="fld"><label>Email (optional)</label><input id="nk-email" type="email"></div>
+      </div>
+      <div class="fld"><label>Address</label><textarea id="nk-addr"></textarea></div>
+      <div id="nk-msg"></div>
+      <div class="step-nav">
+        <button onclick="goStep(1)">&larr; Back</button>
+        <button class="btn-primary" id="nk-btn" onclick="saveNok()">Save and continue &rarr;</button>
+      </div>
+    </div>
+
+    </div>
+    <div class="step" id="step-more">
+      <div class="card">
+        <h3>A photograph</h3>
+        <p class="cardsub">Optional. Only you, the COO and the CEO can see it.</p>
+        <div id="ph-now"></div>
+        <div class="fld"><label>Choose a picture</label><input type="file" id="ph-file" accept="image/*"></div>
+        <div id="ph-msg"></div>
+        <button id="ph-btn" onclick="savePhoto()">Upload it</button>
+      </div>
+
+      <div class="card">
+        <h3>Your qualifications</h3>
+        <p class="cardsub">Degrees and certifications. The Handbook keeps these on your file (§14.1).</p>
+        <div id="ql-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid2">
+            <div class="fld"><label>What</label><input id="ql-what" placeholder="B.Sc Statistics"></div>
+            <div class="fld"><label>Where</label><input id="ql-where" placeholder="University of Ibadan"></div>
+          </div>
+          <div class="grid2">
+            <div class="fld"><label>Year</label><input id="ql-year" type="number" placeholder="2018"></div>
+            <div class="fld"><label>Kind</label>
+              <select id="ql-kind"><option value="false">A degree or diploma</option>
+              <option value="true">A professional certification</option></select></div>
+          </div>
+          <button onclick="addQual()" style="width:100%;border-style:dashed">+ Add it</button>
+        </div>
+        <div id="ql-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Your dependents</h3>
+        <p class="cardsub">A spouse plus up to five others (Employee Handbook §6.1). Used only if health cover is arranged.</p>
+        <div id="dp-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid3">
+            <div class="fld"><label>Name</label><input id="dp-name"></div>
+            <div class="fld"><label>Relationship</label>
+              <select id="dp-rel"><option>Spouse</option><option>Child</option><option>Parent</option></select></div>
+            <div class="fld"><label>Date of birth</label><input id="dp-dob" type="date"></div>
+          </div>
+          <button onclick="addDep()" style="width:100%;border-style:dashed">+ Add them</button>
+        </div>
+        <div id="dp-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Your referees</h3>
+        <p class="cardsub">Two, ideally, and one a former supervisor (Employee Handbook §3.4).</p>
+        <div id="rf-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid2">
+            <div class="fld"><label>Name</label><input id="rf-name"></div>
+            <div class="fld"><label>How they know you</label><input id="rf-rel" placeholder="Former supervisor"></div>
+          </div>
+          <div class="grid3">
+            <div class="fld"><label>Organisation</label><input id="rf-org"></div>
+            <div class="fld"><label>Phone</label><input id="rf-phone" type="tel"></div>
+            <div class="fld"><label>Email</label><input id="rf-email" type="email"></div>
+          </div>
+          <button onclick="addRef()" style="width:100%;border-style:dashed">+ Add them</button>
+        </div>
+        <div id="rf-msg"></div>
+      </div>
+
+      <div class="step-nav">
+        <button onclick="goStep(3)">&larr; Back</button>
+        <button class="btn-primary" onclick="nextStep()">Finish</button>
+      </div>
+    </div>
+
+    <div class="step" id="step-done">
+      <div class="card done-card">
+        <div class="tick">&#10003;</div>
+        <h3 style="font-size:20px;font-family:var(--display);margin-bottom:6px">That is everything</h3>
+        <p style="color:var(--muted);font-size:14px;max-width:38ch;margin:0 auto 20px">
+          Thank you. Your details are saved. You can come back and change any of this whenever you need to.</p>
+        <button class="btn-primary" onclick="go('home')">Go to my portal &rarr;</button>
+      </div>
+    </div>
+
+    <div class="step" id="step-bank">
+    <div class="card">
+      <h3>Bank and tax</h3>
+      <p class="cardsub">Where your salary is paid, and your tax records. Only the bank name and account number are required.</p>
+      <div class="alert info" style="margin-top:0"><b>Only you and Finance can see this</b>Your manager cannot. And only you can change where your salary is paid, not even Finance can alter it.</div>
+      <div class="grid2">
+        <div class="fld"><label>Bank name</label><input id="bk-bank"></div>
+        <div class="fld"><label>Account number</label><input id="bk-acct" inputmode="numeric" maxlength="10"></div>
+      </div>
+      <div class="fld"><label>Account name</label><input id="bk-name">
+        <p class="hint">Exactly as it appears on your bank account.</p></div>
+      <div class="grid2">
+        <div class="fld"><label>Tax Identification Number (TIN)</label><input id="bk-tin">
+          <p class="hint">Optional now, but needed before we can remit your PAYE.</p></div>
+        <div class="fld"><label>National Housing Fund (NHF) number</label><input id="bk-nhf">
+          <p class="hint">Optional.</p></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Pension Fund Administrator (PFA)</label><input id="bk-pfa" placeholder="e.g. Stanbic IBTC Pension Managers">
+          <p class="hint">Optional.</p></div>
+        <div class="fld"><label>Retirement Savings Account (RSA) number</label><input id="bk-rsa">
+          <p class="hint">Optional.</p></div>
+      </div>
+      <p class="hint" style="margin-bottom:14px">Only your bank name and account number are required, that is how you get paid. Pension details are collected now and used only if the scheme is switched on.</p>
+      <div id="bk-msg"></div>
+      <div class="step-nav">
+        <button onclick="goStep(2)">&larr; Back</button>
+        <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save and continue &rarr;</button>
+      </div>
+    </div>
+    </div>
+  </section>
+</div>
+
+<div id="modal" class="modal-bg hidden">
+  <div class="modal">
+    <h3 id="mo-title" style="font-family:var(--display);font-size:18px">Day</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px" id="mo-sub">What did you do, and for how long?</p>
+    <div class="grid2">
+      <div class="fld"><label>Hours worked</label><input id="mo-hours" type="number" step="0.5" min="0.5" max="24"></div>
+      <div class="fld"><label>Standard for this day</label><input id="mo-std" disabled></div>
+    </div>
+    <div class="fld"><label>What you did</label><textarea id="mo-act" placeholder="e.g. Cleaned and coded the Chad baseline dataset, drafted the WASH indicators."></textarea></div>
+    <div id="mo-ai" class="ai-note hidden"></div>
+    <div class="actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="clearDay()" style="color:var(--red)">Clear day</button>
+      <button class="btn-primary" id="mo-save" onclick="saveDay()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+
+// ============================================================
+// TELLING PEOPLE
+// No secret in this page: the Edge Function holds it and checks who you are.
+// An email never blocks the thing it is about. If the note fails, the leave
+// is still approved, the timesheet is still submitted. It says so instead.
+// ============================================================
+async function notify(event, toEmail, toName, extra = {}){
+  if(!toEmail) return false;
+  try {
+    const { error } = await db.functions.invoke("notify", {
+      body: { event, to_email: toEmail, to_name: toName, ...extra }
+    });
+    if(error){ console.warn("notify:", error.message); return false; }
+    return true;
+  } catch(e){ console.warn("notify:", e); return false; }
+}
+
+// who hears about it when you submit something
+async function myApprover(){
+  const { data, error } = await db.rpc("who_approves_for", { p_staff: PROFILE.id });
+  if(error){ console.warn("who_approves_for:", error.message); return null; }
+  return Array.isArray(data) ? data[0] : data;
+}
+
+// ---- nothing fails silently ----
+// Every background call routes its error through here. If it returns true,
+// the caller stops. The person sees what broke, in words, not a dead screen.
+function oops(where, error){
+  if(!error) return false;
+  console.error(where + ":", error);
+  toast(where + " could not load. " + (error.message || ""));
+  return true;
+}
+let toastTimer;
+function toast(text, good){
+  let t = $("toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "toast"; t.className = "toast";
+    document.body.appendChild(t);
+  }
+  t.textContent = text;
+  t.className = "toast on" + (good ? " good" : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 6000);
+}
+window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showTab=showTab;
+window.go=go; window.savePersonal=savePersonal; window.saveNok=saveNok; window.saveFinancial=saveFinancial;
+
+window.openDay=openDay; window.saveDay=saveDay; window.clearDay=clearDay; window.closeModal=closeModal;
+window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=addItem;
+window.removeItem=removeItem; window.submitPlan=submitPlan;
+
+window.goStep=goStep; window.nextStep=nextStep;
+window.loadLeave=loadLeave; window.lvKind=lvKind; window.lvCount=lvCount;
+window.askLeave=askLeave; window.cancelLeave=cancelLeave; window.decideLeave=decideLeave;
+window.loadPayslip=loadPayslip;  
+ 
+ 
+window.natChange=natChange; window.dsChange=dsChange; window.saveDisability=saveDisability;
+window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openReview;
+window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
+window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
+
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","req"];
+function go(v){
+  VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
+  window.scrollTo(0,0);
+  if(v === "profile"){ loadExtras(); if(!FIRST_RUN) showStep(0); }
+  if(v === "home" || v === "timesheet") loadTimesheet();
+  if(v === "plans") loadPlan();
+  if(v === "approvals") loadApprovals();
+  if(v === "team") loadTeam();
+  if(v === "leave") loadLeave();
+  if(v === "req") loadReq();
+  if(v === "finance") loadMyFinance();
+}
+
+const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
+              temporary:"Temporary hire", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
+const STATUS = { probationary:"Probationary", confirmed:"Confirmed", suspended:"Suspended",
+                 resigned:"Resigned", terminated:"Terminated", exited:"Exited" };
+
+function showTab(which){
+  $("tab-in").setAttribute("aria-selected", which==="in");
+  $("tab-up").setAttribute("aria-selected", which==="up");
+  $("pane-in").classList.toggle("hidden", which!=="in");
+  $("pane-up").classList.toggle("hidden", which!=="up");
+}
+
+// ---------- session ----------
+db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
+
+async function signIn(){
+  const email = $("li-email").value.trim(), pass = $("li-pass").value;
+  if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
+  btn("li-btn", true, "Signing in");
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  btn("li-btn", false, "Sign in");
+  if(error) msg("li-msg","err","Could not sign in", error.message);
+}
+
+async function signUp(){
+  const email = $("su-email").value.trim();
+  const pass  = $("su-pass").value, pass2 = $("su-pass2").value;
+  if(!email || !pass){ msg("su-msg","err","Missing details","Enter your email and a password."); return; }
+  if(pass.length < 8){ msg("su-msg","err","Password too short","Use eight characters or more."); return; }
+  if(pass !== pass2){ msg("su-msg","err","Passwords do not match","Please retype them."); return; }
+
+  btn("su-btn", true, "Checking");
+  // friendly check first: are they on the register?
+  const { data: invited, error: cErr } = await db.rpc("email_is_invited", { p_email: email });
+  if(cErr){ btn("su-btn", false, "Create my account"); msg("su-msg","err","Could not check", cErr.message); return; }
+  if(!invited){
+    btn("su-btn", false, "Create my account");
+    msg("su-msg","err","Not on the register",
+        "This email has not been added yet, or an account already exists for it. Contact the Head of Operations.");
+    return;
+  }
+
+  btn("su-btn", true, "Creating");
+  const { error } = await db.auth.signUp({ email, password: pass });
+  btn("su-btn", false, "Create my account");
+  if(error){ msg("su-msg","err","Could not create account", error.message); return; }
+  msg("su-msg","ok","Account created","If a confirmation email is required, check your inbox. Otherwise you can sign in now.");
+}
+
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+// ---------- dashboard ----------
+let PROFILE = null;
+
+async function enterApp(){
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(error || !data){
+    msg("li-msg","err","Profile not found",
+        "Your login is not linked to a staff record. Contact the Head of Operations.");
+    await db.auth.signOut();
+    return;
+  }
+  PROFILE = data;
+
+  $("who-name").textContent = PROFILE.display_name || PROFILE.full_name;
+  $("who-dept").textContent = PROFILE.department || "\u2014";
+
+  // one-off: populate the reference dropdowns and checkbox grids
+  fillSelect("pf-nat", COUNTRIES);
+  fillSelect("pf-origin", NG_STATES);
+  fillSelect("pf-state", NG_STATES);
+  fillChecks("ds-types", DISABILITY_TYPES, "dt");
+  fillChecks("ds-accs", ACCOMMODATIONS, "ac");
+
+  renderFacts(PROFILE);
+  renderNudge(PROFILE);
+  fillProfileForm(PROFILE);
+  $("gate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  const parts = (PROFILE.full_name || "").trim().split(/\s+/);
+  $("who-av").textContent = ((parts[0]||"")[0] || "") + ((parts[1]||"")[0] || "");
+  loadTitles(); loadTargets(); loadPolicies();
+  loadTimesheet();          // the strip is the home screen now
+  loadMinis(); loadWaiting(); checkPayday();
+
+  if(isManager()) loadApprovals();
+  // Finance and certification have their own doors now.
+  if(isFinance() || isCertifier()) showOtherDoors();
+
+  // First visit: nobody has told us anything about themselves yet.
+  buildStepper();
+  if(!PROFILE.phone){
+    FIRST_RUN = true;
+    go("profile");
+    showStep(0);
+    $("first-run").innerHTML =
+      '<div class="alert info"><b>Welcome. Before you start, please tell us about yourself.</b>' +
+      'Four short steps, then you are done. Each one saves as you go.</div>';
+  } else {
+    showStep(0);
+  }
+}
+
+function renderFacts(p){
+  const rows = [
+    ["Staff ID",   p.staff_code || "\u2014"],
+    ["Department", p.department || "\u2014"],
+    ["Reports to", p.line_manager || "\u2014"],
+    ["Role",       p.job_title || "\u2014"],
+    ["Employment", EMP[p.employment_type] || "\u2014"],
+    ["Status",     STATUS[p.employment_status] || p.status || "\u2014"],
+  ];
+  $("p-facts").innerHTML = rows.map(([k,v]) =>
+    `<div class="fact"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join("");
+}
+
+function renderNudge(p){
+  const missing = [];
+  if(p.personal_incomplete) missing.push("personal details");
+  if(p.nok_incomplete)      missing.push("next of kin");
+  if(p.bank_incomplete)     missing.push("bank details");
+  if(!missing.length){ $("nudge").innerHTML = ""; return; }
+  const list = missing.length === 1 ? missing[0]
+    : missing.slice(0,-1).join(", ") + " and " + missing.slice(-1);
+  $("nudge").innerHTML =
+    `<div class="alert warn"><b>Your profile is not complete</b>
+      We still need your ${list}. Without bank details we cannot pay you.
+      <div style="margin-top:9px"><button onclick="go('profile')">Complete my details \u2192</button></div></div>`;
+}
+
+function fillProfileForm(p){
+  set("pf-title", p.honorific); set("pf-name", p.full_name);
+  set("pf-phone", p.phone); set("pf-phone2", p.alternate_phone);
+  set("pf-dob", p.date_of_birth); set("pf-gender", p.gender);
+  set("pf-marital", p.marital_status);
+  set("pf-nat", p.nationality || "Nigeria");
+  set("pf-race", p.race);
+  set("pf-origin", p.state_of_origin); set("pf-lga", p.lga_of_origin);
+  set("pf-city", p.city); set("pf-state", p.state); set("pf-addr", p.residential_address);
+  natChange();
+
+  set("ds-has", p.has_disability);
+  set("ds-notes", p.disability_notes);
+  set("ds-acc-notes", p.accommodation_notes);
+  setChecks("dt", DISABILITY_TYPES, p.disability_types);
+  setChecks("ac", ACCOMMODATIONS, p.accommodations);
+  const sh = $("ds-share"); if(sh) sh.checked = !!p.share_accommodations_with_manager;
+  dsChange();
+  set("nk-name", p.nok_name); set("nk-rel", p.nok_relationship);
+  set("nk-phone", p.nok_phone); set("nk-email", p.nok_email); set("nk-addr", p.nok_address);
+  set("bk-bank", p.bank_name); set("bk-acct", p.account_number); set("bk-name", p.account_name);
+  set("bk-tin", p.tin); set("bk-nhf", p.nhf_number);
+  set("bk-pfa", p.pension_pfa); set("bk-rsa", p.pension_rsa_number);
+}
+function set(id, v){ const e = $(id); if(e) e.value = v ?? ""; }
+function val(id){ const v = $(id) ? $(id).value.trim() : ""; return v ? v : null; }
+
+// ---------- saves ----------
+async function savePersonal(){
+  btn("pf-btn", true, "Saving");
+  const title = val("pf-title");
+  if(title !== (PROFILE.honorific || null)){
+    await db.rpc("save_my_honorific", { p_honorific: title || "" });
+  }
+  const { error } = await db.rpc("save_my_personal", {
+    p_phone: val("pf-phone"), p_alternate_phone: val("pf-phone2"),
+    p_date_of_birth: val("pf-dob"), p_gender: val("pf-gender"),
+    p_marital_status: val("pf-marital"), p_nationality: val("pf-nat"),
+    p_state_of_origin: val("pf-origin"), p_residential_address: val("pf-addr"),
+    p_city: val("pf-city"), p_state: val("pf-state"),
+  });
+  // race and LGA live on the identity saver
+  await db.rpc("save_my_identity", { p_race: val("pf-race"), p_lga_of_origin: val("pf-lga") });
+  btn("pf-btn", false, "Save and continue \u2192");
+  if(error){ msg("pf-msg","err","Could not save", error.message); return; }
+  msg("pf-msg","ok","Saved","Your personal details are up to date.");
+  const fr = $("first-run"); if(fr) fr.innerHTML = "";
+  await refresh();
+  setTimeout(nextStep, 500);
+}
+
+async function saveNok(){
+  btn("nk-btn", true, "Saving");
+  const { error } = await db.rpc("save_my_nok", {
+    p_nok_name: val("nk-name"), p_nok_relationship: val("nk-rel"),
+    p_nok_phone: val("nk-phone"), p_nok_email: val("nk-email"), p_nok_address: val("nk-addr"),
+  });
+  btn("nk-btn", false, "Save and continue \u2192");
+  if(error){ msg("nk-msg","err","Could not save", error.message); return; }
+  msg("nk-msg","ok","Saved","Thank you. We will only use this in an emergency.");
+  await refresh();
+  setTimeout(nextStep, 500);
+}
+
+async function saveFinancial(){
+  const acct = val("bk-acct");
+  if(acct && !/^\d{10}$/.test(acct)){
+    msg("bk-msg","err","Check the account number","A Nigerian account number is 10 digits."); return;
+  }
+  btn("bk-btn", true, "Saving");
+  const { error } = await db.rpc("save_my_financial", {
+    p_bank_name: val("bk-bank"), p_account_number: acct, p_account_name: val("bk-name"),
+    p_tin: val("bk-tin"), p_pension_pfa: val("bk-pfa"),
+    p_pension_rsa_number: val("bk-rsa"), p_nhf_number: val("bk-nhf"),
+  });
+  btn("bk-btn", false, "Save and continue \u2192");
+  if(error){ msg("bk-msg","err","Could not save", error.message); return; }
+  msg("bk-msg","ok","Saved","Your bank and tax details are recorded.");
+  await refresh();
+  setTimeout(nextStep, 500);
+}
+
+async function refresh(){
+  const { data, error } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(oops("Your profile", error)) return;
+  if(data){ PROFILE = data; renderFacts(data); renderNudge(data);
+    $("who-name").textContent = data.display_name || data.full_name; }
+}
+
+async function loadTitles(){
+  const { data, error } = await db.from("my_appointments").select("*");
+  if(oops("Your appointments", error)) return;
+  if(!data || !data.length){ $("p-titles").innerHTML = ""; return; }
+  $("p-titles").innerHTML = data.map(a => {
+    const acting = a.kind === "acting";
+    const extra = [a.department, a.portfolio].filter(Boolean).join(" · ");
+    return `<span class="title-badge ${acting?"acting":""}">${acting?"Acting ":""}${esc(a.title)}${extra?" — "+esc(extra):""}</span>`;
+  }).join(" ");
+}
+
+async function loadTargets(){
+  const wrap = $("t-list");
+  const { data, error } = await db.from("my_targets").select("*");
+  if(oops("Your targets", error)) return;
+  if(!data || !data.length){
+    wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No targets set for you yet. Your manager will add them here.</p>';
+    return;
+  }
+  wrap.innerHTML = data.map(t => {
+    const quant = t.kpi_kind === "quantitative" && t.target_value;
+    const done  = !!t.rating;
+    const prog = quant
+      ? '<div class="bar"><i style="width:' + Math.min(100, t.pct||0) + '%"></i></div>' +
+        '<div class="tgt-foot"><span>' + fmtNum(t.current_value||0) + " of " + fmtNum(t.target_value) +
+        (t.unit ? " " + esc(t.unit) : "") + '</span><span>' + (t.pct||0) + '%</span></div>'
+      : '<div class="tgt-foot"><span>Assessed by your manager</span><span>' +
+        esc(t.status||"").replace(/_/g," ") + '</span></div>';
+    const res = t.resource_link
+      ? '<div class="tgt-foot"><a href="' + esc(t.resource_link) + '" target="_blank" rel="noopener">Open the resource \u2192</a><span></span></div>' : "";
+    // the thing that was missing: a way to say where you have got to
+    const say = done ? "" :
+      '<button class="rowbtn" style="margin-top:8px" onclick="reportProgress(' + t.id + ',' + !!quant + ',' +
+      (t.target_value||0) + ',\'' + esc(t.unit||"").replace(/'/g,"\\'") + '\')">' +
+      (quant ? "Update where you have got to" : "Tell your manager how it is going") + '</button>';
+    return '<div class="tgt">' +
+      '<div class="tgt-head"><b>' + esc(t.title) + '</b>' +
+      '<span class="tag ' + (done ? "month" : t.period) + '">' + esc(t.rating || t.period).replace(/_/g," ") + '</span></div>' +
+      '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' + prog + res + say + '</div>';
+  }).join("");
+}
+
+async function loadPolicies(){
+  const wrap = $("pol-list");
+  const { data, error } = await db.from("policies").select("*").eq("is_current", true).order("uploaded_at",{ascending:false});
+  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No policies published yet.</p>`; return; }
+  wrap.innerHTML = data.map(p => {
+    const url = db.storage.from("policies").getPublicUrl(p.storage_path).data.publicUrl;
+    const when = new Date(p.uploaded_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    return `<div class="pol">
+      <svg class="doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
+      </svg>
+      <div class="t"><b>${esc(p.title)}${p.version?" · "+esc(p.version):""}</b>
+        <div>${p.description?esc(p.description)+" · ":""}Added ${when}</div></div>
+      <a href="${url}" target="_blank" rel="noopener"><button>Download</button></a>
+    </div>`;
+  }).join("");
+}
+
+
+// ============================================================
+// TIMESHEET
+// ============================================================
+const NOW = new Date();
+let TS_YEAR = NOW.getFullYear(), TS_MONTH = NOW.getMonth() + 1;
+let DAYS = {}, HOLIDAYS = {}, LEAVE = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["Mon","Tue","Wed","Thu","Fri"];
+
+// stands in for Gemini until the AI check is wired; flags thin entries only
+function aiFlag(text){
+  const t = (text||"").trim();
+  // The assistant never decides. It only says what a manager is likely to ask.
+  if(t.length < 15)
+    return { thin:true, why:"That is very brief for a day's work. Your manager may ask what else you did." };
+  if(t.split(/\s+/).length < 4)
+    return { thin:true, why:"A few words rarely tell your manager what a day involved. They may query it." };
+  if(/^(worked|busy|tasks|various|office|stuff|admin|meetings?)\.?$/i.test(t))
+    return { thin:true, why:"Words like this do not say what was actually done. Your manager may query the day." };
+  return { thin:false, why:"That reads like a day's work." };
+}
+
+async function loadTimesheet(){
+  $("ts-eyebrow").textContent = MONTHS[TS_MONTH-1] + " " + TS_YEAR;
+  const first = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-01";
+  const lastD = new Date(TS_YEAR, TS_MONTH, 0).getDate();
+  const last  = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + lastD;
+
+  try {
+    // public holidays this month
+    const h = await db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last);
+    if(h.error) throw new Error("Holidays: " + h.error.message);
+    HOLIDAYS = {};
+    (h.data||[]).forEach(x => HOLIDAYS[x.holiday] = x.name);
+
+    // working days
+    const w = await db.rpc("working_days_in", { p_year: TS_YEAR, p_month: TS_MONTH });
+    if(w.error) throw new Error("Working days: " + w.error.message);
+    WORKING_DAYS = w.data ?? 0;
+    $("s-wd").textContent = WORKING_DAYS;
+
+    // my logged days
+    const d = await db.from("my_timesheet").select("*").gte("work_date", first).lte("work_date", last);
+    if(d.error) throw new Error("Your days: " + d.error.message);
+    DAYS = {};
+    (d.data||[]).forEach(r => DAYS[r.work_date] = r);
+
+    // approved leave. Not absence, and not something to log.
+    LEAVE = {};
+    const lv = await db.rpc("my_leave_days", { p_from: first, p_to: last });
+    if(lv.error) throw new Error("Your leave: " + lv.error.message);
+    (lv.data||[]).forEach(x => LEAVE[x.day] = x);
+
+    // this month's submission, if any
+    const pid = await periodId();
+    if(pid === null || pid === undefined) throw new Error("Could not open the month. Has file 16 been run?");
+    const sb = await db.from("submissions")
+      .select("status, report_summary, report_achievements, report_challenges, report_next, manager_note")
+      .eq("period_id", pid).eq("staff_id", PROFILE.id).maybeSingle();
+    if(sb.error) throw new Error("Submission: " + sb.error.message);
+    const sub = sb.data;
+    SUB_STATUS = (sub && sub.status) ? sub.status : "draft";
+    if(sub){
+      set("rp1", sub.report_summary); set("rp2", sub.report_achievements);
+      set("rp3", sub.report_challenges); set("rp4", sub.report_next);
+    }
+    renderLock(sub);
+    buildStrip();
+    await refreshHours();
+    renderNow();
+  } catch(e){
+    // never fail silently: say what broke and where
+    $("ts-locked").innerHTML =
+      '<div class="alert err"><b>The timesheet could not load</b>' + esc(e.message || String(e)) +
+      '<div style="font-size:12px;margin-top:6px;opacity:.85">Tell whoever set this up. Nothing you did caused it.</div></div>';
+    console.error("loadTimesheet:", e);
+  }
+}
+
+async function periodId(){
+  const { data, error } = await db.rpc("ensure_period", { p_year: TS_YEAR, p_month: TS_MONTH });
+  if(error) throw new Error("Opening the month: " + error.message);
+  return data;
+}
+
+function renderLock(sub){
+  const locked = ["submitted","manager_approved","director_approved"].includes(SUB_STATUS);
+  const box = $("ts-locked");
+  if(SUB_STATUS === "returned"){
+    box.innerHTML = '<div class="alert warn"><b>Returned for a change</b>' +
+      esc(sub && sub.manager_note ? sub.manager_note : "Your manager asked for an update.") +
+      ' You can edit and resubmit.</div>';
+  } else if(locked){
+    const where = SUB_STATUS === "submitted" ? "with your line manager"
+                : SUB_STATUS === "manager_approved" ? "approved by your manager, awaiting the director"
+                : "fully approved";
+    box.innerHTML = '<div class="alert ok"><b>Submitted</b>This month is ' + where +
+      '. It is locked. Ask your manager to return it if you need a change.</div>';
+  } else { box.innerHTML = ""; }
+  $("ts-btn").disabled = locked;
+  ["rp1","rp2","rp3","rp4"].forEach(id => { const e=$(id); if(e) e.disabled = locked; });
+}
+
+// ============================================================
+// THE STRIP  ·  one shell per working day. Weekends are not shells,
+// because a weekend is not a day owed. Tap one to log it.
+// ============================================================
+function buildStrip(){
+  const dim = new Date(TS_YEAR, TS_MONTH, 0).getDate();
+  const todayISO = isoOf(new Date());
+  let html = "", logged = 0, working = 0;
+
+  for(let d = 1; d <= dim; d++){
+    const dt = new Date(TS_YEAR, TS_MONTH-1, d);
+    const w = dt.getDay();
+    if(w === 0 || w === 6) continue;                // not a working day, not a shell
+    const iso = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    const hol = HOLIDAYS[iso];
+    const lev = LEAVE[iso];
+    const rec = DAYS[iso];
+    if(!hol) working++;
+    if(rec) logged++;
+
+    let cls = "shell";
+    if(hol) cls += " hol";
+    else if(lev) cls += " leave";
+    else if(rec) cls += (Number(rec.hours) < standardFor(dt) ? " half" : " on");
+    else if(iso === todayISO) cls += " today";
+    if(rec && rec.ai_flag) cls += " flag";
+
+    // a holiday or approved leave is not a day you log
+    const click = (hol || lev) ? "" : ' onclick="openDay(\'' + iso + '\')"';
+    html += '<button class="' + cls + '"' + click + ' aria-label="' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '">' +
+      '<span class="tip">' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '</span>' +
+      '<svg viewBox="0 0 26 36" aria-hidden="true">' +
+        '<ellipse class="sbody" cx="13" cy="18" rx="10" ry="15.5"/>' +
+        '<path class="slit" d="M13 4.5v27" fill="none" stroke-linecap="round"/>' +
+        '<path class="teeth" d="M10.6 9h4.8M10.1 14h5.8M10.1 22h5.8M10.6 27h4.8" fill="none" stroke-linecap="round"/>' +
+      '</svg></button>';
+  }
+  $("strip").innerHTML = html;
+  $("h-month").firstChild.textContent = MONTHS[TS_MONTH-1];
+  $("h-year").textContent = TS_YEAR;
+  $("h-logged").textContent = logged;
+  $("h-of").textContent = " / " + (WORKING_DAYS || working);
+}
+
+const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function standardFor(dt){ return dt.getDay() === 5 ? 5.5 : 7; }
+function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function shellLabel(dt, d, hol, rec, isToday, lev){
+  const day = DOWFULL[dt.getDay()] + " " + d + " " + MONTHS[TS_MONTH-1];
+  if(hol) return day + " \u00b7 " + hol;
+  if(lev) return day + " \u00b7 " + lev.label +
+    (Number(lev.pay_rate) < 1 ? " (" + (Number(lev.pay_rate) === 0 ? "unpaid" : Math.round(lev.pay_rate*100) + "% pay") + ")" : "");
+  if(rec) return day + " \u00b7 " + rec.hours + "h" + (rec.ai_flag ? " \u00b7 flagged" : "");
+  if(isToday) return day + " \u00b7 today, not logged";
+  return day + " \u00b7 not logged";
+}
+
+async function refreshHours(){
+  const { data, error } = await db.rpc("hours_for", { p_staff: PROFILE.id, p_year: TS_YEAR, p_month: TS_MONTH });
+  if(oops("Your hours", error)) return;
+  const h = Array.isArray(data) ? data[0] : data;
+  if(!h) return;
+  const logged = h.days_logged || 0;
+  $("s-logged").textContent = logged;
+  $("s-normal").textContent = Number(h.normal_hours || 0);
+  $("s-extra").textContent = Number(h.overtime_hours||0) + Number(h.weekend_hours||0) + Number(h.holiday_hours||0);
+  const gapN = Math.max(0, WORKING_DAYS - logged - Object.keys(LEAVE).length);
+  const gap = $("ts-gap");
+  if(gap){
+    gap.innerHTML = gapN > 0
+      ? '<div class="alert warn"><b>' + gapN + ' day' + (gapN>1?"s":"") + ' not logged</b>' +
+        'Log them on the home screen, or ask for leave. A day with nothing against it is unpaid.</div>'
+      : "";
+  }
+  MONTH_LOGGED = logged; MONTH_GAP = gapN;
+}
+
+function openDay(iso){
+  if(["submitted","manager_approved","director_approved"].includes(SUB_STATUS)){
+    alert("This month is already submitted, so it is locked. Ask your manager to return it if you need a change.");
+    return;
+  }
+  editing = iso;
+  const dt = new Date(iso + "T00:00:00");
+  const std = dt.getDay() === 5 ? 5.5 : 7;
+  $("mo-title").textContent = dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+  $("mo-std").value = std + " hours";
+  $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
+  $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
+  $("mo-ai").className = "ai-note hidden";
+  thinAcknowledged = false;
+  const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
+  $("modal").classList.remove("hidden");
+}
+function closeModal(){ $("modal").classList.add("hidden"); editing = null; }
+
+// Typing more after a warning means they took the hint: re-check on the next save.
+document.addEventListener("input", e => {
+  if(e.target && e.target.id === "mo-act" && thinAcknowledged){
+    thinAcknowledged = false;
+    const b = $("mo-save"); if(b){ b.textContent = "Save"; b.className = "btn-primary"; }
+    const ai = $("mo-ai"); if(ai) ai.className = "ai-note hidden";
+  }
+});
+
+let thinAcknowledged = false;
+
+async function saveDay(){
+  const hours = parseFloat($("mo-hours").value);
+  const act = $("mo-act").value.trim();
+  if(!hours || hours <= 0){ alert("Enter the hours you worked."); return; }
+
+  const f = aiFlag(act);
+  const ai = $("mo-ai");
+  const btnEl = $("mo-save");
+
+  // Thin, and they have not yet said "yes, that was the day".
+  // Warn, name the consequence, and hand the decision back to them.
+  if(f.thin && !thinAcknowledged){
+    ai.className = "ai-note ai-thin";
+    ai.innerHTML = "<b>\u2691 This looks thin for " + hours + " hours</b>" + f.why +
+      "<div style='margin-top:7px'>If that is genuinely all you did today, save it anyway. " +
+      "It will be flagged for your manager either way.</div>";
+    ai.classList.remove("hidden");
+    thinAcknowledged = true;
+    btnEl.textContent = "Save it anyway";
+    btnEl.className = "";                   // step it down from primary: adding detail is the better path
+    $("mo-act").focus();
+    return;                                 // nothing is saved on this click
+  }
+
+  // Either it reads fine, or they have looked at the warning and meant it.
+  ai.className = "ai-note " + (f.thin ? "ai-thin" : "ai-ok");
+  ai.innerHTML = f.thin
+    ? "<b>Saved, and flagged</b>Your manager will see this day marked for a look."
+    : "<b>\u2713 " + f.why + "</b>";
+  ai.classList.remove("hidden");
+
+  const { error } = await db.rpc("log_day", {
+    p_date: editing, p_hours: hours, p_activity: act || null,
+    p_ai_flag: f.thin, p_ai_note: f.thin ? f.why : null
+  });
+  if(error){ alert("Could not save: " + error.message); return; }
+  await loadTimesheet();
+  setTimeout(closeModal, f.thin ? 1100 : 600);
+}
+
+async function clearDay(){
+  if(!editing) return;
+  const { error } = await db.rpc("clear_day", { p_date: editing });
+  if(error){ alert("Could not clear: " + error.message); return; }
+  closeModal(); await loadTimesheet();
+}
+
+async function submitTimesheet(){
+  if(!$("ts-certify").checked){ msg("ts-msg","err","Please certify","Tick the box to confirm this is a true record."); return; }
+  btn("ts-btn", true, "Submitting");
+  const { error } = await db.rpc("submit_timesheet", {
+    p_year: TS_YEAR, p_month: TS_MONTH,
+    p_summary: val("rp1"), p_achievements: val("rp2"),
+    p_challenges: val("rp3"), p_next: val("rp4")
+  });
+  if(error){ btn("ts-btn", false, "Sign and send to my line manager"); msg("ts-msg","err","Could not submit", error.message); return; }
+
+  const who = await myApprover();
+  const sent = who && await notify("timesheet_submitted", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    month: MONTHS[TS_MONTH-1] + " " + TS_YEAR,
+    days: MONTH_LOGGED, flagged: Object.values(DAYS).filter(d => d.ai_flag).length || null
+  });
+  btn("ts-btn", false, "Sign and send to my line manager");
+  msg("ts-msg","ok","Sent", sent
+    ? "It is with " + (who.full_name||"your line manager").split(" ")[0] + ", and they have been told."
+    : "It is with your line manager. You will be told the outcome.");
+  await loadTimesheet();
+}
+
+// ============================================================
+// PLANS
+// ============================================================
+let PLAN_PERIOD = "week", PLAN_ID = null;
+
+function planTab(p){
+  PLAN_PERIOD = p;
+  $("ptab-week").setAttribute("aria-selected", p==="week");
+  $("ptab-month").setAttribute("aria-selected", p==="month");
+  loadPlan();
+}
+
+async function loadPlan(){
+  const { data: id, error } = await db.rpc("open_plan", { p_period: PLAN_PERIOD });
+  if(error){ msg("pl-msg","err","Could not open your plan", error.message); return; }
+  PLAN_ID = id;
+
+  const { data: pl, error: pe } = await db.from("my_plans").select("*").eq("id", id).maybeSingle();
+  if(oops("Your plan", pe)) return;
+  if(pl){
+    $("pl-title").textContent = PLAN_PERIOD === "week" ? "This week" : "This month";
+    $("pl-dates").textContent = fmtRange(pl.period_start, pl.period_end);
+    $("pl-status").textContent = pl.status;
+    $("pl-status").className = "st " + pl.status;
+    set("pl-headline", pl.headline);
+    $("pl-btn").disabled = pl.status === "approved";
+    $("pl-note").innerHTML = pl.manager_note
+      ? '<div class="alert ' + (pl.status==="returned"?"warn":"info") + '"><b>' +
+        (pl.status==="returned"?"Returned by ":"Note from ") + esc(pl.reviewed_by||"your manager") +
+        '</b>' + esc(pl.manager_note) + '</div>' : "";
+
+  }
+
+  const { data: tg, error: te } = await db.from("my_targets").select("id,title,period");
+  if(oops("Your targets", te)) return;
+  $("it-target").innerHTML = '<option value="">\u2014</option>' +
+    (tg||[]).map(t => '<option value="' + t.id + '">' + esc(t.title) + " (" + t.period + ")</option>").join("");
+
+  await loadItems();
+}
+
+async function loadItems(){
+  const { data, error } = await db.rpc("plan_detail", { p_plan_id: PLAN_ID });
+  const wrap = $("pl-items");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing planned yet. Add your first item below.</p>'; return; }
+  wrap.innerHTML = data.map(i => '<div class="item"><div class="t"><b>' + esc(i.task) + '</b>' +
+      (i.expected_output ? '<span>' + esc(i.expected_output) + '</span>' : "") +
+      (i.due_on ? '<span>Due ' + fmtDate(i.due_on) + '</span>' : "") +
+      (i.target_title ? '<div class="serves">Serves: ' + esc(i.target_title) + '</div>' : "") +
+    '</div><button onclick="removeItem(' + i.item_id + ')" style="padding:4px 10px;font-size:12px;color:var(--red)">Remove</button></div>').join("");
+}
+
+async function addItem(){
+  const task = val("it-task");
+  if(!task){ msg("pl-msg","err","No task","Say what you plan to do."); return; }
+  const tid = $("it-target").value;
+  const { error } = await db.rpc("add_plan_item", {
+    p_plan_id: PLAN_ID, p_task: task, p_expected_output: val("it-out"),
+    p_due_on: val("it-due"), p_target_id: tid ? Number(tid) : null
+  });
+  if(error){ msg("pl-msg","err","Could not add", error.message); return; }
+  ["it-task","it-out","it-due"].forEach(id => $(id).value = "");
+  $("it-target").value = ""; $("pl-msg").innerHTML = "";
+  await loadPlan();
+}
+
+async function removeItem(id){
+  const { error } = await db.rpc("remove_plan_item", { p_item_id: id });
+  if(error){ alert("Could not remove: " + error.message); return; }
+  await loadPlan();
+}
+
+async function submitPlan(){
+  btn("pl-btn", true, "Submitting");
+  const { error } = await db.rpc("submit_plan", { p_plan_id: PLAN_ID, p_headline: val("pl-headline") });
+  if(error){ btn("pl-btn", false, "Submit to my line manager"); msg("pl-msg","err","Could not submit", error.message); return; }
+
+  const who = await myApprover();
+  const { data: pl, error: ple } = await db.from("my_plans").select("period_start,period_end").eq("id", PLAN_ID).maybeSingle();
+  if(ple) console.warn("plan dates for the email:", ple.message);
+  const sent = who && await notify("plan_submitted", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    period: PLAN_PERIOD, headline: val("pl-headline"),
+    dates: pl ? fmtRange(pl.period_start, pl.period_end) : null
+  });
+  btn("pl-btn", false, "Submit to my line manager");
+  msg("pl-msg","ok","Sent", sent
+    ? (who.full_name||"Your manager").split(" ")[0] + " has been told."
+    : "Your plan is with your line manager.");
+  await loadPlan();
+}
+
+function fmtDate(d){ return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }
+function fmtRange(a,b){ return fmtDate(a) + " to " + fmtDate(b); }
+
+
+// ============================================================
+// MANAGER
+// ============================================================
+const MGR_ROLES = ["head","director","coo","super_admin"];
+let RV_SUB = null, PR_PLAN = null, RV_META = null, PR_META = null;
+
+function isManager(){
+  return (PROFILE.roles || []).some(r => MGR_ROLES.includes(r));
+}
+
+async function loadApprovals(){
+  // plans
+  const { data: plans, error: pe } = await db.from("plans_to_review").select("*");
+  const pw = $("ap-plans");
+  if(pe){ pw.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(pe.message) + '</div>'; }
+  else if(!plans || !plans.length){ pw.innerHTML = '<p style="color:var(--faint);font-size:13px">No plans waiting.</p>'; }
+  else {
+    pw.innerHTML = plans.map(p => '<div class="qrow"><span class="dot todo"></span>' +
+      '<span class="t"><b>' + esc(p.staff) + '</b><span>' + p.period + " \u00b7 " +
+      fmtRange(p.period_start, p.period_end) + " \u00b7 " + p.item_count + " item" +
+      (p.item_count===1?"":"s") + (p.department ? " \u00b7 " + esc(p.department) : "") + '</span></span>' +
+      '<button onclick="openPlanReview(' + p.id + ')">Review</button></div>').join("");
+  }
+
+  // timesheets
+  const { data: ts, error: te } = await db.from("timesheets_to_review").select("*");
+  const tw = $("ap-ts");
+  if(te){ tw.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(te.message) + '</div>'; }
+  else if(!ts || !ts.length){ tw.innerHTML = '<p style="color:var(--faint);font-size:13px">No timesheets waiting.</p>'; }
+  else {
+    tw.innerHTML = ts.map(t => {
+      const stage = t.status === "submitted" ? "awaiting you" : "awaiting final approval";
+      const flags = t.days_flagged > 0 ? " \u00b7 \u2691 " + t.days_flagged + " flagged" : "";
+      return '<div class="qrow"><span class="dot todo"></span>' +
+        '<span class="t"><b>' + esc(t.staff) + '</b><span>' + MONTHS[t.month-1] + " " + t.year +
+        " \u00b7 " + t.days_logged + " of " + t.working_days + " days \u00b7 " + stage + flags + '</span></span>' +
+        '<button onclick="openReview(' + t.id + ')">Review</button></div>';
+    }).join("");
+  }
+
+  // the count lives on the home card now, not a badge here
+}
+
+// ---- review a timesheet ----
+async function openReview(id){
+  RV_SUB = id;
+  go("review");
+  const { data: rows, error: re } = await db.from("timesheets_to_review").select("*").eq("id", id).maybeSingle();
+  if(oops("That submission", re)) return;
+  RV_META = rows;
+  if(rows){
+    $("rv-name").textContent = rows.staff;
+    $("rv-eyebrow").textContent = MONTHS[rows.month-1] + " " + rows.year +
+      (rows.department ? " \u00b7 " + rows.department : "");
+    $("rv-report").textContent = [
+      rows.report_summary ? "Summary\n" + rows.report_summary : "",
+    ].filter(Boolean).join("\n\n") || "No report text.";
+    $("rv-ok").textContent = rows.status === "submitted" ? "Approve and pass up" : "Give final approval";
+  }
+
+  const { data: h, error: he } = await db.rpc("submission_hours", { p_submission_id: id });
+  if(oops("The hours", he)) return;
+  const hh = Array.isArray(h) ? h[0] : h;
+  if(hh){
+    $("rv-wd").textContent = hh.working_days;
+    $("rv-logged").textContent = hh.days_logged;
+    $("rv-normal").textContent = Number(hh.normal_hours || 0);
+    $("rv-extra").textContent = Number(hh.overtime_hours||0) + Number(hh.weekend_hours||0) + Number(hh.holiday_hours||0);
+  }
+
+  const { data: days, error } = await db.rpc("submission_detail", { p_submission_id: id });
+  const wrap = $("rv-days");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!days || !days.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No days logged.</p>'; return; }
+
+  const flagged = days.filter(d => d.ai_flag);
+  $("rv-flags").innerHTML = flagged.length
+    ? '<div class="alert warn"><b>' + flagged.length + ' day' + (flagged.length>1?"s":"") +
+      ' the assistant flagged as thin</b>' +
+      flagged.map(d => fmtDate(d.work_date) + ': "' + esc(d.activity || "(blank)") + '"').join("<br>") +
+      '<div style="font-size:12px;margin-top:6px;opacity:.85">A flag is a prompt to look, not a judgment. You decide.</div></div>'
+    : "";
+
+  wrap.innerHTML = days.map(d => '<div class="qrow"><span class="t"><b>' +
+    fmtDate(d.work_date) + " \u00b7 " + d.hours + "h" +
+    (d.kind !== "normal" ? ' <span class="st submitted">' + d.kind + '</span>' : "") + '</b>' +
+    '<span>' + esc(d.activity || "\u2014") + '</span></span>' +
+    (d.ai_flag ? '<span style="color:var(--amber);font-size:12px">\u2691</span>' : "") + '</div>').join("");
+}
+
+async function reviewTs(approve){
+  const note = val("rv-note");
+  if(!approve && !note){ msg("rv-msg","err","A note is needed","Tell them what to change."); return; }
+  btn("rv-ok", true, "Working");
+  const { error } = await db.rpc("review_timesheet", {
+    p_submission_id: RV_SUB, p_approve: approve, p_note: note
+  });
+  if(error){ btn("rv-ok", false, "Approve"); msg("rv-msg","err","Could not do that", error.message); return; }
+
+  const { data: r, error: rle } = await db.from("timesheets_to_review").select("staff,staff_email,year,month").eq("id", RV_SUB).maybeSingle();
+  if(rle) console.warn("who to tell:", rle.message);
+  const tgt = r || RV_META;
+  const sent = tgt && await notify(approve ? "timesheet_approved" : "timesheet_returned",
+    tgt.staff_email, tgt.staff, {
+      month: MONTHS[(tgt.month||1)-1] + " " + tgt.year,
+      stage: approve ? (isCertifier() ? "final approval" : "your manager") : null,
+      note: note || null
+    });
+  btn("rv-ok", false, "Approve");
+  msg("rv-msg","ok", approve ? "Approved" : "Returned",
+      (approve ? "Done." : "Sent back with your reason.") + (sent ? " They have been told." : ""));
+  setTimeout(() => { go("approvals"); }, 1100);
+}
+
+// ---- review a plan ----
+async function openPlanReview(id){
+  PR_PLAN = id;
+  go("planreview");
+  const { data: p, error: pe2 } = await db.from("plans_to_review").select("*").eq("id", id).maybeSingle();
+  if(oops("That plan", pe2)) return;
+  PR_META = p;
+  if(p){
+    $("pr-name").textContent = p.staff;
+    $("pr-dates").textContent = p.period + " \u00b7 " + fmtRange(p.period_start, p.period_end);
+    $("pr-headline").textContent = p.headline || "No headline given";
+  }
+  const { data: items, error } = await db.rpc("plan_detail", { p_plan_id: id });
+  const wrap = $("pr-items");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!items || !items.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No items.</p>'; return; }
+  wrap.innerHTML = items.map(i => '<div class="item"><div class="t"><b>' + esc(i.task) + '</b>' +
+    (i.expected_output ? '<span>' + esc(i.expected_output) + '</span>' : "") +
+    (i.due_on ? '<span>Due ' + fmtDate(i.due_on) + '</span>' : "") +
+    (i.target_title ? '<div class="serves">Serves: ' + esc(i.target_title) + '</div>' : "") +
+    '</div></div>').join("");
+}
+
+async function reviewPlan(approve){
+  const note = val("pr-note");
+  if(!approve && !note){
+    msg("pr-msg","err","Say what to change","Returning a plan without a reason leaves them guessing.");
+    return;
+  }
+  btn("pr-ok", true, "Working");
+  const { error } = await db.rpc("review_plan", {
+    p_plan_id: PR_PLAN, p_approve: approve, p_note: note
+  });
+  if(error){ btn("pr-ok", false, "Approve"); msg("pr-msg","err","Could not do that", error.message); return; }
+
+  const sent = PR_META && await notify(approve ? "plan_approved" : "plan_returned",
+    PR_META.staff_email, PR_META.staff, {
+      period: PR_META.period, by: PROFILE.display_name || PROFILE.full_name, note: note || null
+    });
+  btn("pr-ok", false, "Approve");
+  msg("pr-msg","ok", approve ? "Approved" : "Returned",
+      (approve ? "Done." : "Sent back.") + (sent ? " They have been told." : ""));
+  setTimeout(() => { go("approvals"); }, 1100);
+}
+
+// ---- team targets ----
+async function loadTeam(){
+  const { data, error } = await db.from("my_team").select("*");
+  if(oops("Your team", error)) return;
+  $("tg-staff").innerHTML = '<option value="">Choose\u2026</option>' +
+    (data||[]).map(t => '<option value="' + esc(t.email) + '">' + esc(t.display_name) +
+      (t.department ? " \u00b7 " + esc(t.department) : "") + '</option>').join("");
+  tgDates();
+  await loadAccommodations();
+  await loadTeamTargets();
+}
+
+function tgKind(){
+  const q = $("tg-kind").value === "quantitative";
+  $("tg-num-row").classList.toggle("hidden", !q);
+  $("tg-unit-row").classList.toggle("hidden", !q);
+}
+
+function tgDates(){
+  const p = $("tg-period").value, d = new Date();
+  let s, e;
+  if(p === "week"){
+    const dow = (d.getDay() + 6) % 7;
+    s = new Date(d); s.setDate(d.getDate() - dow);
+    e = new Date(s); e.setDate(s.getDate() + 4);
+  } else if(p === "month"){
+    s = new Date(d.getFullYear(), d.getMonth(), 1);
+    e = new Date(d.getFullYear(), d.getMonth()+1, 0);
+  } else if(p === "quarter"){
+    const q = Math.floor(d.getMonth()/3);
+    s = new Date(d.getFullYear(), q*3, 1);
+    e = new Date(d.getFullYear(), q*3+3, 0);
+  } else {
+    s = new Date(d.getFullYear(), 0, 1);
+    e = new Date(d.getFullYear(), 11, 31);
+  }
+  $("tg-start").value = iso(s); $("tg-end").value = iso(e);
+}
+function iso(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+
+async function setTarget(){
+  const email = $("tg-staff").value;
+  if(!email){ msg("tg-msg","err","Choose someone","Pick who this target is for."); return; }
+  if(!val("tg-title")){ msg("tg-msg","err","No target","Say what they must achieve."); return; }
+  if(!val("tg-kpi")){ msg("tg-msg","err","KPI needed","A target without a yardstick cannot be assessed fairly."); return; }
+
+  btn("tg-btn", true, "Setting");
+  const { error } = await db.rpc("set_target", {
+    p_staff_email: email, p_title: val("tg-title"), p_kpi: val("tg-kpi"),
+    p_period: $("tg-period").value,
+    p_period_start: val("tg-start"), p_period_end: val("tg-end"),
+    p_description: val("tg-desc"), p_kpi_kind: $("tg-kind").value,
+    p_target_value: val("tg-value") ? Number(val("tg-value")) : null,
+    p_unit: val("tg-unit"), p_resource_link: val("tg-link")
+  });
+  if(error){ btn("tg-btn", false, "Set this target"); msg("tg-msg","err","Could not set", error.message); return; }
+  const who = (await db.from("my_team").select("full_name").eq("email", email).maybeSingle()).data;
+  const sent = await notify("target_set", email, who ? who.full_name : null, {
+    period: $("tg-period").value, title: val("tg-title"), resource: val("tg-link") ? "yes" : null
+  });
+  btn("tg-btn", false, "Set this target");
+  msg("tg-msg","ok","Set","They will see it in their portal." + (sent ? " And they have been told." : ""));
+  ["tg-title","tg-kpi","tg-value","tg-unit","tg-link","tg-desc"].forEach(id => $(id).value = "");
+  await loadTeamTargets();
+}
+
+async function loadTeamTargets(){
+  const { data, error } = await db.from("targets_i_manage").select("*");
+  const wrap = $("tg-list");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not set any targets yet.</p>'; return; }
+  wrap.innerHTML = data.map(t => {
+    const prog = t.pct !== null && t.pct !== undefined
+      ? '<div class="bar"><i style="width:' + Math.min(100, t.pct) + '%"></i></div>' +
+        '<div class="tgt-foot"><span>' + (t.current_value||0) + " of " + t.target_value +
+        (t.unit ? " " + esc(t.unit) : "") + '</span><span>' + t.pct + '%</span></div>'
+      : "";
+    const rated = t.rating
+      ? '<span class="st approved">' + esc(t.rating).replace(/_/g," ") + '</span>'
+      : '<select onchange="rateTarget(' + t.id + ', this.value)" style="width:auto;padding:4px 8px;font-size:12px">' +
+        '<option value="">Rate\u2026</option><option value="exceeded">Exceeded</option>' +
+        '<option value="met">Met</option><option value="partly_met">Partly met</option>' +
+        '<option value="not_met">Not met</option></select>';
+    return '<div class="tgt"><div class="tgt-head"><b>' + esc(t.staff) + '</b>' +
+      '<span class="tag ' + t.period + '">' + t.period + '</span></div>' +
+      '<div style="font-size:13.5px;margin-top:3px">' + esc(t.title) + '</div>' +
+      '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' + prog +
+      '<div class="tgt-foot"><span>' + fmtRange(t.period_start, t.period_end) + '</span>' + rated + '</div></div>';
+  }).join("");
+}
+
+async function rateTarget(id, rating){
+  if(!rating) return;
+  const { data: t, error: tle } = await db.from("targets_i_manage").select("staff,staff_email,title").eq("id", id).maybeSingle();
+  if(tle) console.warn("who to tell:", tle.message);
+  const { error } = await db.rpc("rate_target", { p_target_id: id, p_rating: rating });
+  if(error){ toast("Could not rate. " + error.message); return; }
+  if(t) await notify("target_rated", t.staff_email, t.staff, {
+    title: t.title, rating: String(rating).replace(/_/g," ")
+  });
+  toast("Rated" + (t ? ", and " + String(t.staff).split(" ")[0] + " has been told." : "."), true);
+  await loadTeamTargets();
+}
+
+
+// ============================================================
+// REFERENCE LISTS
+// ============================================================
+const NG_STATES = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno",
+  "Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Federal Capital Territory","Gombe","Imo",
+  "Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun",
+  "Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
+
+const COUNTRIES = ["Nigeria","Benin","Cameroon","Chad","Ghana","Guinea-Bissau","Niger","Togo",
+  "Burkina Faso","Cote d'Ivoire","Gambia","Guinea","Liberia","Mali","Senegal","Sierra Leone",
+  "Kenya","Rwanda","South Africa","Tanzania","Uganda","Zambia","Zimbabwe","Egypt","Ethiopia",
+  "Democratic Republic of the Congo","Central African Republic","Congo","Gabon","Equatorial Guinea",
+  "Canada","China","France","Germany","India","Ireland","Italy","Japan","Netherlands","Spain",
+  "United Kingdom","United States of America","Other"];
+
+const DISABILITY_TYPES = [
+  "Deaf or hard of hearing",
+  "Blind or partially sighted",
+  "Physical or mobility",
+  "Speech",
+  "Neurodivergence (e.g. autism, ADHD, dyslexia)",
+  "Mental health condition",
+  "Long-term illness",
+  "Other"
+];
+
+const ACCOMMODATIONS = [
+  "Sign language interpretation",
+  "Captions or transcripts for meetings",
+  "Screen reader compatible documents",
+  "Large print or high contrast materials",
+  "Step-free or accessible workspace",
+  "Assistive technology or software",
+  "Flexible working hours",
+  "Remote or hybrid working",
+  "Written rather than verbal instructions",
+  "Regular breaks",
+  "Quiet workspace",
+  "Extra time for tasks"
+];
+
+function fillSelect(id, items, blank){
+  const e = $(id); if(!e) return;
+  e.innerHTML = (blank === false ? "" : '<option value="">\u2014</option>') +
+    items.map(i => '<option>' + esc(i) + '</option>').join("");
+}
+function fillChecks(id, items, prefix){
+  const e = $(id); if(!e) return;
+  e.innerHTML = items.map((i, n) =>
+    '<label><input type="checkbox" id="' + prefix + n + '" value="' + esc(i) + '"><span>' +
+    esc(i) + '</span></label>').join("");
+}
+function checkedValues(prefix, items){
+  return items.map((i, n) => $(prefix + n) && $(prefix + n).checked ? i : null).filter(Boolean);
+}
+function setChecks(prefix, items, values){
+  const v = values || [];
+  items.forEach((i, n) => { const e = $(prefix + n); if(e) e.checked = v.includes(i); });
+}
+
+// nationality drives whether "state of origin" makes sense
+function natChange(){
+  const ng = $("pf-nat").value === "Nigeria";
+  $("pf-origin-row").classList.toggle("hidden", !ng);
+  $("pf-lga-row").classList.toggle("hidden", !ng);
+}
+
+function dsChange(){
+  const yes = $("ds-has").value === "yes";
+  $("ds-detail").classList.toggle("hidden", !yes);
+  $("ds-acc").classList.toggle("hidden", !yes);
+}
+
+async function saveDisability(){
+  btn("ds-btn", true, "Saving");
+  const has = $("ds-has").value || null;
+  const types = has === "yes" ? checkedValues("dt", DISABILITY_TYPES) : [];
+  const accs  = has === "yes" ? checkedValues("ac", ACCOMMODATIONS) : [];
+  const { error } = await db.rpc("save_my_disability", {
+    p_has_disability: has,
+    p_disability_types: types,
+    p_disability_notes: val("ds-notes"),
+    p_accommodations: accs,
+    p_accommodation_notes: val("ds-acc-notes"),
+    p_share_with_manager: $("ds-share").checked
+  });
+  btn("ds-btn", false, "Save and continue \u2192");
+  if(error){ msg("ds-msg","err","Could not save", error.message); return; }
+  msg("ds-msg","ok","Saved", has === "yes" && $("ds-share").checked
+    ? "Thank you. Your line manager will see the adjustments you need, so they can arrange them."
+    : "Thank you. This is held only by the COO and the CEO.");
+  await refresh();
+  setTimeout(nextStep, 500);
+}
+
+
+// ============================================================
+// BIO WIZARD
+// One card at a time. On a first visit it walks you through and ends.
+// Once you have been through it, the steps become clickable so you can
+// jump straight to the one you want to change.
+// ============================================================
+const STEPS = [
+  { id:"personal",   label:"Personal" },
+  { id:"disability", label:"Adjustments" },
+  { id:"nok",        label:"Next of kin" },
+  { id:"bank",       label:"Bank and tax" },
+  { id:"more",       label:"Your file" },
+];
+let STEP = 0;
+let FIRST_RUN = false;
+
+function buildStepper(){
+  $("stepper").innerHTML = STEPS.map((st, n) =>
+    '<button class="sp" id="sp-' + n + '" onclick="goStep(' + n + ')">' +
+    '<span class="bar"></span><span class="lb">' + (n+1) + '. ' + st.label + '</span></button>').join("");
+}
+
+function paintStepper(){
+  STEPS.forEach((st, n) => {
+    const e = $("sp-" + n); if(!e) return;
+    e.className = "sp" + (n === STEP ? " on" : n < STEP ? " done" : "") + (FIRST_RUN ? "" : " clickable");
+  });
+}
+
+function showStep(n){
+  STEP = n;
+  STEPS.forEach((st, i) => {
+    const e = $("step-" + st.id); if(e) e.classList.toggle("on", i === n);
+  });
+  const done = $("step-done"); if(done) done.classList.toggle("on", n === STEPS.length);
+  $("stepper").classList.toggle("hidden", n === STEPS.length);
+  paintStepper();
+  window.scrollTo(0,0);
+}
+
+function goStep(n){
+  // during a first run you go forward by saving, not by clicking ahead
+  if(FIRST_RUN && n > STEP) return;
+  showStep(n);
+}
+
+function nextStep(){
+  if(STEP < STEPS.length) showStep(STEP + 1);
+  if(STEP === STEPS.length) FIRST_RUN = false;   // they have been all the way through
+}
+
+
+// ============================================================
+// MONEY
+// ============================================================
+const N = v => v === null || v === undefined ? "\u2014" : "\u20a6" + Number(v).toLocaleString("en-NG", {maximumFractionDigits:2});
+
+function monthOptions(sel, def){
+  const e = $(sel); if(!e) return;
+  e.innerHTML = MONTHS.map((m, i) => '<option value="' + (i+1) + '"' +
+    ((i+1) === def ? " selected" : "") + '>' + m + '</option>').join("");
+}
+
+// ---------- my payslip ----------
+let PAYSLIPS = [];
+async function loadMyFinance(){
+  const { data, error } = await db.from("my_payslip").select("*");
+  if(error){ $("ps-body").innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  PAYSLIPS = data || [];
+  if(!PAYSLIPS.length){
+    $("ps-picker").classList.add("hidden");
+    $("ps-body").innerHTML = '<div class="alert info"><b>No payslip yet</b>One appears once your timesheet is approved and Finance has run the month. In the meantime, this is what you earn.</div>';
+  } else {
+    $("ps-picker").classList.remove("hidden");
+    $("ps-month").innerHTML = PAYSLIPS.map((p, i) =>
+      '<option value="' + i + '">' + MONTHS[p.month-1] + " " + p.year + '</option>').join("");
+    loadPayslip();
+  }
+  await loadIndicative();
+  await loadPayHistory();
+}
+
+function loadPayslip(){
+  const p = PAYSLIPS[Number($("ps-month").value) || 0];
+  if(!p) return;
+  const certified = p.status === "certified" || p.status === "paid";
+  const row = (k, v, cls) => '<tr class="' + (cls||"") + '"><td>' + k + '</td><td class="n">' + v + '</td></tr>';
+  const neg = v => Number(v) > 0 ? "(" + N(v) + ")" : "\u2014";
+
+  $("ps-body").innerHTML =
+  '<div class="card">' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:14px">' +
+      '<div><b style="font-family:var(--display);font-size:16px">Payslip</b>' +
+      '<div style="font-size:12.5px;color:var(--muted)">' + MONTHS[p.month-1] + " " + p.year + '</div></div>' +
+      '<span class="st ' + (certified ? "approved" : "submitted") + '">' +
+        (certified ? "Certified" : "Not yet certified") + '</span>' +
+    '</div>' +
+    (certified ? "" : '<div class="alert warn" style="margin-top:0"><b>Provisional</b>This has not been certified yet, so the figures may still change.</div>') +
+    '<table>' +
+      row("Working days in the month", p.working_days) +
+      row("Days paid", p.days_paid) +
+      (Number(p.unpaid_days) > 0 ? row("Unpaid days", p.unpaid_days) : "") +
+      row("Basic", N(p.basic), "rule") +
+      row("Housing", N(p.housing)) +
+      row("Transport", N(p.transport)) +
+      (Number(p.other_allow) > 0 ? row("Other allowance", N(p.other_allow)) : "") +
+      (Number(p.extra_pay) > 0
+        ? row("Extra hours (" + (Number(p.overtime_hours)+Number(p.weekend_hours)+Number(p.holiday_hours)) +
+              "h at " + N(p.hourly_rate) + "/h)", N(p.extra_pay)) : "") +
+      row("<b>Gross salary</b>", "<b>" + N(p.gross_salary) + "</b>", "total") +
+      (p.paye_exempt
+        ? row("PAYE", "Exempt", "rule")
+        : row("PAYE", neg(p.paye), "rule")) +
+      (Number(p.pension_employee) > 0 ? row("Pension (8%)", neg(p.pension_employee)) : "") +
+      (Number(p.nhf) > 0 ? row("National Housing Fund", neg(p.nhf)) : "") +
+      (Number(p.nhis) > 0 ? row("National Health Insurance", neg(p.nhis)) : "") +
+      (Number(p.loan_repayment) > 0 ? row("Loan repayment", neg(p.loan_repayment)) : "") +
+      (Number(p.salary_advance) > 0 ? row("Salary advance", neg(p.salary_advance)) : "") +
+      (Number(p.union_dues) > 0 ? row("Union dues", neg(p.union_dues)) : "") +
+      (Number(p.other_deductions) > 0 ? row("Other deductions", neg(p.other_deductions)) : "") +
+      row("<b>Net pay</b>", "<b>" + N(p.net_pay) + "</b>", "total") +
+      (Number(p.total_claims) > 0 ? (
+        (Number(p.data_claim) > 0 ? row("Data claim", N(p.data_claim), "rule") : "") +
+        (Number(p.travel_claim) > 0 ? row("Travel claim", N(p.travel_claim)) : "") +
+        (Number(p.other_claim) > 0 ? row("Other claim", N(p.other_claim)) : "")
+      ) : "") +
+      row("<b>Amount transferred</b>", "<b>" + N(p.transfer_amount) + "</b>", "total") +
+    '</table>' +
+    (Number(p.rent_relief_yr) > 0
+      ? '<p class="hint" style="margin-top:12px">Rent relief of ' + N(p.rent_relief_yr) +
+        ' a year was applied to your tax' +
+        (p.rent_is_assumed ? '. <b>This is based on an assumed rent.</b> Give the office your tenancy agreement so it reflects what you actually pay.' : '.') + '</p>'
+      : "") +
+    (certified ? '<p class="hint">Certified ' +
+      new Date(p.certified_at).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}) +
+      (p.certified_by ? " by " + esc(p.certified_by) : "") + '</p>' : "") +
+    '<div class="actions"><button onclick="window.print()">Print or save as PDF</button></div>' +
+  '</div>';
+}
+
+async function loadPayHistory(){
+  const { data, error } = await db.from("my_pay_history").select("*");
+  const wrap = $("ph-list");
+  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing recorded yet.</p>'; return; }
+  wrap.innerHTML = data.map(h => {
+    const chg = h.change_pct !== null && h.change_pct !== undefined
+      ? '<span class="st ' + (h.change_pct >= 0 ? "approved" : "returned") + '">' +
+        (h.change_pct > 0 ? "+" : "") + h.change_pct + '%</span>' : "";
+    return '<div class="qrow"><span class="t"><b>' + N(h.monthly_gross) + ' a month</b>' +
+      '<span>From ' + fmtDate(h.effective_from) +
+      (Number(h.monthly_data_claim) > 0 ? " \u00b7 plus " + N(h.monthly_data_claim) + " data claim" : "") +
+      (h.recorded_by ? " \u00b7 recorded by " + esc(h.recorded_by) : "") + '</span></span>' + chg + '</div>';
+  }).join("");
+}
+
+// ============================================================
+// THE ONE THING NOW
+// The portal knows the date and what state the month is in, and shows
+// the single thing that matters. Everything else stays quiet.
+// ============================================================
+let MONTH_LOGGED = 0, MONTH_GAP = 0;
+
+function renderNow(){
+  const el = $("now"); if(!el) return;
+  const today = new Date();
+  const dom = today.getDate();
+  const dow = today.getDay();
+  const isWorkday = dow !== 0 && dow !== 6;
+  const todayISO = isoOf(today);
+  const todayLogged = !!DAYS[todayISO];
+  const todayHoliday = HOLIDAYS[todayISO];
+  const mgr = PROFILE.line_manager ? PROFILE.line_manager.split(" ")[0] : "your line manager";
+  const monthName = MONTHS[TS_MONTH-1];
+  let st;
+
+  if(SUB_STATUS === "director_approved"){
+    st = { ey:"Approved", h:monthName + " is signed off",
+           p:"Both approvals are in. Finance will run payroll and your payslip will follow.", done:true };
+  } else if(SUB_STATUS === "manager_approved"){
+    st = { ey:"With the Director", h:mgr + " approved your " + monthName,
+           p:"It is waiting on a final approval. Nothing for you to do.", done:true };
+  } else if(SUB_STATUS === "submitted"){
+    st = { ey:"With your line manager", h:monthName + " is with " + mgr,
+           p:"Signed and sent. You will be told as soon as it is approved.", done:true };
+  } else if(SUB_STATUS === "returned"){
+    st = { ey:"Returned for a change", h:mgr + " sent " + monthName + " back",
+           p:"Have a look at what they asked for, put it right, and send it again.",
+           cta:"See what to change", go:"timesheet" };
+  } else if(todayHoliday){
+    st = { ey:"Today", h:todayHoliday,
+           p:"A public holiday. Nothing to log. If you did work today, tap the shell and it pays at the holiday rate.",
+           done:true };
+  } else if(LEAVE[todayISO]){
+    st = { ey:"Today", h:"You are on " + LEAVE[todayISO].label.toLowerCase(),
+           p:"Nothing to log. Enjoy it, or get well, whichever applies.", done:true };
+  } else if(isWorkday && !todayLogged){
+    st = { ey:"Right now", h:"Log today",
+           p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
+             (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
+             " Say what you worked on and it takes half a minute.",
+           cta:"Log today", act:"today" };
+  } else if(MONTH_GAP > 0 && dom >= 24){
+    st = { ey:monthName + " closes soon", h:MONTH_GAP + " day" + (MONTH_GAP>1?"s":"") + " still unlogged",
+           p:"A day with nothing against it is unpaid. Fill the sand-coloured shells before the month ends.",
+           cta:"Show me", act:"first-gap" };
+  } else if(MONTH_GAP === 0){
+    st = { ey:"Every day is logged", h:"Send " + monthName + " to " + mgr,
+           p:"Write the month up, sign it, and it goes for approval.",
+           cta:"Review and sign", go:"timesheet" };
+  } else {
+    st = { ey:"Today", h:"Nothing to log today",
+           p:todayLogged ? "Today is logged. " + MONTH_GAP + " other day" + (MONTH_GAP>1?"s":"") +
+                           " still need doing when you get to them."
+                         : "It is the weekend. Enjoy it.", done:true };
+  }
+
+  el.className = "now" + (st.done ? " done" : "");
+  el.innerHTML = '<div class="txt"><div class="ey">' + esc(st.ey) + '</div>' +
+    '<h2>' + esc(st.h) + '</h2><p>' + esc(st.p) + '</p></div>' +
+    (st.cta ? '<button class="go" id="now-go">' + esc(st.cta) + ' \u2192</button>' : "");
+
+  const g = $("now-go");
+  if(g) g.onclick = () => {
+    if(st.go) go(st.go);
+    else if(st.act === "today") openDay(todayISO);
+    else if(st.act === "first-gap"){
+      const first = document.querySelector(".shell:not(.on):not(.half):not(.hol)");
+      if(first){ first.scrollIntoView({behavior:"smooth", block:"center"}); first.click(); }
+    }
+  };
+}
+
+// ---- payday takes the card over, once a month ----
+async function checkPayday(){
+  const { data, error } = await db.from("my_payslip").select("*").limit(1);
+  if(error || !data || !data.length) return;
+  const p = data[0];
+  if(p.status !== "certified" && p.status !== "paid") return;
+  const days = (Date.now() - new Date(p.certified_at)) / 86400000;
+  if(days > 3) return;                        // only while it is news
+  const el = $("now");
+  el.className = "now pay";
+  el.innerHTML = '<div class="txt"><div class="ey">Certified ' +
+    (days < 1 ? "today" : Math.round(days) + " days ago") + '</div>' +
+    '<h2>Your ' + MONTHS[p.month-1] + ' payslip is ready</h2>' +
+    '<p>' + N(p.transfer_amount) + ' is on its way to your account. The full breakdown is in My finance.</p></div>' +
+    '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
+}
+
+// ---- someone else's clock ----
+async function loadWaiting(){
+  if(!isManager()) return;
+  const [pl, ts] = await Promise.all([
+    db.from("plans_to_review").select("staff,submitted_at"),
+    db.from("timesheets_to_review").select("staff,signed_at")
+  ]);
+  const n = (pl.data?.length || 0) + (ts.data?.length || 0);
+  const w = $("waiting");
+  if(!n){ w.classList.add("hidden"); return; }
+  w.classList.remove("hidden");
+
+  // Name who has waited longest. A number is a nag; a name is a reason.
+  const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
+               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"}))]
+              .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
+  let tail = "";
+  if(all.length){
+    const d = Math.floor((Date.now() - new Date(all[0].at)) / 86400000);
+    tail = d >= 1 ? " " + all[0].who.split(" ")[0] + "'s has been waiting " +
+           (d === 1 ? "since yesterday." : d + " days.") : "";
+  }
+  const bits = [];
+  if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
+  if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
+
+  w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
+    bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
+}
+
+// ---- the quiet stats ----
+async function loadMinis(){
+  const { data: pl, error: ple } = await db.from("my_plans").select("*").eq("period","week").limit(1);
+  if(oops("Your plan", ple)) return;
+  if(pl && pl.length){
+    $("m-plan").innerHTML = pl[0].item_count + ' <small>item' + (pl[0].item_count===1?"":"s") + '</small>';
+    $("m-plan-s").textContent = pl[0].status === "approved" ? "Approved by " + (pl[0].reviewed_by || "your manager")
+      : pl[0].status === "submitted" ? "With your line manager"
+      : pl[0].status === "returned" ? "Returned, needs a change" : "Still a draft";
+  } else { $("m-plan").innerHTML = '0 <small>items</small>'; }
+
+  const { data: tg, error: tge } = await db.from("my_targets").select("id,status,rating");
+  if(oops("Your targets", tge)) return;
+  if(tg){
+    const open = tg.filter(t => !t.rating).length;
+    $("m-tg").innerHTML = tg.length + ' <small>set</small>';
+    $("m-tg-s").textContent = tg.length === 0 ? "None set yet"
+      : open + " still open, " + (tg.length - open) + " rated";
+  }
+
+  // corps members have no annual leave (Handbook §3.13), so do not offer it
+  if(PROFILE.employment_type !== "nysc"){
+    $("m-leave-btn").classList.remove("hidden");
+    $("m-leave").innerHTML = '14 <small>days a year</small>';
+    $("m-leave-s").textContent = "Leave is coming to this portal shortly";
+  }
+}
+
+
+// ============================================================
+// LEAVE
+// Every rule below is enforced in the database. The screen only
+// explains them; it never decides.
+// ============================================================
+let BAL = [];
+
+async function loadLeave(){
+  const { data, error } = await db.from("my_leave_balance").select("*");
+  if(oops("Your leave", error)) return;
+  BAL = data || [];
+
+  // the pots worth showing: the ones with a yearly figure and available to you
+  const pots = BAL.filter(b => b.days_per_year && b.available_to_me);
+  $("lv-balances").innerHTML = pots.map(b => {
+    const left = Number(b.remaining || 0);
+    return '<button class="mini" onclick="pickKind(\'' + b.kind + '\')">' +
+      '<div class="k">' + esc(b.label) + '</div>' +
+      '<div class="v">' + left + ' <small>of ' + (b.earned || b.days_per_year) + '</small></div>' +
+      '<div class="s">' + (Number(b.taken || 0) > 0 ? b.taken + " taken" : "None taken") +
+        (b.pay_rate < 1 ? " \u00b7 " + Math.round(b.pay_rate * 100) + "% pay" : "") + '</div></button>';
+  }).join("");
+
+  // the picker: only what this person may actually ask for
+  const can = BAL.filter(b => b.available_to_me);
+  $("lv-kind").innerHTML = '<option value="">Choose\u2026</option>' +
+    can.map(b => '<option value="' + b.kind + '">' + esc(b.label) + '</option>').join("");
+
+  // and say plainly what they cannot have, and why
+  const cannot = BAL.filter(b => !b.available_to_me && b.staff_can_request);
+  $("lv-lede").innerHTML = cannot.length
+    ? "What you have, and how to ask for it. " +
+      esc(cannot.map(c => c.label.replace(" leave","")).join(" and ")) +
+      " is not open to you at the moment."
+    : "What you have, and how to ask for it.";
+
+  lvKind();
+  await loadMyLeaveList();
+}
+
+window.pickKind = k => { $("lv-kind").value = k; lvKind(); $("lv-kind").scrollIntoView({behavior:"smooth", block:"center"}); };
+
+function lvKind(){
+  const k = $("lv-kind").value;
+  const b = BAL.find(x => x.kind === k);
+  if(!b){ $("lv-note").textContent = ""; $("lv-evi-row").classList.add("hidden"); lvCount(); return; }
+
+  // the handbook's own words, and why the number is what it is
+  $("lv-note").textContent = b.explain ? b.explain : (b.note || "");
+
+  // evidence, only when the rule says so
+  const needs = b.needs_evidence_over !== null && b.needs_evidence_over !== undefined;
+  $("lv-evi-row").classList.toggle("hidden", !needs);
+  if(needs){
+    $("lv-evi-lab").textContent = b.evidence_label || "Evidence";
+    $("lv-evi-hint").textContent = b.needs_evidence_over === 0
+      ? "Required."
+      : "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over===1?"":"s") + ".";
+  }
+  $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
+  $("lv-btn").textContent = b.needs_senior
+    ? "Send to my line manager" : "Send to my line manager";
+  lvCount();
+}
+
+async function lvCount(){
+  const f = val("lv-from"), t = val("lv-to"), k = $("lv-kind").value;
+  const box = $("lv-count");
+  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }
+  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
+
+  const { data, error } = await db.rpc("leave_days_in", { p_from: f, p_to: t });
+  if(oops("The day count", error)) return;
+  const days = Number(data || 0);
+  const b = BAL.find(x => x.kind === k);
+  const left = b && b.remaining !== null ? Number(b.remaining) : null;
+
+  let msg = "<b>" + days + " working day" + (days===1?"":"s") + "</b>";
+  if(days === 0){ box.className = "alert warn"; box.innerHTML = msg + "Weekends and public holidays are not leave. Pick working days."; return; }
+
+  const bits = [];
+  if(left !== null) bits.push(left - days >= 0
+    ? "You would have " + (left - days).toFixed(1).replace(/\.0$/,"") + " left."
+    : "That is " + (days - left).toFixed(1).replace(/\.0$/,"") + " more than you have.");
+  if(b && b.pay_rate < 1) bits.push(b.pay_rate === 0
+    ? "Unpaid."
+    : "Paid at " + Math.round(b.pay_rate*100) + "% (Employee Handbook)." );
+  if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
+    bits.push("Needs " + (b.evidence_label||"evidence").toLowerCase() + ".");
+  if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
+  else if(b) bits.push("Your manager decides. It stops there.");
+
+  box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
+  box.innerHTML = msg + bits.join(" ");
+}
+
+async function askLeave(){
+  const k = $("lv-kind").value, f = val("lv-from"), t = val("lv-to");
+  if(!k){ msg("lv-msg","err","Pick the kind","Which sort of leave is this?"); return; }
+  if(!f || !t){ msg("lv-msg","err","Pick the dates","From and to."); return; }
+
+  btn("lv-btn", true, "Sending");
+
+  // upload the evidence first, if there is any
+  let path = null;
+  const file = $("lv-evi").files[0];
+  if(file){
+    const name = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("leave-evidence").upload(PROFILE.id + "/" + name, file);
+    if(up.error){
+      btn("lv-btn", false, "Send to my line manager");
+      msg("lv-msg","err","Could not upload", up.error.message + " (is the 'leave-evidence' bucket created?)");
+      return;
+    }
+    path = up.data.path;
+  }
+
+  const { error } = await db.rpc("request_leave", {
+    p_kind: k, p_from: f, p_to: t, p_reason: val("lv-reason"), p_evidence_path: path
+  });
+  if(error){ btn("lv-btn", false, "Send to my line manager"); msg("lv-msg","err","Not sent", error.message); return; }
+
+  const who = await myApprover();
+  const bk = BAL.find(x => x.kind === k);
+  const days = await db.rpc("leave_days_in", { p_from: f, p_to: t });
+  if(who) await notify("leave_requested", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    leave_type: bk ? bk.label.toLowerCase() : "leave",
+    days: days.data, dates: fmtRange(f, t)
+  });
+
+  btn("lv-btn", false, "Send to my line manager");
+  const b = BAL.find(x => x.kind === k);
+  msg("lv-msg","ok","Sent", b && b.needs_senior
+    ? "Your line manager sees it first, then the COO or the CEO. You will be told either way."
+    : "Your line manager decides this one. You will be told either way.");
+  ["lv-from","lv-to","lv-reason"].forEach(id => $(id).value = "");
+  $("lv-evi").value = "";
+  await loadLeave();
+  await loadTimesheet();          // approved leave changes the shells
+}
+
+async function loadMyLeaveList(){
+  const { data, error } = await db.from("my_leave").select("*");
+  const wrap = $("lv-list");
+  if(oops("Your leave history", error)) return;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not asked for any leave.</p>'; return; }
+
+  const STATE = { with_manager:"With your manager", with_senior:"With the COO or CEO",
+                  approved:"Approved", declined:"Declined", cancelled:"Cancelled" };
+  const CLS = { with_manager:"submitted", with_senior:"submitted", approved:"approved",
+                declined:"returned", cancelled:"draft" };
+
+  wrap.innerHTML = data.map(l => {
+    const note = l.senior_note || l.manager_note;
+    const who  = l.senior || l.manager;
+    return '<div class="qrow"><span class="t"><b>' + esc(l.label) + ' \u00b7 ' + l.days +
+      ' day' + (Number(l.days)===1?"":"s") + '</b><span>' + fmtRange(l.starts_on, l.ends_on) +
+      (l.pay_rate < 1 ? " \u00b7 " + (l.pay_rate === 0 ? "unpaid" : Math.round(l.pay_rate*100) + "% pay") : "") +
+      (who ? " \u00b7 " + esc(who) : "") + '</span>' +
+      (note ? '<span style="color:var(--muted);font-style:italic">\u201c' + esc(note) + '\u201d</span>' : "") +
+      '</span>' +
+      '<span class="st ' + CLS[l.state] + '">' + STATE[l.state] + '</span>' +
+      (["with_manager","with_senior"].includes(l.state) || (l.state === "approved" && l.starts_on > new Date().toISOString().slice(0,10))
+        ? '<button onclick="cancelLeave(' + l.id + ')" style="padding:4px 10px;font-size:12px;margin-left:8px">Cancel</button>' : "") +
+      '</div>';
+  }).join("");
+}
+
+async function cancelLeave(id){
+  if(!confirm("Cancel this leave request?")) return;
+  const { error } = await db.rpc("cancel_leave", { p_id: id });
+  if(error){ toast("Could not cancel. " + error.message); return; }
+  await loadLeave(); await loadTimesheet();
+}
+
+// ---- the manager's side ----
+async function loadLeaveQueue(){
+  const { data, error } = await db.from("leave_to_approve").select("*");
+  const wrap = $("ap-lv");
+  if(!wrap) return 0;
+  if(oops("Leave to approve", error)) return 0;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No leave waiting.</p>'; return 0; }
+
+  wrap.innerHTML = data.map(l => {
+    const stage = l.state === "with_manager" ? "awaiting you" : "awaiting a senior";
+    const pot = l.days_per_year ? " \u00b7 " + l.taken_this_year + " of " + l.days_per_year + " used this year" : "";
+    const evi = l.needs_evidence_over !== null && l.days > l.needs_evidence_over
+      ? (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">evidence attached</span>'
+                        : ' \u00b7 <span style="color:var(--red)">no evidence</span>') : "";
+    return '<div class="qrow"><span class="dot todo"></span>' +
+      '<span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+      '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + evi + '</span>' +
+      (l.reason ? '<span style="font-style:italic">\u201c' + esc(l.reason) + '\u201d</span>' : "") +
+      '</span>' +
+      '<button onclick="decideLeave(' + l.id + ', false)">Decline</button>' +
+      '<button class="btn-primary" style="margin-left:6px" onclick="decideLeave(' + l.id + ', true)">' +
+      (l.state === "with_manager" ? "Approve" : "Grant") + '</button></div>';
+  }).join("");
+  return data.length;
+}
+
+async function decideLeave(id, approve){
+  let note = null;
+  if(!approve){
+    note = prompt("Why are you declining? They will see this.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
+  } else {
+    note = prompt("A note for them (optional). Leave blank to just approve.") || null;
+  }
+  // who is this for? the row is about to leave the queue
+  const { data: lv, error: lve } = await db.from("leave_to_approve").select("*").eq("id", id).maybeSingle();
+  if(lve) console.warn("who to tell:", lve.message);
+
+  const { data, error } = await db.rpc("decide_leave", { p_id: id, p_approve: approve, p_note: note });
+  if(error){ toast("Could not do that. " + error.message); return; }
+
+  // only tell them when it is actually settled: a nod from the manager that
+  // still needs the COO is not an answer, and saying so would mislead them
+  let sent = false;
+  if(lv && (data === "approved" || data === "declined")){
+    sent = await notify(data === "approved" ? (lv.kind === "sick" ? "sick_approved" : "leave_approved")
+                                            : "leave_declined",
+      lv.staff_email, lv.staff, {
+        leave_type: (lv.label||"leave").toLowerCase(), days: lv.days,
+        dates: fmtRange(lv.starts_on, lv.ends_on), reason: note || null
+      });
+  }
+  toast(data === "approved" ? "Approved." + (sent ? " They have been told." : "")
+       : data === "with_senior" ? "Approved and passed up. They will hear when it is settled."
+       : "Declined." + (sent ? " They have your reason." : ""));
+  await loadApprovals();
+}
+
+// ---- sick and bereavement a manager already granted: the CEO/COO are told ----
+async function loadLeaveInfo(){
+  if(!isCertifier()) return;
+  const { data, error } = await db.from("leave_for_information").select("*").limit(8);
+  if(error || !data || !data.length) return;
+  $("ap-info-card").classList.remove("hidden");
+  $("ap-info").innerHTML = data.map(l =>
+    '<div class="qrow"><span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+    '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+    fmtRange(l.starts_on, l.ends_on) +
+    (l.approved_by ? " \u00b7 granted by " + esc(l.approved_by) : "") + '</span></span></div>').join("");
+}
+
+
+// ============================================================
+// REQUISITIONS
+// The threshold is decided in the database. This screen only tells you
+// what it is about to do, as you build the basket, so nothing is a surprise.
+// ============================================================
+let RQ_ID = null, RQ_ITEMS = [], RQ_THRESHOLD = 0, RQ_MONTH_SO_FAR = 0, PROJECTS = [];
+window.loadReq = loadReq; window.rqProject = rqProject; window.addReqItem = addReqItem;
+window.dropReqItem = dropReqItem; window.submitReq = submitReq; window.uploadReceipt = uploadReceipt;
+
+async function loadReq(){
+  // open (or reuse) a draft
+  const { data: id, error } = await db.rpc("open_requisition");
+  if(oops("Your requisition", error)) return;
+  RQ_ID = id;
+
+  // the threshold, and what you have already raised this month
+  const [cfg, mine] = await Promise.all([
+    db.from("config_list").select("value").eq("key","requisition_threshold").maybeSingle(),
+    db.rpc("my_requisitions_this_month")
+  ]);
+  RQ_THRESHOLD    = Number(cfg.data ? cfg.data.value : 0);
+  RQ_MONTH_SO_FAR = Number(mine.data || 0);
+
+  // which projects can pay for it
+  const { data: pj, error: pe } = await db.from("project_list").select("*");
+  if(oops("The projects", pe)) return;
+  PROJECTS = pj || [];
+  $("rq-project").innerHTML = '<option value="">Choose\u2026</option>' +
+    PROJECTS.map(p => '<option value="' + p.code + '">' + esc(p.code) + " \u00b7 " + esc(p.name) + '</option>').join("");
+  rqProject();
+
+  await loadReqItems();
+  await loadReqList();
+}
+
+function rqProject(){
+  const p = PROJECTS.find(x => x.code === $("rq-project").value);
+  $("rq-proj-note").textContent = !p ? "Every naira has to be attributable. A funder will ask."
+    : p.is_overhead ? "Not chargeable to a funder. For costs that belong to the firm."
+    : p.funder ? "Funded by " + p.funder : "";
+}
+
+async function loadReqItems(){
+  const { data, error } = await db.rpc("requisition_detail", { p_req_id: RQ_ID });
+  if(oops("Your items", error)) return;
+  RQ_ITEMS = data || [];
+  const wrap = $("rq-items");
+  wrap.innerHTML = !RQ_ITEMS.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:6px 0">Nothing in it yet.</p>'
+    : RQ_ITEMS.map(i => '<div class="basket"><span class="t"><b>' + esc(i.description) + '</b>' +
+        (i.needed_by ? '<span>Needed by ' + fmtDate(i.needed_by) + '</span>' : "") + '</span>' +
+        '<span class="amt">' + N(i.amount) + '</span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropReqItem(' + i.item_id + ')">Remove</button></div>').join("");
+  paintTotal();
+}
+
+// as the basket fills, say where it is going. No surprises at submit.
+function paintTotal(){
+  const total = RQ_ITEMS.reduce((a,i) => a + Number(i.amount), 0);
+  if(!RQ_ITEMS.length){ $("rq-total").innerHTML = ""; $("rq-btn").disabled = true; return; }
+  $("rq-btn").disabled = false;
+
+  const overOnOwn  = total > RQ_THRESHOLD;
+  const overWithMonth = !overOnOwn && (RQ_MONTH_SO_FAR + total) > RQ_THRESHOLD;
+  let route;
+  if(overOnOwn){
+    route = '<div class="route up"><b>This needs the CEO or COO first</b>' +
+      N(total) + ' is above the ' + N(RQ_THRESHOLD) + ' line. They approve it, then Finance pays.</div>';
+  } else if(overWithMonth){
+    route = '<div class="route up"><b>This needs the CEO or COO first</b>' +
+      'On its own it is under the line, but you have already raised ' + N(RQ_MONTH_SO_FAR) +
+      ' this month. Together that passes ' + N(RQ_THRESHOLD) + '.</div>';
+  } else {
+    route = '<div class="route direct"><b>Straight to Finance</b>' +
+      N(total) + ' is within the ' + N(RQ_THRESHOLD) + ' line, so it does not need approval first.</div>';
+  }
+  $("rq-total").innerHTML =
+    '<div class="running"><span class="lb">' + RQ_ITEMS.length + ' item' +
+    (RQ_ITEMS.length===1?"":"s") + '</span><span class="v">' + N(total) + '</span></div>' + route;
+}
+
+async function addReqItem(){
+  const d = val("it-desc"), a = Number(val("it-amt") || 0);
+  if(!d){ msg("rq-msg","err","No description","Say what the money is for."); return; }
+  if(!a || a <= 0){ msg("rq-msg","err","No amount","How much?"); return; }
+  const { error } = await db.rpc("add_requisition_item", {
+    p_req_id: RQ_ID, p_description: d, p_amount: a, p_needed_by: val("it-by")
+  });
+  if(error){ msg("rq-msg","err","Not added", error.message); return; }
+  ["it-desc","it-amt","it-by"].forEach(id => set(id,""));
+  $("rq-msg").innerHTML = "";
+  await loadReqItems();
+}
+
+async function dropReqItem(id){
+  const { error } = await db.rpc("remove_requisition_item", { p_item_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  await loadReqItems();
+}
+
+async function submitReq(){
+  const purpose = val("rq-purpose"), code = $("rq-project").value;
+  if(!purpose){ msg("rq-msg","err","What is it for?","A line so the approver knows."); return; }
+  if(!code){ msg("rq-msg","err","Which project?","Every naira has to be attributable. A funder will ask."); return; }
+
+  btn("rq-btn", true, "Sending");
+  const { data, error } = await db.rpc("submit_requisition", {
+    p_req_id: RQ_ID, p_purpose: purpose, p_project_code: code
+  });
+  btn("rq-btn", false, "Send it");
+  if(error){ msg("rq-msg","err","Not sent", error.message); return; }
+
+  msg("rq-msg","ok","Sent", data === "awaiting_approval"
+    ? "It is with the CEO or COO. Once approved it goes to Finance."
+    : "It is with Finance.");
+  set("rq-purpose",""); $("rq-project").value = ""; rqProject();
+  await loadReq();
+}
+
+async function loadReqList(){
+  const { data, error } = await db.from("my_requisitions").select("*");
+  if(oops("Your requisitions", error)) return;
+  const rows = (data||[]).filter(r => r.status !== "draft");
+  const wrap = $("rq-list");
+
+  // receipts owed, up front, because this is what gets forgotten
+  const owed = (data||[]).filter(r => r.status === "disbursed" && r.receipts_owed > 0);
+  $("rq-owed-card").classList.toggle("hidden", !owed.length);
+  if(owed.length){
+    $("rq-owed").innerHTML = owed.map(r =>
+      '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+      '<span>Paid ' + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null) + " \u00b7 " +
+      r.receipts_owed + ' receipt' + (r.receipts_owed===1?"":"s") + ' outstanding</span></span>' +
+      '<button class="rowbtn" onclick="uploadReceipt(' + r.id + ')">Add receipts</button></div>').join("");
+  }
+
+  if(!rows.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not raised any.</p>'; return; }
+  const LB = { awaiting_approval:"With the CEO or COO", with_finance:"With Finance",
+               declined:"Declined", disbursed:"Paid", closed:"Closed" };
+  const CL = { awaiting_approval:"submitted", with_finance:"submitted", declined:"returned",
+               disbursed:"approved", closed:"draft" };
+  wrap.innerHTML = rows.map(r =>
+    '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+    '<span>' + fmtDate(r.raised_on) + " \u00b7 " + r.item_count + ' item' + (r.item_count===1?"":"s") +
+    (r.project_code ? " \u00b7 " + esc(r.project_code) : "") + '</span>' +
+    (r.decision_note ? '<span style="font-style:italic">\u201c' + esc(r.decision_note) + '\u201d</span>' : "") +
+    '</span><span class="st ' + CL[r.status] + '">' + (LB[r.status] || r.status) + '</span></div>').join("");
+}
+
+async function uploadReceipt(reqId){
+  const { data, error } = await db.rpc("requisition_detail", { p_req_id: reqId });
+  if(oops("That requisition", error)) return;
+  const missing = (data||[]).filter(i => !i.has_receipt);
+  if(!missing.length){ toast("Every item already has a receipt."); return; }
+
+  const item = missing[0];
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/pdf,image/*";
+  inp.onchange = async () => {
+    const f = inp.files[0]; if(!f) return;
+    const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("receipts").upload(PROFILE.id + "/" + name, f);
+    if(up.error){ toast("Upload failed. " + up.error.message + " (is the 'receipts' bucket created?)"); return; }
+    const { error: e2 } = await db.rpc("attach_receipt", { p_item_id: item.item_id, p_path: up.data.path });
+    if(e2){ toast("Could not attach. " + e2.message); return; }
+    toast("Receipt added for \u201c" + item.description + "\u201d." +
+          (missing.length > 1 ? " " + (missing.length-1) + " still to go." : " That one is complete."));
+    await loadReqList();
+  };
+  toast("Pick the receipt for: " + item.description + " (" + N(item.amount) + ")");
+  inp.click();
+}
+
+
+// ============================================================
+// TELLING YOUR MANAGER WHERE YOU HAVE GOT TO
+// Before this, a manager set "400 households" and the staffer had no way
+// to say they had done 310. Every quantitative target sat at 0% until it
+// was rated blind.
+// ============================================================
+window.reportProgress = reportProgress; window.savePhoto = savePhoto;
+window.addQual = addQual; window.addDep = addDep; window.addRef = addRef;
+window.dropRow = dropRow; window.showOtherDoors = showOtherDoors;
+
+async function reportProgress(id, quant, target, unit){
+  let current = null, note = null;
+  if(quant){
+    const v = prompt("How many " + (unit || "so far") + "?\n\nThe target is " + target + ".");
+    if(v === null) return;
+    if(isNaN(Number(v))){ toast("That is not a number."); return; }
+    current = Number(v);
+  }
+  note = prompt("A note for your manager (optional).\n\nWhat you have done, or what is in the way.") || null;
+  const { error } = await db.rpc("report_progress", {
+    p_target_id: id, p_current: current, p_note: note,
+    p_status: "in_progress"
+  });
+  if(error){ toast("Could not save. " + error.message); return; }
+  toast("Saved. Your manager can see where you are.", true);
+  await loadTargets();
+}
+
+// ============================================================
+// THE REST OF YOUR FILE  ·  photo, qualifications, dependents, referees
+// All of this existed in the database and had no form. Handbook §14.1
+// says the personnel file holds them.
+// ============================================================
+async function savePhoto(){
+  const f = $("ph-file").files[0];
+  if(!f){ msg("ph-msg","err","No picture","Choose one first."); return; }
+  btn("ph-btn", true, "Uploading");
+  const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const up = await db.storage.from("staff-photos").upload(PROFILE.id + "/" + name, f, { upsert:true });
+  if(up.error){ btn("ph-btn", false, "Upload it");
+    msg("ph-msg","err","Upload failed", up.error.message + " (is the 'staff-photos' bucket created?)"); return; }
+  const { error } = await db.rpc("save_my_photo", { p_path: up.data.path });
+  btn("ph-btn", false, "Upload it");
+  if(error){ msg("ph-msg","err","Not saved", error.message); return; }
+  msg("ph-msg","ok","Saved","That is your photograph.");
+  await refresh(); await loadExtras();
+}
+
+async function loadExtras(){
+  const [q, d, r] = await Promise.all([
+    db.from("my_qualifications").select("*"),
+    db.from("my_dependents").select("*"),
+    db.from("my_referees").select("*"),
+  ]);
+  if(oops("Your qualifications", q.error) || oops("Your dependents", d.error) || oops("Your referees", r.error)) return;
+
+  $("ql-list").innerHTML = !q.data || !q.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nothing yet.</p>'
+    : q.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.qualification) +
+        (x.is_certification ? ' <span class="st draft">certification</span>' : "") + '</b>' +
+        '<span>' + [x.institution, x.year_obtained].filter(Boolean).map(esc).join(" \u00b7 ") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'qualification\',' + x.id + ')">Remove</button></div>').join("");
+
+  const others = (d.data||[]).filter(x => String(x.relationship).toLowerCase() !== "spouse").length;
+  $("dp-list").innerHTML = (!d.data || !d.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nobody yet.</p>'
+    : d.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.full_name) + '</b>' +
+        '<span>' + esc(x.relationship) + (x.date_of_birth ? " \u00b7 born " + fmtDate(x.date_of_birth) : "") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'dependent\',' + x.id + ')">Remove</button></div>').join("")) +
+    (others >= 5 ? '<p class="hint" style="color:var(--amber)">That is five besides a spouse, which is the limit (Employee Handbook §6.1).</p>' : "");
+
+  $("rf-list").innerHTML = !r.data || !r.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nobody yet.</p>'
+    : r.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.full_name) + '</b>' +
+        '<span>' + [x.relationship, x.organisation, x.phone].filter(Boolean).map(esc).join(" \u00b7 ") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'referee\',' + x.id + ')">Remove</button></div>').join("");
+
+  const ph = $("ph-now");
+  if(ph) ph.innerHTML = PROFILE.photo_path
+    ? '<div class="alert ok" style="margin-top:0"><b>You have one on file</b>Upload another to replace it.</div>' : "";
+}
+
+async function addQual(){
+  const w = val("ql-what");
+  if(!w){ msg("ql-msg","err","What is it?","Name the qualification."); return; }
+  const { error } = await db.rpc("add_my_qualification", {
+    p_qualification: w, p_institution: val("ql-where"),
+    p_year: val("ql-year") ? Number(val("ql-year")) : null,
+    p_is_certification: $("ql-kind").value === "true"
+  });
+  if(error){ msg("ql-msg","err","Not added", error.message); return; }
+  ["ql-what","ql-where","ql-year"].forEach(id => set(id,"")); $("ql-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function addDep(){
+  const n = val("dp-name");
+  if(!n){ msg("dp-msg","err","Who?","Give their name."); return; }
+  const { error } = await db.rpc("add_my_dependent", {
+    p_full_name: n, p_relationship: $("dp-rel").value, p_dob: val("dp-dob")
+  });
+  if(error){ msg("dp-msg","err","Not added", error.message); return; }
+  ["dp-name","dp-dob"].forEach(id => set(id,"")); $("dp-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function addRef(){
+  const n = val("rf-name");
+  if(!n){ msg("rf-msg","err","Who?","Give their name."); return; }
+  const { error } = await db.rpc("add_my_referee", {
+    p_full_name: n, p_relationship: val("rf-rel"), p_organisation: val("rf-org"),
+    p_phone: val("rf-phone"), p_email: val("rf-email")
+  });
+  if(error){ msg("rf-msg","err","Not added", error.message); return; }
+  ["rf-name","rf-rel","rf-org","rf-phone","rf-email"].forEach(id => set(id,"")); $("rf-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function dropRow(kind, id){
+  const { error } = await db.rpc("remove_my_row", { p_table: kind, p_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  await loadExtras();
+}
+
+// ============================================================
+// The other doors, for whoever holds those roles
+// ============================================================
+function showOtherDoors(){
+  const el = $("other-doors"); if(!el) return;
+  const bits = [];
+  if(isFinance())   bits.push('<a href="/cowrie-shell/finance.html"><button>Finance portal &rarr;</button></a>');
+  if(isCertifier()) bits.push('<a href="/cowrie-shell/admin.html"><button>Admin console &rarr;</button></a>');
+  if(!bits.length) return;
+  el.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)">' +
+    '<span style="font-size:12.5px;color:var(--faint);align-self:center;margin-right:4px">Your other doors, same login:</span>' +
+    bits.join("") + '</div>';
+}
+
+
+// ============================================================
+// WHAT YOU EARN  ·  shown before payroll has ever run
+// Clearly INDICATIVE: a full month, no adjustments, today's settings.
+// The payslip is the truth; this is the shape of it.
+// ============================================================
+async function loadIndicative(){
+  const { data, error } = await db.rpc("my_indicative_pay");
+  if(oops("What you earn", error)) return;
+  const p = Array.isArray(data) ? data[0] : data;
+  const box = $("ind-body"); if(!box) return;
+  if(!p || !p.monthly_gross){ box.innerHTML = ""; return; }
+
+  const row = (k, v, cls) => '<tr class="' + (cls||"") + '"><td>' + k + '</td><td class="n">' + v + '</td></tr>';
+  const neg = v => Number(v) > 0 ? "(" + N(v) + ")" : "\u2014";
+
+  box.innerHTML =
+  '<div class="card">' +
+    '<h3>What you earn</h3>' +
+    '<p class="cardsub">A full month, no adjustments, today\u2019s settings. Your payslip is the truth; this is its shape.</p>' +
+    '<table>' +
+      row("Basic", N(p.basic), "rule") +
+      row("Housing", N(p.housing)) +
+      row("Transport", N(p.transport)) +
+      row("<b>Gross salary</b>", "<b>" + N(p.monthly_gross) + "</b>", "total") +
+      (p.paye_exempt
+        ? row("PAYE", "Exempt \u00b7 corps member", "rule")
+        : row("PAYE (about " + p.effective_rate + "% of gross)", neg(p.paye), "rule")) +
+      (Number(p.pension) > 0 ? row("Pension", neg(p.pension)) : "") +
+      (Number(p.nhf) > 0 ? row("National Housing Fund", neg(p.nhf)) : "") +
+      (Number(p.nhis) > 0 ? row("National Health Insurance", neg(p.nhis)) : "") +
+      row("<b>Net</b>", "<b>" + N(p.net) + "</b>", "total") +
+      (Number(p.data_claim) > 0 ? row("Data claim", N(p.data_claim), "rule") : "") +
+      (Number(p.data_claim) > 0 ? row("<b>Take home</b>", "<b>" + N(p.take_home) + "</b>", "total") : "") +
+    '</table>' +
+    (Number(p.rent_relief_yr) > 0
+      ? '<p class="hint" style="margin-top:12px">Rent relief of ' + N(p.rent_relief_yr) + ' a year lowers your tax' +
+        (p.rent_is_assumed
+          ? '. <b>This rests on an assumed rent.</b> Give the office your tenancy agreement so it reflects what you actually pay.'
+          : ', based on the rent you declared.') + '</p>' : "") +
+    '<p class="hint">Days you do not work, unpaid leave, and anything Finance adds will change the real figure.</p>' +
+  '</div>';
+}
+
+
+// ============================================================
+// THE ADJUSTMENTS YOUR TEAM NEEDS
+//
+// This is the part that was missing. Someone ticked "my line manager may
+// see the adjustments I need, so they can arrange them" and their manager
+// never saw it. The box worked; nothing read it. A promise the system did
+// not keep is worse than not asking.
+//
+// A manager sees WHAT is needed, never the condition behind it.
+// ============================================================
+async function loadAccommodations(){
+  const { data, error } = await db.from("team_accommodations").select("*");
+  if(oops("What your team needs", error)) return;
+  const mine = (data||[]).filter(a => a.staff_id !== PROFILE.id);
+  const card = $("acc-card");
+  if(!card) return;
+  if(!mine.length){ card.classList.add("hidden"); return; }
+  card.classList.remove("hidden");
+
+  $("acc-list").innerHTML = mine.map(a =>
+    '<div class="tgt"><div class="tgt-head"><b>' + esc(a.staff) + '</b>' +
+    (a.department ? '<span class="tag month">' + esc(a.department) + '</span>' : "") + '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+      (a.accommodations||[]).map(x =>
+        '<span class="tag" style="background:var(--clr-blue);color:#1a4e73;font-size:11px;padding:4px 10px">' +
+        esc(x) + '</span>').join("") +
+    '</div>' +
+    (a.accommodation_notes
+      ? '<div class="kpi" style="margin-top:8px">They added: <span>' + esc(a.accommodation_notes) + '</span></div>' : "") +
+    '<div class="tgt-foot"><span>They told us ' +
+      new Date(a.told_us_on).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}) +
+      '</span><span></span></div></div>').join("") +
+  '<p class="hint" style="margin-top:12px">If you cannot arrange something, say so early rather than late. ' +
+  'The Handbook commits Data-Lead to reasonable adjustments (§8.6, §9.22), and the Head of Operations will help.</p>';
+}
+
+// ---------- helpers ----------
+function msg(id, kind, title, body){
+  $(id).innerHTML = `<div class="alert ${kind}"><b>${title}</b>${esc(body)}</div>`;
+}
+function btn(id, busy, label){
+  const b = $(id); b.disabled = busy;
+  b.innerHTML = busy ? `<span class="spin"></span>${label}…` : label;
+}
+function fmtNum(n){ return Number(n).toLocaleString("en-NG"); }
+function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+</script>
+</body>
+</html>

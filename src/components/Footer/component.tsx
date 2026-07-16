@@ -15,6 +15,10 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
   WHATSAPP_MESSAGE,
 )}`;
 
+// Where we actually work. This was nowhere in the footer, and it is the most
+// interesting thing about the firm.
+const COUNTRIES = ["Nigeria", "Benin", "Chad", "Togo", "Guinea-Bissau"];
+
 export default function Footer() {
   return (
     <>
@@ -38,33 +42,41 @@ export default function Footer() {
       </a>
 
       <footer className="footer">
-        <div className="footer__col">
-          <Link to={"/"}>
-            <img src={logo_bw} alt="Data-Lead Africa" className="footer__logo" />
-          </Link>
-          <div className="footer__follow">
+        <div className="footer__grid">
+          <div className="footer__col footer__brand">
+            <Link to={"/"}>
+              <img src={logo_bw} alt="Data-Lead Africa" className="footer__logo" />
+            </Link>
+            <p className="footer__say">
+              Evidence for decisions across West and Central Africa. Research,
+              analytics, and the training to do it yourselves.
+            </p>
             <div className="follow-links">
               <a
                 href="https://www.instagram.com/datalead_africa/?hl=en"
                 className="follow-link"
+                aria-label="Instagram"
               >
                 <i className="nf nf-fa-instagram"></i>
               </a>
               <a
                 href="https://ng.linkedin.com/company/data-leadafrica"
                 className="follow-link"
+                aria-label="LinkedIn"
               >
                 <i className="nf nf-dev-linkedin"></i>
               </a>
               <a
                 href="https://x.com/datalead_africa?lang=en"
                 className="follow-link"
+                aria-label="X"
               >
                 <i className="nf nf-dev-twitter"></i>
               </a>
               <a
                 href="https://www.youtube.com/@data-leadafrica3321"
                 className="follow-link"
+                aria-label="YouTube"
               >
                 <i className="nf nf-fa-youtube"></i>
               </a>
@@ -84,42 +96,83 @@ export default function Footer() {
               </a>
             </div>
           </div>
-        </div>
-        <div className="footer__col">
-          <p className="col__header">Company</p>
-          <Link to={routes.whoWeAre}>About</Link>
-          <Link to={routes.training}>Training</Link>
-          <Link to={routes.research}>Research</Link>
-          <Link to={routes.consultancy}>Consultancy</Link>
-        </div>
-        <div className="footer__col">
-          <p className="col__header">Get in touch</p>
-          <div className="get-in-touch">
-            <i className="nf nf-oct-location"></i>
-            <address>
-              Plot 759, Bassan Plaza, Central Business District, Abuja.
-            </address>
+
+          <div className="footer__col">
+            <p className="col__header">Company</p>
+            <Link to={routes.whoWeAre}>About</Link>
+            <Link to={routes.training}>Training</Link>
+            <Link to={routes.research}>Research</Link>
+            <Link to={routes.consultancy}>Consultancy</Link>
+
+            {/* Cowrie Shell, for staff. A plain <a> because /cowrie is a Vercel
+                rewrite to a static page, not a React Router route. Set apart by
+                a rule so it reads as "and also this", not as a fifth page for
+                the public. Kept out of the bottom bar because the floating
+                WhatsApp button sits there. */}
+            <a className="col__staff" href="/cowrie" title="Cowrie Shell, the staff portal">
+              <svg className="col__shell" viewBox="0 0 26 36" aria-hidden="true">
+                <ellipse cx="13" cy="18" rx="10" ry="15.5" />
+                <path d="M13 4.5v27" className="shell__slit" fill="none" />
+              </svg>
+              Staff portal
+            </a>
           </div>
-          <div className="get-in-touch">
-            <i className="nf nf-oct-mail"></i>
-            <Link to="mailto:info@dataleadafrica.com">
-              info@dataleadafrica.com
-            </Link>
-          </div>
-          <div className="get-in-touch">
-            <i className="nf nf-fa-phone"></i>
-            <div className="phone-list">
-              <Link to="tel:+2349166661234">+234 916 666 1234</Link>,{" "}
-              <Link to="tel:+2347030500741">+234 703 050 0741</Link>,{" "}
-              <Link to="tel:+245957914857">+245 957 914 857</Link>,{" "}
-              <Link to="tel:+447983203075">+44 7983 203075</Link>
+
+          <div className="footer__col">
+            <p className="col__header">Get in touch</p>
+            <div className="get-in-touch">
+              <i className="nf nf-oct-location"></i>
+              <address>
+                Plot 759, Bassan Plaza, Central Business District, Abuja.
+              </address>
             </div>
+            <div className="get-in-touch">
+              <i className="nf nf-oct-mail"></i>
+              <Link to="mailto:info@dataleadafrica.com">
+                info@dataleadafrica.com
+              </Link>
+            </div>
+
+            {/* Four numbers were a wall of digits. Labelled, they say where we are. */}
+            <dl className="footer__phones">
+              <dt>Nigeria</dt>
+              <dd>
+                <Link to="tel:+2349166661234">+234 916 666 1234</Link>
+                <span aria-hidden="true"> · </span>
+                <Link to="tel:+2347030500741">+234 703 050 0741</Link>
+              </dd>
+              <dt>Guinea-Bissau</dt>
+              <dd>
+                <Link to="tel:+245957914857">+245 957 914 857</Link>
+              </dd>
+              <dt>United Kingdom</dt>
+              <dd>
+                <Link to="tel:+447983203075">+44 7983 203075</Link>
+              </dd>
+            </dl>
           </div>
         </div>
-        <p className="footer__copyright">
-          © 2025 Data-Lead Africa. All Rights Reserved |{" "}
-          <a href={routes.privacyPolicy}>Privacy Policy</a>
+
+        <p className="footer__where">
+          <span className="where__label">Working in</span>
+          {COUNTRIES.map((c, i) => (
+            <span key={c}>
+              {i > 0 && <i className="where__dot" aria-hidden="true"></i>}
+              <span className="where__country">{c}</span>
+            </span>
+          ))}
         </p>
+
+        {/* Left-aligned, as the original was. The "Chat with us" button is fixed
+            to the bottom right of the viewport, so anything on the right of this
+            bar ends up behind it. */}
+        <div className="footer__bar">
+          <p>
+            © {new Date().getFullYear()} Data-Lead Africa. All rights reserved.
+            <span className="bar__sep" aria-hidden="true"> · </span>
+            <a href={routes.privacyPolicy}>Privacy Policy</a>
+          </p>
+        </div>
       </footer>
     </>
   );
