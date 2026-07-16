@@ -284,6 +284,12 @@ td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums}
         <button class="rowbtn" onclick="loadReqs()">Refresh</button></div>
       <div id="req-pay"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
     </div>
+    <div class="panel hidden" id="req-close-card">
+      <h3>Ready to close</h3>
+      <div class="ps">Every receipt is in. Closing one says the money was accounted for, not just handed over.</div>
+      <div id="req-close"></div>
+    </div>
+
     <div class="panel">
       <h3>Receipts outstanding</h3>
       <div class="ps">Money already handed out with nothing to show for it yet. This is what an auditor asks about.</div>
@@ -682,6 +688,7 @@ async function exportSchedule(){
 // REQUISITIONS
 // ============================================================
 window.loadReqs = loadReqs; window.disburse = disburse; window.closeReq = closeReq;
+window.setProjState = setProjState;
 
 async function loadReqs(){
   const { data, error } = await db.from("requisitions_to_disburse").select("*");
@@ -699,6 +706,18 @@ async function loadReqs(){
         '<button class="btn-primary rowbtn" onclick="disburse(' + r.id + ',\'' + esc(r.staff_email) +
         '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + r.total + ')"' + (noBank ? " disabled" : "") + '>Mark paid</button></div>';
     }).join("");
+
+  // disbursed, every receipt in, but never closed. Nothing moved them on.
+  const { data: done, error: de } = await db.from("requisitions_overview").select("*")
+    .eq("status", "disbursed").eq("receipts_owed", 0);
+  if(oops("Requisitions to close", de)) return;
+  $("req-close-card").classList.toggle("hidden", !done || !done.length);
+  if(done && done.length)
+    $("req-close").innerHTML = done.map(r =>
+      '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+      '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
+      (r.project_code ? " \u00b7 " + esc(r.project_code) : "") + ' \u00b7 every receipt in</span></span>' +
+      '<button class="btn-primary rowbtn" onclick="closeReq(' + r.id + ')">Close it</button></div>').join("");
 
   const { data: o, error: oe } = await db.rpc("receipts_outstanding");
   if(oops("The receipts", oe)) return;
@@ -1037,6 +1056,10 @@ async function loadProjects(){
   wrap.innerHTML = data.map(p => {
     const net = Number(p.net||0);
     const burn = p.budget_used_pct;
+    const states = p.is_overhead ? "" :
+      '<select onchange="setProjState(\'' + p.code + '\', this.value)" style="width:auto;padding:3px 7px;font-size:11px">' +
+      ['active','on_hold','closed'].map(x => '<option value="' + x + '"' + (p.state === x ? " selected" : "") + '>' +
+        (x === "active" ? "Active" : x === "on_hold" ? "On hold" : "Closed") + '</option>').join("") + '</select>';
     return '<div class="qrow"><span class="t"><b>' + esc(p.code) + ' \u00b7 ' + esc(p.name) +
       (p.is_overhead ? ' <span class="tag calm">not chargeable</span>' : "") +
       (p.state !== "active" ? ' <span class="tag calm">' + p.state + '</span>' : "") + '</b>' +
@@ -1048,14 +1071,18 @@ async function loadProjects(){
       (p.is_overhead ? '<span class="amt" style="color:var(--muted)">' + K(p.money_out) + ' out</span>'
         : '<span class="amt" style="color:' + (net < 0 ? "var(--red)" : "var(--green)") + '">' +
           (net >= 0 ? "+" : "") + K(net) + '</span>') +
-      (burn !== null && burn > 100 ? '<span class="tag bad">over budget</span>' : "") + '</div>';
+      (burn !== null && burn > 100 ? '<span class="tag bad">over budget</span>' : "") + states + '</div>';
   }).join("") +
   '<p class="hint" style="margin-top:10px">Payroll and PAYE sit under overhead. Only requisitions and typed entries carry a project.</p>';
 }
 
 async function setProjState(code, state){
+  if(state === "closed" && !confirm("Close " + code + "?\n\nNo new requisition can be charged to it. Anything already spent stays where it is.")) {
+    await loadProjects(); return;
+  }
   const { error } = await db.rpc("admin_set_project_state", { p_code: code, p_state: state });
-  if(error){ toast("Could not. " + error.message); return; }
+  if(error){ toast("Could not. " + error.message); await loadProjects(); return; }
+  toast(code + " is now " + (state === "on_hold" ? "on hold" : state) + ".", true);
   await loadProjects();
 }
 </script>
