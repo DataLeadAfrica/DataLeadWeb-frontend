@@ -103,6 +103,19 @@ export default function Footer() {
             <Link to={routes.training}>Training</Link>
             <Link to={routes.research}>Research</Link>
             <Link to={routes.consultancy}>Consultancy</Link>
+
+            {/* Cowrie Shell, for staff. A plain <a> because /cowrie is a Vercel
+                rewrite to a static page, not a React Router route. Set apart by
+                a rule so it reads as "and also this", not as a fifth page for
+                the public. Kept out of the bottom bar because the floating
+                WhatsApp button sits there. */}
+            <a className="col__staff" href="/cowrie" title="Cowrie Shell, the staff portal">
+              <svg className="col__shell" viewBox="0 0 26 36" aria-hidden="true">
+                <ellipse cx="13" cy="18" rx="10" ry="15.5" />
+                <path d="M13 4.5v27" className="shell__slit" fill="none" />
+              </svg>
+              Staff portal
+            </a>
           </div>
 
           <div className="footer__col">
@@ -150,23 +163,15 @@ export default function Footer() {
           ))}
         </p>
 
+        {/* Left-aligned, as the original was. The "Chat with us" button is fixed
+            to the bottom right of the viewport, so anything on the right of this
+            bar ends up behind it. */}
         <div className="footer__bar">
           <p>
             © {new Date().getFullYear()} Data-Lead Africa. All rights reserved.
-          </p>
-          <div className="bar__right">
+            <span className="bar__sep" aria-hidden="true"> · </span>
             <a href={routes.privacyPolicy}>Privacy Policy</a>
-            {/* Cowrie Shell, for staff. A plain <a> because /cowrie is a Vercel
-                rewrite to a static page, not a React Router route. Quiet, but
-                a real labelled link so a screen reader announces it. */}
-            <a className="bar__staff" href="/cowrie" title="Cowrie Shell, for Data-Lead staff">
-              <svg className="bar__shell" viewBox="0 0 26 36" aria-hidden="true">
-                <ellipse cx="13" cy="18" rx="10" ry="15.5" />
-                <path d="M13 4.5v27" className="shell__slit" fill="none" />
-              </svg>
-              Staff
-            </a>
-          </div>
+          </p>
         </div>
       </footer>
     </>
