@@ -212,6 +212,39 @@
   footer a{color:var(--orange-strong);text-decoration:none;}
   footer .partners{color:#8b8378;}
 
+  /* ---------- Step wizard ---------- */
+  .steps{padding:20px 0 6px;}
+  .steps__bar{height:4px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .steps__bar span{display:block;height:100%;width:20%;border-radius:999px;
+    background:linear-gradient(100deg,var(--brand),var(--orange-strong));
+    transition:width .35s var(--ease);}
+  .steps__list{list-style:none;display:flex;margin:12px 0 0;padding:0;}
+  .steps__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+    font-size:.75rem;color:var(--muted);text-align:center;min-width:0;}
+  .steps__dot{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    font-size:.72rem;font-weight:600;background:#fff;border:1.5px solid var(--line);color:var(--muted);
+    transition:background .2s,border-color .2s,color .2s;}
+  .steps__label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .steps__item.is-active{color:var(--ink);font-weight:600;}
+  .steps__item.is-active .steps__dot{background:var(--brand-tint);border-color:var(--brand);color:var(--brand-dark);}
+  .steps__item.is-done .steps__dot{background:var(--brand);border-color:var(--brand);color:#fff;font-size:.8rem;}
+  @media (max-width:600px){ .steps__label{display:none;} }
+
+  /* Only the current step is in the document. Hidden steps are display:none,
+     so their required fields are ignored by the browser and by validate(). */
+  .step{display:none;}
+  .step.is-current{display:block;animation:stepin .35s var(--ease);}
+  @keyframes stepin{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  .stepnav{display:flex;gap:10px;align-items:center;margin-top:22px;}
+  .btn-back{flex:none;font-family:"Poppins";font-weight:600;font-size:.95rem;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 20px;cursor:pointer;
+    transition:border-color .2s,background .2s;}
+  .btn-back:hover{border-color:#d7cebf;background:#fdfcfa;}
+  .btn-next{flex:1;}
+  .stepnav .submit{flex:1;width:auto;}
+  @media (prefers-reduced-motion: reduce){ .step.is-current{animation:none;} }
+
   /* ---------- Staged reveal ---------- */
   @keyframes rise{to{opacity:1;transform:none;}}
   .js .reveal-seq{opacity:0;transform:translateY(16px);animation:rise .7s var(--ease) forwards;animation-delay:calc(var(--i,0)*115ms + .12s);}
@@ -301,10 +334,22 @@
   <div class="card">
     <div class="form-error" id="formError"></div>
 
+    <nav class="steps" id="stepper" aria-label="Application progress">
+      <div class="steps__bar"><span id="stepsFill"></span></div>
+      <ol class="steps__list">
+        <li class="steps__item is-active" data-i="1"><span class="steps__dot">1</span><span class="steps__label">Organisation</span></li>
+        <li class="steps__item" data-i="2"><span class="steps__dot">2</span><span class="steps__label">Registration</span></li>
+        <li class="steps__item" data-i="3"><span class="steps__dot">3</span><span class="steps__label">Contact person</span></li>
+        <li class="steps__item" data-i="4"><span class="steps__dot">4</span><span class="steps__label">What you need</span></li>
+        <li class="steps__item" data-i="5"><span class="steps__dot">5</span><span class="steps__label">Anything else</span></li>
+      </ol>
+    </nav>
+
     <form id="hostForm" novalidate>
 
+      <div class="step is-current" data-step="1">
       <!-- 01 ORGANIZATION -->
-      <fieldset class="reveal-scroll">
+      <fieldset>
         <legend><span class="num">01</span> Organization</legend>
         <p class="section-hint">Tell us about the organisation offering the placement.</p>
 
@@ -376,8 +421,11 @@
         </div>
       </fieldset>
 
+      </div>
+
+      <div class="step" data-step="2">
       <!-- 02 REGISTRATION -->
-      <fieldset class="reveal-scroll">
+      <fieldset>
         <legend><span class="num">02</span> Registration</legend>
         <p class="section-hint">We verify host organisations with the Corporate Affairs Commission (CAC).</p>
 
@@ -402,8 +450,11 @@
         </div>
       </fieldset>
 
+      </div>
+
+      <div class="step" data-step="3">
       <!-- 03 CONTACT -->
-      <fieldset class="reveal-scroll">
+      <fieldset>
         <legend><span class="num">03</span> Contact person</legend>
 
         <div class="grid">
@@ -432,8 +483,11 @@
         </div>
       </fieldset>
 
+      </div>
+
+      <div class="step" data-step="4">
       <!-- 04 INTERNSHIP NEEDS -->
-      <fieldset class="reveal-scroll">
+      <fieldset>
         <legend><span class="num">04</span> What you need</legend>
         <p class="section-hint">This helps us match the right interns to your team.</p>
 
@@ -487,8 +541,11 @@
         </div>
       </fieldset>
 
+      </div>
+
+      <div class="step" data-step="5">
       <!-- 05 ANYTHING ELSE -->
-      <fieldset class="reveal-scroll">
+      <fieldset>
         <legend><span class="num">05</span> Anything else</legend>
 
         <div class="field">
@@ -505,8 +562,14 @@
         </div>
       </fieldset>
 
-      <div class="actions reveal-scroll">
-        <button type="submit" class="submit" id="submitBtn">Submit application</button>
+      </div>
+
+      <div class="actions">
+        <div class="stepnav">
+          <button type="button" class="btn-back" id="backBtn" hidden>Back</button>
+          <button type="button" class="btn-next submit" id="nextBtn">Next</button>
+          <button type="submit" class="submit" id="submitBtn" hidden>Submit application</button>
+        </div>
         <p class="form-note">We'll review and get back to you by email.</p>
       </div>
     </form>
@@ -716,41 +779,54 @@ function setErr(id,on,msg){
   const em=field.querySelector(".err-msg"); if(em){ em.classList.toggle("show",on); if(msg) em.textContent=msg; }
 }
 
-function validate(){
+/* When passed a step element, only fields inside that step are checked.
+   With no argument every field is checked (used as a final guard on submit). */
+function validate(scope){
   let ok=true, firstBad=null;
+  const inScope = el => !!el && (!scope || scope.contains(el));
   const abuja = document.getElementById("city").value==="Abuja (FCT)";
   const req=["orgName","sector","city","cacNumber","contactName","contactRole","email","phone","numInterns","address"];
   if(abuja) req.splice(3,0,"district"); else if(document.getElementById("city").value) req.splice(3,0,"town");
   req.forEach(id=>{
     const el=document.getElementById(id);
+    if(!inScope(el)) return;
     let bad=!el.value || !el.value.trim() || el.value==="__other__";
     if(id==="district" && el.value==="__other__"){ bad=!document.getElementById("districtOther").value.trim(); }
     setErr(id,bad); if(bad){ ok=false; firstBad=firstBad||el; }
   });
 
   const email=document.getElementById("email");
-  if(email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){ setErr("email",true,"Please enter a valid email."); ok=false; firstBad=firstBad||email; }
+  if(inScope(email) && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){ setErr("email",true,"Please enter a valid email."); ok=false; firstBad=firstBad||email; }
 
+  if(inScope(fileInput)){
   const f=fileInput.files[0], fileErr=document.getElementById("fileErr");
   let fbad=false;
   if(!f){ fbad=true; fileErr.textContent="Please attach your CAC certificate."; }
   else if(f.size>MAX_MB*1024*1024){ fbad=true; fileErr.textContent="File is over "+MAX_MB+" MB. Please upload a smaller file."; }
   setErr("cacFile",fbad); if(fbad){ ok=false; firstBad=firstBad||fileInput; }
+  }
 
+  const spc=document.getElementById("spControl");
+  if(inScope(spc)){
   const sbad = skillState.chosen.length===0;
   document.getElementById("skillsErr").classList.toggle("show",sbad);
   document.getElementById("skillField").classList.toggle("invalid",sbad);
-  if(sbad){ ok=false; firstBad=firstBad||document.getElementById("spControl"); }
+  if(sbad){ ok=false; firstBad=firstBad||spc; }
+  }
 
   [["arrangement","arrErr"],["startWhen","startErr"]].forEach(([name,errId])=>{
+    const errEl=document.getElementById(errId);
+    if(!inScope(errEl)) return;
     const c=document.querySelector('input[name="'+name+'"]:checked');
-    document.getElementById(errId).classList.toggle("show",!c);
-    if(!c){ ok=false; firstBad=firstBad||document.getElementById(errId); }
+    errEl.classList.toggle("show",!c);
+    if(!c){ ok=false; firstBad=firstBad||errEl; }
   });
 
   const consent=document.getElementById("consent");
-  document.getElementById("consentErr").classList.toggle("show",!consent.checked);
-  if(!consent.checked){ ok=false; firstBad=firstBad||consent; }
+  if(inScope(consent)){
+    document.getElementById("consentErr").classList.toggle("show",!consent.checked);
+    if(!consent.checked){ ok=false; firstBad=firstBad||consent; }
+  }
 
   if(firstBad) firstBad.scrollIntoView({behavior:"smooth",block:"center"});
   return ok;
@@ -761,6 +837,49 @@ function fileToBase64(file){
 }
 const val=id=>{ const e=document.getElementById(id); return e?e.value.trim():""; };
 const radio=name=>{ const e=document.querySelector('input[name="'+name+'"]:checked'); return e?e.value:""; };
+
+
+/* =============================================================
+   Five-step wizard. Each step is validated before moving on,
+   so people fix mistakes where they made them.
+   ============================================================= */
+const wiz = (function(){
+  const steps   = [...document.querySelectorAll(".step")];
+  const items   = [...document.querySelectorAll(".steps__item")];
+  const fill    = document.getElementById("stepsFill");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const subBtn  = document.getElementById("submitBtn");
+  const card    = document.querySelector(".card");
+  let i = 0;
+
+  function show(n, focus){
+    i = Math.max(0, Math.min(n, steps.length-1));
+    steps.forEach((s,k)=> s.classList.toggle("is-current", k===i));
+    items.forEach((it,k)=>{
+      it.classList.toggle("is-active", k===i);
+      it.classList.toggle("is-done", k<i);
+      const dot=it.querySelector(".steps__dot");
+      dot.textContent = k<i ? "\u2713" : String(k+1);
+    });
+    fill.style.width = ((i+1)/steps.length*100)+"%";
+    backBtn.hidden = i===0;
+    nextBtn.hidden = i===steps.length-1;
+    subBtn.hidden  = i!==steps.length-1;
+    if(focus){
+      const top = card.getBoundingClientRect().top + window.scrollY - 20;
+      window.scrollTo({top, behavior:"smooth"});
+    }
+  }
+
+  nextBtn.addEventListener("click", ()=>{
+    if(validate(steps[i])) show(i+1, true);
+  });
+  backBtn.addEventListener("click", ()=> show(i-1, true));
+
+  show(0, false);
+  return { goTo: show, current: ()=>i, steps };
+})();
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
