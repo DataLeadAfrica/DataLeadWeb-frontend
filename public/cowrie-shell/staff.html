@@ -82,6 +82,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
   opacity:0;pointer-events:none;transition:.22s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.good{background:var(--green-bg);color:var(--green);border-color:var(--green)}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -576,6 +577,12 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <h1 style="font-size:26px;margin-bottom:4px">Targets</h1>
     <p style="color:var(--muted);margin-bottom:18px">Set what someone must achieve, and the KPI it is measured against. Rate it at the end of the period.</p>
 
+    <div class="card hidden" id="acc-card">
+      <h3>What your team needs from you</h3>
+      <p class="cardsub">They chose to tell you. You are seeing what they need, never why they need it, that is theirs and the Handbook keeps it that way (§1.2, §14).</p>
+      <div id="acc-list"></div>
+    </div>
+
     <div class="card">
       <h3>Set a target</h3>
       <p class="cardsub">A KPI is required. Make it a yardstick, something you could both point at and agree it was met.</p>
@@ -1037,6 +1044,30 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const $ = id => document.getElementById(id);
 
+// ============================================================
+// TELLING PEOPLE
+// No secret in this page: the Edge Function holds it and checks who you are.
+// An email never blocks the thing it is about. If the note fails, the leave
+// is still approved, the timesheet is still submitted. It says so instead.
+// ============================================================
+async function notify(event, toEmail, toName, extra = {}){
+  if(!toEmail) return false;
+  try {
+    const { error } = await db.functions.invoke("notify", {
+      body: { event, to_email: toEmail, to_name: toName, ...extra }
+    });
+    if(error){ console.warn("notify:", error.message); return false; }
+    return true;
+  } catch(e){ console.warn("notify:", e); return false; }
+}
+
+// who hears about it when you submit something
+async function myApprover(){
+  const { data, error } = await db.rpc("who_approves_for", { p_staff: PROFILE.id });
+  if(error){ console.warn("who_approves_for:", error.message); return null; }
+  return Array.isArray(data) ? data[0] : data;
+}
+
 // ---- nothing fails silently ----
 // Every background call routes its error through here. If it returns true,
 // the caller stops. The person sees what broke, in words, not a dead screen.
@@ -1047,7 +1078,7 @@ function oops(where, error){
   return true;
 }
 let toastTimer;
-function toast(text){
+function toast(text, good){
   let t = $("toast");
   if(!t){
     t = document.createElement("div");
@@ -1055,7 +1086,7 @@ function toast(text){
     document.body.appendChild(t);
   }
   t.textContent = text;
-  t.classList.add("on");
+  t.className = "toast on" + (good ? " good" : "");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("on"), 6000);
 }
@@ -1638,9 +1669,18 @@ async function submitTimesheet(){
     p_summary: val("rp1"), p_achievements: val("rp2"),
     p_challenges: val("rp3"), p_next: val("rp4")
   });
+  if(error){ btn("ts-btn", false, "Sign and send to my line manager"); msg("ts-msg","err","Could not submit", error.message); return; }
+
+  const who = await myApprover();
+  const sent = who && await notify("timesheet_submitted", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    month: MONTHS[TS_MONTH-1] + " " + TS_YEAR,
+    days: MONTH_LOGGED, flagged: Object.values(DAYS).filter(d => d.ai_flag).length || null
+  });
   btn("ts-btn", false, "Sign and send to my line manager");
-  if(error){ msg("ts-msg","err","Could not submit", error.message); return; }
-  msg("ts-msg","ok","Sent","Your timesheet is with your line manager.");
+  msg("ts-msg","ok","Sent", sent
+    ? "It is with " + (who.full_name||"your line manager").split(" ")[0] + ", and they have been told."
+    : "It is with your line manager. You will be told the outcome.");
   await loadTimesheet();
 }
 
@@ -1720,9 +1760,20 @@ async function removeItem(id){
 async function submitPlan(){
   btn("pl-btn", true, "Submitting");
   const { error } = await db.rpc("submit_plan", { p_plan_id: PLAN_ID, p_headline: val("pl-headline") });
+  if(error){ btn("pl-btn", false, "Submit to my line manager"); msg("pl-msg","err","Could not submit", error.message); return; }
+
+  const who = await myApprover();
+  const { data: pl, error: ple } = await db.from("my_plans").select("period_start,period_end").eq("id", PLAN_ID).maybeSingle();
+  if(ple) console.warn("plan dates for the email:", ple.message);
+  const sent = who && await notify("plan_submitted", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    period: PLAN_PERIOD, headline: val("pl-headline"),
+    dates: pl ? fmtRange(pl.period_start, pl.period_end) : null
+  });
   btn("pl-btn", false, "Submit to my line manager");
-  if(error){ msg("pl-msg","err","Could not submit", error.message); return; }
-  msg("pl-msg","ok","Sent","Your plan is with your line manager.");
+  msg("pl-msg","ok","Sent", sent
+    ? (who.full_name||"Your manager").split(" ")[0] + " has been told."
+    : "Your plan is with your line manager.");
   await loadPlan();
 }
 
@@ -1734,7 +1785,7 @@ function fmtRange(a,b){ return fmtDate(a) + " to " + fmtDate(b); }
 // MANAGER
 // ============================================================
 const MGR_ROLES = ["head","director","coo","super_admin"];
-let RV_SUB = null, PR_PLAN = null;
+let RV_SUB = null, PR_PLAN = null, RV_META = null, PR_META = null;
 
 function isManager(){
   return (PROFILE.roles || []).some(r => MGR_ROLES.includes(r));
@@ -1779,6 +1830,7 @@ async function openReview(id){
   go("review");
   const { data: rows, error: re } = await db.from("timesheets_to_review").select("*").eq("id", id).maybeSingle();
   if(oops("That submission", re)) return;
+  RV_META = rows;
   if(rows){
     $("rv-name").textContent = rows.staff;
     $("rv-eyebrow").textContent = MONTHS[rows.month-1] + " " + rows.year +
@@ -1826,11 +1878,21 @@ async function reviewTs(approve){
   const { error } = await db.rpc("review_timesheet", {
     p_submission_id: RV_SUB, p_approve: approve, p_note: note
   });
+  if(error){ btn("rv-ok", false, "Approve"); msg("rv-msg","err","Could not do that", error.message); return; }
+
+  const { data: r, error: rle } = await db.from("timesheets_to_review").select("staff,staff_email,year,month").eq("id", RV_SUB).maybeSingle();
+  if(rle) console.warn("who to tell:", rle.message);
+  const tgt = r || RV_META;
+  const sent = tgt && await notify(approve ? "timesheet_approved" : "timesheet_returned",
+    tgt.staff_email, tgt.staff, {
+      month: MONTHS[(tgt.month||1)-1] + " " + tgt.year,
+      stage: approve ? (isCertifier() ? "final approval" : "your manager") : null,
+      note: note || null
+    });
   btn("rv-ok", false, "Approve");
-  if(error){ msg("rv-msg","err","Could not do that", error.message); return; }
   msg("rv-msg","ok", approve ? "Approved" : "Returned",
-      approve ? "Done. They will be told." : "Sent back with your note.");
-  setTimeout(() => { go("approvals"); }, 900);
+      (approve ? "Done." : "Sent back with your reason.") + (sent ? " They have been told." : ""));
+  setTimeout(() => { go("approvals"); }, 1100);
 }
 
 // ---- review a plan ----
@@ -1839,6 +1901,7 @@ async function openPlanReview(id){
   go("planreview");
   const { data: p, error: pe2 } = await db.from("plans_to_review").select("*").eq("id", id).maybeSingle();
   if(oops("That plan", pe2)) return;
+  PR_META = p;
   if(p){
     $("pr-name").textContent = p.staff;
     $("pr-dates").textContent = p.period + " \u00b7 " + fmtRange(p.period_start, p.period_end);
@@ -1865,10 +1928,16 @@ async function reviewPlan(approve){
   const { error } = await db.rpc("review_plan", {
     p_plan_id: PR_PLAN, p_approve: approve, p_note: note
   });
+  if(error){ btn("pr-ok", false, "Approve"); msg("pr-msg","err","Could not do that", error.message); return; }
+
+  const sent = PR_META && await notify(approve ? "plan_approved" : "plan_returned",
+    PR_META.staff_email, PR_META.staff, {
+      period: PR_META.period, by: PROFILE.display_name || PROFILE.full_name, note: note || null
+    });
   btn("pr-ok", false, "Approve");
-  if(error){ msg("pr-msg","err","Could not do that", error.message); return; }
-  msg("pr-msg","ok", approve ? "Approved" : "Returned", "Done.");
-  setTimeout(() => { go("approvals"); }, 900);
+  msg("pr-msg","ok", approve ? "Approved" : "Returned",
+      (approve ? "Done." : "Sent back.") + (sent ? " They have been told." : ""));
+  setTimeout(() => { go("approvals"); }, 1100);
 }
 
 // ---- team targets ----
@@ -1879,6 +1948,7 @@ async function loadTeam(){
     (data||[]).map(t => '<option value="' + esc(t.email) + '">' + esc(t.display_name) +
       (t.department ? " \u00b7 " + esc(t.department) : "") + '</option>').join("");
   tgDates();
+  await loadAccommodations();
   await loadTeamTargets();
 }
 
@@ -1925,9 +1995,13 @@ async function setTarget(){
     p_target_value: val("tg-value") ? Number(val("tg-value")) : null,
     p_unit: val("tg-unit"), p_resource_link: val("tg-link")
   });
+  if(error){ btn("tg-btn", false, "Set this target"); msg("tg-msg","err","Could not set", error.message); return; }
+  const who = (await db.from("my_team").select("full_name").eq("email", email).maybeSingle()).data;
+  const sent = await notify("target_set", email, who ? who.full_name : null, {
+    period: $("tg-period").value, title: val("tg-title"), resource: val("tg-link") ? "yes" : null
+  });
   btn("tg-btn", false, "Set this target");
-  if(error){ msg("tg-msg","err","Could not set", error.message); return; }
-  msg("tg-msg","ok","Set","They will see it in their portal.");
+  msg("tg-msg","ok","Set","They will see it in their portal." + (sent ? " And they have been told." : ""));
   ["tg-title","tg-kpi","tg-value","tg-unit","tg-link","tg-desc"].forEach(id => $(id).value = "");
   await loadTeamTargets();
 }
@@ -1959,8 +2033,14 @@ async function loadTeamTargets(){
 
 async function rateTarget(id, rating){
   if(!rating) return;
+  const { data: t, error: tle } = await db.from("targets_i_manage").select("staff,staff_email,title").eq("id", id).maybeSingle();
+  if(tle) console.warn("who to tell:", tle.message);
   const { error } = await db.rpc("rate_target", { p_target_id: id, p_rating: rating });
-  if(error){ alert("Could not rate: " + error.message); return; }
+  if(error){ toast("Could not rate. " + error.message); return; }
+  if(t) await notify("target_rated", t.staff_email, t.staff, {
+    title: t.title, rating: String(rating).replace(/_/g," ")
+  });
+  toast("Rated" + (t ? ", and " + String(t.staff).split(" ")[0] + " has been told." : "."), true);
   await loadTeamTargets();
 }
 
@@ -2490,9 +2570,18 @@ async function askLeave(){
   const { error } = await db.rpc("request_leave", {
     p_kind: k, p_from: f, p_to: t, p_reason: val("lv-reason"), p_evidence_path: path
   });
-  btn("lv-btn", false, "Send to my line manager");
-  if(error){ msg("lv-msg","err","Not sent", error.message); return; }
+  if(error){ btn("lv-btn", false, "Send to my line manager"); msg("lv-msg","err","Not sent", error.message); return; }
 
+  const who = await myApprover();
+  const bk = BAL.find(x => x.kind === k);
+  const days = await db.rpc("leave_days_in", { p_from: f, p_to: t });
+  if(who) await notify("leave_requested", who.email, who.full_name, {
+    staff_name: PROFILE.display_name || PROFILE.full_name,
+    leave_type: bk ? bk.label.toLowerCase() : "leave",
+    days: days.data, dates: fmtRange(f, t)
+  });
+
+  btn("lv-btn", false, "Send to my line manager");
   const b = BAL.find(x => x.kind === k);
   msg("lv-msg","ok","Sent", b && b.needs_senior
     ? "Your line manager sees it first, then the COO or the CEO. You will be told either way."
@@ -2573,11 +2662,27 @@ async function decideLeave(id, approve){
   } else {
     note = prompt("A note for them (optional). Leave blank to just approve.") || null;
   }
+  // who is this for? the row is about to leave the queue
+  const { data: lv, error: lve } = await db.from("leave_to_approve").select("*").eq("id", id).maybeSingle();
+  if(lve) console.warn("who to tell:", lve.message);
+
   const { data, error } = await db.rpc("decide_leave", { p_id: id, p_approve: approve, p_note: note });
   if(error){ toast("Could not do that. " + error.message); return; }
-  toast(data === "approved" ? "Approved. They have been told."
-       : data === "with_senior" ? "Approved and passed to the COO or CEO."
-       : "Returned to them with your reason.");
+
+  // only tell them when it is actually settled: a nod from the manager that
+  // still needs the COO is not an answer, and saying so would mislead them
+  let sent = false;
+  if(lv && (data === "approved" || data === "declined")){
+    sent = await notify(data === "approved" ? (lv.kind === "sick" ? "sick_approved" : "leave_approved")
+                                            : "leave_declined",
+      lv.staff_email, lv.staff, {
+        leave_type: (lv.label||"leave").toLowerCase(), days: lv.days,
+        dates: fmtRange(lv.starts_on, lv.ends_on), reason: note || null
+      });
+  }
+  toast(data === "approved" ? "Approved." + (sent ? " They have been told." : "")
+       : data === "with_senior" ? "Approved and passed up. They will hear when it is settled."
+       : "Declined." + (sent ? " They have your reason." : ""));
   await loadApprovals();
 }
 
@@ -2949,6 +3054,43 @@ async function loadIndicative(){
           : ', based on the rent you declared.') + '</p>' : "") +
     '<p class="hint">Days you do not work, unpaid leave, and anything Finance adds will change the real figure.</p>' +
   '</div>';
+}
+
+
+// ============================================================
+// THE ADJUSTMENTS YOUR TEAM NEEDS
+//
+// This is the part that was missing. Someone ticked "my line manager may
+// see the adjustments I need, so they can arrange them" and their manager
+// never saw it. The box worked; nothing read it. A promise the system did
+// not keep is worse than not asking.
+//
+// A manager sees WHAT is needed, never the condition behind it.
+// ============================================================
+async function loadAccommodations(){
+  const { data, error } = await db.from("team_accommodations").select("*");
+  if(oops("What your team needs", error)) return;
+  const mine = (data||[]).filter(a => a.staff_id !== PROFILE.id);
+  const card = $("acc-card");
+  if(!card) return;
+  if(!mine.length){ card.classList.add("hidden"); return; }
+  card.classList.remove("hidden");
+
+  $("acc-list").innerHTML = mine.map(a =>
+    '<div class="tgt"><div class="tgt-head"><b>' + esc(a.staff) + '</b>' +
+    (a.department ? '<span class="tag month">' + esc(a.department) + '</span>' : "") + '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+      (a.accommodations||[]).map(x =>
+        '<span class="tag" style="background:var(--clr-blue);color:#1a4e73;font-size:11px;padding:4px 10px">' +
+        esc(x) + '</span>').join("") +
+    '</div>' +
+    (a.accommodation_notes
+      ? '<div class="kpi" style="margin-top:8px">They added: <span>' + esc(a.accommodation_notes) + '</span></div>' : "") +
+    '<div class="tgt-foot"><span>They told us ' +
+      new Date(a.told_us_on).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}) +
+      '</span><span></span></div></div>').join("") +
+  '<p class="hint" style="margin-top:12px">If you cannot arrange something, say so early rather than late. ' +
+  'The Handbook commits Data-Lead to reasonable adjustments (§8.6, §9.22), and the Head of Operations will help.</p>';
 }
 
 // ---------- helpers ----------
