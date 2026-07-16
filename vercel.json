@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/giz",
-      "destination": "/giz/index.html"
+      "source": "/cowrie",
+      "destination": "/cowrie-shell/index.html"
+    },
+    {
+      "source": "/cowrie/",
+      "destination": "/cowrie-shell/index.html"
     },
     {
       "source": "/(.*)",
