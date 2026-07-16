@@ -324,7 +324,8 @@ td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums}
             <option value="expense">Money out</option>
           </select></div>
         <div class="fld"><label>Category</label><select id="cs-cat"></select></div>
-        <div class="fld"><label>Which project</label><select id="cs-proj"></select></div>
+        <div class="fld"><label id="cs-proj-lab">Which project</label><select id="cs-proj" onchange="csProj()"></select>
+          <p class="hint" id="cs-proj-note"></p></div>
       </div>
       <div class="grid3">
         <div class="fld"><label>Description</label><input id="cs-desc" placeholder="Second tranche, Chad baseline"></div>
@@ -729,7 +730,7 @@ async function closeReq(id){
 // ============================================================
 // CASHBOOK
 // ============================================================
-window.loadCash = loadCash; window.cbQuick = cbQuick; window.csDir = csDir;
+window.loadCash = loadCash; window.cbQuick = cbQuick; window.csDir = csDir; window.csProj = csProj;
 window.addCash = addCash; window.dropCash = dropCash;
 
 const CATS = {
@@ -738,15 +739,58 @@ const CATS = {
             "Professional fees","Bank charges","Staff welfare","Marketing","Other"],
 };
 
+let PROJECTS = [];
 async function initCash(){
   cbQuick();
-  csDir();
   set("cs-on", iso(new Date()));
   const { data, error } = await db.from("project_list").select("*");
-  if(!oops("The projects", error))
-    $("cs-proj").innerHTML = (data||[]).map(p =>
-      '<option value="' + p.code + '"' + (p.is_overhead ? " selected" : "") + '>' +
+  if(oops("The projects", error)) return;
+  PROJECTS = data || [];
+  csDir();
+}
+
+// The choice means a different thing in each direction.
+//   Money out -> which project PAYS for this? Overhead is a fair default:
+//                rent and the kettle belong to the firm.
+//   Money in  -> which project does this money BELONG to? There is no fair
+//                default. UNICEF paying for the Chad baseline is not overhead,
+//                and calling it that would make Chad look like it earned
+//                nothing and cost a fortune.
+function fillProjects(){
+  const income = $("cs-dir").value === "income";
+  const real = PROJECTS.filter(p => !p.is_overhead);
+
+  $("cs-proj-lab").textContent = income ? "Which project is this money for?" : "Which project pays for it?";
+  $("cs-proj").innerHTML =
+    (income ? '<option value="">Choose\u2026</option>' : "") +
+    PROJECTS.map(p => '<option value="' + p.code + '"' +
+      (!income && p.is_overhead ? " selected" : "") + '>' +
       esc(p.code) + " \u00b7 " + esc(p.name) + '</option>').join("");
+  csProj();
+
+  // one project means no real projects: say so rather than let them tag
+  // a UNICEF payment as overhead and wonder why Chad looks unprofitable
+  if(income && !real.length){
+    $("cs-proj-note").innerHTML =
+      '<span style="color:var(--amber)">You have not added any projects yet. ' +
+      'Add them under Projects, or this income cannot be attributed to the work it paid for.</span>';
+  }
+}
+
+function csProj(){
+  const income = $("cs-dir").value === "income";
+  const p = PROJECTS.find(x => x.code === $("cs-proj").value);
+  const note = $("cs-proj-note");
+  if(!p){
+    note.textContent = income
+      ? "Say which engagement this money is for. Without it you cannot tell whether a project made money."
+      : "";
+    return;
+  }
+  note.textContent = p.is_overhead
+    ? (income ? "Only for income that belongs to no project: interest, a refund, a rebate."
+              : "The firm\u2019s own cost. Not chargeable to a funder.")
+    : (p.funder ? (income ? "From " + p.funder : "Charged to " + p.funder + "\u2019s budget") : "");
 }
 
 function cbQuick(){
@@ -765,6 +809,7 @@ function csDir(){
   $("cs-cat").innerHTML = CATS[d].map(c => '<option>' + c + '</option>').join("");
   $("cs-cp-lab").textContent = d === "income" ? "Who paid us" : "Who we paid";
   $("cs-cp").placeholder = d === "income" ? "UNICEF Nigeria" : "Ikeja Electric";
+  fillProjects();
 }
 
 async function loadCash(){
@@ -842,6 +887,11 @@ async function addCash(){
   const desc = val("cs-desc"), amt = Number(val("cs-amt")||0);
   if(!desc){ msg("cs-msg","err","No description","Say what it was."); return; }
   if(!amt || amt <= 0){ msg("cs-msg","err","No amount","How much?"); return; }
+  if($("cs-dir").value === "income" && !$("cs-proj").value){
+    msg("cs-msg","err","Which project is it for?",
+        "Money in has to be attributed to the work it paid for, or you can never tell whether a project made money. If it truly belongs to no project, choose Overhead.");
+    return;
+  }
 
   btn("cs-btn", true, "Recording");
   let path = null;
