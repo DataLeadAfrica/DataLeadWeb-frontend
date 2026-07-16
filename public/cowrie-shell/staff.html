@@ -15,7 +15,7 @@
   --clr-orange:#f56e0f; --clr-orange-medium:#f9a971; --clr-orange-light:#fde9da;
   --clr-blue:#e7f5fe; --ink:#14232e;
   --line:#ecebf0; --muted:#5b5b66; --faint:#8b8792;
-  --paper:#fffdfb; --card:#ffffff;
+  --paper:#fdfbf7; --card:#ffffff; --sand:#eee5d8; --clay:#c9541e;
   --green:#1d6b4c; --green-bg:#e9f5ef;
   --amber:#8a5b0b; --amber-bg:#fdf4e3; --amber-line:#e9c98a;
   --red:#a32d2d; --red-bg:#fbecec;
@@ -86,6 +86,127 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* profile */
+
+/* ============================================================
+   THE SHELL STRIP  ·  one cowrie per working day.
+   A cowrie was West Africa's unit of account: you counted shells
+   to know what you had. Here you count days. That is the whole idea.
+   ============================================================ */
+.hero{margin-bottom:32px}
+.hero-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}
+.hero-month{font-family:var(--display);font-size:clamp(42px,8.5vw,64px);line-height:.86;letter-spacing:-.035em}
+.hero-month em{font-style:normal;color:var(--faint);font-size:.42em;letter-spacing:-.01em;
+  display:block;margin-top:8px;font-family:var(--display-md)}
+.hero-count{text-align:right;flex:none}
+.hero-count b{font-family:var(--display);font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.hero-count .of{color:var(--faint);font-size:15px}
+.hero-count span{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;
+  letter-spacing:.1em;margin-top:5px;font-family:var(--display-md)}
+
+.strip{display:flex;flex-wrap:wrap;gap:7px}
+.shell{width:26px;height:36px;border:none;background:none;padding:0;border-radius:0;
+  position:relative;cursor:pointer;transition:transform .14s}
+.shell:hover{transform:translateY(-3px)}
+.shell:hover .tip{opacity:1;transform:translate(-50%,0)}
+.shell:focus-visible{outline:2px solid var(--clr-orange);outline-offset:3px;border-radius:6px}
+.shell svg{width:100%;height:100%;display:block}
+.shell .sbody{fill:var(--sand);transition:fill .25s}
+.shell .slit{stroke:#d6c8b4;stroke-width:1.3;transition:stroke .25s}
+.shell .teeth{stroke:#d6c8b4;stroke-width:.8;opacity:.7;transition:stroke .25s}
+.shell.on .sbody{fill:var(--clr-orange)}
+.shell.on .slit{stroke:#a8410f}
+.shell.on .teeth{stroke:#a8410f;opacity:.55}
+.shell.half .sbody{fill:url(#halfgrad)}
+.shell.today .sbody{fill:#fff;stroke:var(--clr-orange);stroke-width:1.6}
+.shell.today::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid var(--clr-orange);opacity:0;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{opacity:.7;transform:scale(.85)}70%{opacity:0;transform:scale(1.15)}100%{opacity:0}}
+.shell.hol .sbody{fill:var(--clr-blue)}
+.shell.hol .slit,.shell.hol .teeth{stroke:#7fbde8}
+.shell.hol{cursor:default}
+.shell.hol:hover{transform:none}
+.shell.flag::before{content:"";position:absolute;top:-2px;right:-1px;width:6px;height:6px;
+  border-radius:50%;background:var(--amber);border:1.5px solid var(--paper)}
+/* the moment a day is logged: it fills from the base up */
+@keyframes fillup{0%{transform:scaleY(0);transform-origin:13px 33.5px;opacity:.4}
+  60%{opacity:1}100%{transform:scaleY(1);transform-origin:13px 33.5px;opacity:1}}
+@keyframes nudge{0%{transform:scale(1)}45%{transform:scale(1.14)}100%{transform:scale(1)}}
+.shell.just .sbody{animation:fillup .42s cubic-bezier(.2,.9,.3,1.2)}
+.shell.just{animation:nudge .42s ease-out}
+
+.tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translate(-50%,4px);
+  background:var(--ink);color:#fff;font-size:11px;padding:5px 9px;border-radius:7px;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:.16s;z-index:5}
+.tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-4px;
+  border:4px solid transparent;border-top-color:var(--ink)}
+.key{display:flex;gap:15px;margin-top:15px;font-size:11.5px;color:var(--faint);flex-wrap:wrap}
+.key i{width:9px;height:12px;border-radius:50% 50% 45% 45%;display:inline-block;margin-right:6px;vertical-align:-2px}
+
+/* ---------- the one thing to do now ---------- */
+.now{background:var(--ink);color:#fff;border-radius:18px;padding:24px 26px;margin-bottom:14px;
+  display:flex;align-items:center;gap:20px}
+.now .txt{flex:1}
+.now .ey{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.16em;color:var(--clr-orange-medium);margin-bottom:6px}
+.now h2{font-size:21px;color:#fff;margin-bottom:4px;letter-spacing:-.01em;font-family:var(--display)}
+.now p{font-size:13px;color:#a9b4bd;max-width:46ch}
+.now .go{background:var(--clr-orange);border-color:var(--clr-orange);color:#fff;font-weight:500;
+  padding:12px 22px;border-radius:12px;white-space:nowrap;flex:none}
+.now .go:hover{background:#e0620c;border-color:#e0620c}
+.now.done{background:var(--green-bg);color:var(--green)}
+.now.done .ey,.now.done h2{color:var(--green)}
+.now.done p{color:#3d7a5f}
+.now.pay{background:linear-gradient(135deg,#1d2f3d 0%,var(--ink) 55%);position:relative;overflow:hidden}
+.now.pay::before{content:"";position:absolute;right:-30px;top:-40px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle,rgba(245,110,15,.28),transparent 68%)}
+.now.pay .ey{color:var(--clr-orange-medium)}
+
+/* ---------- someone else's clock ---------- */
+.waiting{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--clr-orange);border-radius:14px;padding:18px 22px;margin-bottom:14px;
+  display:flex;align-items:center;gap:16px;cursor:pointer;transition:.14s}
+.waiting:hover{border-color:var(--clr-orange-medium);border-left-color:var(--clr-orange);transform:translateX(2px)}
+.waiting .n{font-family:var(--display);font-size:30px;line-height:1;color:var(--clr-orange);
+  flex:none;font-variant-numeric:tabular-nums}
+.waiting .t{flex:1}
+.waiting .t b{font-family:var(--display-md);font-weight:500;font-size:15px;display:block}
+.waiting .t span{font-size:12.5px;color:var(--muted)}
+.waiting .arr{color:var(--faint)}
+
+/* ---------- quiet stats ---------- */
+.strap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  text-align:left;cursor:pointer;transition:.14s}
+.mini:hover{border-color:var(--clr-orange-medium);transform:translateY(-1px)}
+.mini .k{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;
+  font-family:var(--display-md);margin-bottom:7px}
+.mini .v{font-family:var(--display);font-size:22px;line-height:1;letter-spacing:-.02em}
+.mini .v small{font-size:12.5px;color:var(--faint);font-family:var(--display-md)}
+.mini .s{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ---------- everything else, small ---------- */
+.more{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.more button{font-size:13px;padding:8px 14px;border-radius:20px;color:var(--muted);background:none;border:1px solid var(--line)}
+.more button:hover{border-color:var(--clr-gray);color:var(--clr-gray)}
+.foot{margin-top:34px;font-size:12px;color:var(--faint);text-align:center;line-height:1.7}
+
+/* ---------- header ---------- */
+.av{width:34px;height:34px;border-radius:50%;background:var(--clr-orange-light);
+  border:1px solid var(--clr-orange-medium);display:grid;place-items:center;
+  font-family:var(--display-md);font-size:13px;color:var(--clay);flex:none}
+
+/* thumbs need 44px; on a phone the shells grow and hover goes away */
+@media (max-width:600px){
+  .strip{gap:10px}
+  .shell{width:38px;height:50px}
+  .shell:hover{transform:none}
+  .tip{display:none}
+  .now{flex-direction:column;align-items:flex-start;gap:16px}
+  .now .go{width:100%}
+  .hero-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .hero-count{text-align:left}
+}
+
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line);margin-top:16px}
 .fact{padding:12px 0;border-bottom:1px solid var(--line)}
 .fact:nth-child(odd){padding-right:16px}
@@ -170,6 +291,12 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 </div>
 
 <!-- ============ DASHBOARD ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="halfgrad" x1="0" y1="1" x2="0" y2="0">
+    <stop offset="50%" stop-color="#f56e0f"/><stop offset="50%" stop-color="#eee5d8"/>
+  </linearGradient>
+</defs></svg>
+
 <div id="app" class="wrap hidden">
   <div class="topbar">
     <div class="logo">
@@ -180,119 +307,115 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       </svg>
       Cowrie Shell
     </div>
-    <div class="who"><b id="who-name">—</b><br><span id="who-dept">—</span><br>
-      <button onclick="signOut()">Sign out</button></div>
+    <div style="display:flex;align-items:center;gap:11px">
+      <div class="who" style="text-align:right">
+        <b id="who-name">&mdash;</b><br><span id="who-dept">&mdash;</span><br>
+        <button onclick="signOut()">Sign out</button>
+      </div>
+      <div class="av" id="who-av">&mdash;</div>
+    </div>
   </div>
 
   <section id="v-home">
-  <div class="eyebrow" id="d-eyebrow">Your portal</div>
-  <h1 style="font-size:27px;margin-bottom:4px" id="d-greet">Welcome</h1>
-  <p style="color:var(--muted);margin-bottom:22px">Your profile, your targets, and the policies that apply to you.</p>
+    <div id="nudge"></div>
 
-  <!-- profile -->
-  <div id="nudge"></div>
+    <section class="hero">
+      <div class="hero-head">
+        <h1 class="hero-month" id="h-month">&mdash;<em id="h-year"></em></h1>
+        <div class="hero-count">
+          <b id="h-logged">0</b><span class="of" id="h-of"> / 0</span>
+          <span>Days logged</span>
+        </div>
+      </div>
+      <div class="strip" id="strip"></div>
+      <div class="key">
+        <span><i style="background:var(--clr-orange)"></i>Logged</span>
+        <span><i style="background:#fff;border:1.5px solid var(--clr-orange)"></i>Today</span>
+        <span><i style="background:var(--sand)"></i>Not yet</span>
+        <span><i style="background:var(--clr-blue)"></i>Holiday</span>
+      </div>
+    </section>
 
-  <div class="section-label">This month</div>
-  <button class="tile" onclick="go('timesheet')">
-    <span class="dot todo" id="ts-dot"></span>
-    <span class="t"><b>My timesheet</b><span id="ts-sub">Log the days you worked</span></span><span class="arr">&rarr;</span>
-  </button>
-  <button class="tile" onclick="go('plans')">
-    <span class="dot todo" id="pl-dot"></span>
-    <span class="t"><b>My plans</b><span id="pl-sub">What you intend to do this week</span></span><span class="arr">&rarr;</span>
-  </button>
+    <div class="now" id="now"></div>
 
-  <div id="mgr-block" class="hidden">
-    <div class="section-label" id="mgr-label">Your team</div>
-    <button class="tile" onclick="go('approvals')">
-      <span class="dot todo" id="ap-dot"></span>
-      <span class="t"><b>Approvals</b><span id="ap-sub">Plans and timesheets from your team</span></span>
-      <span class="badge hidden" id="ap-badge">0</span><span class="arr">&rarr;</span>
-    </button>
-    <button class="tile" onclick="go('team')">
-      <span class="dot" style="background:var(--clr-blue)"></span>
-      <span class="t"><b>Targets</b><span>Set and rate targets for your team</span></span><span class="arr">&rarr;</span>
-    </button>
-  </div>
+    <button class="waiting hidden" id="waiting" onclick="go('approvals')"></button>
 
-  <button class="tile" onclick="go('finance')">
-    <span class="dot" style="background:var(--clr-orange-medium)"></span>
-    <span class="t"><b>My finance</b><span id="fin-sub">Your payslip and pay history</span></span><span class="arr">&rarr;</span>
-  </button>
+    <div class="strap">
+      <button class="mini" onclick="go('plans')">
+        <div class="k">This week's plan</div>
+        <div class="v" id="m-plan">&mdash;</div>
+        <div class="s" id="m-plan-s">Nothing planned yet</div>
+      </button>
+      <button class="mini" onclick="go('policies')">
+        <div class="k">Your targets</div>
+        <div class="v" id="m-tg">&mdash;</div>
+        <div class="s" id="m-tg-s">None set</div>
+      </button>
+      <button class="mini hidden" id="m-leave-btn">
+        <div class="k">Annual leave</div>
+        <div class="v" id="m-leave">&mdash;</div>
+        <div class="s" id="m-leave-s">&mdash;</div>
+      </button>
+    </div>
 
-  <div id="fin-block" class="hidden">
-    <div class="section-label">Finance</div>
-    <button class="tile" onclick="go('roster')">
-      <span class="dot todo"></span>
-      <span class="t"><b>Payroll</b><span>Run the month, adjust, export the bank schedule</span></span><span class="arr">&rarr;</span>
-    </button>
-  </div>
+    <div class="more">
+      <button onclick="go('profile')">My details</button>
+      <button onclick="go('finance')">My finance</button>
+      <button onclick="go('timesheet')">Sign off the month</button>
+      <button onclick="go('policies')">Policies and targets</button>
+      <button class="hidden" id="p-roster" onclick="go('roster')">Payroll</button>
+      <button class="hidden" id="p-cert" onclick="go('certify')">Certify</button>
+    </div>
 
-  <div id="cert-block" class="hidden">
-    <div class="section-label">Certify</div>
-    <button class="tile" onclick="go('certify')">
-      <span class="dot todo"></span>
-      <span class="t"><b>Certify payroll</b><span>Sign off the month so payslips release</span></span><span class="arr">&rarr;</span>
-    </button>
-  </div>
-
-  <div class="section-label">You</div>
-  <div class="card">
-    <h3>Your details</h3>
-    <div id="p-titles"></div>
-    <div class="facts" id="p-facts"></div>
-    <div style="margin-top:16px"><button onclick="go('profile')">Update my details →</button></div>
-  </div>
-
-  <!-- targets -->
-  <div class="card">
-    <h3>Your targets</h3>
-    <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against.</p>
-    <div id="t-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-  </div>
-
-  <!-- policies -->
-  <div class="card">
-    <h3>Policies</h3>
-    <p class="cardsub">Company policies. Download and keep them somewhere you can find them again.</p>
-    <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading…</p></div>
-  </div>
-
-  <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:26px">
-    Timesheets, leave and requisitions are coming to this portal shortly.
-  </p>
+    <p class="foot">
+      Each shell is a working day. Tap one to log it.<br>
+      A cowrie was West Africa&rsquo;s unit of account: you counted shells to know what you had.
+    </p>
   </section>
 
+  <!-- ---------- policies + targets + who you are ---------- -->
+  <section id="v-policies" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Company</div>
+    <h1 style="font-size:26px;margin-bottom:18px">Policies and targets</h1>
+    <div class="card">
+      <h3>Policies</h3>
+      <p class="cardsub">Download and keep them somewhere you can find them again.</p>
+      <div id="pol-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="card">
+      <h3>Your targets</h3>
+      <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against.</p>
+      <div id="t-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+    <div class="card">
+      <h3>You</h3>
+      <div id="p-titles"></div>
+      <div class="facts" id="p-facts"></div>
+    </div>
+  </section>
 
-  <!-- ---------- timesheet ---------- -->
+  <!-- ---------- sign off the month ---------- -->
   <section id="v-timesheet" class="hidden">
     <button class="back" onclick="go('home')">&larr; Back</button>
     <div class="eyebrow" id="ts-eyebrow">This month</div>
-    <h1 style="font-size:26px;margin-bottom:4px">My timesheet</h1>
-    <p style="color:var(--muted);margin-bottom:18px">Tap a day to log your hours and what you did. Mon to Thu is 7 hours, Friday 5.5.</p>
+    <h1 style="font-size:26px;margin-bottom:4px">Sign off the month</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Your days are logged on the home screen. This is where you write the month up and send it to your line manager.</p>
 
     <div id="ts-locked"></div>
 
     <div class="stats">
-      <div class="stat"><div class="k">Working days</div><div class="v" id="s-wd">—</div></div>
+      <div class="stat"><div class="k">Working days</div><div class="v" id="s-wd">&mdash;</div></div>
       <div class="stat"><div class="k">Days logged</div><div class="v" id="s-logged">0</div></div>
       <div class="stat"><div class="k">Normal hours</div><div class="v" id="s-normal">0</div></div>
       <div class="stat accent"><div class="k">Extra hours</div><div class="v" id="s-extra">0</div></div>
     </div>
 
-    <div class="card">
-      <div class="cal" id="cal-head"></div>
-      <div class="cal" id="cal"></div>
-      <div class="legend">
-        <span><i style="background:var(--clr-orange-light);border-color:var(--clr-orange-medium)"></i>Logged</span>
-        <span><i style="background:var(--amber-bg);border-color:var(--amber-line)"></i>Nothing logged</span>
-        <span><i style="background:var(--clr-blue);border-color:#7fbde8"></i>Public holiday</span>
-      </div>
-    </div>
+    <div id="ts-gap"></div>
 
     <div class="card">
       <h3>Monthly activity report</h3>
-      <p class="cardsub">Read by your line manager and kept for donor reporting.</p>
+      <p class="cardsub">Read by your line manager and kept for donor reporting. The summary is required.</p>
       <div class="fld"><label>1. Summary of the month</label><textarea id="rp1"></textarea></div>
       <div class="fld"><label>2. Key achievements and outputs</label><textarea id="rp2"></textarea></div>
       <div class="fld"><label>3. Challenges</label><textarea id="rp3" placeholder="Write None if there were none."></textarea></div>
@@ -302,12 +425,13 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <div class="card">
       <label style="display:flex;gap:10px;align-items:flex-start;margin:0;color:var(--clr-gray);font-size:14px">
         <input type="checkbox" id="ts-certify" style="width:auto;margin-top:4px">
-        <span id="ts-cert-text">I certify that this is a true record of the days and hours I worked.</span>
+        <span>I certify that this is a true record of the days and hours I worked.</span>
       </label>
       <div id="ts-msg"></div>
       <button class="btn-primary" style="width:100%;margin-top:14px" id="ts-btn" onclick="submitTimesheet()">Sign and send to my line manager</button>
     </div>
   </section>
+
 
   <!-- ---------- plans ---------- -->
   <section id="v-plans" class="hidden">
@@ -823,12 +947,12 @@ window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openRe
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
   if(v === "profile" && !FIRST_RUN){ showStep(0); }
-  if(v === "timesheet") loadTimesheet();
+  if(v === "home" || v === "timesheet") loadTimesheet();
   if(v === "plans") loadPlan();
   if(v === "approvals") loadApprovals();
   if(v === "team") loadTeam();
@@ -902,11 +1026,8 @@ async function enterApp(){
   }
   PROFILE = data;
 
-  const first = (PROFILE.full_name || "").trim().split(/\s+/)[0] || "there";
   $("who-name").textContent = PROFILE.display_name || PROFILE.full_name;
   $("who-dept").textContent = PROFILE.department || "\u2014";
-  $("d-greet").textContent  = "Welcome, " + first;
-  $("d-eyebrow").textContent = PROFILE.department ? PROFILE.department + " \u00b7 your portal" : "Your portal";
 
   // one-off: populate the reference dropdowns and checkbox grids
   fillSelect("pf-nat", COUNTRIES);
@@ -920,14 +1041,15 @@ async function enterApp(){
   fillProfileForm(PROFILE);
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
+  const parts = (PROFILE.full_name || "").trim().split(/\s+/);
+  $("who-av").textContent = ((parts[0]||"")[0] || "") + ((parts[1]||"")[0] || "");
   loadTitles(); loadTargets(); loadPolicies();
+  loadTimesheet();          // the strip is the home screen now
+  loadMinis(); loadWaiting(); checkPayday();
 
-  if(isManager()){
-    $("mgr-block").classList.remove("hidden");
-    loadApprovals();
-  }
-  if(isFinance()) $("fin-block").classList.remove("hidden");
-  if(isCertifier()) $("cert-block").classList.remove("hidden");
+  if(isManager()) loadApprovals();
+  if(isFinance())   $("p-roster").classList.remove("hidden");
+  if(isCertifier()) $("p-cert").classList.remove("hidden");
 
   // First visit: nobody has told us anything about themselves yet.
   buildStepper();
@@ -1175,8 +1297,9 @@ async function loadTimesheet(){
       set("rp3", sub.report_challenges); set("rp4", sub.report_next);
     }
     renderLock(sub);
-    buildCal();
+    buildStrip();
     await refreshHours();
+    renderNow();
   } catch(e){
     // never fail silently: say what broke and where
     $("ts-locked").innerHTML =
@@ -1210,30 +1333,56 @@ function renderLock(sub){
   ["rp1","rp2","rp3","rp4"].forEach(id => { const e=$(id); if(e) e.disabled = locked; });
 }
 
-function buildCal(){
-  $("cal-head").innerHTML = DOW.map(d => '<div class="dow">' + d + '</div>').join("");
+// ============================================================
+// THE STRIP  ·  one shell per working day. Weekends are not shells,
+// because a weekend is not a day owed. Tap one to log it.
+// ============================================================
+function buildStrip(){
   const dim = new Date(TS_YEAR, TS_MONTH, 0).getDate();
-  const firstDow = new Date(TS_YEAR, TS_MONTH-1, 1).getDay();
-  const lead = firstDow === 0 ? 4 : (firstDow === 6 ? 5 : firstDow - 1);
-  let html = "";
-  for(let i=0;i<lead;i++) html += "<div></div>";
-  for(let d=1; d<=dim; d++){
-    const w = new Date(TS_YEAR, TS_MONTH-1, d).getDay();
-    if(w === 0 || w === 6) continue;
+  const todayISO = isoOf(new Date());
+  let html = "", logged = 0, working = 0;
+
+  for(let d = 1; d <= dim; d++){
+    const dt = new Date(TS_YEAR, TS_MONTH-1, d);
+    const w = dt.getDay();
+    if(w === 0 || w === 6) continue;                // not a working day, not a shell
     const iso = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + String(d).padStart(2,"0");
     const hol = HOLIDAYS[iso];
     const rec = DAYS[iso];
-    const cls = hol ? "day hol" : rec ? "day filled" : "day gap";
-    const hrs = hol ? "Holiday" : rec ? rec.hours + "h" : "\u2014";
-    const tick = hol ? esc(hol) : (rec && rec.activity ? esc(rec.activity) : "");
-    const flag = (rec && rec.ai_flag) ? "\u2691 flagged" : "";
-    const click = hol ? "disabled" : 'onclick="openDay(\'' + iso + '\')"';
-    html += '<button class="' + cls + '" ' + click + '>' +
-      '<span class="dn">' + d + " " + MONTHS[TS_MONTH-1].slice(0,3) + '</span>' +
-      '<span class="hrs">' + hrs + '</span><span class="tick">' + tick + '</span>' +
-      '<span class="flag">' + flag + '</span></button>';
+    if(!hol) working++;
+    if(rec) logged++;
+
+    let cls = "shell";
+    if(hol) cls += " hol";
+    else if(rec) cls += (Number(rec.hours) < standardFor(dt) ? " half" : " on");
+    else if(iso === todayISO) cls += " today";
+    if(rec && rec.ai_flag) cls += " flag";
+
+    const click = hol ? "" : ' onclick="openDay(\'' + iso + '\')"';
+    html += '<button class="' + cls + '"' + click + ' aria-label="' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '">' +
+      '<span class="tip">' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '</span>' +
+      '<svg viewBox="0 0 26 36" aria-hidden="true">' +
+        '<ellipse class="sbody" cx="13" cy="18" rx="10" ry="15.5"/>' +
+        '<path class="slit" d="M13 4.5v27" fill="none" stroke-linecap="round"/>' +
+        '<path class="teeth" d="M10.6 9h4.8M10.1 14h5.8M10.1 22h5.8M10.6 27h4.8" fill="none" stroke-linecap="round"/>' +
+      '</svg></button>';
   }
-  $("cal").innerHTML = html;
+  $("strip").innerHTML = html;
+  $("h-month").firstChild.textContent = MONTHS[TS_MONTH-1];
+  $("h-year").textContent = TS_YEAR;
+  $("h-logged").textContent = logged;
+  $("h-of").textContent = " / " + (WORKING_DAYS || working);
+}
+
+const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function standardFor(dt){ return dt.getDay() === 5 ? 5.5 : 7; }
+function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function shellLabel(dt, d, hol, rec, isToday){
+  const day = DOWFULL[dt.getDay()] + " " + d + " " + MONTHS[TS_MONTH-1];
+  if(hol) return day + " \u00b7 " + hol;
+  if(rec) return day + " \u00b7 " + rec.hours + "h" + (rec.ai_flag ? " \u00b7 flagged" : "");
+  if(isToday) return day + " \u00b7 today, not logged";
+  return day + " \u00b7 not logged";
 }
 
 async function refreshHours(){
@@ -1245,8 +1394,15 @@ async function refreshHours(){
   $("s-logged").textContent = logged;
   $("s-normal").textContent = Number(h.normal_hours || 0);
   $("s-extra").textContent = Number(h.overtime_hours||0) + Number(h.weekend_hours||0) + Number(h.holiday_hours||0);
-  $("ts-sub").textContent = logged === 0 ? "Log the days you worked" : logged + " of " + WORKING_DAYS + " days logged";
-  $("ts-dot").className = "dot " + (logged > 0 ? "done" : "todo");
+  const gapN = Math.max(0, WORKING_DAYS - logged);
+  const gap = $("ts-gap");
+  if(gap){
+    gap.innerHTML = gapN > 0
+      ? '<div class="alert warn"><b>' + gapN + ' day' + (gapN>1?"s":"") + ' not logged</b>' +
+        'Log them on the home screen, or ask for leave. A day with nothing against it is unpaid.</div>'
+      : "";
+  }
+  MONTH_LOGGED = logged; MONTH_GAP = gapN;
 }
 
 function openDay(iso){
@@ -1370,10 +1526,7 @@ async function loadPlan(){
       ? '<div class="alert ' + (pl.status==="returned"?"warn":"info") + '"><b>' +
         (pl.status==="returned"?"Returned by ":"Note from ") + esc(pl.reviewed_by||"your manager") +
         '</b>' + esc(pl.manager_note) + '</div>' : "";
-    $("pl-sub").textContent = pl.item_count > 0
-      ? pl.item_count + " item" + (pl.item_count>1?"s":"") + " \u00b7 " + pl.status
-      : "What you intend to do this week";
-    $("pl-dot").className = "dot " + (pl.status === "draft" ? "todo" : "done");
+
   }
 
   const { data: tg, error: te } = await db.from("my_targets").select("id,title,period");
@@ -1469,11 +1622,7 @@ async function loadApprovals(){
     }).join("");
   }
 
-  const n = (plans?.length || 0) + (ts?.length || 0);
-  $("ap-badge").textContent = n;
-  $("ap-badge").classList.toggle("hidden", n === 0);
-  $("ap-sub").textContent = n === 0 ? "Nothing waiting" : n + " waiting for you";
-  $("ap-dot").className = "dot " + (n > 0 ? "todo" : "done");
+  // the count lives on the home card now, not a badge here
 }
 
 // ---- review a timesheet ----
@@ -2074,6 +2223,156 @@ async function doCertify(){
   if(error){ btn("cf-btn", false, "Certify"); alert("Could not certify: " + error.message); return; }
   alert(data + " payslips certified and released.");
   await loadCertify();
+}
+
+
+// ============================================================
+// THE ONE THING NOW
+// The portal knows the date and what state the month is in, and shows
+// the single thing that matters. Everything else stays quiet.
+// ============================================================
+let MONTH_LOGGED = 0, MONTH_GAP = 0;
+
+function renderNow(){
+  const el = $("now"); if(!el) return;
+  const today = new Date();
+  const dom = today.getDate();
+  const dow = today.getDay();
+  const isWorkday = dow !== 0 && dow !== 6;
+  const todayISO = isoOf(today);
+  const todayLogged = !!DAYS[todayISO];
+  const todayHoliday = HOLIDAYS[todayISO];
+  const mgr = PROFILE.line_manager ? PROFILE.line_manager.split(" ")[0] : "your line manager";
+  const monthName = MONTHS[TS_MONTH-1];
+  let st;
+
+  if(SUB_STATUS === "director_approved"){
+    st = { ey:"Approved", h:monthName + " is signed off",
+           p:"Both approvals are in. Finance will run payroll and your payslip will follow.", done:true };
+  } else if(SUB_STATUS === "manager_approved"){
+    st = { ey:"With the Director", h:mgr + " approved your " + monthName,
+           p:"It is waiting on a final approval. Nothing for you to do.", done:true };
+  } else if(SUB_STATUS === "submitted"){
+    st = { ey:"With your line manager", h:monthName + " is with " + mgr,
+           p:"Signed and sent. You will be told as soon as it is approved.", done:true };
+  } else if(SUB_STATUS === "returned"){
+    st = { ey:"Returned for a change", h:mgr + " sent " + monthName + " back",
+           p:"Have a look at what they asked for, put it right, and send it again.",
+           cta:"See what to change", go:"timesheet" };
+  } else if(todayHoliday){
+    st = { ey:"Today", h:todayHoliday,
+           p:"A public holiday. Nothing to log. If you did work today, tap the shell and it pays at the holiday rate.",
+           done:true };
+  } else if(isWorkday && !todayLogged){
+    st = { ey:"Right now", h:"Log today",
+           p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
+             (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
+             " Say what you worked on and it takes half a minute.",
+           cta:"Log today", act:"today" };
+  } else if(MONTH_GAP > 0 && dom >= 24){
+    st = { ey:monthName + " closes soon", h:MONTH_GAP + " day" + (MONTH_GAP>1?"s":"") + " still unlogged",
+           p:"A day with nothing against it is unpaid. Fill the sand-coloured shells before the month ends.",
+           cta:"Show me", act:"first-gap" };
+  } else if(MONTH_GAP === 0){
+    st = { ey:"Every day is logged", h:"Send " + monthName + " to " + mgr,
+           p:"Write the month up, sign it, and it goes for approval.",
+           cta:"Review and sign", go:"timesheet" };
+  } else {
+    st = { ey:"Today", h:"Nothing to log today",
+           p:todayLogged ? "Today is logged. " + MONTH_GAP + " other day" + (MONTH_GAP>1?"s":"") +
+                           " still need doing when you get to them."
+                         : "It is the weekend. Enjoy it.", done:true };
+  }
+
+  el.className = "now" + (st.done ? " done" : "");
+  el.innerHTML = '<div class="txt"><div class="ey">' + esc(st.ey) + '</div>' +
+    '<h2>' + esc(st.h) + '</h2><p>' + esc(st.p) + '</p></div>' +
+    (st.cta ? '<button class="go" id="now-go">' + esc(st.cta) + ' \u2192</button>' : "");
+
+  const g = $("now-go");
+  if(g) g.onclick = () => {
+    if(st.go) go(st.go);
+    else if(st.act === "today") openDay(todayISO);
+    else if(st.act === "first-gap"){
+      const first = document.querySelector(".shell:not(.on):not(.half):not(.hol)");
+      if(first){ first.scrollIntoView({behavior:"smooth", block:"center"}); first.click(); }
+    }
+  };
+}
+
+// ---- payday takes the card over, once a month ----
+async function checkPayday(){
+  const { data, error } = await db.from("my_payslip").select("*").limit(1);
+  if(error || !data || !data.length) return;
+  const p = data[0];
+  if(p.status !== "certified" && p.status !== "paid") return;
+  const days = (Date.now() - new Date(p.certified_at)) / 86400000;
+  if(days > 3) return;                        // only while it is news
+  const el = $("now");
+  el.className = "now pay";
+  el.innerHTML = '<div class="txt"><div class="ey">Certified ' +
+    (days < 1 ? "today" : Math.round(days) + " days ago") + '</div>' +
+    '<h2>Your ' + MONTHS[p.month-1] + ' payslip is ready</h2>' +
+    '<p>' + N(p.transfer_amount) + ' is on its way to your account. The full breakdown is in My finance.</p></div>' +
+    '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
+}
+
+// ---- someone else's clock ----
+async function loadWaiting(){
+  if(!isManager()) return;
+  const [pl, ts] = await Promise.all([
+    db.from("plans_to_review").select("staff,submitted_at"),
+    db.from("timesheets_to_review").select("staff,signed_at")
+  ]);
+  const n = (pl.data?.length || 0) + (ts.data?.length || 0);
+  const w = $("waiting");
+  if(!n){ w.classList.add("hidden"); return; }
+  w.classList.remove("hidden");
+
+  // Name who has waited longest. A number is a nag; a name is a reason.
+  const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
+               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"}))]
+              .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
+  let tail = "";
+  if(all.length){
+    const d = Math.floor((Date.now() - new Date(all[0].at)) / 86400000);
+    tail = d >= 1 ? " " + all[0].who.split(" ")[0] + "'s has been waiting " +
+           (d === 1 ? "since yesterday." : d + " days.") : "";
+  }
+  const bits = [];
+  if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
+  if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
+
+  w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
+    bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
+}
+
+// ---- the quiet stats ----
+async function loadMinis(){
+  const { data: pl, error: ple } = await db.from("my_plans").select("*").eq("period","week").limit(1);
+  if(oops("Your plan", ple)) return;
+  if(pl && pl.length){
+    $("m-plan").innerHTML = pl[0].item_count + ' <small>item' + (pl[0].item_count===1?"":"s") + '</small>';
+    $("m-plan-s").textContent = pl[0].status === "approved" ? "Approved by " + (pl[0].reviewed_by || "your manager")
+      : pl[0].status === "submitted" ? "With your line manager"
+      : pl[0].status === "returned" ? "Returned, needs a change" : "Still a draft";
+  } else { $("m-plan").innerHTML = '0 <small>items</small>'; }
+
+  const { data: tg, error: tge } = await db.from("my_targets").select("id,status,rating");
+  if(oops("Your targets", tge)) return;
+  if(tg){
+    const open = tg.filter(t => !t.rating).length;
+    $("m-tg").innerHTML = tg.length + ' <small>set</small>';
+    $("m-tg-s").textContent = tg.length === 0 ? "None set yet"
+      : open + " still open, " + (tg.length - open) + " rated";
+  }
+
+  // corps members have no annual leave (Handbook §3.13), so do not offer it
+  if(PROFILE.employment_type !== "nysc"){
+    $("m-leave-btn").classList.remove("hidden");
+    $("m-leave").innerHTML = '14 <small>days a year</small>';
+    $("m-leave-s").textContent = "Leave is coming to this portal shortly";
+  }
 }
 
 // ---------- helpers ----------
