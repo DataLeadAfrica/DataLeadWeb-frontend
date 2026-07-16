@@ -369,9 +369,9 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <button onclick="go('timesheet')">Sign off the month</button>
       <button onclick="go('req')">Requisition</button>
       <button onclick="go('policies')">Policies and targets</button>
-      <button class="hidden" id="p-roster" onclick="go('roster')">Payroll</button>
-      <button class="hidden" id="p-cert" onclick="go('certify')">Certify</button>
     </div>
+
+    <div id="other-doors"></div>
 
     <p class="foot">
       Each shell is a working day. Tap one to log it.<br>
@@ -391,7 +391,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
     <div class="card">
       <h3>Your targets</h3>
-      <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against.</p>
+      <p class="cardsub">Set by your manager. Each has a KPI, the yardstick it is measured against. Say where you have got to; they cannot rate you fairly on a blank.</p>
       <div id="t-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
     </div>
     <div class="card">
@@ -636,6 +636,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
 
     <div id="ps-body"></div>
+    <div id="ind-body"></div>
 
     <div class="card">
       <h3>Your pay history</h3>
@@ -643,73 +644,6 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <div id="ph-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
     </div>
   </section>
-
-  <!-- ---------- finance: payroll ---------- -->
-  <section id="v-roster" class="hidden">
-    <button class="back" onclick="go('home')">&larr; Back</button>
-    <div class="eyebrow">Finance</div>
-    <h1 style="font-size:26px;margin-bottom:4px">Payroll</h1>
-    <p style="color:var(--muted);margin-bottom:18px">You compute the money. The CEO or COO certifies it. Different people, deliberately.</p>
-
-    <div class="card" style="padding:16px 20px">
-      <div class="grid3" style="grid-template-columns:1fr 1fr auto;align-items:end">
-        <div class="fld" style="margin:0"><label>Year</label><input id="rn-year" type="number" value="2026"></div>
-        <div class="fld" style="margin:0"><label>Month</label>
-          <select id="rn-month"></select></div>
-        <button class="btn-primary" id="rn-btn" onclick="runPayroll()">Run payroll</button>
-      </div>
-      <div id="rn-msg"></div>
-    </div>
-
-    <div id="sum-body"></div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
-        <h3 style="margin:0">The roster</h3>
-        <button onclick="exportSchedule()" style="padding:5px 11px;font-size:12px">Export bank schedule</button>
-      </div>
-      <div id="rs-list"><p style="color:var(--faint);font-size:13px">Run the month to see it.</p></div>
-    </div>
-
-    <div class="card">
-      <h3>Add a reimbursement or deduction</h3>
-      <p class="cardsub">Start a deduction with Loan, Advance or Union, or a claim with Travel, and it lands in that column of the model. Anything else is "other".</p>
-      <div class="grid2">
-        <div class="fld"><label>Staff</label><select id="aj-staff"><option value="">Choose&hellip;</option></select></div>
-        <div class="fld"><label>Kind</label>
-          <select id="aj-kind">
-            <option value="reimbursement">Reimbursement (added after tax)</option>
-            <option value="deduction">Deduction (taken after tax)</option>
-          </select></div>
-      </div>
-      <div class="grid2">
-        <div class="fld"><label>Description</label><input id="aj-desc" placeholder="Travel claim, Chad field visit"></div>
-        <div class="fld"><label>Amount (&#8358;)</label><input id="aj-amt" type="number"></div>
-      </div>
-      <div class="alert info" style="margin-top:0"><b>A claim without a receipt is taxable</b>Your payroll model says it plainly: a fixed monthly sum paid with no receipt is an allowance, not a reimbursement, and is fully taxable. Pay only against a receipt, and only the amount claimed.</div>
-      <div id="aj-msg"></div>
-      <button class="btn-primary" id="aj-btn" onclick="addAdjustment()">Add</button>
-    </div>
-  </section>
-
-  <!-- ---------- certify ---------- -->
-  <section id="v-certify" class="hidden">
-    <button class="back" onclick="go('home')">&larr; Back</button>
-    <div class="eyebrow">CEO / COO</div>
-    <h1 style="font-size:26px;margin-bottom:4px">Certify payroll</h1>
-    <p style="color:var(--muted);margin-bottom:18px">Finance has computed the month. Certifying releases the payslips and clears payment.</p>
-
-    <div class="card" style="padding:16px 20px">
-      <div class="grid2">
-        <div class="fld" style="margin:0"><label>Year</label><input id="cf-year" type="number" value="2026"></div>
-        <div class="fld" style="margin:0"><label>Month</label><select id="cf-month"></select></div>
-      </div>
-      <button onclick="loadCertify()" style="width:100%;margin-top:12px">Show me the month</button>
-    </div>
-
-    <div id="cf-body"></div>
-  </section>
-
 
   <!-- ---------- leave ---------- -->
   <section id="v-leave" class="hidden">
@@ -961,6 +895,77 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
 
     </div>
+    <div class="step" id="step-more">
+      <div class="card">
+        <h3>A photograph</h3>
+        <p class="cardsub">Optional. Only you, the COO and the CEO can see it.</p>
+        <div id="ph-now"></div>
+        <div class="fld"><label>Choose a picture</label><input type="file" id="ph-file" accept="image/*"></div>
+        <div id="ph-msg"></div>
+        <button id="ph-btn" onclick="savePhoto()">Upload it</button>
+      </div>
+
+      <div class="card">
+        <h3>Your qualifications</h3>
+        <p class="cardsub">Degrees and certifications. The Handbook keeps these on your file (§14.1).</p>
+        <div id="ql-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid2">
+            <div class="fld"><label>What</label><input id="ql-what" placeholder="B.Sc Statistics"></div>
+            <div class="fld"><label>Where</label><input id="ql-where" placeholder="University of Ibadan"></div>
+          </div>
+          <div class="grid2">
+            <div class="fld"><label>Year</label><input id="ql-year" type="number" placeholder="2018"></div>
+            <div class="fld"><label>Kind</label>
+              <select id="ql-kind"><option value="false">A degree or diploma</option>
+              <option value="true">A professional certification</option></select></div>
+          </div>
+          <button onclick="addQual()" style="width:100%;border-style:dashed">+ Add it</button>
+        </div>
+        <div id="ql-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Your dependents</h3>
+        <p class="cardsub">A spouse plus up to five others (Employee Handbook §6.1). Used only if health cover is arranged.</p>
+        <div id="dp-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid3">
+            <div class="fld"><label>Name</label><input id="dp-name"></div>
+            <div class="fld"><label>Relationship</label>
+              <select id="dp-rel"><option>Spouse</option><option>Child</option><option>Parent</option></select></div>
+            <div class="fld"><label>Date of birth</label><input id="dp-dob" type="date"></div>
+          </div>
+          <button onclick="addDep()" style="width:100%;border-style:dashed">+ Add them</button>
+        </div>
+        <div id="dp-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Your referees</h3>
+        <p class="cardsub">Two, ideally, and one a former supervisor (Employee Handbook §3.4).</p>
+        <div id="rf-list"></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px">
+          <div class="grid2">
+            <div class="fld"><label>Name</label><input id="rf-name"></div>
+            <div class="fld"><label>How they know you</label><input id="rf-rel" placeholder="Former supervisor"></div>
+          </div>
+          <div class="grid3">
+            <div class="fld"><label>Organisation</label><input id="rf-org"></div>
+            <div class="fld"><label>Phone</label><input id="rf-phone" type="tel"></div>
+            <div class="fld"><label>Email</label><input id="rf-email" type="email"></div>
+          </div>
+          <button onclick="addRef()" style="width:100%;border-style:dashed">+ Add them</button>
+        </div>
+        <div id="rf-msg"></div>
+      </div>
+
+      <div class="step-nav">
+        <button onclick="goStep(3)">&larr; Back</button>
+        <button class="btn-primary" onclick="nextStep()">Finish</button>
+      </div>
+    </div>
+
     <div class="step" id="step-done">
       <div class="card done-card">
         <div class="tick">&#10003;</div>
@@ -998,7 +1003,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <div id="bk-msg"></div>
       <div class="step-nav">
         <button onclick="goStep(2)">&larr; Back</button>
-        <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save and finish</button>
+        <button class="btn-primary" id="bk-btn" onclick="saveFinancial()">Save and continue &rarr;</button>
       </div>
     </div>
     </div>
@@ -1064,19 +1069,19 @@ window.removeItem=removeItem; window.submitPlan=submitPlan;
 window.goStep=goStep; window.nextStep=nextStep;
 window.loadLeave=loadLeave; window.lvKind=lvKind; window.lvCount=lvCount;
 window.askLeave=askLeave; window.cancelLeave=cancelLeave; window.decideLeave=decideLeave;
-window.loadPayslip=loadPayslip; window.runPayroll=runPayroll; window.loadRoster=loadRoster;
-window.addAdjustment=addAdjustment; window.exportSchedule=exportSchedule;
-window.loadCertify=loadCertify; window.doCertify=doCertify;
+window.loadPayslip=loadPayslip;  
+ 
+ 
 window.natChange=natChange; window.dsChange=dsChange; window.saveDisability=saveDisability;
 window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openReview;
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies","leave","req"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","req"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
-  if(v === "profile" && !FIRST_RUN){ showStep(0); }
+  if(v === "profile"){ loadExtras(); if(!FIRST_RUN) showStep(0); }
   if(v === "home" || v === "timesheet") loadTimesheet();
   if(v === "plans") loadPlan();
   if(v === "approvals") loadApprovals();
@@ -1084,8 +1089,6 @@ function go(v){
   if(v === "leave") loadLeave();
   if(v === "req") loadReq();
   if(v === "finance") loadMyFinance();
-  if(v === "roster") loadRoster();
-  if(v === "certify") initCertify();
 }
 
 const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
@@ -1175,8 +1178,8 @@ async function enterApp(){
   loadMinis(); loadWaiting(); checkPayday();
 
   if(isManager()) loadApprovals();
-  if(isFinance())   $("p-roster").classList.remove("hidden");
-  if(isCertifier()) $("p-cert").classList.remove("hidden");
+  // Finance and certification have their own doors now.
+  if(isFinance() || isCertifier()) showOtherDoors();
 
   // First visit: nobody has told us anything about themselves yet.
   buildStepper();
@@ -1294,7 +1297,7 @@ async function saveFinancial(){
     p_tin: val("bk-tin"), p_pension_pfa: val("bk-pfa"),
     p_pension_rsa_number: val("bk-rsa"), p_nhf_number: val("bk-nhf"),
   });
-  btn("bk-btn", false, "Save and finish");
+  btn("bk-btn", false, "Save and continue \u2192");
   if(error){ msg("bk-msg","err","Could not save", error.message); return; }
   msg("bk-msg","ok","Saved","Your bank and tax details are recorded.");
   await refresh();
@@ -1322,24 +1325,31 @@ async function loadTitles(){
 async function loadTargets(){
   const wrap = $("t-list");
   const { data, error } = await db.from("my_targets").select("*");
-  if(error){ wrap.innerHTML = `<div class="alert err"><b>Could not load</b>${esc(error.message)}</div>`; return; }
+  if(oops("Your targets", error)) return;
   if(!data || !data.length){
-    wrap.innerHTML = `<p style="color:var(--faint);font-size:13px">No targets set for you yet. Your manager will add them here.</p>`;
+    wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No targets set for you yet. Your manager will add them here.</p>';
     return;
   }
   wrap.innerHTML = data.map(t => {
     const quant = t.kpi_kind === "quantitative" && t.target_value;
+    const done  = !!t.rating;
     const prog = quant
-      ? `<div class="bar"><i style="width:${Math.min(100, t.pct||0)}%"></i></div>
-         <div class="tgt-foot"><span>${fmtNum(t.current_value||0)} of ${fmtNum(t.target_value)}${t.unit?" "+esc(t.unit):""}</span><span>${t.pct||0}%</span></div>`
-      : `<div class="tgt-foot"><span>Assessed by your manager</span><span>${esc(t.status||"").replace(/_/g," ")}</span></div>`;
+      ? '<div class="bar"><i style="width:' + Math.min(100, t.pct||0) + '%"></i></div>' +
+        '<div class="tgt-foot"><span>' + fmtNum(t.current_value||0) + " of " + fmtNum(t.target_value) +
+        (t.unit ? " " + esc(t.unit) : "") + '</span><span>' + (t.pct||0) + '%</span></div>'
+      : '<div class="tgt-foot"><span>Assessed by your manager</span><span>' +
+        esc(t.status||"").replace(/_/g," ") + '</span></div>';
     const res = t.resource_link
-      ? `<div class="tgt-foot"><a href="${esc(t.resource_link)}" target="_blank" rel="noopener">Open the resource →</a><span></span></div>` : "";
-    return `<div class="tgt">
-      <div class="tgt-head"><b>${esc(t.title)}</b><span class="tag ${t.period}">${t.period}</span></div>
-      <div class="kpi">KPI: <span>${esc(t.kpi)}</span></div>
-      ${prog}${res}
-    </div>`;
+      ? '<div class="tgt-foot"><a href="' + esc(t.resource_link) + '" target="_blank" rel="noopener">Open the resource \u2192</a><span></span></div>' : "";
+    // the thing that was missing: a way to say where you have got to
+    const say = done ? "" :
+      '<button class="rowbtn" style="margin-top:8px" onclick="reportProgress(' + t.id + ',' + !!quant + ',' +
+      (t.target_value||0) + ',\'' + esc(t.unit||"").replace(/'/g,"\\'") + '\')">' +
+      (quant ? "Update where you have got to" : "Tell your manager how it is going") + '</button>';
+    return '<div class="tgt">' +
+      '<div class="tgt-head"><b>' + esc(t.title) + '</b>' +
+      '<span class="tag ' + (done ? "month" : t.period) + '">' + esc(t.rating || t.period).replace(/_/g," ") + '</span></div>' +
+      '<div class="kpi">KPI: <span>' + esc(t.kpi) + '</span></div>' + prog + res + say + '</div>';
   }).join("");
 }
 
@@ -2062,6 +2072,7 @@ const STEPS = [
   { id:"disability", label:"Adjustments" },
   { id:"nok",        label:"Next of kin" },
   { id:"bank",       label:"Bank and tax" },
+  { id:"more",       label:"Your file" },
 ];
 let STEP = 0;
 let FIRST_RUN = false;
@@ -2121,13 +2132,14 @@ async function loadMyFinance(){
   PAYSLIPS = data || [];
   if(!PAYSLIPS.length){
     $("ps-picker").classList.add("hidden");
-    $("ps-body").innerHTML = '<div class="alert info"><b>No payslip yet</b>A payslip appears once your timesheet is approved and Finance has run the month.</div>';
+    $("ps-body").innerHTML = '<div class="alert info"><b>No payslip yet</b>One appears once your timesheet is approved and Finance has run the month. In the meantime, this is what you earn.</div>';
   } else {
     $("ps-picker").classList.remove("hidden");
     $("ps-month").innerHTML = PAYSLIPS.map((p, i) =>
       '<option value="' + i + '">' + MONTHS[p.month-1] + " " + p.year + '</option>').join("");
     loadPayslip();
   }
+  await loadIndicative();
   await loadPayHistory();
 }
 
@@ -2204,543 +2216,6 @@ async function loadPayHistory(){
       (h.recorded_by ? " \u00b7 recorded by " + esc(h.recorded_by) : "") + '</span></span>' + chg + '</div>';
   }).join("");
 }
-
-// ---------- finance: run the month ----------
-function isFinance(){ return (PROFILE.roles || []).includes("finance"); }
-function isCertifier(){ const r = PROFILE.roles || []; return r.includes("super_admin") || r.includes("coo"); }
-
-async function loadRoster(){
-  monthOptions("rn-month", new Date().getMonth() + 1);
-  const { data: team, error: tme } = await db.from("admin_staff_list").select("full_name,email").order("full_name");
-  if(oops("The staff list", tme)) return;
-  if(team) $("aj-staff").innerHTML = '<option value="">Choose\u2026</option>' +
-    team.map(t => '<option value="' + esc(t.email) + '">' + esc(t.full_name) + '</option>').join("");
-  await paintRoster();
-}
-
-async function runPayroll(){
-  const y = Number($("rn-year").value), m = Number($("rn-month").value);
-  btn("rn-btn", true, "Running");
-  const { data, error } = await db.rpc("compute_payroll", { p_year: y, p_month: m });
-  btn("rn-btn", false, "Run payroll");
-  if(error){ msg("rn-msg","err","Could not run", error.message); return; }
-  const ok = (data||[]).filter(r => r.outcome === "computed").length;
-  const bad = (data||[]).filter(r => r.outcome !== "computed");
-  $("rn-msg").innerHTML = '<div class="alert ' + (bad.length ? "warn" : "ok") + '">' +
-    '<b>' + ok + ' computed' + (bad.length ? ", " + bad.length + " could not be" : "") + '</b>' +
-    (bad.length ? bad.map(b => esc(b.staff) + ": " + esc(b.outcome)).join("<br>") : "Every line is ready.") +
-    '</div>';
-  await paintRoster();
-}
-
-async function paintRoster(){
-  const y = Number($("rn-year").value), m = Number($("rn-month").value);
-
-  const { data: sum, error: se } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
-  if(oops("The summary", se)) return;
-  $("sum-body").innerHTML = sum ? summaryCard(sum, y, m) : "";
-
-  const { data, error } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
-  const wrap = $("rs-list");
-  if(error){ wrap.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
-  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Nothing computed for this month yet.</p>'; return; }
-  wrap.innerHTML = '<div style="overflow-x:auto"><table style="min-width:640px">' +
-    '<thead><tr><th>Staff</th><th class="n">Gross</th><th class="n">PAYE</th><th class="n">Net</th><th class="n">Claims</th><th class="n">Transfer</th></tr></thead><tbody>' +
-    data.map(r => '<tr><td><b style="font-family:var(--display-md);font-weight:500">' + esc(r.staff) + '</b>' +
-      '<div style="font-size:11px;color:var(--faint)">' + esc(r.kind) + (r.department ? " \u00b7 " + esc(r.department) : "") +
-      (r.rent_is_assumed ? ' \u00b7 <span style="color:var(--amber)">rent assumed</span>' : "") + '</div></td>' +
-      '<td class="n">' + N(r.gross_salary) + '</td><td class="n">' + N(r.paye) + '</td>' +
-      '<td class="n">' + N(r.net_pay) + '</td><td class="n">' + N(r.total_claims) + '</td>' +
-      '<td class="n"><b>' + N(r.transfer_amount) + '</b></td></tr>').join("") +
-    '</tbody></table></div>';
-}
-
-function summaryCard(s, y, m){
-  const tally = Math.abs(Number(s.tally_check));
-  const balanced = tally <= 1;
-  return '<div class="card">' +
-    '<h3>' + MONTHS[m-1] + " " + y + ' &middot; the whole month</h3>' +
-    '<p class="cardsub">' + s.staff_count + ' people &middot; ' + s.working_days + ' working days</p>' +
-    '<table>' +
-      '<tr><td>Basic</td><td class="n">' + N(s.total_basic) + '</td></tr>' +
-      '<tr><td>Housing</td><td class="n">' + N(s.total_housing) + '</td></tr>' +
-      '<tr><td>Transport</td><td class="n">' + N(s.total_transport) + '</td></tr>' +
-      '<tr class="total"><td>Total gross</td><td class="n">' + N(s.total_gross) + '</td></tr>' +
-      '<tr class="rule"><td>PAYE to FCT-IRS</td><td class="n">' + N(s.total_paye) + '</td></tr>' +
-      (Number(s.total_pension_employee) > 0 ? '<tr><td>Pension (staff)</td><td class="n">' + N(s.total_pension_employee) + '</td></tr>' : "") +
-      '<tr><td>Total deductions</td><td class="n">' + N(s.total_deductions) + '</td></tr>' +
-      '<tr class="total"><td>Net pay to staff</td><td class="n">' + N(s.total_net_pay) + '</td></tr>' +
-      '<tr class="rule"><td>Reimbursements</td><td class="n">' + N(s.total_claims) + '</td></tr>' +
-      '<tr class="total"><td>To transfer</td><td class="n">' + N(s.total_to_transfer) + '</td></tr>' +
-      '<tr class="rule"><td>Employer add-ons</td><td class="n">' + N(s.total_employer_addon) + '</td></tr>' +
-      '<tr class="total"><td>Total cost to Data-Lead</td><td class="n">' + N(s.total_employer_cost) + '</td></tr>' +
-    '</table>' +
-    '<div class="alert ' + (balanced ? "ok" : "err") + '" style="margin-bottom:0">' +
-      '<b>' + (balanced ? "The month tallies" : "The month does NOT tally, out by " + N(s.tally_check)) + '</b>' +
-      'Package ' + N(s.package) + ' = to staff ' + N(s.to_staff) + ' + to government ' + N(s.to_government) + '.' +
-      (balanced ? "" : " Do not certify until this is zero.") +
-    '</div>' +
-    (Number(s.rent_assumed_count) > 0
-      ? '<div class="alert warn" style="margin-bottom:0"><b>' + s.rent_assumed_count +
-        ' on assumed rent</b>Rent relief is only claimable on real, evidenced rent. Collect their tenancy agreements.</div>' : "") +
-  '</div>';
-}
-
-async function addAdjustment(){
-  const email = $("aj-staff").value;
-  if(!email){ msg("aj-msg","err","Choose someone","Pick who this is for."); return; }
-  const desc = val("aj-desc"), amt = Number(val("aj-amt"));
-  if(!desc || !amt || amt <= 0){ msg("aj-msg","err","Missing details","A description and a positive amount are needed."); return; }
-  btn("aj-btn", true, "Adding");
-  const { error } = await db.rpc("add_adjustment", {
-    p_staff_email: email, p_year: Number($("rn-year").value), p_month: Number($("rn-month").value),
-    p_kind: $("aj-kind").value, p_description: desc, p_amount: amt
-  });
-  btn("aj-btn", false, "Add");
-  if(error){ msg("aj-msg","err","Could not add", error.message); return; }
-  msg("aj-msg","ok","Added","The line has been recomputed.");
-  $("aj-desc").value = ""; $("aj-amt").value = "";
-  await paintRoster();
-}
-
-async function exportSchedule(){
-  const y = Number($("rn-year").value), m = Number($("rn-month").value);
-  const { data, error } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
-  if(oops("The roster", error)) return;
-  if(!data || !data.length){ toast("Nothing to export for " + MONTHS[m-1] + " " + y + " yet."); return; }
-
-  // Anyone without bank details cannot be paid. Say so before the file is made,
-  // not after the transfer fails.
-  const missing = data.filter(r => !r.account_number || !r.bank_name);
-  if(missing.length){
-    const names = missing.map(r => r.staff).join(", ");
-    if(!confirm(missing.length + " of " + data.length + " have no bank details on file:\n\n" +
-                names + "\n\nThey cannot be paid. Export the rest anyway?")) return;
-  }
-  const payable = data.filter(r => r.account_number && r.bank_name);
-  if(!payable.length){ toast("Nobody on this run has bank details. Nothing to export."); return; }
-
-  const head = ["Staff","Staff ID","Bank","Account name","Account number","Amount"];
-  const rows = payable.map(r => [r.staff, r.staff_code || "", r.bank_name, r.account_name || "",
-    "'" + r.account_number, Number(r.transfer_amount).toFixed(2)]);
-  const csv = [head, ...rows].map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
-  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
-  const a = document.createElement("a");
-  a.href = url; a.download = "bank-schedule-" + y + "-" + String(m).padStart(2,"0") + ".csv";
-  a.click(); URL.revokeObjectURL(url);
-  toast(payable.length + " line" + (payable.length>1?"s":"") + " exported" +
-        (missing.length ? ", " + missing.length + " left out for want of bank details." : "."));
-}
-
-// ---------- certify ----------
-function initCertify(){ monthOptions("cf-month", new Date().getMonth() + 1); loadCertify(); }
-
-async function loadCertify(){
-  const y = Number($("cf-year").value), m = Number($("cf-month").value);
-  const { data: s, error: sce } = await db.from("payroll_summary").select("*").eq("year", y).eq("month", m).maybeSingle();
-  if(oops("The month", sce)) return;
-  if(!s){ $("cf-body").innerHTML = '<div class="alert info"><b>Nothing to certify</b>Finance has not run this month yet.</div>'; return; }
-  const done = Number(s.certified_count) === Number(s.staff_count);
-  const balanced = Math.abs(Number(s.tally_check)) <= 1;
-  $("cf-body").innerHTML = summaryCard(s, y, m) +
-    (done
-      ? '<div class="alert ok"><b>Already certified</b>All ' + s.staff_count + ' payslips are released.</div>'
-      : '<div class="card">' +
-        '<div class="alert info" style="margin-top:0"><b>What certifying does</b>It releases every payslip to staff and clears Finance to pay. Your name goes against it.</div>' +
-        '<button class="btn-primary" id="cf-btn" style="width:100%" onclick="doCertify()"' +
-        (balanced ? "" : " disabled") + '>Certify ' + MONTHS[m-1] + " " + y + '</button>' +
-        (balanced ? "" : '<p class="hint" style="margin-top:8px;color:var(--red)">Certification is blocked until the month tallies.</p>') +
-        '</div>');
-}
-
-async function doCertify(){
-  const y = Number($("cf-year").value), m = Number($("cf-month").value);
-  if(!confirm("Certify " + MONTHS[m-1] + " " + y + "? Payslips release to staff and this locks.")) return;
-  btn("cf-btn", true, "Certifying");
-  const { data, error } = await db.rpc("certify_payroll", { p_year: y, p_month: m });
-  if(error){ btn("cf-btn", false, "Certify"); alert("Could not certify: " + error.message); return; }
-  alert(data + " payslips certified and released.");
-  await loadCertify();
-}
-
-
-// ============================================================
-// THE ONE THING NOW
-// The portal knows the date and what state the month is in, and shows
-// the single thing that matters. Everything else stays quiet.
-// ============================================================
-let MONTH_LOGGED = 0, MONTH_GAP = 0;
-
-function renderNow(){
-  const el = $("now"); if(!el) return;
-  const today = new Date();
-  const dom = today.getDate();
-  const dow = today.getDay();
-  const isWorkday = dow !== 0 && dow !== 6;
-  const todayISO = isoOf(today);
-  const todayLogged = !!DAYS[todayISO];
-  const todayHoliday = HOLIDAYS[todayISO];
-  const mgr = PROFILE.line_manager ? PROFILE.line_manager.split(" ")[0] : "your line manager";
-  const monthName = MONTHS[TS_MONTH-1];
-  let st;
-
-  if(SUB_STATUS === "director_approved"){
-    st = { ey:"Approved", h:monthName + " is signed off",
-           p:"Both approvals are in. Finance will run payroll and your payslip will follow.", done:true };
-  } else if(SUB_STATUS === "manager_approved"){
-    st = { ey:"With the Director", h:mgr + " approved your " + monthName,
-           p:"It is waiting on a final approval. Nothing for you to do.", done:true };
-  } else if(SUB_STATUS === "submitted"){
-    st = { ey:"With your line manager", h:monthName + " is with " + mgr,
-           p:"Signed and sent. You will be told as soon as it is approved.", done:true };
-  } else if(SUB_STATUS === "returned"){
-    st = { ey:"Returned for a change", h:mgr + " sent " + monthName + " back",
-           p:"Have a look at what they asked for, put it right, and send it again.",
-           cta:"See what to change", go:"timesheet" };
-  } else if(todayHoliday){
-    st = { ey:"Today", h:todayHoliday,
-           p:"A public holiday. Nothing to log. If you did work today, tap the shell and it pays at the holiday rate.",
-           done:true };
-  } else if(LEAVE[todayISO]){
-    st = { ey:"Today", h:"You are on " + LEAVE[todayISO].label.toLowerCase(),
-           p:"Nothing to log. Enjoy it, or get well, whichever applies.", done:true };
-  } else if(isWorkday && !todayLogged){
-    st = { ey:"Right now", h:"Log today",
-           p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
-             (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
-             " Say what you worked on and it takes half a minute.",
-           cta:"Log today", act:"today" };
-  } else if(MONTH_GAP > 0 && dom >= 24){
-    st = { ey:monthName + " closes soon", h:MONTH_GAP + " day" + (MONTH_GAP>1?"s":"") + " still unlogged",
-           p:"A day with nothing against it is unpaid. Fill the sand-coloured shells before the month ends.",
-           cta:"Show me", act:"first-gap" };
-  } else if(MONTH_GAP === 0){
-    st = { ey:"Every day is logged", h:"Send " + monthName + " to " + mgr,
-           p:"Write the month up, sign it, and it goes for approval.",
-           cta:"Review and sign", go:"timesheet" };
-  } else {
-    st = { ey:"Today", h:"Nothing to log today",
-           p:todayLogged ? "Today is logged. " + MONTH_GAP + " other day" + (MONTH_GAP>1?"s":"") +
-                           " still need doing when you get to them."
-                         : "It is the weekend. Enjoy it.", done:true };
-  }
-
-  el.className = "now" + (st.done ? " done" : "");
-  el.innerHTML = '<div class="txt"><div class="ey">' + esc(st.ey) + '</div>' +
-    '<h2>' + esc(st.h) + '</h2><p>' + esc(st.p) + '</p></div>' +
-    (st.cta ? '<button class="go" id="now-go">' + esc(st.cta) + ' \u2192</button>' : "");
-
-  const g = $("now-go");
-  if(g) g.onclick = () => {
-    if(st.go) go(st.go);
-    else if(st.act === "today") openDay(todayISO);
-    else if(st.act === "first-gap"){
-      const first = document.querySelector(".shell:not(.on):not(.half):not(.hol)");
-      if(first){ first.scrollIntoView({behavior:"smooth", block:"center"}); first.click(); }
-    }
-  };
-}
-
-// ---- payday takes the card over, once a month ----
-async function checkPayday(){
-  const { data, error } = await db.from("my_payslip").select("*").limit(1);
-  if(error || !data || !data.length) return;
-  const p = data[0];
-  if(p.status !== "certified" && p.status !== "paid") return;
-  const days = (Date.now() - new Date(p.certified_at)) / 86400000;
-  if(days > 3) return;                        // only while it is news
-  const el = $("now");
-  el.className = "now pay";
-  el.innerHTML = '<div class="txt"><div class="ey">Certified ' +
-    (days < 1 ? "today" : Math.round(days) + " days ago") + '</div>' +
-    '<h2>Your ' + MONTHS[p.month-1] + ' payslip is ready</h2>' +
-    '<p>' + N(p.transfer_amount) + ' is on its way to your account. The full breakdown is in My finance.</p></div>' +
-    '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
-}
-
-// ---- someone else's clock ----
-async function loadWaiting(){
-  if(!isManager()) return;
-  const [pl, ts] = await Promise.all([
-    db.from("plans_to_review").select("staff,submitted_at"),
-    db.from("timesheets_to_review").select("staff,signed_at")
-  ]);
-  const n = (pl.data?.length || 0) + (ts.data?.length || 0);
-  const w = $("waiting");
-  if(!n){ w.classList.add("hidden"); return; }
-  w.classList.remove("hidden");
-
-  // Name who has waited longest. A number is a nag; a name is a reason.
-  const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
-               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"}))]
-              .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
-  let tail = "";
-  if(all.length){
-    const d = Math.floor((Date.now() - new Date(all[0].at)) / 86400000);
-    tail = d >= 1 ? " " + all[0].who.split(" ")[0] + "'s has been waiting " +
-           (d === 1 ? "since yesterday." : d + " days.") : "";
-  }
-  const bits = [];
-  if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
-  if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
-
-  w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
-    bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
-}
-
-// ---- the quiet stats ----
-async function loadMinis(){
-  const { data: pl, error: ple } = await db.from("my_plans").select("*").eq("period","week").limit(1);
-  if(oops("Your plan", ple)) return;
-  if(pl && pl.length){
-    $("m-plan").innerHTML = pl[0].item_count + ' <small>item' + (pl[0].item_count===1?"":"s") + '</small>';
-    $("m-plan-s").textContent = pl[0].status === "approved" ? "Approved by " + (pl[0].reviewed_by || "your manager")
-      : pl[0].status === "submitted" ? "With your line manager"
-      : pl[0].status === "returned" ? "Returned, needs a change" : "Still a draft";
-  } else { $("m-plan").innerHTML = '0 <small>items</small>'; }
-
-  const { data: tg, error: tge } = await db.from("my_targets").select("id,status,rating");
-  if(oops("Your targets", tge)) return;
-  if(tg){
-    const open = tg.filter(t => !t.rating).length;
-    $("m-tg").innerHTML = tg.length + ' <small>set</small>';
-    $("m-tg-s").textContent = tg.length === 0 ? "None set yet"
-      : open + " still open, " + (tg.length - open) + " rated";
-  }
-
-  // corps members have no annual leave (Handbook §3.13), so do not offer it
-  if(PROFILE.employment_type !== "nysc"){
-    $("m-leave-btn").classList.remove("hidden");
-    $("m-leave").innerHTML = '14 <small>days a year</small>';
-    $("m-leave-s").textContent = "Leave is coming to this portal shortly";
-  }
-}
-
-
-// ============================================================
-// LEAVE
-// Every rule below is enforced in the database. The screen only
-// explains them; it never decides.
-// ============================================================
-let BAL = [];
-
-async function loadLeave(){
-  const { data, error } = await db.from("my_leave_balance").select("*");
-  if(oops("Your leave", error)) return;
-  BAL = data || [];
-
-  // the pots worth showing: the ones with a yearly figure and available to you
-  const pots = BAL.filter(b => b.days_per_year && b.available_to_me);
-  $("lv-balances").innerHTML = pots.map(b => {
-    const left = Number(b.remaining || 0);
-    return '<button class="mini" onclick="pickKind(\'' + b.kind + '\')">' +
-      '<div class="k">' + esc(b.label) + '</div>' +
-      '<div class="v">' + left + ' <small>of ' + (b.earned || b.days_per_year) + '</small></div>' +
-      '<div class="s">' + (Number(b.taken || 0) > 0 ? b.taken + " taken" : "None taken") +
-        (b.pay_rate < 1 ? " \u00b7 " + Math.round(b.pay_rate * 100) + "% pay" : "") + '</div></button>';
-  }).join("");
-
-  // the picker: only what this person may actually ask for
-  const can = BAL.filter(b => b.available_to_me);
-  $("lv-kind").innerHTML = '<option value="">Choose\u2026</option>' +
-    can.map(b => '<option value="' + b.kind + '">' + esc(b.label) + '</option>').join("");
-
-  // and say plainly what they cannot have, and why
-  const cannot = BAL.filter(b => !b.available_to_me && b.staff_can_request);
-  $("lv-lede").innerHTML = cannot.length
-    ? "What you have, and how to ask for it. " +
-      esc(cannot.map(c => c.label.replace(" leave","")).join(" and ")) +
-      " is not open to you at the moment."
-    : "What you have, and how to ask for it.";
-
-  lvKind();
-  await loadMyLeaveList();
-}
-
-window.pickKind = k => { $("lv-kind").value = k; lvKind(); $("lv-kind").scrollIntoView({behavior:"smooth", block:"center"}); };
-
-function lvKind(){
-  const k = $("lv-kind").value;
-  const b = BAL.find(x => x.kind === k);
-  if(!b){ $("lv-note").textContent = ""; $("lv-evi-row").classList.add("hidden"); lvCount(); return; }
-
-  // the handbook's own words, and why the number is what it is
-  $("lv-note").textContent = b.explain ? b.explain : (b.note || "");
-
-  // evidence, only when the rule says so
-  const needs = b.needs_evidence_over !== null && b.needs_evidence_over !== undefined;
-  $("lv-evi-row").classList.toggle("hidden", !needs);
-  if(needs){
-    $("lv-evi-lab").textContent = b.evidence_label || "Evidence";
-    $("lv-evi-hint").textContent = b.needs_evidence_over === 0
-      ? "Required."
-      : "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over===1?"":"s") + ".";
-  }
-  $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
-  $("lv-btn").textContent = b.needs_senior
-    ? "Send to my line manager" : "Send to my line manager";
-  lvCount();
-}
-
-async function lvCount(){
-  const f = val("lv-from"), t = val("lv-to"), k = $("lv-kind").value;
-  const box = $("lv-count");
-  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }
-  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
-
-  const { data, error } = await db.rpc("leave_days_in", { p_from: f, p_to: t });
-  if(oops("The day count", error)) return;
-  const days = Number(data || 0);
-  const b = BAL.find(x => x.kind === k);
-  const left = b && b.remaining !== null ? Number(b.remaining) : null;
-
-  let msg = "<b>" + days + " working day" + (days===1?"":"s") + "</b>";
-  if(days === 0){ box.className = "alert warn"; box.innerHTML = msg + "Weekends and public holidays are not leave. Pick working days."; return; }
-
-  const bits = [];
-  if(left !== null) bits.push(left - days >= 0
-    ? "You would have " + (left - days).toFixed(1).replace(/\.0$/,"") + " left."
-    : "That is " + (days - left).toFixed(1).replace(/\.0$/,"") + " more than you have.");
-  if(b && b.pay_rate < 1) bits.push(b.pay_rate === 0
-    ? "Unpaid."
-    : "Paid at " + Math.round(b.pay_rate*100) + "% (Employee Handbook)." );
-  if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
-    bits.push("Needs " + (b.evidence_label||"evidence").toLowerCase() + ".");
-  if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
-  else if(b) bits.push("Your manager decides. It stops there.");
-
-  box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
-  box.innerHTML = msg + bits.join(" ");
-}
-
-async function askLeave(){
-  const k = $("lv-kind").value, f = val("lv-from"), t = val("lv-to");
-  if(!k){ msg("lv-msg","err","Pick the kind","Which sort of leave is this?"); return; }
-  if(!f || !t){ msg("lv-msg","err","Pick the dates","From and to."); return; }
-
-  btn("lv-btn", true, "Sending");
-
-  // upload the evidence first, if there is any
-  let path = null;
-  const file = $("lv-evi").files[0];
-  if(file){
-    const name = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-    const up = await db.storage.from("leave-evidence").upload(PROFILE.id + "/" + name, file);
-    if(up.error){
-      btn("lv-btn", false, "Send to my line manager");
-      msg("lv-msg","err","Could not upload", up.error.message + " (is the 'leave-evidence' bucket created?)");
-      return;
-    }
-    path = up.data.path;
-  }
-
-  const { error } = await db.rpc("request_leave", {
-    p_kind: k, p_from: f, p_to: t, p_reason: val("lv-reason"), p_evidence_path: path
-  });
-  btn("lv-btn", false, "Send to my line manager");
-  if(error){ msg("lv-msg","err","Not sent", error.message); return; }
-
-  const b = BAL.find(x => x.kind === k);
-  msg("lv-msg","ok","Sent", b && b.needs_senior
-    ? "Your line manager sees it first, then the COO or the CEO. You will be told either way."
-    : "Your line manager decides this one. You will be told either way.");
-  ["lv-from","lv-to","lv-reason"].forEach(id => $(id).value = "");
-  $("lv-evi").value = "";
-  await loadLeave();
-  await loadTimesheet();          // approved leave changes the shells
-}
-
-async function loadMyLeaveList(){
-  const { data, error } = await db.from("my_leave").select("*");
-  const wrap = $("lv-list");
-  if(oops("Your leave history", error)) return;
-  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not asked for any leave.</p>'; return; }
-
-  const STATE = { with_manager:"With your manager", with_senior:"With the COO or CEO",
-                  approved:"Approved", declined:"Declined", cancelled:"Cancelled" };
-  const CLS = { with_manager:"submitted", with_senior:"submitted", approved:"approved",
-                declined:"returned", cancelled:"draft" };
-
-  wrap.innerHTML = data.map(l => {
-    const note = l.senior_note || l.manager_note;
-    const who  = l.senior || l.manager;
-    return '<div class="qrow"><span class="t"><b>' + esc(l.label) + ' \u00b7 ' + l.days +
-      ' day' + (Number(l.days)===1?"":"s") + '</b><span>' + fmtRange(l.starts_on, l.ends_on) +
-      (l.pay_rate < 1 ? " \u00b7 " + (l.pay_rate === 0 ? "unpaid" : Math.round(l.pay_rate*100) + "% pay") : "") +
-      (who ? " \u00b7 " + esc(who) : "") + '</span>' +
-      (note ? '<span style="color:var(--muted);font-style:italic">\u201c' + esc(note) + '\u201d</span>' : "") +
-      '</span>' +
-      '<span class="st ' + CLS[l.state] + '">' + STATE[l.state] + '</span>' +
-      (["with_manager","with_senior"].includes(l.state) || (l.state === "approved" && l.starts_on > new Date().toISOString().slice(0,10))
-        ? '<button onclick="cancelLeave(' + l.id + ')" style="padding:4px 10px;font-size:12px;margin-left:8px">Cancel</button>' : "") +
-      '</div>';
-  }).join("");
-}
-
-async function cancelLeave(id){
-  if(!confirm("Cancel this leave request?")) return;
-  const { error } = await db.rpc("cancel_leave", { p_id: id });
-  if(error){ toast("Could not cancel. " + error.message); return; }
-  await loadLeave(); await loadTimesheet();
-}
-
-// ---- the manager's side ----
-async function loadLeaveQueue(){
-  const { data, error } = await db.from("leave_to_approve").select("*");
-  const wrap = $("ap-lv");
-  if(!wrap) return 0;
-  if(oops("Leave to approve", error)) return 0;
-  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No leave waiting.</p>'; return 0; }
-
-  wrap.innerHTML = data.map(l => {
-    const stage = l.state === "with_manager" ? "awaiting you" : "awaiting a senior";
-    const pot = l.days_per_year ? " \u00b7 " + l.taken_this_year + " of " + l.days_per_year + " used this year" : "";
-    const evi = l.needs_evidence_over !== null && l.days > l.needs_evidence_over
-      ? (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">evidence attached</span>'
-                        : ' \u00b7 <span style="color:var(--red)">no evidence</span>') : "";
-    return '<div class="qrow"><span class="dot todo"></span>' +
-      '<span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
-      '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
-      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + evi + '</span>' +
-      (l.reason ? '<span style="font-style:italic">\u201c' + esc(l.reason) + '\u201d</span>' : "") +
-      '</span>' +
-      '<button onclick="decideLeave(' + l.id + ', false)">Decline</button>' +
-      '<button class="btn-primary" style="margin-left:6px" onclick="decideLeave(' + l.id + ', true)">' +
-      (l.state === "with_manager" ? "Approve" : "Grant") + '</button></div>';
-  }).join("");
-  return data.length;
-}
-
-async function decideLeave(id, approve){
-  let note = null;
-  if(!approve){
-    note = prompt("Why are you declining? They will see this.");
-    if(note === null) return;
-    if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
-  } else {
-    note = prompt("A note for them (optional). Leave blank to just approve.") || null;
-  }
-  const { data, error } = await db.rpc("decide_leave", { p_id: id, p_approve: approve, p_note: note });
-  if(error){ toast("Could not do that. " + error.message); return; }
-  toast(data === "approved" ? "Approved. They have been told."
-       : data === "with_senior" ? "Approved and passed to the COO or CEO."
-       : "Returned to them with your reason.");
-  await loadApprovals();
-}
-
-// ---- sick and bereavement a manager already granted: the CEO/COO are told ----
-async function loadLeaveInfo(){
-  if(!isCertifier()) return;
-  const { data, error } = await db.from("leave_for_information").select("*").limit(8);
-  if(error || !data || !data.length) return;
-  $("ap-info-card").classList.remove("hidden");
-  $("ap-info").innerHTML = data.map(l =>
-    '<div class="qrow"><span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
-    '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
-    fmtRange(l.starts_on, l.ends_on) +
-    (l.approved_by ? " \u00b7 granted by " + esc(l.approved_by) : "") + '</span></span></div>').join("");
-}
-
 
 // ============================================================
 // REQUISITIONS
@@ -2913,6 +2388,189 @@ async function uploadReceipt(reqId){
   };
   toast("Pick the receipt for: " + item.description + " (" + N(item.amount) + ")");
   inp.click();
+}
+
+
+// ============================================================
+// TELLING YOUR MANAGER WHERE YOU HAVE GOT TO
+// Before this, a manager set "400 households" and the staffer had no way
+// to say they had done 310. Every quantitative target sat at 0% until it
+// was rated blind.
+// ============================================================
+window.reportProgress = reportProgress; window.savePhoto = savePhoto;
+window.addQual = addQual; window.addDep = addDep; window.addRef = addRef;
+window.dropRow = dropRow; window.showOtherDoors = showOtherDoors;
+
+async function reportProgress(id, quant, target, unit){
+  let current = null, note = null;
+  if(quant){
+    const v = prompt("How many " + (unit || "so far") + "?\n\nThe target is " + target + ".");
+    if(v === null) return;
+    if(isNaN(Number(v))){ toast("That is not a number."); return; }
+    current = Number(v);
+  }
+  note = prompt("A note for your manager (optional).\n\nWhat you have done, or what is in the way.") || null;
+  const { error } = await db.rpc("report_progress", {
+    p_target_id: id, p_current: current, p_note: note,
+    p_status: "in_progress"
+  });
+  if(error){ toast("Could not save. " + error.message); return; }
+  toast("Saved. Your manager can see where you are.", true);
+  await loadTargets();
+}
+
+// ============================================================
+// THE REST OF YOUR FILE  ·  photo, qualifications, dependents, referees
+// All of this existed in the database and had no form. Handbook §14.1
+// says the personnel file holds them.
+// ============================================================
+async function savePhoto(){
+  const f = $("ph-file").files[0];
+  if(!f){ msg("ph-msg","err","No picture","Choose one first."); return; }
+  btn("ph-btn", true, "Uploading");
+  const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const up = await db.storage.from("staff-photos").upload(PROFILE.id + "/" + name, f, { upsert:true });
+  if(up.error){ btn("ph-btn", false, "Upload it");
+    msg("ph-msg","err","Upload failed", up.error.message + " (is the 'staff-photos' bucket created?)"); return; }
+  const { error } = await db.rpc("save_my_photo", { p_path: up.data.path });
+  btn("ph-btn", false, "Upload it");
+  if(error){ msg("ph-msg","err","Not saved", error.message); return; }
+  msg("ph-msg","ok","Saved","That is your photograph.");
+  await refresh(); await loadExtras();
+}
+
+async function loadExtras(){
+  const [q, d, r] = await Promise.all([
+    db.from("my_qualifications").select("*"),
+    db.from("my_dependents").select("*"),
+    db.from("my_referees").select("*"),
+  ]);
+  if(oops("Your qualifications", q.error) || oops("Your dependents", d.error) || oops("Your referees", r.error)) return;
+
+  $("ql-list").innerHTML = !q.data || !q.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nothing yet.</p>'
+    : q.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.qualification) +
+        (x.is_certification ? ' <span class="st draft">certification</span>' : "") + '</b>' +
+        '<span>' + [x.institution, x.year_obtained].filter(Boolean).map(esc).join(" \u00b7 ") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'qualification\',' + x.id + ')">Remove</button></div>').join("");
+
+  const others = (d.data||[]).filter(x => String(x.relationship).toLowerCase() !== "spouse").length;
+  $("dp-list").innerHTML = (!d.data || !d.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nobody yet.</p>'
+    : d.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.full_name) + '</b>' +
+        '<span>' + esc(x.relationship) + (x.date_of_birth ? " \u00b7 born " + fmtDate(x.date_of_birth) : "") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'dependent\',' + x.id + ')">Remove</button></div>').join("")) +
+    (others >= 5 ? '<p class="hint" style="color:var(--amber)">That is five besides a spouse, which is the limit (Employee Handbook §6.1).</p>' : "");
+
+  $("rf-list").innerHTML = !r.data || !r.data.length
+    ? '<p style="color:var(--faint);font-size:13px;padding:4px 0">Nobody yet.</p>'
+    : r.data.map(x => '<div class="qrow"><span class="t"><b>' + esc(x.full_name) + '</b>' +
+        '<span>' + [x.relationship, x.organisation, x.phone].filter(Boolean).map(esc).join(" \u00b7 ") + '</span></span>' +
+        '<button class="rowbtn" style="color:var(--red)" onclick="dropRow(\'referee\',' + x.id + ')">Remove</button></div>').join("");
+
+  const ph = $("ph-now");
+  if(ph) ph.innerHTML = PROFILE.photo_path
+    ? '<div class="alert ok" style="margin-top:0"><b>You have one on file</b>Upload another to replace it.</div>' : "";
+}
+
+async function addQual(){
+  const w = val("ql-what");
+  if(!w){ msg("ql-msg","err","What is it?","Name the qualification."); return; }
+  const { error } = await db.rpc("add_my_qualification", {
+    p_qualification: w, p_institution: val("ql-where"),
+    p_year: val("ql-year") ? Number(val("ql-year")) : null,
+    p_is_certification: $("ql-kind").value === "true"
+  });
+  if(error){ msg("ql-msg","err","Not added", error.message); return; }
+  ["ql-what","ql-where","ql-year"].forEach(id => set(id,"")); $("ql-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function addDep(){
+  const n = val("dp-name");
+  if(!n){ msg("dp-msg","err","Who?","Give their name."); return; }
+  const { error } = await db.rpc("add_my_dependent", {
+    p_full_name: n, p_relationship: $("dp-rel").value, p_dob: val("dp-dob")
+  });
+  if(error){ msg("dp-msg","err","Not added", error.message); return; }
+  ["dp-name","dp-dob"].forEach(id => set(id,"")); $("dp-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function addRef(){
+  const n = val("rf-name");
+  if(!n){ msg("rf-msg","err","Who?","Give their name."); return; }
+  const { error } = await db.rpc("add_my_referee", {
+    p_full_name: n, p_relationship: val("rf-rel"), p_organisation: val("rf-org"),
+    p_phone: val("rf-phone"), p_email: val("rf-email")
+  });
+  if(error){ msg("rf-msg","err","Not added", error.message); return; }
+  ["rf-name","rf-rel","rf-org","rf-phone","rf-email"].forEach(id => set(id,"")); $("rf-msg").innerHTML = "";
+  await loadExtras();
+}
+
+async function dropRow(kind, id){
+  const { error } = await db.rpc("remove_my_row", { p_table: kind, p_id: id });
+  if(error){ toast("Could not remove. " + error.message); return; }
+  await loadExtras();
+}
+
+// ============================================================
+// The other doors, for whoever holds those roles
+// ============================================================
+function showOtherDoors(){
+  const el = $("other-doors"); if(!el) return;
+  const bits = [];
+  if(isFinance())   bits.push('<a href="/cowrie-shell/finance.html"><button>Finance portal &rarr;</button></a>');
+  if(isCertifier()) bits.push('<a href="/cowrie-shell/admin.html"><button>Admin console &rarr;</button></a>');
+  if(!bits.length) return;
+  el.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)">' +
+    '<span style="font-size:12.5px;color:var(--faint);align-self:center;margin-right:4px">Your other doors, same login:</span>' +
+    bits.join("") + '</div>';
+}
+
+
+// ============================================================
+// WHAT YOU EARN  ·  shown before payroll has ever run
+// Clearly INDICATIVE: a full month, no adjustments, today's settings.
+// The payslip is the truth; this is the shape of it.
+// ============================================================
+async function loadIndicative(){
+  const { data, error } = await db.rpc("my_indicative_pay");
+  if(oops("What you earn", error)) return;
+  const p = Array.isArray(data) ? data[0] : data;
+  const box = $("ind-body"); if(!box) return;
+  if(!p || !p.monthly_gross){ box.innerHTML = ""; return; }
+
+  const row = (k, v, cls) => '<tr class="' + (cls||"") + '"><td>' + k + '</td><td class="n">' + v + '</td></tr>';
+  const neg = v => Number(v) > 0 ? "(" + N(v) + ")" : "\u2014";
+
+  box.innerHTML =
+  '<div class="card">' +
+    '<h3>What you earn</h3>' +
+    '<p class="cardsub">A full month, no adjustments, today\u2019s settings. Your payslip is the truth; this is its shape.</p>' +
+    '<table>' +
+      row("Basic", N(p.basic), "rule") +
+      row("Housing", N(p.housing)) +
+      row("Transport", N(p.transport)) +
+      row("<b>Gross salary</b>", "<b>" + N(p.monthly_gross) + "</b>", "total") +
+      (p.paye_exempt
+        ? row("PAYE", "Exempt \u00b7 corps member", "rule")
+        : row("PAYE (about " + p.effective_rate + "% of gross)", neg(p.paye), "rule")) +
+      (Number(p.pension) > 0 ? row("Pension", neg(p.pension)) : "") +
+      (Number(p.nhf) > 0 ? row("National Housing Fund", neg(p.nhf)) : "") +
+      (Number(p.nhis) > 0 ? row("National Health Insurance", neg(p.nhis)) : "") +
+      row("<b>Net</b>", "<b>" + N(p.net) + "</b>", "total") +
+      (Number(p.data_claim) > 0 ? row("Data claim", N(p.data_claim), "rule") : "") +
+      (Number(p.data_claim) > 0 ? row("<b>Take home</b>", "<b>" + N(p.take_home) + "</b>", "total") : "") +
+    '</table>' +
+    (Number(p.rent_relief_yr) > 0
+      ? '<p class="hint" style="margin-top:12px">Rent relief of ' + N(p.rent_relief_yr) + ' a year lowers your tax' +
+        (p.rent_is_assumed
+          ? '. <b>This rests on an assumed rent.</b> Give the office your tenancy agreement so it reflects what you actually pay.'
+          : ', based on the rent you declared.') + '</p>' : "") +
+    '<p class="hint">Days you do not work, unpaid leave, and anything Finance adds will change the real figure.</p>' +
+  '</div>';
 }
 
 // ---------- helpers ----------
