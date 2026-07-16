@@ -121,6 +121,10 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .shell.today::after{content:"";position:absolute;inset:-4px;border-radius:50%;
   border:1.5px solid var(--clr-orange);opacity:0;animation:pulse 2.4s ease-out infinite}
 @keyframes pulse{0%{opacity:.7;transform:scale(.85)}70%{opacity:0;transform:scale(1.15)}100%{opacity:0}}
+.shell.leave .sbody{fill:var(--green-bg)}
+.shell.leave .slit,.shell.leave .teeth{stroke:var(--green)}
+.shell.leave{cursor:default}
+.shell.leave:hover{transform:none}
 .shell.hol .sbody{fill:var(--clr-blue)}
 .shell.hol .slit,.shell.hol .teeth{stroke:#7fbde8}
 .shell.hol{cursor:default}
@@ -332,6 +336,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
         <span><i style="background:var(--clr-orange)"></i>Logged</span>
         <span><i style="background:#fff;border:1.5px solid var(--clr-orange)"></i>Today</span>
         <span><i style="background:var(--sand)"></i>Not yet</span>
+        <span><i style="background:var(--green-bg);border:1px solid var(--green)"></i>Leave</span>
         <span><i style="background:var(--clr-blue)"></i>Holiday</span>
       </div>
     </section>
@@ -351,7 +356,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
         <div class="v" id="m-tg">&mdash;</div>
         <div class="s" id="m-tg-s">None set</div>
       </button>
-      <button class="mini hidden" id="m-leave-btn">
+      <button class="mini hidden" id="m-leave-btn" onclick="go('leave')">
         <div class="k">Annual leave</div>
         <div class="v" id="m-leave">&mdash;</div>
         <div class="s" id="m-leave-s">&mdash;</div>
@@ -490,6 +495,18 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <div class="card">
       <h3>Timesheets awaiting you</h3>
       <div id="ap-ts"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Leave awaiting you</h3>
+      <p class="cardsub">Sick and bereavement stop with you. Everything else goes on to the COO or the CEO after you.</p>
+      <div id="ap-lv"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card hidden" id="ap-info-card">
+      <h3>For your information</h3>
+      <p class="cardsub">Sick and bereavement leave a manager has already granted. You are being told, not asked.</p>
+      <div id="ap-info"></div>
     </div>
   </section>
 
@@ -690,6 +707,57 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
 
     <div id="cf-body"></div>
+  </section>
+
+
+  <!-- ---------- leave ---------- -->
+  <section id="v-leave" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Time off</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Leave</h1>
+    <p style="color:var(--muted);margin-bottom:18px" id="lv-lede">What you have, and how to ask for it.</p>
+
+    <!-- what you have -->
+    <div class="strap" id="lv-balances"></div>
+
+    <!-- ask -->
+    <div class="card">
+      <h3>Ask for leave</h3>
+      <p class="cardsub" id="lv-sub">Pick the kind first. The rules for each are different, and they are the Handbook's, not mine.</p>
+
+      <div class="fld"><label>What kind</label>
+        <select id="lv-kind" onchange="lvKind()"></select>
+        <p class="hint" id="lv-note"></p>
+      </div>
+
+      <div class="grid2">
+        <div class="fld"><label>From</label><input type="date" id="lv-from" onchange="lvCount()"></div>
+        <div class="fld"><label>To</label><input type="date" id="lv-to" onchange="lvCount()"></div>
+      </div>
+
+      <div id="lv-count" class="alert info" style="margin-top:0"></div>
+
+      <div class="fld"><label id="lv-reason-lab">Reason</label>
+        <textarea id="lv-reason" placeholder="A short note for your manager."></textarea></div>
+
+      <div class="fld hidden" id="lv-evi-row">
+        <label id="lv-evi-lab">Evidence</label>
+        <input type="file" id="lv-evi" accept="application/pdf,image/*">
+        <p class="hint" id="lv-evi-hint"></p>
+      </div>
+
+      <div id="lv-msg"></div>
+      <button class="btn-primary" style="width:100%" id="lv-btn" onclick="askLeave()">Send to my line manager</button>
+    </div>
+
+    <!-- history -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <h3 style="margin:0">Your leave</h3>
+        <button class="rowbtn" onclick="loadLeave()" style="padding:5px 11px;font-size:12px">Refresh</button>
+      </div>
+      <div id="lv-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
   </section>
 
   <!-- ---------- profile ---------- -->
@@ -939,6 +1007,8 @@ window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=a
 window.removeItem=removeItem; window.submitPlan=submitPlan;
 
 window.goStep=goStep; window.nextStep=nextStep;
+window.loadLeave=loadLeave; window.lvKind=lvKind; window.lvCount=lvCount;
+window.askLeave=askLeave; window.cancelLeave=cancelLeave; window.decideLeave=decideLeave;
 window.loadPayslip=loadPayslip; window.runPayroll=runPayroll; window.loadRoster=loadRoster;
 window.addAdjustment=addAdjustment; window.exportSchedule=exportSchedule;
 window.loadCertify=loadCertify; window.doCertify=doCertify;
@@ -947,7 +1017,7 @@ window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openRe
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","roster","certify","policies","leave"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -956,6 +1026,7 @@ function go(v){
   if(v === "plans") loadPlan();
   if(v === "approvals") loadApprovals();
   if(v === "team") loadTeam();
+  if(v === "leave") loadLeave();
   if(v === "finance") loadMyFinance();
   if(v === "roster") loadRoster();
   if(v === "certify") initCertify();
@@ -1241,7 +1312,7 @@ async function loadPolicies(){
 // ============================================================
 const NOW = new Date();
 let TS_YEAR = NOW.getFullYear(), TS_MONTH = NOW.getMonth() + 1;
-let DAYS = {}, HOLIDAYS = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
+let DAYS = {}, HOLIDAYS = {}, LEAVE = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOW = ["Mon","Tue","Wed","Thu","Fri"];
 
@@ -1282,6 +1353,12 @@ async function loadTimesheet(){
     if(d.error) throw new Error("Your days: " + d.error.message);
     DAYS = {};
     (d.data||[]).forEach(r => DAYS[r.work_date] = r);
+
+    // approved leave. Not absence, and not something to log.
+    LEAVE = {};
+    const lv = await db.rpc("my_leave_days", { p_from: first, p_to: last });
+    if(lv.error) throw new Error("Your leave: " + lv.error.message);
+    (lv.data||[]).forEach(x => LEAVE[x.day] = x);
 
     // this month's submission, if any
     const pid = await periodId();
@@ -1348,17 +1425,20 @@ function buildStrip(){
     if(w === 0 || w === 6) continue;                // not a working day, not a shell
     const iso = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + String(d).padStart(2,"0");
     const hol = HOLIDAYS[iso];
+    const lev = LEAVE[iso];
     const rec = DAYS[iso];
     if(!hol) working++;
     if(rec) logged++;
 
     let cls = "shell";
     if(hol) cls += " hol";
+    else if(lev) cls += " leave";
     else if(rec) cls += (Number(rec.hours) < standardFor(dt) ? " half" : " on");
     else if(iso === todayISO) cls += " today";
     if(rec && rec.ai_flag) cls += " flag";
 
-    const click = hol ? "" : ' onclick="openDay(\'' + iso + '\')"';
+    // a holiday or approved leave is not a day you log
+    const click = (hol || lev) ? "" : ' onclick="openDay(\'' + iso + '\')"';
     html += '<button class="' + cls + '"' + click + ' aria-label="' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '">' +
       '<span class="tip">' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '</span>' +
       '<svg viewBox="0 0 26 36" aria-hidden="true">' +
@@ -1377,9 +1457,11 @@ function buildStrip(){
 const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 function standardFor(dt){ return dt.getDay() === 5 ? 5.5 : 7; }
 function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
-function shellLabel(dt, d, hol, rec, isToday){
+function shellLabel(dt, d, hol, rec, isToday, lev){
   const day = DOWFULL[dt.getDay()] + " " + d + " " + MONTHS[TS_MONTH-1];
   if(hol) return day + " \u00b7 " + hol;
+  if(lev) return day + " \u00b7 " + lev.label +
+    (Number(lev.pay_rate) < 1 ? " (" + (Number(lev.pay_rate) === 0 ? "unpaid" : Math.round(lev.pay_rate*100) + "% pay") + ")" : "");
   if(rec) return day + " \u00b7 " + rec.hours + "h" + (rec.ai_flag ? " \u00b7 flagged" : "");
   if(isToday) return day + " \u00b7 today, not logged";
   return day + " \u00b7 not logged";
@@ -1394,7 +1476,7 @@ async function refreshHours(){
   $("s-logged").textContent = logged;
   $("s-normal").textContent = Number(h.normal_hours || 0);
   $("s-extra").textContent = Number(h.overtime_hours||0) + Number(h.weekend_hours||0) + Number(h.holiday_hours||0);
-  const gapN = Math.max(0, WORKING_DAYS - logged);
+  const gapN = Math.max(0, WORKING_DAYS - logged - Object.keys(LEAVE).length);
   const gap = $("ts-gap");
   if(gap){
     gap.innerHTML = gapN > 0
@@ -2263,6 +2345,9 @@ function renderNow(){
     st = { ey:"Today", h:todayHoliday,
            p:"A public holiday. Nothing to log. If you did work today, tap the shell and it pays at the holiday rate.",
            done:true };
+  } else if(LEAVE[todayISO]){
+    st = { ey:"Today", h:"You are on " + LEAVE[todayISO].label.toLowerCase(),
+           p:"Nothing to log. Enjoy it, or get well, whichever applies.", done:true };
   } else if(isWorkday && !todayLogged){
     st = { ey:"Right now", h:"Log today",
            p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
@@ -2373,6 +2458,231 @@ async function loadMinis(){
     $("m-leave").innerHTML = '14 <small>days a year</small>';
     $("m-leave-s").textContent = "Leave is coming to this portal shortly";
   }
+}
+
+
+// ============================================================
+// LEAVE
+// Every rule below is enforced in the database. The screen only
+// explains them; it never decides.
+// ============================================================
+let BAL = [];
+
+async function loadLeave(){
+  const { data, error } = await db.from("my_leave_balance").select("*");
+  if(oops("Your leave", error)) return;
+  BAL = data || [];
+
+  // the pots worth showing: the ones with a yearly figure and available to you
+  const pots = BAL.filter(b => b.days_per_year && b.available_to_me);
+  $("lv-balances").innerHTML = pots.map(b => {
+    const left = Number(b.remaining || 0);
+    return '<button class="mini" onclick="pickKind(\'' + b.kind + '\')">' +
+      '<div class="k">' + esc(b.label) + '</div>' +
+      '<div class="v">' + left + ' <small>of ' + (b.earned || b.days_per_year) + '</small></div>' +
+      '<div class="s">' + (Number(b.taken || 0) > 0 ? b.taken + " taken" : "None taken") +
+        (b.pay_rate < 1 ? " \u00b7 " + Math.round(b.pay_rate * 100) + "% pay" : "") + '</div></button>';
+  }).join("");
+
+  // the picker: only what this person may actually ask for
+  const can = BAL.filter(b => b.available_to_me);
+  $("lv-kind").innerHTML = '<option value="">Choose\u2026</option>' +
+    can.map(b => '<option value="' + b.kind + '">' + esc(b.label) + '</option>').join("");
+
+  // and say plainly what they cannot have, and why
+  const cannot = BAL.filter(b => !b.available_to_me && b.staff_can_request);
+  $("lv-lede").innerHTML = cannot.length
+    ? "What you have, and how to ask for it. " +
+      esc(cannot.map(c => c.label.replace(" leave","")).join(" and ")) +
+      " is not open to you at the moment."
+    : "What you have, and how to ask for it.";
+
+  lvKind();
+  await loadMyLeaveList();
+}
+
+window.pickKind = k => { $("lv-kind").value = k; lvKind(); $("lv-kind").scrollIntoView({behavior:"smooth", block:"center"}); };
+
+function lvKind(){
+  const k = $("lv-kind").value;
+  const b = BAL.find(x => x.kind === k);
+  if(!b){ $("lv-note").textContent = ""; $("lv-evi-row").classList.add("hidden"); lvCount(); return; }
+
+  // the handbook's own words, and why the number is what it is
+  $("lv-note").textContent = b.explain ? b.explain : (b.note || "");
+
+  // evidence, only when the rule says so
+  const needs = b.needs_evidence_over !== null && b.needs_evidence_over !== undefined;
+  $("lv-evi-row").classList.toggle("hidden", !needs);
+  if(needs){
+    $("lv-evi-lab").textContent = b.evidence_label || "Evidence";
+    $("lv-evi-hint").textContent = b.needs_evidence_over === 0
+      ? "Required."
+      : "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over===1?"":"s") + ".";
+  }
+  $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
+  $("lv-btn").textContent = b.needs_senior
+    ? "Send to my line manager" : "Send to my line manager";
+  lvCount();
+}
+
+async function lvCount(){
+  const f = val("lv-from"), t = val("lv-to"), k = $("lv-kind").value;
+  const box = $("lv-count");
+  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }
+  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
+
+  const { data, error } = await db.rpc("leave_days_in", { p_from: f, p_to: t });
+  if(oops("The day count", error)) return;
+  const days = Number(data || 0);
+  const b = BAL.find(x => x.kind === k);
+  const left = b && b.remaining !== null ? Number(b.remaining) : null;
+
+  let msg = "<b>" + days + " working day" + (days===1?"":"s") + "</b>";
+  if(days === 0){ box.className = "alert warn"; box.innerHTML = msg + "Weekends and public holidays are not leave. Pick working days."; return; }
+
+  const bits = [];
+  if(left !== null) bits.push(left - days >= 0
+    ? "You would have " + (left - days).toFixed(1).replace(/\.0$/,"") + " left."
+    : "That is " + (days - left).toFixed(1).replace(/\.0$/,"") + " more than you have.");
+  if(b && b.pay_rate < 1) bits.push(b.pay_rate === 0
+    ? "Unpaid."
+    : "Paid at " + Math.round(b.pay_rate*100) + "% (Employee Handbook)." );
+  if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
+    bits.push("Needs " + (b.evidence_label||"evidence").toLowerCase() + ".");
+  if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
+  else if(b) bits.push("Your manager decides. It stops there.");
+
+  box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
+  box.innerHTML = msg + bits.join(" ");
+}
+
+async function askLeave(){
+  const k = $("lv-kind").value, f = val("lv-from"), t = val("lv-to");
+  if(!k){ msg("lv-msg","err","Pick the kind","Which sort of leave is this?"); return; }
+  if(!f || !t){ msg("lv-msg","err","Pick the dates","From and to."); return; }
+
+  btn("lv-btn", true, "Sending");
+
+  // upload the evidence first, if there is any
+  let path = null;
+  const file = $("lv-evi").files[0];
+  if(file){
+    const name = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up = await db.storage.from("leave-evidence").upload(PROFILE.id + "/" + name, file);
+    if(up.error){
+      btn("lv-btn", false, "Send to my line manager");
+      msg("lv-msg","err","Could not upload", up.error.message + " (is the 'leave-evidence' bucket created?)");
+      return;
+    }
+    path = up.data.path;
+  }
+
+  const { error } = await db.rpc("request_leave", {
+    p_kind: k, p_from: f, p_to: t, p_reason: val("lv-reason"), p_evidence_path: path
+  });
+  btn("lv-btn", false, "Send to my line manager");
+  if(error){ msg("lv-msg","err","Not sent", error.message); return; }
+
+  const b = BAL.find(x => x.kind === k);
+  msg("lv-msg","ok","Sent", b && b.needs_senior
+    ? "Your line manager sees it first, then the COO or the CEO. You will be told either way."
+    : "Your line manager decides this one. You will be told either way.");
+  ["lv-from","lv-to","lv-reason"].forEach(id => $(id).value = "");
+  $("lv-evi").value = "";
+  await loadLeave();
+  await loadTimesheet();          // approved leave changes the shells
+}
+
+async function loadMyLeaveList(){
+  const { data, error } = await db.from("my_leave").select("*");
+  const wrap = $("lv-list");
+  if(oops("Your leave history", error)) return;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not asked for any leave.</p>'; return; }
+
+  const STATE = { with_manager:"With your manager", with_senior:"With the COO or CEO",
+                  approved:"Approved", declined:"Declined", cancelled:"Cancelled" };
+  const CLS = { with_manager:"submitted", with_senior:"submitted", approved:"approved",
+                declined:"returned", cancelled:"draft" };
+
+  wrap.innerHTML = data.map(l => {
+    const note = l.senior_note || l.manager_note;
+    const who  = l.senior || l.manager;
+    return '<div class="qrow"><span class="t"><b>' + esc(l.label) + ' \u00b7 ' + l.days +
+      ' day' + (Number(l.days)===1?"":"s") + '</b><span>' + fmtRange(l.starts_on, l.ends_on) +
+      (l.pay_rate < 1 ? " \u00b7 " + (l.pay_rate === 0 ? "unpaid" : Math.round(l.pay_rate*100) + "% pay") : "") +
+      (who ? " \u00b7 " + esc(who) : "") + '</span>' +
+      (note ? '<span style="color:var(--muted);font-style:italic">\u201c' + esc(note) + '\u201d</span>' : "") +
+      '</span>' +
+      '<span class="st ' + CLS[l.state] + '">' + STATE[l.state] + '</span>' +
+      (["with_manager","with_senior"].includes(l.state) || (l.state === "approved" && l.starts_on > new Date().toISOString().slice(0,10))
+        ? '<button onclick="cancelLeave(' + l.id + ')" style="padding:4px 10px;font-size:12px;margin-left:8px">Cancel</button>' : "") +
+      '</div>';
+  }).join("");
+}
+
+async function cancelLeave(id){
+  if(!confirm("Cancel this leave request?")) return;
+  const { error } = await db.rpc("cancel_leave", { p_id: id });
+  if(error){ toast("Could not cancel. " + error.message); return; }
+  await loadLeave(); await loadTimesheet();
+}
+
+// ---- the manager's side ----
+async function loadLeaveQueue(){
+  const { data, error } = await db.from("leave_to_approve").select("*");
+  const wrap = $("ap-lv");
+  if(!wrap) return 0;
+  if(oops("Leave to approve", error)) return 0;
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No leave waiting.</p>'; return 0; }
+
+  wrap.innerHTML = data.map(l => {
+    const stage = l.state === "with_manager" ? "awaiting you" : "awaiting a senior";
+    const pot = l.days_per_year ? " \u00b7 " + l.taken_this_year + " of " + l.days_per_year + " used this year" : "";
+    const evi = l.needs_evidence_over !== null && l.days > l.needs_evidence_over
+      ? (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">evidence attached</span>'
+                        : ' \u00b7 <span style="color:var(--red)">no evidence</span>') : "";
+    return '<div class="qrow"><span class="dot todo"></span>' +
+      '<span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+      '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + evi + '</span>' +
+      (l.reason ? '<span style="font-style:italic">\u201c' + esc(l.reason) + '\u201d</span>' : "") +
+      '</span>' +
+      '<button onclick="decideLeave(' + l.id + ', false)">Decline</button>' +
+      '<button class="btn-primary" style="margin-left:6px" onclick="decideLeave(' + l.id + ', true)">' +
+      (l.state === "with_manager" ? "Approve" : "Grant") + '</button></div>';
+  }).join("");
+  return data.length;
+}
+
+async function decideLeave(id, approve){
+  let note = null;
+  if(!approve){
+    note = prompt("Why are you declining? They will see this.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
+  } else {
+    note = prompt("A note for them (optional). Leave blank to just approve.") || null;
+  }
+  const { data, error } = await db.rpc("decide_leave", { p_id: id, p_approve: approve, p_note: note });
+  if(error){ toast("Could not do that. " + error.message); return; }
+  toast(data === "approved" ? "Approved. They have been told."
+       : data === "with_senior" ? "Approved and passed to the COO or CEO."
+       : "Returned to them with your reason.");
+  await loadApprovals();
+}
+
+// ---- sick and bereavement a manager already granted: the CEO/COO are told ----
+async function loadLeaveInfo(){
+  if(!isCertifier()) return;
+  const { data, error } = await db.from("leave_for_information").select("*").limit(8);
+  if(error || !data || !data.length) return;
+  $("ap-info-card").classList.remove("hidden");
+  $("ap-info").innerHTML = data.map(l =>
+    '<div class="qrow"><span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
+    '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
+    fmtRange(l.starts_on, l.ends_on) +
+    (l.approved_by ? " \u00b7 granted by " + esc(l.approved_by) : "") + '</span></span></div>').join("");
 }
 
 // ---------- helpers ----------
