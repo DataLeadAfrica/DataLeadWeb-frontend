@@ -1109,30 +1109,48 @@ async function loadTimesheet(){
   const lastD = new Date(TS_YEAR, TS_MONTH, 0).getDate();
   const last  = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + lastD;
 
-  HOLIDAYS = {};
-  const { data: hols } = await db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last);
-  (hols||[]).forEach(h => HOLIDAYS[h.holiday] = h.name);
+  try {
+    // public holidays this month
+    const h = await db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last);
+    if(h.error) throw new Error("Holidays: " + h.error.message);
+    HOLIDAYS = {};
+    (h.data||[]).forEach(x => HOLIDAYS[x.holiday] = x.name);
 
-  const { data: wd } = await db.rpc("working_days_in", { p_year: TS_YEAR, p_month: TS_MONTH });
-  WORKING_DAYS = wd ?? 0;
-  $("s-wd").textContent = WORKING_DAYS;
+    // working days
+    const w = await db.rpc("working_days_in", { p_year: TS_YEAR, p_month: TS_MONTH });
+    if(w.error) throw new Error("Working days: " + w.error.message);
+    WORKING_DAYS = w.data ?? 0;
+    $("s-wd").textContent = WORKING_DAYS;
 
-  DAYS = {};
-  const { data: rows } = await db.from("my_timesheet").select("*").gte("work_date", first).lte("work_date", last);
-  (rows||[]).forEach(r => DAYS[r.work_date] = r);
+    // my logged days
+    const d = await db.from("my_timesheet").select("*").gte("work_date", first).lte("work_date", last);
+    if(d.error) throw new Error("Your days: " + d.error.message);
+    DAYS = {};
+    (d.data||[]).forEach(r => DAYS[r.work_date] = r);
 
-  const pid = await periodId();
-  const { data: sub } = await db.from("submissions")
-    .select("status, report_summary, report_achievements, report_challenges, report_next, manager_note")
-    .eq("period_id", pid).eq("staff_id", PROFILE.id).maybeSingle();
-  SUB_STATUS = sub?.status || "draft";
-  if(sub){
-    set("rp1", sub.report_summary); set("rp2", sub.report_achievements);
-    set("rp3", sub.report_challenges); set("rp4", sub.report_next);
+    // this month's submission, if any
+    const pid = await periodId();
+    if(pid === null || pid === undefined) throw new Error("Could not open the month. Has file 16 been run?");
+    const sb = await db.from("submissions")
+      .select("status, report_summary, report_achievements, report_challenges, report_next, manager_note")
+      .eq("period_id", pid).eq("staff_id", PROFILE.id).maybeSingle();
+    if(sb.error) throw new Error("Submission: " + sb.error.message);
+    const sub = sb.data;
+    SUB_STATUS = (sub && sub.status) ? sub.status : "draft";
+    if(sub){
+      set("rp1", sub.report_summary); set("rp2", sub.report_achievements);
+      set("rp3", sub.report_challenges); set("rp4", sub.report_next);
+    }
+    renderLock(sub);
+    buildCal();
+    await refreshHours();
+  } catch(e){
+    // never fail silently: say what broke and where
+    $("ts-locked").innerHTML =
+      '<div class="alert err"><b>The timesheet could not load</b>' + esc(e.message || String(e)) +
+      '<div style="font-size:12px;margin-top:6px;opacity:.85">Tell whoever set this up. Nothing you did caused it.</div></div>';
+    console.error("loadTimesheet:", e);
   }
-  renderLock(sub);
-  buildCal();
-  await refreshHours();
 }
 
 async function periodId(){
@@ -1185,7 +1203,8 @@ function buildCal(){
 }
 
 async function refreshHours(){
-  const { data } = await db.rpc("hours_for", { p_staff: PROFILE.id, p_year: TS_YEAR, p_month: TS_MONTH });
+  const { data, error } = await db.rpc("hours_for", { p_staff: PROFILE.id, p_year: TS_YEAR, p_month: TS_MONTH });
+  if(error){ console.error("hours_for:", error.message); return; }
   const h = Array.isArray(data) ? data[0] : data;
   if(!h) return;
   const logged = h.days_logged || 0;
@@ -1197,7 +1216,10 @@ async function refreshHours(){
 }
 
 function openDay(iso){
-  if(["submitted","manager_approved","director_approved"].includes(SUB_STATUS)) return;
+  if(["submitted","manager_approved","director_approved"].includes(SUB_STATUS)){
+    alert("This month is already submitted, so it is locked. Ask your manager to return it if you need a change.");
+    return;
+  }
   editing = iso;
   const dt = new Date(iso + "T00:00:00");
   const std = dt.getDay() === 5 ? 5.5 : 7;
