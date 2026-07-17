@@ -9,9 +9,16 @@
       "destination": "/giz/host-an-intern/index.html"
     },
     {
+      "source": "/giz/employability",
+      "destination": "/giz/employability/index.html"
+    },
+    {
+      "source": "/giz/employability/record",
+      "destination": "/giz/employability/record/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-
