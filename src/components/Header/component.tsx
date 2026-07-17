@@ -190,6 +190,7 @@ export default function Header() {
   const gizLinks: Record<string, string> = {
     "Remote Work Training": "/giz",
     "Host an Intern": "/giz/host-an-intern",
+    "Employability Placements": "/giz/employability",
   };
 
   const courseLinks: Record<string, string> = {
