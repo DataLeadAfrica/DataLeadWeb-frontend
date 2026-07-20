@@ -189,6 +189,8 @@ export default function Header() {
   // so these are plain <a href> links (staticLinks below), not <Link to>.
   const gizLinks: Record<string, string> = {
     "Remote Work Training": "/giz",
+    "Register / Update progress": "/giz/remote-work/register",
+    "Programme dashboard": "/giz/remote-work/dashboard",
     "Host an Intern": "/giz/host-an-intern",
     "Employability Placements": "/giz/employability",
   };
