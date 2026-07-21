@@ -21,6 +21,7 @@ type BioProps = {
   facebook?: string;
   knowsAbout?: string[];
   areaServed?: string;
+  noindex?: boolean;
 };
 
 // Linkify known links inside the bio prose: Deaf-in-Tech and mothers2mothers.
@@ -75,6 +76,7 @@ export default function Bio(props: BioProps) {
     facebook,
     knowsAbout,
     areaServed,
+    noindex,
   } = props;
 
   const facts: { label: string; value?: string }[] = [
@@ -144,6 +146,7 @@ export default function Bio(props: BioProps) {
           (quote || "")
         }
         jsonLd={jsonLd}
+        noindex={noindex}
       />
 
       <div className="bio__crumb">
