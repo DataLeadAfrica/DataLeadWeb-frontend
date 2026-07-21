@@ -1,105 +1,231 @@
 import { Link } from "react-router";
 
 import "./page.css";
-import Seo from "../../components/Seo/component";
-import { StaffInfo } from "./router";
+import Seo from "../../../components/Seo/component";
 
-export default function OurTeam({ staffInfo }: { staffInfo: StaffInfo }) {
-  const entries = Object.entries(staffInfo);
-  const leadEntry = entries.find(([, v]) => v.lead);
-  const lead = leadEntry ? leadEntry[1] : null;
-  const rest = entries.filter(([, v]) => !v.lead).map(([, v]) => v);
+type BioProps = {
+  imgSrc: string;
+  name: string;
+  title: string;
+  text: string;
+  bioRoute?: string;
+  quote?: string;
+  focus?: string;
+  education?: string;
+  recognition?: string;
+  languages?: string;
+  boards?: string;
+  linkedin?: string;
+  x?: string;
+  instagram?: string;
+  facebook?: string;
+  knowsAbout?: string[];
+  areaServed?: string;
+  noindex?: boolean;
+};
+
+// Linkify known links inside the bio prose: Deaf-in-Tech and mothers2mothers.
+function renderParagraph(text: string, key: number) {
+  const patterns: { re: RegExp; href: string }[] = [
+    { re: /Deaf[-\s]in[-\s]Tech/, href: "https://deafintech.org/" },
+    { re: /mothers2mothers(?:\s*\(M2M\))?/, href: "https://m2m.org/" },
+  ];
+  // find the earliest match among patterns
+  let best: { idx: number; label: string; href: string } | null = null;
+  for (const p of patterns) {
+    const m = text.match(p.re);
+    if (m && m.index !== undefined) {
+      if (!best || m.index < best.idx)
+        best = { idx: m.index, label: m[0], href: p.href };
+    }
+  }
+  if (!best) return <p key={key}>{text}</p>;
+  const before = text.slice(0, best.idx);
+  const after = text.slice(best.idx + best.label.length);
+  return (
+    <p key={key}>
+      {before}
+      <a
+        href={best.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bio__link"
+      >
+        {best.label}
+      </a>
+      {after}
+    </p>
+  );
+}
+
+export default function Bio(props: BioProps) {
+  const {
+    imgSrc,
+    name,
+    title,
+    text,
+    quote,
+    focus,
+    education,
+    recognition,
+    languages,
+    boards,
+    linkedin,
+    x,
+    instagram,
+    facebook,
+    knowsAbout,
+    areaServed,
+    noindex,
+  } = props;
+
+  const facts: { label: string; value?: string }[] = [
+    { label: "Focus", value: focus },
+    { label: "Education", value: education },
+    { label: "Recognition", value: recognition },
+    { label: "Boards", value: boards },
+    { label: "Languages", value: languages },
+  ].filter((f) => f.value && f.value.trim().length > 0);
+
+  // Build a rich Person profile for search engines and AI assistants.
+  const person: Record<string, unknown> = {
+    "@type": "Person",
+    name: name,
+    jobTitle: title,
+    worksFor: {
+      "@type": "Organization",
+      name: "Data-Lead Africa",
+      url: "https://dataleadafrica.com",
+    },
+    image: "https://dataleadafrica.com" + imgSrc,
+    url: "https://dataleadafrica.com" + (props.bioRoute || ""),
+  };
+  if (quote) person.description = quote;
+  if (languages) {
+    // Include the primary languages and any "working" languages listed after ";"
+    person.knowsLanguage = languages
+      .replace(/;/g, ",")
+      .replace(/working /gi, "")
+      .replace(/ & /g, ", ")
+      .split(",")
+      .map((l) => l.trim())
+      .filter(Boolean);
+  }
+  if (knowsAbout && knowsAbout.length) person.knowsAbout = knowsAbout;
+  if (areaServed) person.areaServed = areaServed;
+  if (education) person.alumniOf = education;
+  if (recognition) person.award = recognition;
+  if (boards) {
+    person.memberOf = boards.split(",").map((b) => ({
+      "@type": "Organization",
+      name: b.trim(),
+    }));
+  }
+  const sameAs: string[] = [];
+  if (linkedin) sameAs.push(linkedin);
+  if (x) sameAs.push(x);
+  if (instagram) sameAs.push(instagram);
+  if (facebook) sameAs.push(facebook);
+  if (sameAs.length) person.sameAs = sameAs;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Data-Lead Africa",
-    url: "https://dataleadafrica.com",
-    logo: "https://dataleadafrica.com/assets/dla-logo-email.png",
-    employee: entries.map(([, v]) => ({
-      "@type": "Person",
-      name: v.name,
-      jobTitle: v.title,
-      image: "https://dataleadafrica.com" + v.imgSrc,
-      url: "https://dataleadafrica.com" + v.bioRoute,
-    })),
+    "@type": "ProfilePage",
+    mainEntity: person,
   };
 
   return (
-    <div className="wwt">
+    <div className="bio">
       <Seo
-        title="Leadership & Team | Data-Lead Africa"
-        description="Meet the researchers, data scientists and development specialists leading Data-Lead Africa. Founded and led by Arowolo Ayoola, Ph.D, delivering rigorous data work across the African continent."
+        title={name + " | Data-Lead Africa"}
+        description={
+          name +
+          ", " +
+          title +
+          " at Data-Lead Africa. " +
+          (quote || "")
+        }
         jsonLd={jsonLd}
+        noindex={noindex}
       />
 
-      <div className="wwt__wrap">
-        <header className="wwt-mast">
-          <p className="wwt-eyebrow">Leadership</p>
-          <h1 className="wwt-mast__title">The people behind the decisions.</h1>
-          <p className="wwt-mast__lead">
-            Data-Lead Africa is led by researchers, scientists and development
-            specialists who have shaped national strategy and delivered rigorous
-            work across the African continent.
-          </p>
-        </header>
+      <div className="bio__crumb">
+        <Link to="/our-team">&larr; Back to team</Link>
       </div>
 
-      {lead && (
-        <section className="wwt-lead">
-          <div className="wwt-lead__photo">
-            <img src={lead.imgSrc} alt={lead.name} />
+      <div className="bio__grid">
+        <aside className="bio__side">
+          <div className="bio__photo">
+            <img src={imgSrc} alt={name} />
           </div>
-          <div className="wwt-lead__body">
-            <p className="wwt-lead__kicker">Founder &amp; Lead Partner</p>
-            <h2 className="wwt-lead__name">{lead.name}</h2>
-            <p className="wwt-lead__role">{lead.title}</p>
-            <p className="wwt-lead__bio">
-              A researcher, data analyst and monitoring &amp; evaluation
-              consultant with nearly two decades of experience shaping
-              high-impact policy and research, including working on the
-              Nigeria's Economic Recovery &amp; Growth Plan. Founder of{" "}
-              <a
-                href="https://deafintech.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="wwt-inline-link"
-              >
-                Deaf-in-Tech
-              </a>{" "}
-              and World Economic Forum Social Intrapreneur of the Year 2023.
-            </p>
-            {lead.institutions && (
-              <div className="wwt-lead__inst">
-                {lead.institutions.map((inst) => (
-                  <span key={inst}>{inst}</span>
-                ))}
-              </div>
-            )}
-            <Link to={lead.bioRoute} className="wwt-lead__link">
-              Read full profile
-            </Link>
-          </div>
-        </section>
-      )}
+          <h1 className="bio__name">{name}</h1>
+          <p className="bio__role">{title}</p>
 
-      <div className="wwt__wrap">
-        <div className="wwt-roster-head">
-          <h2>The partners &amp; leadership team</h2>
-        </div>
-        <div className="wwt-roster">
-          {rest.map((v) => (
-            <Link key={v.bioRoute} to={v.bioRoute} className="wwt-ro">
-              <div className="wwt-ro__photo">
-                <img src={v.imgSrc} alt={v.name} />
-              </div>
-              <div className="wwt-ro__meta">
-                <h3>{v.name}</h3>
-                <p className="wwt-ro__role">{v.title}</p>
-                {v.expertise && <p className="wwt-ro__exp">{v.expertise}</p>}
-              </div>
-            </Link>
-          ))}
+          {facts.length > 0 && (
+            <div className="bio__facts">
+              {facts.map((f) => (
+                <div className="bio__fact" key={f.label}>
+                  <b>{f.label}</b>
+                  {f.value}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {(linkedin || x || instagram || facebook) && (
+            <div className="bio__socials">
+              {linkedin && (
+                <a
+                  href={linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  in
+                </a>
+              )}
+              {x && (
+                <a
+                  href={x}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X"
+                >
+                  X
+                </a>
+              )}
+              {instagram && (
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                >
+                  IG
+                </a>
+              )}
+              {facebook && (
+                <a
+                  href={facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  f
+                </a>
+              )}
+            </div>
+          )}
+        </aside>
+
+        <div className="bio__main">
+          <p className="bio__kicker">Profile</p>
+          {quote && <p className="bio__lead">{quote}</p>}
+          <div className="bio__body">
+            {text
+              .split("\n\n")
+              .map((line, index) => renderParagraph(line, index))}
+          </div>
         </div>
       </div>
     </div>
