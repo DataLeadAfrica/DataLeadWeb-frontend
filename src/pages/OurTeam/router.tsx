@@ -159,7 +159,7 @@ bioText: `I'm Gabriel Mathew, a multidisciplinary creative and Visual Storytelle
 // Unlisted profiles: reachable by direct URL only, NOT shown on the /our-team grid.
 const unlistedStaff: StaffInfo = {
   Maranatha: {
-    name: "Maranatha Emmaogboji",
+    name: "Ekwukwu Maranatha Emmaogboji",
     title: "Head of Media and Creative Production",
     imgSrc: "/assets/our-team/maranatha-light.jpg",
     bioRoute: routes.ourTeamMaranatha,
@@ -167,11 +167,11 @@ const unlistedStaff: StaffInfo = {
     focus: "Brand, media and creative direction",
     education: "B.A English Language, Benue State University",
     noindex: true,
-    bioText: `Maranatha Emmaogboji is the Head of Media and Creative Production at Data-Lead Africa, where he leads the organization's media, branding, digital communications, and creative content strategy. With over ten years of experience in media production, he has developed expertise in video production, screenwriting, multimedia design, digital storytelling, and content development. He oversees the planning and execution of creative campaigns and creative media projects within the organization.
+    bioText: `Ekwukwu Maranatha Emmaogboji is the Head of Media and Creative Production at Data-Lead Africa, where he leads the organization's media, branding, digital communications, and creative content strategy. With over ten years of experience in media production, he has developed expertise in video production, screenwriting, multimedia design, digital storytelling, and content development. He oversees the planning and execution of creative campaigns and creative media projects within the organization.
 
 He holds a Bachelor's Degree in English Language from Benue State University. His professional journey into media began during his undergraduate years, where he served as a Production Manager for several theatre productions on campus. Through these productions, he gained practical experience in production planning, stage management, team coordination, and storytelling, laying the foundation for his career in the broader media and communications industry.
 
-Beyond creative media production, Maranatha is also a creative writer and literary enthusiast. He has written stage plays, contributed to literary projects, and published poetry exploring themes of identity, society, culture, and human experience. His background in literature and storytelling continues to influence his approach to content creation.
+Beyond creative media production, Ekwukwu is also a creative writer and literary enthusiast. He has written stage plays, contributed to literary projects, and published poetry exploring themes of identity, society, culture, and human experience. His background in literature and storytelling continues to influence his approach to content creation.
 
 At Data-Lead Africa, he remains committed to using creative media to support sustainable development outcomes across Africa.`,
   },
