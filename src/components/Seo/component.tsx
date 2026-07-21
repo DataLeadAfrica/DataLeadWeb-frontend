@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 
 // Lightweight per-page SEO: sets the document <title>, meta description,
-// canonical URL and optional JSON-LD structured data. No external library.
+// canonical URL, optional JSON-LD structured data, and an optional
+// robots "noindex" tag for pages that should stay out of search results.
 //
-// Usage:  <Seo title="…" description="…" jsonLd={{ ... }} />
+// Usage:  <Seo title="…" description="…" jsonLd={{ ... }} noindex />
 
 type SeoProps = {
   title: string;
   description?: string;
   jsonLd?: object | object[];
+  noindex?: boolean;
 };
 
 function upsertMeta(name: string, content: string) {
@@ -35,7 +37,7 @@ function upsertCanonical(href: string) {
   link.setAttribute("href", href);
 }
 
-export default function Seo({ title, description, jsonLd }: SeoProps) {
+export default function Seo({ title, description, jsonLd, noindex }: SeoProps) {
   useEffect(() => {
     if (title) document.title = title;
     if (description) {
@@ -53,6 +55,16 @@ export default function Seo({ title, description, jsonLd }: SeoProps) {
     }
     upsertCanonical(window.location.origin + window.location.pathname);
 
+    // Keep this page out of search results when asked. Added on mount and
+    // removed on unmount, so it never leaks onto other pages in the SPA.
+    let robots: HTMLMetaElement | null = null;
+    if (noindex) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      robots.setAttribute("content", "noindex, nofollow");
+      document.head.appendChild(robots);
+    }
+
     let script: HTMLScriptElement | null = null;
     if (jsonLd) {
       script = document.createElement("script");
@@ -62,8 +74,9 @@ export default function Seo({ title, description, jsonLd }: SeoProps) {
     }
     return () => {
       if (script && script.parentNode) script.parentNode.removeChild(script);
+      if (robots && robots.parentNode) robots.parentNode.removeChild(robots);
     };
-  }, [title, description, JSON.stringify(jsonLd)]);
+  }, [title, description, JSON.stringify(jsonLd), noindex]);
 
   return null;
 }
