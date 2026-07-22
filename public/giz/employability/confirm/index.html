@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fef1e7" />
+    <title>
+      Confirm your attendance | GIZ-ZME programme | Data-Lead Africa
+    </title>
+
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link
+      rel="stylesheet"
+      href="/fonts/clash-display/Fonts/WEB/css/clash-display.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+
+    <style>
+      /* ==================================================================
+         GIZ-ZME Remote Work Training Programme
+         Attendance confirmation form.
+
+         Standalone page. Lives at /giz/employability/confirm/
+         Logos are real files already in the repo under /assets/
+         Tokens mirrored from src/global.css so the page can stand alone.
+         ================================================================== */
+      :root {
+        color-scheme: light;
+
+        --clr-orange: #f56e0f;
+        --clr-orange-medium: #f9a971;
+        --clr-orange-light: #fde9da;
+        --clr-orange-strong: #d94a00;
+        --clr-orange-deep: #7c2d12;
+
+        --bg-gradient: linear-gradient(
+          105.6deg,
+          #fde2cf -45.34%,
+          #e7f5fe 51.56%,
+          #fffbeb 87.94%,
+          #fef1e7 105.06%
+        );
+
+        --ink: #1c1b22;
+        --ink-soft: #55535e;
+        --surface: #ffffff;
+        --line: #e3ddd3;
+
+        --clr-red: #b3261e;
+        --clr-red-bg: #fdecec;
+        --clr-green: #1f7a4c;
+
+        --font-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+          sans-serif;
+        --font-display: "ClashDisplay-Semibold", "Poppins", sans-serif;
+
+        --radius-2: 8px;
+        --radius-3: 12px;
+        --radius-4: 16px;
+        --shadow-2: 0 12px 32px rgba(28, 27, 34, 0.1);
+
+        --tap: 48px;
+        --maxw: 680px;
+      }
+
+      html {
+        box-sizing: border-box;
+        -webkit-text-size-adjust: 100%;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        color: var(--ink);
+        background: var(--bg-gradient) fixed;
+        background-color: #fef1e7;
+        line-height: 1.6;
+        font-size: 16px;
+        min-height: 100svh;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        background: var(--clr-orange-strong);
+        color: #fff;
+        padding: 0.6rem 1rem;
+        z-index: 100;
+      }
+      .skip-link:focus {
+        left: 0;
+      }
+
+      /* ---------------- Header ---------------- */
+      .masthead {
+        background: rgba(255, 255, 255, 0.74);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+      }
+      .masthead__inner {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        padding: 1.15rem 1rem 1.25rem;
+      }
+
+      .logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(0.9rem, 4vw, 2rem);
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+      .logos img {
+        width: auto;
+        object-fit: contain;
+      }
+      .logo--dla {
+        height: 46px;
+      }
+      .logo--giz {
+        height: 32px;
+      }
+      .logo--ministry {
+        height: 40px;
+      }
+      .logos__rule {
+        width: 1px;
+        height: 32px;
+        background: var(--line);
+        flex: none;
+      }
+      @media (max-width: 560px) {
+        .logo--dla {
+          height: 34px;
+        }
+        .logo--giz {
+          height: 26px;
+        }
+        .logo--ministry {
+          height: 32px;
+        }
+        .logos__rule {
+          display: none;
+        }
+      }
+
+      .wordmark {
+        text-align: center;
+      }
+      .wordmark__org {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--clr-orange-strong);
+        margin: 0;
+      }
+      .wordmark__title {
+        font-family: var(--font-display);
+        margin: 0.4rem 0 0;
+        font-size: clamp(0.95rem, 2.7vw, 1.12rem);
+        color: var(--clr-orange-deep);
+        line-height: 1.35;
+      }
+      .wordmark__sub {
+        margin: 0.2rem 0 0;
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+      }
+
+      /* ---------------- Layout ---------------- */
+      .wrap {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        padding: 1.8rem 1rem 3rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-4);
+        box-shadow: var(--shadow-2);
+        padding: 1.6rem;
+      }
+      @media (max-width: 520px) {
+        .card {
+          padding: 1.15rem;
+        }
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--clr-orange-deep);
+        background: var(--clr-orange-light);
+        border: 1px solid #f6d3b6;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        margin-bottom: 0.9rem;
+      }
+      .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 5.5vw, 2rem);
+        margin: 0 0 0.5rem;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+      }
+      .lede {
+        color: var(--ink-soft);
+        margin: 0 0 1.4rem;
+        font-size: 0.98rem;
+      }
+      .lede strong {
+        color: var(--ink);
+      }
+
+      .deadline {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        background: #fffbeb;
+        border: 1px solid #f3dfae;
+        border-radius: var(--radius-3);
+        padding: 0.75rem 0.9rem;
+        font-size: 0.88rem;
+        margin: 0 0 1.6rem;
+      }
+      .deadline svg {
+        width: 18px;
+        height: 18px;
+        stroke: #a16207;
+        fill: none;
+        stroke-width: 2;
+        flex: none;
+        margin-top: 0.15rem;
+      }
+
+      /* ---------------- Form ---------------- */
+      fieldset {
+        border: 0;
+        margin: 0 0 1.7rem;
+        padding: 0;
+      }
+      legend {
+        padding: 0;
+        font-size: 1.02rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+      .hint {
+        font-size: 0.84rem;
+        color: var(--ink-soft);
+        margin: -0.5rem 0 0.8rem;
+      }
+
+      .choices {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .choice {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        min-height: var(--tap);
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-3);
+        padding: 0.85rem 0.95rem;
+        cursor: pointer;
+        background: #fff;
+        transition: border-color 0.15s ease, background 0.15s ease;
+      }
+      .choice:hover {
+        border-color: var(--clr-orange-medium);
+      }
+      .choice input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .choice__mark {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #c9c3b8;
+        flex: none;
+        margin-top: 0.15rem;
+        display: grid;
+        place-items: center;
+        transition: border-color 0.15s ease;
+      }
+      .choice__mark::after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--clr-orange-strong);
+        transform: scale(0);
+        transition: transform 0.15s ease;
+      }
+      .choice input:checked ~ .choice__mark {
+        border-color: var(--clr-orange-strong);
+      }
+      .choice input:checked ~ .choice__mark::after {
+        transform: scale(1);
+      }
+      .choice:has(input:checked) {
+        border-color: var(--clr-orange-strong);
+        background: #fff8f2;
+      }
+      .choice input:focus-visible ~ .choice__mark {
+        outline: 2px solid var(--clr-orange-strong);
+        outline-offset: 3px;
+      }
+      .choice__body {
+        flex: 1;
+      }
+      .choice__title {
+        font-weight: 600;
+        display: block;
+        line-height: 1.35;
+      }
+      .choice__note {
+        font-size: 0.84rem;
+        color: var(--ink-soft);
+        display: block;
+      }
+
+      .field {
+        margin-bottom: 1rem;
+      }
+      .field label {
+        display: block;
+        font-weight: 500;
+        font-size: 0.92rem;
+        margin-bottom: 0.35rem;
+      }
+      .req {
+        color: var(--clr-orange-strong);
+      }
+      .optional {
+        font-weight: 400;
+        color: var(--ink-soft);
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      select,
+      textarea {
+        width: 100%;
+        min-height: var(--tap);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        color: var(--ink);
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-2);
+        padding: 0.6rem 0.8rem;
+      }
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+      select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355535e' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 18px;
+        padding-right: 2.4rem;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid var(--clr-orange-strong);
+        outline-offset: 1px;
+        border-color: var(--clr-orange-strong);
+      }
+      [aria-invalid="true"] {
+        border-color: var(--clr-red);
+        background: var(--clr-red-bg);
+      }
+      .err {
+        display: block;
+        color: var(--clr-red);
+        font-size: 0.83rem;
+        margin-top: 0.3rem;
+        min-height: 1em;
+      }
+
+      .reveal {
+        margin-top: 0.85rem;
+        padding-left: 1rem;
+        border-left: 3px solid var(--clr-orange);
+      }
+
+      .actions {
+        border-top: 1px solid var(--line);
+        padding-top: 1.4rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 54px;
+        background: var(--clr-orange-strong);
+        color: #fff;
+        border: 0;
+        font-family: var(--font-sans);
+        font-size: 1.05rem;
+        font-weight: 600;
+        border-radius: var(--radius-3);
+        cursor: pointer;
+        box-shadow: 0 8px 22px rgba(217, 74, 0, 0.28);
+        transition: background 0.2s ease, transform 0.15s ease;
+      }
+      .btn:hover:not(:disabled) {
+        background: #c24200;
+        transform: translateY(-1px);
+      }
+      .btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn .spin {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .form-error {
+        background: var(--clr-red-bg);
+        border: 1px solid #f2b8b8;
+        color: #7a1616;
+        border-radius: var(--radius-2);
+        padding: 0.75rem 0.9rem;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      /* ---------------- Success ---------------- */
+      .done {
+        text-align: center;
+        padding: 0.5rem 0;
+      }
+      .done:focus {
+        outline: none;
+      }
+      .done__tick {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.1rem;
+        border-radius: 50%;
+        background: #e8f7ee;
+        display: grid;
+        place-items: center;
+      }
+      .done__tick svg {
+        width: 32px;
+        height: 32px;
+        stroke: var(--clr-green);
+        fill: none;
+        stroke-width: 2.5;
+      }
+      .done__title {
+        font-family: var(--font-display);
+        font-size: 1.45rem;
+        margin: 0 0 0.6rem;
+      }
+      .done__text {
+        color: var(--ink-soft);
+        margin: 0 auto 1.2rem;
+        max-width: 44ch;
+      }
+      .done__ref {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+      }
+
+      .site-footer {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        padding: 0 1rem 2rem;
+      }
+      .site-footer p {
+        margin: 0.25rem 0;
+      }
+      .site-footer a {
+        color: var(--clr-orange-strong);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="masthead">
+      <div class="masthead__inner">
+        <div class="logos">
+          <img
+            class="logo--dla"
+            src="/assets/dla-logo-email.png"
+            alt="Data-Lead Africa"
+            width="600"
+            height="301"
+          />
+          <span class="logos__rule" aria-hidden="true"></span>
+          <img
+            class="logo--giz"
+            src="/assets/giz/giz-lockup.png"
+            alt="German Cooperation, implemented by GIZ"
+            width="396"
+            height="120"
+          />
+          <span class="logos__rule" aria-hidden="true"></span>
+          <img
+            class="logo--ministry"
+            src="/assets/giz/fmle.png"
+            alt="Federal Ministry of Labour and Employment"
+            width="119"
+            height="120"
+          />
+        </div>
+
+        <div class="wordmark">
+          <p class="wordmark__org">Data-Lead Africa</p>
+          <p class="wordmark__title">
+            GIZ-ZME Remote Work Training Programme
+          </p>
+          <p class="wordmark__sub">
+            In partnership with GIZ and the Federal Ministry of Labour and
+            Employment
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap" id="main">
+      <!-- ============================ FORM ============================ -->
+      <section class="card" id="formCard">
+        <span class="eyebrow">Attendance confirmation</span>
+        <h1 class="page-title">Confirm your training date</h1>
+        <p class="lede" id="greeting">
+          Your training dates were sent to you by email. Please let us know
+          whether you will be available. It takes less than a minute.
+        </p>
+
+        <div class="deadline" id="deadlineBox">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+          <span>
+            Please respond by <strong id="deadlineText"></strong>. Places not
+            confirmed by then will be given to participants on the waiting
+            list.
+          </span>
+        </div>
+
+        <div class="form-error" id="formError" hidden></div>
+
+        <form id="confirmForm" novalidate>
+          <fieldset>
+            <legend>
+              Will you be available to attend? <span class="req">*</span>
+            </legend>
+            <div class="choices">
+              <label class="choice">
+                <input type="radio" name="response" value="Attending" />
+                <span class="choice__mark" aria-hidden="true"></span>
+                <span class="choice__body">
+                  <span class="choice__title"
+                    >Yes, I will attend on my scheduled dates</span
+                  >
+                </span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="response" value="Reschedule" />
+                <span class="choice__mark" aria-hidden="true"></span>
+                <span class="choice__body">
+                  <span class="choice__title"
+                    >I would like a different batch</span
+                  >
+                  <span class="choice__note"
+                    >Pick the batch that suits you below.</span
+                  >
+                </span>
+              </label>
+
+              <label class="choice">
+                <input type="radio" name="response" value="Not attending" />
+                <span class="choice__mark" aria-hidden="true"></span>
+                <span class="choice__body">
+                  <span class="choice__title">I cannot attend at all</span>
+                  <span class="choice__note"
+                    >Your place will be given to someone else.</span
+                  >
+                </span>
+              </label>
+            </div>
+            <span class="err" id="err-response"></span>
+
+            <div class="reveal" id="rescheduleBlock" hidden>
+              <div class="field">
+                <label for="preferredBatch"
+                  >Which batch would you prefer?
+                  <span class="req">*</span></label
+                >
+                <select id="preferredBatch" name="preferredBatch">
+                  <option value="">Select a batch</option>
+                </select>
+                <span class="err" id="err-preferredBatch"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Your details</legend>
+            <p class="hint">
+              Check that these are correct. We will use them to reach you
+              before the training.
+            </p>
+
+            <div class="field">
+              <label for="fullName"
+                >Full name <span class="req">*</span></label
+              >
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                autocomplete="name"
+              />
+              <span class="err" id="err-fullName"></span>
+            </div>
+
+            <div class="field">
+              <label for="phone"
+                >Phone number <span class="req">*</span></label
+              >
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="080..."
+              />
+              <span class="err" id="err-phone"></span>
+            </div>
+
+            <div class="field">
+              <label for="email"
+                >Email address <span class="req">*</span></label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+              />
+              <span class="err" id="err-email"></span>
+            </div>
+
+            <div class="field">
+              <label for="note"
+                >Anything we should know?
+                <span class="optional">(optional)</span></label
+              >
+              <textarea
+                id="note"
+                name="note"
+                rows="2"
+                maxlength="300"
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit" class="btn" id="submitBtn">
+              <span class="spin" id="spinner" hidden></span>
+              <span class="btn__label">Send my response</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============================ SUCCESS ============================ -->
+      <section class="card done" id="doneCard" hidden tabindex="-1">
+        <div class="done__tick">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m5 13 4 4L19 7" />
+          </svg>
+        </div>
+        <h1 class="done__title" id="doneTitle">Response received</h1>
+        <p class="done__text" id="doneText"></p>
+        <p class="done__ref">Reference: <strong id="doneRef"></strong></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        &copy; <span id="year"></span> Data-Lead Africa, GIZ-ZME employability
+        programme
+      </p>
+      <p>
+        Trouble with this form? Email
+        <a href="mailto:info@dataleadafrica.com">info@dataleadafrica.com</a>
+      </p>
+    </footer>
+
+    <script>
+      /* ==================================================================
+         1. CONFIG
+
+         APPS_SCRIPT_URL is the only line you must change before go-live.
+         Paste the Apps Script web app deployment URL between the quotes.
+         It looks like:
+           https://script.google.com/macros/s/AKfycb..../exec
+         ================================================================== */
+      const CONFIG = {
+        APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxZhYhwoH84UxibzxVyu3C_iu0YdUkZ-1BraNkB79Yz8-rcveLQgodyJk1kUAVFrHpl/exec",
+        PROGRAMME_NAME: "GIZ-ZME Remote Work Training Programme",
+        /* Shown in the yellow box. Set to "" to hide the box entirely. */
+        DEADLINE: "Friday",
+      };
+
+      /* Batches offered in the reschedule dropdown. */
+      const BATCHES = ["Batch 3", "Batch 4"];
+
+      /* ==================================================================
+         Nothing below this line needs editing.
+         ================================================================== */
+      const params = new URLSearchParams(location.search);
+      const form = document.getElementById("confirmForm");
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("year").textContent =
+          new Date().getFullYear();
+
+        if (CONFIG.DEADLINE) {
+          document.getElementById("deadlineText").textContent =
+            CONFIG.DEADLINE;
+        } else {
+          document.getElementById("deadlineBox").hidden = true;
+        }
+
+        fillFromLink();
+        buildBatchOptions();
+        wireChoices();
+        form.addEventListener("submit", handleSubmit);
+      });
+
+      /* Reads ?ref, ?name, ?email, ?phone from the emailed link.
+         All optional. A plain link with no parameters works fine. */
+      function fillFromLink() {
+        const name = (params.get("name") || "").trim();
+        const email = (params.get("email") || "").trim();
+        const phone = (params.get("phone") || "").trim();
+
+        if (name) form.fullName.value = name;
+        if (email) form.email.value = email;
+        if (phone) form.phone.value = phone;
+
+        if (name) {
+          const first = name.split(" ")[0];
+          document.getElementById("greeting").innerHTML =
+            "Hello <strong>" +
+            escapeHtml(first) +
+            "</strong>, your training dates were sent to you by email. " +
+            "Please let us know whether you will be available. It takes less than a minute.";
+        }
+      }
+
+      function buildBatchOptions() {
+        const sel = document.getElementById("preferredBatch");
+        BATCHES.forEach((b) => {
+          const o = document.createElement("option");
+          o.value = b;
+          o.textContent = b;
+          sel.appendChild(o);
+        });
+      }
+
+      function wireChoices() {
+        form.querySelectorAll('input[name="response"]').forEach((r) => {
+          r.addEventListener("change", () => {
+            document.getElementById("rescheduleBlock").hidden =
+              r.value !== "Reschedule";
+            clearError("response");
+          });
+        });
+        ["fullName", "phone", "email", "preferredBatch"].forEach((n) => {
+          const el = form.elements[n];
+          if (el) el.addEventListener("input", () => clearError(n));
+        });
+      }
+
+      /* ---------------- Validation ---------------- */
+      function validate() {
+        let firstBad = null;
+        const fail = (name, msg) => {
+          showError(name, msg);
+          if (!firstBad) firstBad = name;
+        };
+
+        const response = getRadio("response");
+        if (!response) fail("response", "Choose one of the three options.");
+
+        if (response === "Reschedule" && !form.preferredBatch.value) {
+          fail("preferredBatch", "Select the batch you would prefer.");
+        }
+
+        if (!form.fullName.value.trim())
+          fail("fullName", "Enter your full name.");
+
+        const phone = form.phone.value.replace(/\s/g, "");
+        if (!phone) fail("phone", "Enter your phone number.");
+        else if (!/^[0-9+]{8,15}$/.test(phone))
+          fail("phone", "Enter a valid phone number.");
+
+        const email = form.email.value.trim();
+        if (!email) fail("email", "Enter your email address.");
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+          fail("email", "Enter a valid email address.");
+
+        return firstBad;
+      }
+
+      /* ---------------- Submit ---------------- */
+      async function handleSubmit(e) {
+        e.preventDefault();
+        hideFormError();
+
+        const bad = validate();
+        if (bad) {
+          showFormError(
+            "Some answers need fixing. We have taken you to the first one."
+          );
+          focusField(bad);
+          return;
+        }
+
+        const payload = collectData();
+        setLoading(true);
+        try {
+          await saveToSheet(payload);
+          showDone(payload);
+        } catch (err) {
+          console.error(err);
+          setLoading(false);
+          showFormError(
+            "We could not send your response. Check your internet connection and try again. Your answers are still here."
+          );
+        }
+      }
+
+      function collectData() {
+        const response = getRadio("response");
+        return {
+          reference: params.get("ref") || makeReference(),
+          fullName: form.fullName.value.trim(),
+          phone: form.phone.value.trim(),
+          email: form.email.value.trim(),
+          response: response,
+          preferredBatch:
+            response === "Reschedule" ? form.preferredBatch.value : "",
+          note: form.note.value.trim(),
+          programme: CONFIG.PROGRAMME_NAME,
+          submittedAt: new Date().toISOString(),
+        };
+      }
+
+      function makeReference() {
+        return "DLA-" + Math.floor(100000 + Math.random() * 900000);
+      }
+
+      /**
+       * Apps Script does not answer CORS preflight requests. Sending the body
+       * as text/plain keeps the request "simple", so the browser skips the
+       * preflight and the call goes straight through. The script parses the
+       * body as JSON regardless of what we label it.
+       */
+      async function saveToSheet(payload) {
+        if (
+          !CONFIG.APPS_SCRIPT_URL ||
+          CONFIG.APPS_SCRIPT_URL.indexOf("PASTE_") === 0
+        ) {
+          throw new Error("APPS_SCRIPT_URL is not configured.");
+        }
+        const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          redirect: "follow",
+        });
+        if (!res.ok) throw new Error("Save failed: HTTP " + res.status);
+        const data = await res.json();
+        if (!data || data.ok !== true)
+          throw new Error(data.error || "Save reported failure.");
+        return data;
+      }
+
+      /* ---------------- UI helpers ---------------- */
+      function showDone(d) {
+        document.getElementById("formCard").hidden = true;
+        const card = document.getElementById("doneCard");
+        const title = document.getElementById("doneTitle");
+        const text = document.getElementById("doneText");
+
+        if (d.response === "Attending") {
+          title.textContent = "You are confirmed";
+          text.textContent =
+            "Thank you. We will send the final joining details closer to the date.";
+        } else if (d.response === "Reschedule") {
+          title.textContent = "Request received";
+          text.textContent =
+            "We have received your request to move to " +
+            d.preferredBatch +
+            ". Our team will write to you to confirm the change, subject to space in that batch.";
+        } else {
+          title.textContent = "Thank you for letting us know";
+          text.textContent =
+            "We have recorded that you cannot attend, and your place will be offered to someone on the waiting list.";
+        }
+
+        document.getElementById("doneRef").textContent = d.reference;
+        card.hidden = false;
+        card.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function setLoading(on) {
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = on;
+        document.getElementById("spinner").hidden = !on;
+        btn.querySelector(".btn__label").textContent = on
+          ? "Sending"
+          : "Send my response";
+      }
+
+      function getRadio(name) {
+        const el = form.querySelector(
+          'input[name="' + name + '"]:checked'
+        );
+        return el ? el.value : "";
+      }
+
+      function showError(name, msg) {
+        const el = document.getElementById("err-" + name);
+        if (el) el.textContent = msg;
+        const field = form.elements[name];
+        if (field && field.setAttribute && !field.length)
+          field.setAttribute("aria-invalid", "true");
+      }
+
+      function clearError(name) {
+        const el = document.getElementById("err-" + name);
+        if (el) el.textContent = "";
+        const field = form.elements[name];
+        if (field && field.removeAttribute && !field.length)
+          field.removeAttribute("aria-invalid");
+      }
+
+      function focusField(name) {
+        const els = form.elements[name];
+        if (!els) return;
+        const el = els.length ? els[0] : els;
+        if (el && el.focus) el.focus();
+      }
+
+      function showFormError(msg) {
+        const el = document.getElementById("formError");
+        el.textContent = msg;
+        el.hidden = false;
+      }
+
+      function hideFormError() {
+        document.getElementById("formError").hidden = true;
+      }
+
+      function escapeHtml(s) {
+        return s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+    </script>
+  </body>
+</html>
