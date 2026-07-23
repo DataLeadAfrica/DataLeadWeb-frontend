@@ -12,9 +12,8 @@
 //    Project Settings -> API -> Project URL and the "anon public" key.
 //    NEVER paste the service_role key here.
 // ------------------------------------------------------------
-export const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
-export const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
-
+export const SUPABASE_URL = "https://zndjhvcqrgusorflnkxd.supabase.co";
+export const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpuZGpodmNxcmd1c29yZmxua3hkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTI3NTEsImV4cCI6MjEwMDM4ODc1MX0.jgl7vnGsqWcN7TYplyyPOYlo2v_jlaA1SYhCqb0Qh9U";
 // While the two lines above are still placeholders the pages show a
 // friendly "coming soon" message instead of breaking.
 export const isConfigured =
