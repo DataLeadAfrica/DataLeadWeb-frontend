@@ -1,0 +1,111 @@
+.vfy {
+  background: var(--paper, #faf8f4);
+  min-height: 70vh;
+  padding: 3rem 1.25rem 5rem;
+}
+
+.vfy__wrap {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.vfy__loading {
+  color: #5d5d5d;
+  font-size: 0.95rem;
+}
+
+.vfy__card {
+  background: #fff;
+  border: 1px solid #e3e0da;
+  border-radius: 16px;
+  padding: 1.9rem;
+}
+
+.vfy__card--good {
+  border-color: #cbe5d8;
+}
+
+.vfy__card--bad {
+  border-color: #f0cfcb;
+}
+
+.vfy__pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: 30px;
+  margin-bottom: 0.9rem;
+}
+
+.vfy__pill--good {
+  background: #e7f4ed;
+  color: #0d7a4a;
+}
+
+.vfy__pill--bad {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.vfy__h1 {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+.vfy__text {
+  color: #5d5d5d;
+  font-size: 0.95rem;
+  margin: 0 0 0.8rem;
+}
+
+.vfy__facts {
+  margin: 1.3rem 0 0;
+  padding: 0;
+  border-top: 1px solid #eeece7;
+}
+
+.vfy__fact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eeece7;
+}
+
+.vfy__fact dt {
+  flex: 0 0 170px;
+  font-size: 0.8rem;
+  color: #5d5d5d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.vfy__fact dd {
+  flex: 1 1 260px;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #141414;
+}
+
+.vfy__cta {
+  margin-top: 1.4rem;
+}
+
+@media (max-width: 560px) {
+  .vfy__h1 {
+    font-size: 1.35rem;
+  }
+  .vfy__fact dt {
+    flex-basis: 100%;
+  }
+}
