@@ -68,4 +68,5 @@ export const routes = {
   privacyPolicy: "/privacy-policy",
   myCertificate: "/my-certificate",
   verifyCertificate: "/verify/:number",
+  staffCertificates: "/staff/certificates",
 };
