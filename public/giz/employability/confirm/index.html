@@ -422,6 +422,11 @@
         padding-left: 1rem;
         border-left: 3px solid var(--clr-orange);
       }
+      .reveal__note {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+      }
 
       .actions {
         border-top: 1px solid var(--line);
@@ -599,9 +604,9 @@
             <path d="M12 7v5l3 2" />
           </svg>
           <span>
-            Please respond by <strong id="deadlineText"></strong>. Places not
-            confirmed by then will be given to participants on the waiting
-            list.
+            Please respond within <strong id="deadlineText"></strong> of
+            receiving your invitation email. Places not confirmed by then
+            will be offered to participants on the waiting list.
           </span>
         </div>
 
@@ -631,7 +636,7 @@
                     >I would like a different batch</span
                   >
                   <span class="choice__note"
-                    >Pick the batch that suits you below.</span
+                    >We will email you a new batch date.</span
                   >
                 </span>
               </label>
@@ -650,16 +655,10 @@
             <span class="err" id="err-response"></span>
 
             <div class="reveal" id="rescheduleBlock" hidden>
-              <div class="field">
-                <label for="preferredBatch"
-                  >Which batch would you prefer?
-                  <span class="req">*</span></label
-                >
-                <select id="preferredBatch" name="preferredBatch">
-                  <option value="">Select a batch</option>
-                </select>
-                <span class="err" id="err-preferredBatch"></span>
-              </div>
+              <p class="reveal__note">
+                Thank you. A new batch date will be communicated to you by
+                email once a place becomes available.
+              </p>
             </div>
           </fieldset>
 
@@ -768,14 +767,18 @@
            https://script.google.com/macros/s/AKfycb..../exec
          ================================================================== */
       const CONFIG = {
-        APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxZhYhwoH84UxibzxVyu3C_iu0YdUkZ-1BraNkB79Yz8-rcveLQgodyJk1kUAVFrHpl/exec",
+        APPS_SCRIPT_URL:
+          "https://script.google.com/macros/s/AKfycbxZhYhwoH84UxibzxVyu3C_iu0YdUkZ-1BraNkB79Yz8-rcveLQgodyJk1kUAVFrHpl/exec",
         PROGRAMME_NAME: "GIZ-ZME Remote Work Training Programme",
-        /* Shown in the yellow box. Set to "" to hide the box entirely. */
-        DEADLINE: "Friday",
-      };
 
-      /* Batches offered in the reschedule dropdown. */
-      const BATCHES = ["Batch 3", "Batch 4"];
+        /* Shown in the yellow box, as "Please respond within ___ of
+           receiving your invitation email."
+
+           This is deliberately a rolling window, not a fixed date, so the
+           same page can be reused for every batch without editing.
+           Set to "" to hide the yellow box entirely. */
+        RESPONSE_WINDOW: "48 hours",
+      };
 
       /* ==================================================================
          Nothing below this line needs editing.
@@ -787,15 +790,14 @@
         document.getElementById("year").textContent =
           new Date().getFullYear();
 
-        if (CONFIG.DEADLINE) {
+        if (CONFIG.RESPONSE_WINDOW) {
           document.getElementById("deadlineText").textContent =
-            CONFIG.DEADLINE;
+            CONFIG.RESPONSE_WINDOW;
         } else {
           document.getElementById("deadlineBox").hidden = true;
         }
 
         fillFromLink();
-        buildBatchOptions();
         wireChoices();
         form.addEventListener("submit", handleSubmit);
       });
@@ -821,16 +823,6 @@
         }
       }
 
-      function buildBatchOptions() {
-        const sel = document.getElementById("preferredBatch");
-        BATCHES.forEach((b) => {
-          const o = document.createElement("option");
-          o.value = b;
-          o.textContent = b;
-          sel.appendChild(o);
-        });
-      }
-
       function wireChoices() {
         form.querySelectorAll('input[name="response"]').forEach((r) => {
           r.addEventListener("change", () => {
@@ -839,7 +831,7 @@
             clearError("response");
           });
         });
-        ["fullName", "phone", "email", "preferredBatch"].forEach((n) => {
+        ["fullName", "phone", "email"].forEach((n) => {
           const el = form.elements[n];
           if (el) el.addEventListener("input", () => clearError(n));
         });
@@ -855,10 +847,6 @@
 
         const response = getRadio("response");
         if (!response) fail("response", "Choose one of the three options.");
-
-        if (response === "Reschedule" && !form.preferredBatch.value) {
-          fail("preferredBatch", "Select the batch you would prefer.");
-        }
 
         if (!form.fullName.value.trim())
           fail("fullName", "Enter your full name.");
@@ -905,15 +893,12 @@
       }
 
       function collectData() {
-        const response = getRadio("response");
         return {
           reference: params.get("ref") || makeReference(),
           fullName: form.fullName.value.trim(),
           phone: form.phone.value.trim(),
           email: form.email.value.trim(),
-          response: response,
-          preferredBatch:
-            response === "Reschedule" ? form.preferredBatch.value : "",
+          response: getRadio("response"),
           note: form.note.value.trim(),
           programme: CONFIG.PROGRAMME_NAME,
           submittedAt: new Date().toISOString(),
@@ -964,9 +949,8 @@
         } else if (d.response === "Reschedule") {
           title.textContent = "Request received";
           text.textContent =
-            "We have received your request to move to " +
-            d.preferredBatch +
-            ". Our team will write to you to confirm the change, subject to space in that batch.";
+            "We have recorded that you would like a different batch. " +
+            "Our team will email you a new batch date once a place becomes available.";
         } else {
           title.textContent = "Thank you for letting us know";
           text.textContent =
