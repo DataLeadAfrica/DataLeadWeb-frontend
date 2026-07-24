@@ -1,0 +1,95 @@
+KIDS PYTHON CODING SUMMER BOOTCAMP 2026
+Static registration page
+
+WHAT IS IN THIS FOLDER
+  index.html          The complete page. Nothing else is needed.
+  READ-ME-FIRST.txt   This file. Do NOT upload it to the repo.
+
+WHERE IT GOES IN THE REPO
+  public/kids-python-2026/index.html
+
+It will then be live at:
+  https://www.dataleadafrica.com/kids-python-2026/
+
+WHAT I CHANGED FROM THE FILE YOU SENT ME
+  1. The Apps Script URL is now filled in (it was a placeholder).
+  2. The logo now points at /assets/logo-header.svg, which is already in
+     your repo. The original pointed at a logo.png that does not exist,
+     so it would have shown a broken image.
+  3. Added a canonical link tag.
+  4. Added a commented-out og:image slot for later.
+  5. Changed the age bracket from 9 to 17 into 8 to 17, so it matches
+     the course page on the website. Three places: the meta
+     description, the social sharing description, the visible "Ages"
+     row in the facts panel, and the Age dropdown now starts at 8.
+  Nothing else was touched. No design or wording changes.
+
+UPLOAD STEPS (GitHub website, no terminal)
+
+  1. Go to github.com/DataLeadAfrica/DataLeadWeb-frontend
+
+  2. Make the new branch FIRST.
+     Click the branch dropdown (it says "main").
+     Type:  feature/kids-python-2026-page
+     Click "Create branch: feature/kids-python-2026-page from main".
+
+  3. Confirm the dropdown now shows feature/kids-python-2026-page,
+     not main. Do not continue until it does.
+
+  4. Click into the "public" folder.
+
+  5. Click "Add file", then "Upload files".
+     Do NOT use "Create new file". Pasting this much code into the
+     GitHub editor corrupts it.
+
+  6. Drag the whole kids-python-2026 FOLDER into the upload area.
+     Drag the folder itself, not the file inside it. GitHub will
+     create public/kids-python-2026/index.html for you.
+
+  7. Before committing, check the file list on screen shows:
+        public/kids-python-2026/index.html
+     and nothing else. If READ-ME-FIRST.txt is listed, remove it.
+
+  8. Commit message:
+        Add Kids Python Bootcamp 2026 registration page
+     Choose "Commit directly to the feature/kids-python-2026-page branch".
+     Click "Commit changes".
+
+  9. Wait about a minute for Vercel to build the preview.
+     Go to the Vercel dashboard, open the newest deployment for this
+     branch, and copy the preview URL.
+
+ 10. Open this in your browser:
+        <preview-url>/kids-python-2026/
+
+TEST CHECKLIST (on the Vercel preview, not the live site)
+
+  [ ] The page loads and the Data-Lead Africa logo shows at top left
+  [ ] Clicking the logo goes to the site home page
+  [ ] "Start registration" opens step 1
+  [ ] Leaving a required field blank shows a red error, not a silent skip
+  [ ] The progress bar moves through steps 1, 2 and 3
+  [ ] On step 3 you cannot submit without ticking the terms box
+  [ ] Submitting shows the green success screen
+  [ ] A new row appears in the Google Sheet within a few seconds
+  [ ] A confirmation email arrives at the address you typed
+  [ ] A notification email arrives at info@dataleadafrica.com
+  [ ] The facts panel on the left reads "Ages 8 to 17"
+  [ ] The Age dropdown starts at 8, not 9
+  [ ] The age dropdown starts at 8, not 9
+  [ ] It all works on your phone as well as your laptop
+
+  Use an obviously fake name like TEST TEST so the rows are easy to
+  find and delete afterwards.
+
+IF SUBMITTING FAILS
+  The page will say it could not submit. That is almost always one of:
+    a. The Apps Script deployment access is not set to "Anyone"
+    b. A code change was saved but no NEW version was deployed
+    c. The script was created standalone instead of from inside the Sheet
+  Send me the message you see and I will work through it with you.
+
+DO NOT MERGE YET
+  The three "Enrol now" buttons on /courses/python-coding-for-kids
+  still open the old pop-up form. That rewiring is the next step, and
+  I will send it once you confirm this page passes the checklist.
