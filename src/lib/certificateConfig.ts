@@ -144,7 +144,7 @@ export const TEMPLATES: Record<string, Template> = {
             font: '"Poppins Black DLA"', track: 0, align: "center" },
     date: { x: 0.5010, baseline: 0.6049, size: 0.0284, max: 0.62,
             font: '"Pagella DLA"', track: 0, weight: 700, align: "center" },
-    certNo: { x: 0.5010, baseline: 0.9330, size: 0.0130, align: "center" },
+    certNo: { x: 0.5010, baseline: 0.7680, size: 0.0120, align: "center" },
     datePrefix: "From ",
   },
 };
