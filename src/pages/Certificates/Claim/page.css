@@ -1,0 +1,331 @@
+/* Fonts used when drawing the certificate itself. Self-hosted so the
+   certificate renders identically for everyone, with no external request. */
+@font-face {
+  font-family: "Poppins Black DLA";
+  src: url("/fonts/poppins-latin-900-normal.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pagella DLA";
+  src: url("/fonts/pagella-bold.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bebas Neue DLA";
+  src: url("/fonts/bebas-neue-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antonio DLA";
+  src: url("/fonts/antonio-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+.claim {
+  background: var(--paper, #faf8f4);
+  min-height: 70vh;
+  padding: 3rem 1.25rem 5rem;
+}
+
+.claim__wrap {
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+.claim__h1 {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: 2.1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.5rem;
+}
+
+.claim__h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.9rem;
+}
+
+.claim__sub {
+  color: #5d5d5d;
+  font-size: 0.98rem;
+  margin: 0 0 1.7rem;
+  max-width: 60ch;
+}
+
+.claim__card {
+  background: #fff;
+  border: 1px solid #e3e0da;
+  border-radius: 16px;
+  padding: 1.6rem;
+  max-width: 520px;
+}
+
+.claim__label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.claim__input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e3e0da;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.claim__input:focus {
+  outline: 2px solid #e2761b;
+  outline-offset: 1px;
+  border-color: #e2761b;
+}
+
+.claim__hint {
+  font-size: 0.78rem;
+  color: #5d5d5d;
+  margin: 0.45rem 0 0;
+}
+
+.claim__error {
+  color: #b3261e;
+  font-size: 0.84rem;
+  margin: 0.7rem 0 0;
+}
+
+.claim__otp {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.claim__otpbox {
+  width: 100%;
+  max-width: 60px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 0.7rem 0.2rem;
+  border: 1px solid #e3e0da;
+  border-radius: 10px;
+  font-family: inherit;
+}
+
+.claim__otpbox:focus {
+  outline: 2px solid #e2761b;
+  outline-offset: 1px;
+  border-color: #e2761b;
+}
+
+.claim__row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-top: 1.1rem;
+}
+
+.claim__btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.75rem 1.3rem;
+  background: #e2761b;
+  color: #fff;
+}
+
+.claim__btn:hover {
+  background: #b85c0f;
+}
+
+.claim__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.claim__btn--ghost {
+  background: #fff;
+  border-color: #e3e0da;
+  color: #141414;
+}
+
+.claim__btn--ghost:hover {
+  background: #fff;
+  border-color: #141414;
+}
+
+.claim__tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.claim__tab {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0.85rem;
+  border-radius: 30px;
+  border: 1px solid #e3e0da;
+  background: #fff;
+  color: #5d5d5d;
+}
+
+.claim__tab--on {
+  border-color: #141414;
+  color: #141414;
+}
+
+.claim__certshell {
+  background: #fff;
+  border: 1px solid #e3e0da;
+  border-radius: 16px;
+  padding: 0.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.claim__canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.claim__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  font-size: 0.85rem;
+  color: #5d5d5d;
+  margin-bottom: 0.5rem;
+}
+
+.claim__meta b {
+  color: #141414;
+  font-weight: 600;
+}
+
+.claim__valid {
+  color: #0d7a4a;
+}
+
+.claim__verify {
+  font-size: 0.85rem;
+  background: #f2f8f5;
+  border: 1px solid #cbe5d8;
+  color: #14532d;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  margin: 0.7rem 0 0;
+  word-break: break-all;
+}
+
+.claim__share {
+  border-top: 1px solid #e3e0da;
+  margin-top: 1.8rem;
+  padding-top: 1.5rem;
+}
+
+.claim__sbtns {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.claim__s {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e3e0da;
+  background: #fff;
+  font-size: 0.87rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  color: #141414;
+  cursor: pointer;
+}
+
+.claim__s:hover {
+  border-color: #141414;
+}
+
+.claim__captionbox {
+  margin-top: 1rem;
+  background: var(--paper, #faf8f4);
+  border: 1px solid #e3e0da;
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+
+.claim__caplabel {
+  display: block;
+  font-size: 0.78rem;
+  color: #5d5d5d;
+  margin-bottom: 0.3rem;
+}
+
+.claim__caption {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.87rem;
+  resize: vertical;
+  min-height: 72px;
+  color: #141414;
+}
+
+.claim__more {
+  font-size: 0.9rem;
+  color: #5d5d5d;
+  margin-top: 1.6rem;
+}
+
+@media (max-width: 640px) {
+  .claim__h1 {
+    font-size: 1.6rem;
+  }
+  .claim__otpbox {
+    max-width: none;
+    font-size: 1.15rem;
+  }
+}
+
+.claim__addli {
+  margin-top: 1.4rem;
+  padding: 1.1rem;
+  border: 1px solid #d6e4f0;
+  background: #f3f8fc;
+  border-radius: 12px;
+}
+
+.claim__addli__btn {
+  display: inline-block;
+  background: #0a66c2;
+  text-decoration: none;
+}
+
+.claim__addli__btn:hover {
+  background: #084e96;
+}
+
+.claim__addli__note {
+  font-size: 0.8rem;
+  color: #41556b;
+  margin: 0.6rem 0 0;
+}

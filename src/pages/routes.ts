@@ -66,4 +66,7 @@ export const routes = {
   consultancy: "/consultancy",
   training: "/training",
   privacyPolicy: "/privacy-policy",
+  myCertificate: "/my-certificate",
+  verifyCertificate: "/verify/:number",
+  staffCertificates: "/staff/certificates",
 };
