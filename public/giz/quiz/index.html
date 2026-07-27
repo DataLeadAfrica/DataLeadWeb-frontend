@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Capstone Project | GIZ-ZME Remote Work Training | Data-Lead Africa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--ink:#141414;--muted:#5d5d5d;--line:#e3e0da;--paper:#faf8f4;
+    --brand:#e2761b;--brand-dark:#b85c0f;--ok:#0d7a4a;--bad:#b3261e;--blue:#2f6fb0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:Poppins,system-ui,sans-serif;line-height:1.55}
+  .wrap{max-width:820px;margin:0 auto;padding:26px 18px 90px}
+  .topbar{border-top:6px solid var(--brand);background:#fff;border-bottom:1px solid var(--line)}
+  .topbar .wrap{padding:16px 18px}
+  .kicker{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  h1{font-size:1.7rem;letter-spacing:-.02em;margin:.2rem 0 .4rem;line-height:1.1}
+  h2{font-size:1.15rem;margin:1.8rem 0 .5rem}
+  h3{font-size:1rem;margin:1.4rem 0 .4rem}
+  p.sub{color:var(--muted);margin:0 0 1.4rem}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
+  label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.3rem}
+  input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:10px;font:inherit;font-size:1rem;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:.35rem}
+  button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;
+    padding:12px 22px;font-weight:600;font-size:.95rem}
+  .btn{background:var(--brand);color:#fff}.btn:hover{background:var(--brand-dark)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .err{color:var(--bad);font-size:.85rem;margin-top:.6rem}
+  .step{display:none}.step.on{display:block}
+  .brief{background:#eef4fb;border:1px solid #cfe0f1;border-radius:12px;padding:16px;margin-bottom:16px;font-size:.92rem}
+  .brief h3{margin:.1rem 0 .5rem;color:var(--blue)}
+  .data{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;
+    margin:12px 0;font-size:.82rem;overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:.82rem}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+  th{background:#f4f1ec;font-weight:600}
+  .q{border-top:1px solid var(--line);padding:14px 0}
+  .q:first-of-type{border-top:0}
+  .q .ql{font-weight:600;font-size:.95rem;margin-bottom:.5rem}
+  .opts label{display:flex;align-items:center;gap:8px;font-weight:400;font-size:.95rem;
+    padding:7px 0;cursor:pointer}
+  .opts input{width:auto}
+  .msg{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:center;
+    padding:8px 0;border-top:1px solid #f0ede8}
+  .msg:first-child{border-top:0}
+  .msg .t{font-size:.9rem}
+  .bizrow{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px;margin-bottom:8px;align-items:end}
+  .bizrow .nm{font-size:.82rem;color:var(--muted);align-self:center}
+  .num{max-width:220px}
+  .result{text-align:center;padding:12px 0}
+  .badge{display:inline-block;font-weight:700;font-size:.78rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:6px 14px;border-radius:30px;margin-bottom:14px}
+  .badge.pass{background:#e7f4ed;color:var(--ok)}
+  .badge.fail{background:#fdecea;color:var(--bad)}
+  .scorebig{font-size:2.6rem;font-weight:700}
+  .certno{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--paper);
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;display:inline-block;margin:8px 0}
+  @media(max-width:560px){.bizrow{grid-template-columns:1fr}.msg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="topbar"><div class="wrap">
+    <div class="kicker">GIZ-ZME Remote Work Training Programme</div>
+    <div style="font-weight:700;font-size:1.05rem">Capstone Project &middot; Module 9</div>
+  </div></div>
+
+  <div class="wrap">
+
+    <!-- ===== STEP 1: who you are ===== -->
+    <section class="step on" id="s1">
+      <h1>Your capstone project</h1>
+      <p class="sub">This is a simulated client job, not a class test. Work on your own.
+        When you finish and pass, your certificate is issued straight away and you can
+        collect it from the certificate page.</p>
+
+      <div class="card">
+        <label for="name">Full name, exactly as it should appear on your certificate</label>
+        <input id="name" autocomplete="name" placeholder="e.g. Onisola Funmike" />
+        <div class="hint">Use your real first name and surname. This is printed on the certificate.</div>
+
+        <div style="height:16px"></div>
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com" />
+        <div class="hint">You will use this email to log in and download your certificate.</div>
+
+        <div style="height:16px"></div>
+        <label for="cluster">Your assigned cluster</label>
+        <select id="cluster">
+          <option value="">Choose your cluster</option>
+          <option value="A">Cluster A &ndash; Data, Research &amp; Analysis</option>
+          <option value="B">Cluster B &ndash; Creative &amp; Content</option>
+          <option value="C">Cluster C &ndash; Professional Services</option>
+          <option value="D">Cluster D &ndash; Digital Starters</option>
+        </select>
+        <div class="hint">You were assigned a cluster at the start of the training.
+          Choose the one you were given.</div>
+
+        <div class="err" id="s1err" style="display:none"></div>
+        <div class="row"><button class="btn" id="start">Start my project</button></div>
+      </div>
+    </section>
+
+    <!-- ===== STEP 2: the questions ===== -->
+    <section class="step" id="s2">
+      <h1 id="cTitle"></h1>
+      <div id="cBody"></div>
+      <div class="err" id="s2err" style="display:none"></div>
+      <div class="row">
+        <button class="btn" id="submit">Submit my work</button>
+        <button class="btn-ghost" id="back">Back</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 3: result ===== -->
+    <section class="step" id="s3">
+      <div class="card result" id="resultCard"></div>
+    </section>
+
+  </div>
+
+<script>
+/* ============================================================
+   CONFIG. The anon public key is safe in this file: it is the
+   same key the website already ships, and the answer key is never
+   here. Grading happens inside Supabase.
+   ============================================================ */
+var SUPABASE_URL = "https://zndjhvcqrgusorflnkxd.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpuZGpodmNxcmd1c29yZmxua3hkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTI3NTEsImV4cCI6MjEwMDM4ODc1MX0.jgl7vnGsqWcN7TYplyyPOYlo2v_jlaA1SYhCqb0Qh9U";
+var CERT_PAGE = "/my-certificate";
+
+var $ = function(s){ return document.querySelector(s); };
+function show(id){
+  var steps = document.querySelectorAll(".step");
+  for (var i=0;i<steps.length;i++) steps[i].classList.remove("on");
+  $(id).classList.add("on");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+var state = { name:"", email:"", cluster:"" };
+
+/* ---------- data ---------- */
+var TAGS = ["Complaint","Question","Praise","Spam"];
+var MESSAGES = [
+ "My order still has not arrived after two weeks.","Do you deliver to Jos?",
+ "Best service I have ever used, thank you!","CLICK HERE to win a free iPhone now!!!",
+ "The product came broken.","What time do you close today?",
+ "Absolutely love it, I will order again.","Earn 5000 dollars from home, message me.",
+ "I was charged twice for one order.","Is this available in size medium?",
+ "Fast delivery and great quality.","Free crypto giveaway, join now.",
+ "Nobody answered my calls all day.","Can I pay on delivery?",
+ "You people are amazing, five stars.","Congratulations, you have been selected, claim your prize.",
+ "The item is not as described.","How long does shipping take?",
+ "Thank you for the quick response.","Verify your account here to avoid suspension."
+];
+var BIZ_SENTENCES = [
+ "Sunrise Bakery can be reached on 08031112233 and is based in Abuja.",
+ "Contact Green Leaf Pharmacy in Lagos on 0802 445 6677.",
+ "Kada Electronics, Kano, phone 07069998877.",
+ "In Ibadan, call Bright Tailors on 08144556677.",
+ "Zenith Bookshop is in Enugu; their number is 08033221100.",
+ "Reach Palm Grove Hotel, Port Harcourt, on 0803 900 1122.",
+ "Delta Auto Care operates in Warri, phone 08055667788.",
+ "Call Star Laundry in Kaduna on 07011223344.",
+ "Fresh Farms, based in Jos, on 08099887766.",
+ "Contact Unity Print in Abuja on 0802 334 5566."
+];
+var BIZ_NAMES = ["Sunrise Bakery","Green Leaf Pharmacy","Kada Electronics","Bright Tailors",
+ "Zenith Bookshop","Palm Grove Hotel","Delta Auto Care","Star Laundry","Fresh Farms","Unity Print"];
+
+var A_TABLE = [
+ ["chidi okafor","08031234567","chidi@gmail.com","Lagos","15,000","12/03/2025"],
+ ["NGOZI EZE","+2348021112233","ngozi.eze@yahoo.com","abuja","7500","3 Jan 2025"],
+ ["Musa Bello","0803 111 2222","(none given)","Kano","22000","2025-02-11"],
+ ["chidi okafor","8031234567","chidi@gmail.com","LAGOS","15000","12 March 2025"],
+ ["Amaka O.","0705-999-8888","amaka@","Enugu","3,000","15/04/2025"],
+ ["tunde adewale","234 806 4445556","tunde@outlook.com","Ibadan","45000","2025/01/29"],
+ ["Grace","08099998888","grace@gmail.com","(none given)","12000","5 Feb 2025"],
+ ["NGOZI EZE","08021112233","ngozi.eze@yahoo.com","Abuja","7,500","01/03/2025"],
+ ["Ibrahim Sani","0802 333 4444","ibrahim@gmail.com","Kaduna","30,000","18/02/2025"],
+ ["blessing u","070-6543-2109","blessing@gmail","Port Harcourt","9500","2025-03-22"],
+ ["Kelvin O","08033445566","kelvin@yahoo.com","lagos","18000","9 Feb 2025"],
+ ["FATIMA YUSUF","0803 222 1111","fatima@gmail.com","Abuja","6,000","2025-01-14"],
+ ["tunde adewale","2348064445556","tunde@outlook.com","Ibadan","45,000","29 Jan 2025"],
+ ["Uche N.","08055667788","uche@gmail.com","Enugu","25000","03/03/2025"],
+ ["Amaka O.","07059998888","amaka@gmail.com","ENUGU","3000","15 Apr 2025"],
+ ["peter james","0802 888 9999","peter@outlook.com","Jos","7000","2025/02/20"],
+ ["Zainab A","08011223344","zainab@yahoo.com","Kano","14,000","11/03/2025"],
+ ["Grace","08099998888","grace@gmail.com","Warri","12,000","05/02/2025"],
+ ["Samuel E.","0803 456 7890","samuel@gmail.com","Lagos","20000","2025-01-31"],
+ ["Rita M","070 1234 5678","rita@gmail.com","Abuja","5,500","27 Feb 2025"]
+];
+var C_TX = [
+ ["01 Jun","Client payment, Ada Ltd","+120,000"],["02 Jun","Internet subscription","-15,000"],
+ ["03 Jun","Canva Pro subscription","-6,000"],["04 Jun","Client payment, Bright Stores","+80,000"],
+ ["05 Jun","Transport","-4,500"],["06 Jun","Office snacks","-3,000"],
+ ["08 Jun","Client payment, Kola","+45,000"],["10 Jun","Airtime and data","-10,000"],
+ ["12 Jun","Paid freelance designer","-30,000"],["14 Jun","Refund issued to client","-20,000"],
+ ["16 Jun","Client payment, Ada Ltd","+120,000"],["18 Jun","Software, Notion","-8,000"],
+ ["20 Jun","Bank charges","-1,200"],["22 Jun","Client payment, Zed","+60,000"],
+ ["25 Jun","Generator fuel","-18,000"]
+];
+var C_STEPS = [
+ {id:"domain",label:"Buy the domain"},
+ {id:"copy",label:"Write the website copy"},
+ {id:"logo",label:"Design the logo"},
+ {id:"approve",label:"Get the client to approve the logo"},
+ {id:"pages",label:"Set up the website pages"},
+ {id:"test",label:"Test the website on a phone"},
+ {id:"signoff",label:"Get client sign-off before launch"},
+ {id:"launch",label:"Launch the website"},
+ {id:"share",label:"Share the launch post on social media"}
+];
+
+/* ---------- builders per cluster ---------- */
+function numQ(id,label,hint){
+  return '<div class="q"><div class="ql">'+label+'</div>'+
+    (hint?'<div class="hint" style="margin:-.2rem 0 .5rem">'+hint+'</div>':'')+
+    '<input class="num" inputmode="numeric" data-k="'+id+'" placeholder="Enter a number" /></div>';
+}
+function mcQ(id,label,opts){
+  var h='<div class="q"><div class="ql">'+label+'</div><div class="opts">';
+  for(var i=0;i<opts.length;i++){
+    h+='<label><input type="radio" name="'+id+'" value="'+opts[i][0]+'" /> '+esc(opts[i][1])+'</label>';
+  }
+  return h+'</div></div>';
+}
+
+function buildA(){
+  var t='<div class="brief"><h3>The client</h3>I run a small skincare store. My customer '+
+    'list is a mess after a year of jotting things down. Please clean it up, remove any '+
+    'duplicate customers, then answer the questions below so I know what the list tells me.</div>'+
+    '<p class="sub">Clean the list on paper or in a spreadsheet first: fix the phone formats, '+
+    'spot the duplicate customers, and standardise the amounts. Then answer from your cleaned list.</p>'+
+    '<div class="data"><table><tr><th>Name</th><th>Phone</th><th>Email</th><th>City</th><th>Amount</th><th>Date</th></tr>';
+  for(var i=0;i<A_TABLE.length;i++){ t+='<tr>'; for(var j=0;j<6;j++) t+='<td>'+esc(A_TABLE[i][j])+'</td>'; t+='</tr>'; }
+  t+='</table></div>';
+  t+=numQ("unique","1. After removing duplicate customers, how many unique customers remain?");
+  t+=numQ("removed","2. How many duplicate rows did you remove?");
+  t+=numQ("total","3. What is the total sales value of the cleaned list, in naira?","Enter digits only, e.g. 239500");
+  t+=numQ("lagos","4. How many customers are in Lagos?");
+  t+=numQ("cities","5. How many different cities appear in the cleaned list?","Count real cities only; ignore the blank ones.");
+  t+=numQ("big","6. How many customers spent 20,000 naira or more?");
+  t+=numQ("bademail","7. How many records have a missing or invalid email you would need to fix before emailing them?");
+  return t;
+}
+
+function buildB(){
+  return '<div class="brief"><h3>The client brief (the true facts)</h3>'+
+    'We are opening <b>Bright Bean</b>, a coffee cafe in <b>Wuse, Abuja</b>, <b>this Saturday</b>. '+
+    'Our launch offer is <b>buy one coffee, get one free</b>, all launch weekend. '+
+    'Our Instagram is <b>@brightbeanabuja</b>.</div>'+
+    '<h3>The draft caption a colleague wrote</h3>'+
+    '<div class="data" style="font-size:.95rem;font-style:italic">"Big news! Bright Bean opens '+
+    'this <u>Friday</u> in <u>Maitama</u>. Enjoy <u>buy two, get one free</u> all launch weekend. '+
+    'Follow us <u>@brightbean_abuja</u> and come say hello!"</div>'+
+    '<p class="sub">Your job is to quality-check this caption against the client brief before it '+
+    'goes out. Answer the questions using the true facts from the brief.</p>'+
+    mcQ("day","1. Which launch day is correct?",[["fri","Friday"],["sat","Saturday"],["sun","Sunday"]])+
+    mcQ("area","2. Which area of Abuja is correct?",[["mai","Maitama"],["wuse","Wuse"],["gar","Garki"]])+
+    mcQ("offer","3. What is the correct launch offer?",
+      [["bt","Buy two, get one free"],["bogo","Buy one, get one free"],["half","Fifty percent off"],["past","Free pastry"]])+
+    '<div class="q"><div class="ql">4. Type the correct Instagram handle exactly as in the brief</div>'+
+    '<input data-k="handle" placeholder="@..." /></div>'+
+    mcQ("errors","5. How many factual errors are in the draft caption?",
+      [["2","2"],["3","3"],["4","4"],["5","5"]]);
+}
+
+function buildC(){
+  var t='<div class="brief"><h3>The client</h3>We are a small three-person startup and things '+
+    'are disorganised. Please do the bookkeeping from the June transactions, then put our website '+
+    'launch tasks into a sensible order.</div>'+
+    '<h3>Task 1: Bookkeeping</h3><div class="data"><table><tr><th>Date</th><th>Description</th><th>Amount (NGN)</th></tr>';
+  for(var i=0;i<C_TX.length;i++){ t+='<tr><td>'+esc(C_TX[i][0])+'</td><td>'+esc(C_TX[i][1])+'</td><td>'+esc(C_TX[i][2])+'</td></tr>'; }
+  t+='</table></div>';
+  t+=numQ("income","1. Total income for the month, in naira?","Add up all the money coming in. Digits only.");
+  t+=numQ("expenses","2. Total expenses for the month, in naira?","Everything going out, including the refund. Digits only.");
+  t+=numQ("profit","3. Profit for the month (income minus expenses), in naira?");
+  t+=mcQ("madeprofit","4. Did the business make a profit this month?",[["yes","Yes"],["no","No"]]);
+  t+='<h3>Task 2: Put the launch tasks in order</h3>'+
+    '<p class="hint" style="margin-top:0">Choose which task belongs in each position, first to last. '+
+    'Owners are not needed here, just the sensible order.</p>';
+  var optionsHtml='<option value="">Choose a task</option>';
+  for(var k=0;k<C_STEPS.length;k++) optionsHtml+='<option value="'+C_STEPS[k].id+'">'+esc(C_STEPS[k].label)+'</option>';
+  for(var pos=1;pos<=9;pos++){
+    t+='<div class="q" style="padding:8px 0"><label>Position '+pos+'</label>'+
+       '<select data-order="'+(pos-1)+'">'+optionsHtml+'</select></div>';
+  }
+  return t;
+}
+
+function buildD(){
+  var t='<div class="brief"><h3>The client</h3>This is a quality check for a micro-tasks account. '+
+    'Follow the guidelines exactly. We care about accuracy and following instructions.</div>';
+  // Task 1
+  t+='<h3>Task 1: Label each message</h3><p class="hint" style="margin-top:0">Give each message one tag.</p>';
+  for(var i=0;i<MESSAGES.length;i++){
+    var sel='<select data-tag="'+i+'"><option value="">Choose</option>';
+    for(var j=0;j<TAGS.length;j++) sel+='<option value="'+TAGS[j]+'">'+TAGS[j]+'</option>';
+    sel+='</select>';
+    t+='<div class="msg"><div class="t">'+(i+1)+'. '+esc(MESSAGES[i])+'</div>'+sel+'</div>';
+  }
+  // Task 2
+  t+='<h3>Task 2: Enter the details</h3><p class="hint" style="margin-top:0">Read each sentence and '+
+     'enter the phone number and city for that business. Copy the details exactly.</p>';
+  for(var b=0;b<BIZ_SENTENCES.length;b++){
+    t+='<div class="data" style="margin:6px 0;padding:8px 10px">'+esc(BIZ_SENTENCES[b])+'</div>'+
+       '<div class="bizrow"><div class="nm">'+esc(BIZ_NAMES[b])+'</div>'+
+       '<input data-biz-phone="'+b+'" placeholder="Phone" inputmode="numeric" />'+
+       '<input data-biz-city="'+b+'" placeholder="City" /></div>';
+  }
+  // Task 3
+  t+='<h3>Task 3: Fix the dates</h3><div class="data" style="font-size:.9rem">our shop opened on '+
+     '<b>3 January 2025</b>. we now deliver every day. we started in lagos on <b>12 February 2025</b> '+
+     'and added abuja on <b>4 March 2025</b>. thank you for your support.</div>'+
+     '<p class="hint">Rewrite each of the three dates in the format DD/MM/YYYY.</p>';
+  t+='<div class="q"><div class="ql">Date 1: "3 January 2025" becomes</div><input data-date="0" placeholder="DD/MM/YYYY" class="num" /></div>';
+  t+='<div class="q"><div class="ql">Date 2: "12 February 2025" becomes</div><input data-date="1" placeholder="DD/MM/YYYY" class="num" /></div>';
+  t+='<div class="q"><div class="ql">Date 3: "4 March 2025" becomes</div><input data-date="2" placeholder="DD/MM/YYYY" class="num" /></div>';
+  return t;
+}
+
+var TITLES = {A:"Cluster A: Data, Research & Analysis",B:"Cluster B: Creative & Content",
+  C:"Cluster C: Professional Services",D:"Cluster D: Digital Starters"};
+
+/* ---------- collect answers from the DOM ---------- */
+function collect(){
+  var c = state.cluster, a = {};
+  function radio(name){ var el=document.querySelector('input[name="'+name+'"]:checked'); return el?el.value:""; }
+  function field(k){ var el=document.querySelector('[data-k="'+k+'"]'); return el?el.value:""; }
+  if(c==="A"){
+    ["unique","removed","total","lagos","cities","big","bademail"].forEach(function(k){ a[k]=field(k); });
+  } else if(c==="B"){
+    a.day = ({fri:"Friday",sat:"Saturday",sun:"Sunday"})[radio("day")]||"";
+    a.area = ({mai:"Maitama",wuse:"Wuse",gar:"Garki"})[radio("area")]||"";
+    a.offer = radio("offer");            // "bogo" is the correct value
+    a.handle = field("handle");
+    a.errors = radio("errors");
+  } else if(c==="C"){
+    ["income","expenses","profit"].forEach(function(k){ a[k]=field(k); });
+    a.madeprofit = radio("madeprofit");
+    var order=[]; for(var i=0;i<9;i++){ var el=document.querySelector('[data-order="'+i+'"]'); order.push(el?el.value:""); }
+    a.order = order;
+  } else if(c==="D"){
+    var tags=[]; for(var i=0;i<20;i++){ var el=document.querySelector('[data-tag="'+i+'"]'); tags.push(el?el.value:""); }
+    a.tags = tags;
+    var biz=[]; for(var b=0;b<10;b++){
+      var p=document.querySelector('[data-biz-phone="'+b+'"]'); var ci=document.querySelector('[data-biz-city="'+b+'"]');
+      biz.push({phone:p?p.value:"",city:ci?ci.value:""});
+    }
+    a.biz = biz;
+    var dates=[]; for(var d=0;d<3;d++){ var el=document.querySelector('[data-date="'+d+'"]'); dates.push(el?el.value:""); }
+    a.dates = dates;
+  }
+  return a;
+}
+
+/* ---------- flow ---------- */
+$("#start").onclick = function(){
+  var name = $("#name").value.trim();
+  var email = $("#email").value.trim();
+  var cluster = $("#cluster").value;
+  var e = $("#s1err");
+  if(!name){ e.textContent="Please enter your full name."; e.style.display="block"; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ e.textContent="Please enter a valid email address."; e.style.display="block"; return; }
+  if(!cluster){ e.textContent="Please choose your cluster."; e.style.display="block"; return; }
+  e.style.display="none";
+  state.name=name; state.email=email; state.cluster=cluster;
+  $("#cTitle").textContent = TITLES[cluster];
+  $("#cBody").innerHTML = ({A:buildA,B:buildB,C:buildC,D:buildD})[cluster]();
+  show("#s2");
+};
+$("#back").onclick = function(){ show("#s1"); };
+
+$("#submit").onclick = function(){
+  var btn = this, e = $("#s2err");
+  e.style.display="none";
+  btn.disabled = true; btn.textContent = "Submitting...";
+  var payload = {
+    p_cluster: state.cluster, p_full_name: state.name,
+    p_email: state.email, p_answers: collect()
+  };
+  fetch(SUPABASE_URL + "/rest/v1/rpc/giz_submit_quiz", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", apikey:SUPABASE_ANON_KEY,
+      Authorization:"Bearer "+SUPABASE_ANON_KEY },
+    body: JSON.stringify(payload)
+  }).then(function(r){ return r.json(); }).then(function(data){
+    var row = Array.isArray(data) ? data[0] : data;
+    if(!row){ throw new Error("No response"); }
+    renderResult(row);
+    show("#s3");
+  }).catch(function(){
+    e.textContent = "Could not submit. Please check your connection and try again.";
+    e.style.display="block";
+    btn.disabled=false; btn.textContent="Submit my work";
+  });
+};
+
+function renderResult(row){
+  var h;
+  if(row.passed){
+    h = '<div class="result"><span class="badge pass">Passed</span>'+
+      '<div class="scorebig" style="color:var(--ok)">'+row.score+'%</div>'+
+      '<p style="font-size:1.05rem;margin:.4rem 0 0">Congratulations, '+esc(state.name.split(" ")[0])+'.</p>'+
+      '<p class="sub" style="margin:.4rem auto 0;max-width:44ch">Your Remote Work Training certificate '+
+      'has been issued. Your certificate number is:</p>'+
+      '<div class="certno">'+esc(row.certificate_number||"")+'</div>'+
+      '<p class="sub" style="max-width:46ch;margin:.2rem auto 1rem">Go to the certificate page and enter '+
+      '<b>'+esc(state.email)+'</b>. You will get a code by email to view and download it.</p>'+
+      '<a class="btn" href="'+CERT_PAGE+'" style="text-decoration:none;display:inline-block">Get my certificate</a></div>';
+  } else {
+    h = '<div class="result"><span class="badge fail">Not passed yet</span>'+
+      '<div class="scorebig" style="color:var(--bad)">'+row.score+'%</div>'+
+      '<p class="sub" style="max-width:46ch;margin:.6rem auto 1rem">You need 50 percent to pass. '+
+      'Review the brief carefully and try again. Take your time; accuracy matters more than speed.</p>'+
+      '<button class="btn" onclick="location.reload()">Try again</button></div>';
+  }
+  $("#resultCard").innerHTML = h;
+}
+</script>
+</body>
+</html>
