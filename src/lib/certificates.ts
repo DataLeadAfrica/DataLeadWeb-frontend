@@ -41,6 +41,10 @@ export type VerifyResult = {
   duration_text: string | null;
   completed_on: string | null;
   revoked: boolean | null;
+  // Optional. The verify_certificate function does not return this today, so
+  // the showcase page falls back to the programme slug. If the function is
+  // ever updated to include it, the page picks it up with no further change.
+  template_key?: string | null;
 };
 
 // Step one of signing in. Always reports success, even for an address that is
