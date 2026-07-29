@@ -1,0 +1,219 @@
+/* Fonts used when drawing the certificate itself. These must be declared on
+   every page that draws a certificate, otherwise the canvas falls back to a
+   system face and the artwork comes out wrong. Same list as the claim page. */
+@font-face {
+  font-family: "Poppins Black DLA";
+  src: url("/fonts/poppins-latin-900-normal.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pagella DLA";
+  src: url("/fonts/pagella-bold.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bebas Neue DLA";
+  src: url("/fonts/bebas-neue-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antonio DLA";
+  src: url("/fonts/antonio-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+.shc {
+  background: var(--paper, #faf8f4);
+  min-height: 70vh;
+  padding: 3rem 1.25rem 5rem;
+}
+
+.shc__wrap {
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+.shc__loading {
+  color: #5d5d5d;
+  font-size: 0.95rem;
+}
+
+.shc__panel {
+  background: #fff;
+  border: 1px solid #e3e0da;
+  border-radius: 16px;
+  padding: 1.9rem;
+}
+
+.shc__head {
+  margin-bottom: 1.6rem;
+}
+
+.shc__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f56e0f;
+  margin: 0 0 0.5rem;
+}
+
+.shc__h1 {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: 2.1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  margin: 0 0 0.45rem;
+}
+
+.shc__h2 {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+
+.shc__sub {
+  color: #4a4a4a;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.shc__text {
+  color: #4a4a4a;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.shc__figure {
+  margin: 0 0 1.6rem;
+  background: #fff;
+  border: 1px solid #e3e0da;
+  border-radius: 16px;
+  padding: 0.75rem;
+}
+
+.shc__canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.shc__verify {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #cbe5d8;
+  border-radius: 16px;
+  padding: 1.6rem;
+  margin-bottom: 1.4rem;
+}
+
+.shc__verifyText {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.shc__number {
+  font-size: 0.85rem;
+  color: #5d5d5d;
+  margin: 1rem 0 0;
+  word-break: break-all;
+}
+
+.shc__qrBox {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shc__qr {
+  width: 150px;
+  height: 150px;
+  display: block;
+  border: 1px solid #e3e0da;
+  border-radius: 10px;
+  padding: 8px;
+  background: #fff;
+}
+
+.shc__qrCaption {
+  font-size: 0.75rem;
+  color: #5d5d5d;
+  letter-spacing: 0.03em;
+}
+
+.shc__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+
+.shc__btn {
+  display: inline-block;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.7rem 1.15rem;
+  border-radius: 30px;
+  border: 1px solid #d8d4cc;
+  background: #fff;
+  color: #1a1a1a;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.shc__btn:hover {
+  background: #f3f1ec;
+  border-color: #c4bfb5;
+}
+
+.shc__btn--primary {
+  background: #0d7a4a;
+  border-color: #0d7a4a;
+  color: #fff;
+}
+
+.shc__btn--primary:hover {
+  background: #0a6640;
+  border-color: #0a6640;
+}
+
+.shc__issuer {
+  font-size: 0.85rem;
+  color: #5d5d5d;
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .shc__h1 {
+    font-size: 1.65rem;
+  }
+
+  .shc__verify {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .shc__actions .shc__btn {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

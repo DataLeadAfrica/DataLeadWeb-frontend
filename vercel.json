@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/certificate/:number",
+      "destination": "/api/certificate-meta?number=:number"
+    },
+    {
       "source": "/cowrie",
       "destination": "/cowrie-shell/index.html"
     },
@@ -21,7 +25,7 @@
       "destination": "/giz/employability/record/index.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

@@ -67,6 +67,7 @@ export const routes = {
   training: "/training",
   privacyPolicy: "/privacy-policy",
   myCertificate: "/my-certificate",
+  shareCertificate: "/certificate/:number",
   verifyCertificate: "/verify/:number",
   staffCertificates: "/staff/certificates",
 };
