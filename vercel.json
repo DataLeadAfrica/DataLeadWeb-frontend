@@ -1,6 +1,17 @@
 {
   "rewrites": [
     {
+      "source": "/certificate/:number",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Ff]acebookexternalhit|[Ff]acebot|[Ll]inkedin[Bb]ot|[Ll]inkedIn|[Tt]witterbot|WhatsApp|[Ss]lackbot|Slack-ImgProxy|TelegramBot|Discordbot|Pinterest|redditbot|Applebot|[Bb]ingbot|[Gg]ooglebot|Embedly|Iframely|SkypeUriPreview|vkShare|W3C_Validator|[Nn]uzzel|[Qq]uora [Ll]ink [Pp]review|[Oo]utbrain|[Dd]uckduckbot|[Yy]andex).*"
+        }
+      ],
+      "destination": "/api/certificate-meta?number=:number"
+    },
+    {
       "source": "/cowrie",
       "destination": "/cowrie-shell/index.html"
     },
@@ -21,7 +32,7 @@
       "destination": "/giz/employability/record/index.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
