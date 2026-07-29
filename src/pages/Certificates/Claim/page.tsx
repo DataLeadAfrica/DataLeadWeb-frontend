@@ -94,13 +94,19 @@ export default function ClaimCertificate() {
     if (clean && i < 5) boxRefs.current[i + 1]?.focus();
   }
 
-  const verifyUrl = current ? `${SITE}/verify/${current.certificate_number}` : "";
+  // What gets shared. The certificate page shows the certificate itself and
+  // carries a Verify button and a QR code through to the page above, and it is
+  // the only one of the two that produces a preview picture on LinkedIn,
+  // Facebook and WhatsApp.
+  const shareUrl = current
+    ? `${SITE}/certificate/${current.certificate_number}`
+    : "";
 
   function caption(handle: string) {
     if (!current) return "";
     return (
       `I have completed the ${certificateTitle(current)} with ${handle}. ` +
-      `You can verify my certificate here: ${verifyUrl} ${HASHTAG}`
+      `You can view and verify my certificate here: ${shareUrl} ${HASHTAG}`
     );
   }
 
@@ -270,7 +276,7 @@ export default function ClaimCertificate() {
             </div>
 
             <p className="claim__verify">
-              Anyone can check this certificate at <b>{verifyUrl}</b>
+              Anyone can view and verify this certificate at <b>{shareUrl}</b>
             </p>
 
             <div className="claim__row">
@@ -317,7 +323,7 @@ export default function ClaimCertificate() {
                   className="claim__s"
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(verifyUrl)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(shareUrl)}`}
                 >
                   LinkedIn
                 </a>
@@ -325,7 +331,7 @@ export default function ClaimCertificate() {
                   className="claim__s"
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${enc(verifyUrl)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${enc(shareUrl)}`}
                 >
                   Facebook
                 </a>
@@ -342,7 +348,7 @@ export default function ClaimCertificate() {
                   href={addToLinkedInUrl(
                     current,
                     LINKEDIN_ORGANIZATION_ID,
-                    verifyUrl,
+                    shareUrl,
                   )}
                 >
                   Add to my LinkedIn profile
