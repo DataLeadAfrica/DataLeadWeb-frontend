@@ -20,6 +20,7 @@ import courseRouter from "./pages/Courses/router";
 import consultancyRouter from "./pages/Consultancy/router";
 import successRouter from "./pages/Success/router";
 import certificatesRouter from "./pages/Certificates/router";
+import learningRouter from "./pages/Learning/router";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -40,6 +41,7 @@ createRoot(document.getElementById("root")!).render(
         {consultancyRouter()}
         {successRouter()}
         {certificatesRouter()}
+        {learningRouter()}
       </Routes>
       <Footer />
     </BrowserRouter>
