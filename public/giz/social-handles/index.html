@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en-NG">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- ==================== HEAD / METADATA ====================
+     This page is unlisted: reachable by link, kept out of search.
+     robots = noindex, so no canonical and no structured data.
+     Open Graph tags stay: they drive the WhatsApp / LinkedIn
+     link preview, which still renders on a noindexed page.
+     ========================================================= -->
+<title>Share Your Social Media Handles | Data-Lead Africa Community</title>
+<meta name="description" content="Data-Lead Africa alumni: share your LinkedIn, Instagram, X, TikTok and other handles so we can tag you in photos, videos and shout-outs from your data analytics, data science or AI training in Abuja." />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#F56E0F" />
+<meta name="author" content="Data-Lead Africa" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Data-Lead Africa" />
+<meta property="og:locale" content="en_NG" />
+<meta property="og:title" content="Share Your Social Media Handles | Data-Lead Africa Community" />
+<meta property="og:description" content="Alumni of our data analytics, data science and AI bootcamps: tell us where to tag you." />
+<meta property="og:image" content="https://dataleadafrica.com/assets/index/hero.png" />
+<meta property="og:image:alt" content="Data-Lead Africa participants during a data analytics training session in Abuja" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@DataLead_Africa" />
+<meta name="twitter:title" content="Share Your Social Media Handles | Data-Lead Africa" />
+<meta name="twitter:description" content="Alumni of our data analytics, data science and AI bootcamps: tell us where to tag you." />
+<meta name="twitter:image" content="https://dataleadafrica.com/assets/index/hero.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    /* Data-Lead Africa brand orange #F56E0F */
+    --ink:#241A12;
+    --ink-70:rgba(36,26,18,.70);
+    --ink-45:rgba(36,26,18,.45);
+    --ink-15:rgba(36,26,18,.15);
+    --ink-08:rgba(36,26,18,.08);
+    --stone:#F4EDE6;
+    --card:#FFFFFF;
+    --signal:#F56E0F;
+    --signal-dark:#C4530A;
+    --signal-soft:rgba(245,110,15,.12);
+    --alert:#A02B1C;
+    --ok:#12795A;
+
+    --display:"Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --body:"Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --r:16px;
+    --pad:clamp(20px, 4vw, 32px);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--stone);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block}
+  button{font:inherit;color:inherit}
+  :focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:4px}
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  .hidden{display:none !important}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px) 72px}
+
+  /* ---------------- Masthead ---------------- */
+  .masthead{padding:clamp(30px,5vw,60px) 0 clamp(22px,3.5vw,34px)}
+  .eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-45);margin:0 0 18px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none}
+  h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(32px,5.6vw,58px);line-height:1.02;letter-spacing:-.03em;
+    margin:0 0 16px;max-width:16ch;
+  }
+  h1 em{font-style:normal;color:var(--signal)}
+  .standfirst{max-width:54ch;font-size:clamp(15.5px,1.6vw,17.5px);color:var(--ink-70);margin:0}
+
+  /* ---------------- Layout ---------------- */
+  .grid{
+    display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+    gap:clamp(20px,3vw,40px);align-items:start;
+  }
+  @media (max-width:920px){.grid{grid-template-columns:1fr}}
+
+  /* ---------------- Stepper ---------------- */
+  .stepper{
+    display:flex;gap:8px;margin-bottom:16px;
+    list-style:none;padding:0;
+  }
+  .stepper li{flex:1}
+  .stepper button{
+    width:100%;text-align:left;background:none;border:0;padding:0;cursor:pointer;
+  }
+  .stepper .bar{
+    display:block;height:4px;border-radius:100px;
+    background:var(--ink-15);margin-bottom:9px;transition:background .25s ease;
+  }
+  .stepper .n{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    color:var(--ink-45);display:block;
+  }
+  .stepper .t{
+    font-family:var(--display);font-weight:500;font-size:13.5px;
+    color:var(--ink-45);letter-spacing:-.01em;
+  }
+  .stepper li.done .bar{background:var(--signal-dark)}
+  .stepper li.here .bar{background:var(--signal)}
+  .stepper li.here .n,.stepper li.here .t{color:var(--ink)}
+  .stepper li.done .t{color:var(--ink-70)}
+  .stepper button:disabled{cursor:default}
+  @media (max-width:520px){.stepper .t{display:none}}
+
+  /* ---------------- Cards ---------------- */
+  .card{
+    background:var(--card);border-radius:var(--r);
+    border:1px solid var(--ink-08);
+    box-shadow:0 1px 2px rgba(36,26,18,.04);
+    animation:rise .32s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .card-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:14px;padding:var(--pad) var(--pad) 0;flex-wrap:wrap;
+  }
+  .card-head h2{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(20px,2.2vw,25px);letter-spacing:-.02em;margin:0;
+  }
+  .card-head .note{
+    font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--ink-45);margin:0;
+  }
+  .card-intro{
+    padding:10px var(--pad) 0;margin:0;
+    font-size:14.5px;color:var(--ink-70);max-width:48ch;
+  }
+  .card-body{padding:var(--pad)}
+
+  /* ---------------- Fields ---------------- */
+  .field{padding:18px 0;border-bottom:1px solid var(--ink-08)}
+  .field:first-of-type{padding-top:2px}
+  .field:last-of-type{border-bottom:0;padding-bottom:0}
+  .field-label{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .field-label label{font-weight:600;font-size:15.5px;letter-spacing:-.005em}
+  .req{color:var(--signal);margin-left:3px}
+  .key{font-family:var(--mono);font-size:10.5px;color:var(--ink-45);white-space:nowrap;flex:none}
+  .hint{font-size:13px;color:var(--ink-45);margin:0 0 9px}
+  .hint code{font-family:var(--mono);font-size:12px;background:var(--ink-08);padding:1px 5px;border-radius:4px}
+
+  input[type=text],input[type=email],input[type=tel],select{
+    width:100%;padding:13px 14px;font:inherit;font-size:16px;color:var(--ink);
+    background:#FBF7F3;border:1.5px solid transparent;border-radius:10px;
+    transition:border-color .14s ease,background .14s ease;
+  }
+  input::placeholder{color:var(--ink-45)}
+  input:hover,select:hover{background:#F6EFE8}
+  input:focus,select:focus{background:#fff;border-color:var(--signal);outline:none;box-shadow:0 0 0 4px var(--signal-soft)}
+  select{
+    appearance:none;cursor:pointer;padding-right:40px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23241A12' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+
+  .prefixed{
+    display:flex;background:#FBF7F3;border:1.5px solid transparent;
+    border-radius:10px;transition:border-color .14s ease,background .14s ease;
+  }
+  .prefixed:hover{background:#F6EFE8}
+  .prefixed:focus-within{background:#fff;border-color:var(--signal);box-shadow:0 0 0 4px var(--signal-soft)}
+  .prefixed span{font-family:var(--mono);font-size:16px;color:var(--ink-45);display:flex;align-items:center;padding:0 2px 0 14px}
+  .prefixed input{background:transparent;border:0;padding-left:2px}
+  .prefixed input:focus{box-shadow:none;background:transparent}
+
+  .err{display:none;font-size:13px;color:var(--alert);margin-top:7px;font-weight:500}
+  .field.invalid .err{display:block}
+  .field.invalid input,.field.invalid select,
+  .field.invalid .prefixed{border-color:var(--alert)}
+
+  /* ---------------- Review list ---------------- */
+  .review{list-style:none;margin:0;padding:0}
+  .review li{
+    display:flex;align-items:baseline;gap:14px;
+    padding:11px 0;border-bottom:1px solid var(--ink-08);font-size:15px;
+  }
+  .review li:last-child{border-bottom:0}
+  .review .k{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-45);width:104px;flex:none;
+  }
+  .review .v{flex:1;word-break:break-word}
+  .review .v.empty{color:var(--ink-45)}
+  .review .edit{
+    background:none;border:0;padding:2px 4px;cursor:pointer;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--signal);
+  }
+  .review .edit:hover{text-decoration:underline}
+
+  .consent{
+    display:flex;gap:12px;align-items:flex-start;padding:16px;
+    background:#FBF7F3;border-radius:12px;cursor:pointer;margin-top:20px;
+  }
+  .consent input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--signal);cursor:pointer}
+  .consent span{font-size:14px;color:var(--ink-70);line-height:1.5}
+
+  /* ---------------- Nav ---------------- */
+  .nav{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:0 var(--pad) var(--pad);
+  }
+  .btn{
+    background:linear-gradient(100deg,var(--signal-dark),var(--signal));color:#fff;
+    border:0;border-radius:100px;padding:15px 32px;
+    font-family:var(--display);font-weight:600;font-size:16.5px;letter-spacing:-.01em;
+    cursor:pointer;box-shadow:0 8px 22px rgba(245,110,15,.28);
+    transition:transform .12s ease,box-shadow .2s ease,filter .18s ease;
+  }
+  .btn:hover:not(:disabled){filter:brightness(1.06);box-shadow:0 12px 30px rgba(245,110,15,.38);transform:translateY(-1px)}
+  .btn:active:not(:disabled){transform:translateY(0)}
+  .btn:disabled{opacity:.55;cursor:progress;box-shadow:none;filter:none;transform:none}
+  .btn-ghost{
+    background:none;border:1.5px solid var(--ink-15);color:var(--ink-70);
+    border-radius:100px;padding:14px 24px;font-size:15px;font-weight:500;
+    cursor:pointer;transition:border-color .14s ease,color .14s ease;
+  }
+  .btn-ghost:hover{border-color:var(--signal);color:var(--signal)}
+  .nav .small{font-size:13px;color:var(--ink-45);max-width:30ch}
+
+  .formerror{
+    display:none;margin:0 var(--pad) var(--pad);padding:13px 15px;border-radius:10px;
+    background:rgba(160,43,28,.07);border:1px solid rgba(160,43,28,.25);
+    color:var(--alert);font-size:14px;font-weight:500;
+  }
+  .formerror.show{display:block}
+
+  /* ---------------- Record card ---------------- */
+  .rail{position:sticky;top:24px}
+  @media (max-width:920px){.rail{position:static;margin-bottom:20px}}
+  .record{
+    background:var(--ink);color:#fff;border-radius:var(--r);
+    padding:24px;overflow:hidden;position:relative;
+  }
+  .record::after{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.14) 1px, transparent 0);
+    background-size:14px 14px;opacity:.5;pointer-events:none;
+  }
+  .record > *{position:relative;z-index:1}
+  .record .rtitle{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:rgba(255,255,255,.5);margin:0 0 18px;
+  }
+  .rhead{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+  .ravatar{
+    width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.12);
+    flex:none;overflow:hidden;display:grid;place-items:center;
+    font-family:var(--display);font-weight:600;font-size:19px;color:rgba(255,255,255,.6);
+  }
+  .ravatar img{width:100%;height:100%;object-fit:cover}
+  .rname{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.02em;line-height:1.15;word-break:break-word}
+  .rname.empty{color:rgba(255,255,255,.35)}
+  .rcohort{
+    display:inline-block;margin-top:7px;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.08em;text-transform:uppercase;background:var(--signal);
+    color:#fff;padding:3px 9px;border-radius:100px;
+  }
+  .rcohort.empty{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+  .chip{
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:6px 10px;
+    border-radius:100px;border:1px solid rgba(255,255,255,.16);
+    color:rgba(255,255,255,.35);transition:all .2s ease;
+  }
+  .chip.on{background:#fff;color:var(--ink);border-color:#fff;font-weight:500}
+  .meter-label{
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px;
+  }
+  .meter{height:5px;background:rgba(255,255,255,.14);border-radius:100px;overflow:hidden}
+  .meter i{display:block;height:100%;width:0%;background:var(--signal);border-radius:100px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+  .rail .footnote{font-size:12.5px;color:var(--ink-45);margin:13px 4px 0;line-height:1.5}
+
+  /* ---------------- Success ---------------- */
+  .done{
+    display:none;background:var(--card);border:1px solid var(--ink-08);
+    border-radius:var(--r);padding:clamp(28px,5vw,48px);
+  }
+  .done.show{display:block;animation:rise .32s cubic-bezier(.2,.7,.3,1)}
+  .done .tick{width:46px;height:46px;border-radius:50%;background:var(--ok);display:grid;place-items:center;margin-bottom:20px}
+  .done h2{font-family:var(--display);font-weight:700;font-size:clamp(27px,4.2vw,38px);letter-spacing:-.03em;margin:0 0 14px;line-height:1.04}
+  .done p{max-width:46ch;color:var(--ink-70);margin:0 0 12px}
+  .done .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .done .socials a{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-70);text-decoration:none;border:1.5px solid var(--ink-15);
+    border-radius:100px;padding:8px 14px;transition:border-color .14s,color .14s;
+  }
+  .done .socials a:hover{border-color:var(--signal);color:var(--signal)}
+  .done .again{
+    margin-top:22px;background:none;border:1.5px solid var(--ink-15);border-radius:100px;
+    padding:11px 22px;font-size:14.5px;font-weight:500;cursor:pointer;
+    transition:border-color .14s,color .14s;
+  }
+  .done .again:hover{border-color:var(--signal);color:var(--signal)}
+
+  footer{
+    margin-top:40px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--ink-45);display:flex;gap:8px 20px;flex-wrap:wrap;
+  }
+  footer a{color:inherit;text-decoration:none}
+  footer a:hover{color:var(--signal)}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow"><span class="dot"></span> Data-Lead Africa · Community</p>
+    <h1>Tell us where to <em>tag you</em>.</h1>
+    <p class="standfirst">You trained with us in Abuja, so let's keep you in the picture. Share your handles and we'll tag you in photos, videos and shout-outs from your cohort. Two short steps, then a quick check.</p>
+  </header>
+
+  <div class="grid">
+
+    <main>
+      <form id="form" novalidate>
+
+        <!-- ---------- Stepper ---------- -->
+        <ol class="stepper" id="stepper">
+          <li class="here" data-s="1">
+            <button type="button" data-goto="1">
+              <span class="bar"></span>
+              <span class="n">01</span>
+              <span class="t">About you</span>
+            </button>
+          </li>
+          <li data-s="2">
+            <button type="button" data-goto="2">
+              <span class="bar"></span>
+              <span class="n">02</span>
+              <span class="t">Your handles</span>
+            </button>
+          </li>
+          <li data-s="3">
+            <button type="button" data-goto="3">
+              <span class="bar"></span>
+              <span class="n">03</span>
+              <span class="t">Check and send</span>
+            </button>
+          </li>
+        </ol>
+
+        <p class="sr-only" id="liveStep" role="status" aria-live="polite">Step 1 of 3: About you</p>
+
+        <!-- ============ STEP 1 ============ -->
+        <section class="card" id="card1" data-step="1" aria-labelledby="h-step1">
+          <div class="card-head">
+            <h2 id="h-step1">About you</h2>
+            <p class="note">Step 1 of 3</p>
+          </div>
+          <p class="card-intro">So we know who you are and which cohort to tag you with.</p>
+          <div class="card-body">
+
+            <div class="field" data-field="fullName">
+              <div class="field-label">
+                <label for="fullName">Full name<span class="req">*</span></label>
+                <span class="key">full_name</span>
+              </div>
+              <input id="fullName" name="fullName" type="text" autocomplete="name" placeholder="Ngozi Adeyemi" required>
+              <p class="err">Enter your full name.</p>
+            </div>
+
+            <div class="field" data-field="email">
+              <div class="field-label">
+                <label for="email">Email address<span class="req">*</span></label>
+                <span class="key">email</span>
+              </div>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+              <p class="err">Enter a valid email address.</p>
+            </div>
+
+            <div class="field" data-field="phone">
+              <div class="field-label">
+                <label for="phone">Phone number<span class="req">*</span></label>
+                <span class="key">phone</span>
+              </div>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="0803 000 0000" required>
+              <p class="err">Enter a phone number we can reach you on.</p>
+            </div>
+
+            <div class="field" data-field="cohort">
+              <div class="field-label">
+                <label for="cohort">Training attended<span class="req">*</span></label>
+                <span class="key">cohort</span>
+              </div>
+              <select id="cohort" name="cohort" required>
+                <option value="" selected disabled>Select your training</option>
+                <option>Data Analytics Bootcamp</option>
+                <option>Data Science Bootcamp</option>
+                <option>AI &amp; Machine Learning</option>
+                <option>Python for Kids</option>
+                <option>Graphics Design</option>
+                <option value="Other">Other</option>
+              </select>
+              <p class="err">Select the training you attended.</p>
+              <div id="otherWrap" class="hidden" style="margin-top:12px">
+                <input id="cohortOther" name="cohortOther" type="text" placeholder="Which training was it?">
+                <p class="err" id="otherErr" style="display:none">Tell us which training you attended.</p>
+              </div>
+            </div>
+
+          </div>
+          <p class="formerror" data-error="1"></p>
+          <div class="nav">
+            <button class="btn" type="button" data-next="2">Continue</button>
+            <p class="small">Step 2 is your handles.</p>
+          </div>
+        </section>
+
+        <!-- ============ STEP 2 ============ -->
+        <section class="card hidden" id="card2" data-step="2" aria-labelledby="h-step2">
+          <div class="card-head">
+            <h2 id="h-step2">Your handles</h2>
+            <p class="note">Step 2 of 3</p>
+          </div>
+          <p class="card-intro">Fill in the platforms you actually use. Skip the rest.</p>
+          <div class="card-body">
+
+            <div class="field" data-field="linkedin">
+              <div class="field-label">
+                <label for="linkedin">LinkedIn</label>
+                <span class="key">linkedin_url</span>
+              </div>
+              <p class="hint">Paste your profile link, e.g. <code>linkedin.com/in/johndoe</code></p>
+              <input id="linkedin" name="linkedin" type="text" inputmode="url" placeholder="linkedin.com/in/yourname">
+              <p class="err">That doesn't look like a LinkedIn profile link.</p>
+            </div>
+
+            <div class="field" data-field="instagram">
+              <div class="field-label">
+                <label for="instagram">Instagram</label>
+                <span class="key">instagram</span>
+              </div>
+              <div class="prefixed">
+                <span>@</span>
+                <input id="instagram" name="instagram" type="text" placeholder="yourname" autocapitalize="none" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="field" data-field="facebook">
+              <div class="field-label">
+                <label for="facebook">Facebook</label>
+                <span class="key">facebook_url</span>
+              </div>
+              <p class="hint">Profile link or username, e.g. <code>facebook.com/johndoe</code></p>
+              <input id="facebook" name="facebook" type="text" placeholder="facebook.com/yourname">
+            </div>
+
+            <div class="field" data-field="x">
+              <div class="field-label">
+                <label for="x">X (Twitter)</label>
+                <span class="key">x_handle</span>
+              </div>
+              <div class="prefixed">
+                <span>@</span>
+                <input id="x" name="x" type="text" placeholder="yourname" autocapitalize="none" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="field" data-field="tiktok">
+              <div class="field-label">
+                <label for="tiktok">TikTok</label>
+                <span class="key">tiktok</span>
+              </div>
+              <div class="prefixed">
+                <span>@</span>
+                <input id="tiktok" name="tiktok" type="text" placeholder="yourname" autocapitalize="none" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="field" data-field="youtube">
+              <div class="field-label">
+                <label for="youtube">YouTube channel</label>
+                <span class="key">youtube</span>
+              </div>
+              <input id="youtube" name="youtube" type="text" placeholder="youtube.com/@yourchannel">
+            </div>
+
+            <div class="field" data-field="other">
+              <div class="field-label">
+                <label for="other">Anywhere else</label>
+                <span class="key">other</span>
+              </div>
+              <p class="hint">Threads, Behance, a portfolio site, whatever you'd like us to link.</p>
+              <input id="other" name="other" type="text" placeholder="Platform and handle">
+            </div>
+
+          </div>
+          <p class="formerror" data-error="2"></p>
+          <div class="nav">
+            <button class="btn" type="button" data-next="3">Continue</button>
+            <button class="btn-ghost" type="button" data-back="1">Back</button>
+          </div>
+        </section>
+
+        <!-- ============ STEP 3 ============ -->
+        <section class="card hidden" id="card3" data-step="3" aria-labelledby="h-step3">
+          <div class="card-head">
+            <h2 id="h-step3">Check and send</h2>
+            <p class="note">Step 3 of 3</p>
+          </div>
+          <p class="card-intro">This is what we'll save. Change anything that isn't right.</p>
+          <div class="card-body">
+            <ul class="review" id="review"></ul>
+
+            <label class="consent" for="consent">
+              <input id="consent" type="checkbox" required>
+              <span>I'm happy for Data-Lead Africa to tag my handles in community and promotional content. I can ask you to stop at any time by emailing <strong>info@dataleadafrica.com</strong>.</span>
+            </label>
+            <p class="err" id="consentErr" style="display:none;padding-left:2px">Please tick the box so we know we can tag you.</p>
+          </div>
+          <p class="formerror" data-error="3"></p>
+          <div class="nav">
+            <button class="btn" type="submit" id="submitBtn">Send my details</button>
+            <button class="btn-ghost" type="button" data-back="2">Back</button>
+          </div>
+        </section>
+
+      </form>
+
+      <!-- ============ SUCCESS ============ -->
+      <div class="done" id="done">
+        <div class="tick">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none" aria-hidden="true">
+            <path d="M2 8.5 8 14.5 20 2" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>You're on the list.</h2>
+        <p id="doneMsg">Thanks, we've got your handles.</p>
+        <p>Next time we post from your cohort, you'll be tagged. Follow along so you catch it.</p>
+        <div class="socials">
+          <a href="https://www.instagram.com/datalead_africa/" rel="noopener">Instagram</a>
+          <a href="https://www.linkedin.com/company/data-leadafrica" rel="noopener">LinkedIn</a>
+          <a href="https://x.com/datalead_africa" rel="noopener">X</a>
+          <a href="https://www.facebook.com/DataLead.Africa/" rel="noopener">Facebook</a>
+        </div>
+        <button class="again" type="button" id="againBtn">Submit another participant</button>
+      </div>
+    </main>
+
+    <!-- ============ LIVE RECORD ============ -->
+    <aside class="rail" aria-label="Preview of your community profile">
+      <div class="record">
+        <p class="rtitle">How you'll appear</p>
+        <div class="rhead">
+          <span class="ravatar" id="rAvatar" aria-hidden="true">DL</span>
+          <div>
+            <div class="rname empty" id="rName">Your name</div>
+            <span class="rcohort empty" id="rCohort">Cohort</span>
+          </div>
+        </div>
+        <div class="chips" id="chips">
+          <span class="chip" data-for="linkedin">in</span>
+          <span class="chip" data-for="instagram">ig</span>
+          <span class="chip" data-for="facebook">fb</span>
+          <span class="chip" data-for="x">x</span>
+          <span class="chip" data-for="tiktok">tt</span>
+          <span class="chip" data-for="youtube">yt</span>
+          <span class="chip" data-for="other">web</span>
+        </div>
+        <div class="meter-label">
+          <span>Record complete</span>
+          <span id="meterCount">0 / 11</span>
+        </div>
+        <div class="meter"><i id="meterFill"></i></div>
+      </div>
+      <p class="footnote">The more handles you add, the easier it is for us to tag you across platforms.</p>
+    </aside>
+
+  </div>
+
+  <footer>
+    <span>Data-Lead Africa</span>
+    <span>Central Business District, Abuja</span>
+    <a href="mailto:info@dataleadafrica.com">info@dataleadafrica.com</a>
+  </footer>
+
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG — paste your deployed Google Apps Script web app URL here.
+   Deploy: Apps Script → Deploy → New deployment → Web app
+           Execute as: Me   |   Who has access: Anyone
+   ===================================================================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxWQW34DIdv66eGL2hCiz8vNOk5UmGfWuFiibnkGRr4Oz1_4hpLl_YIK4LKc-fTK89_g/exec";
+
+const $ = id => document.getElementById(id);
+const form = $("form");
+const fields = {
+  fullName:$("fullName"), email:$("email"), phone:$("phone"),
+  cohort:$("cohort"), cohortOther:$("cohortOther"),
+  linkedin:$("linkedin"), instagram:$("instagram"), facebook:$("facebook"),
+  x:$("x"), tiktok:$("tiktok"), youtube:$("youtube"), other:$("other")
+};
+const SOCIALS = ["linkedin","instagram","facebook","x","tiktok","youtube","other"];
+const LABELS = {
+  fullName:"Name", email:"Email", phone:"Phone", cohort:"Training",
+  linkedin:"LinkedIn", instagram:"Instagram", facebook:"Facebook",
+  x:"X", tiktok:"TikTok", youtube:"YouTube", other:"Other"
+};
+
+let step = 1;
+let furthest = 1;
+
+/* ---------------- validation helpers ---------------- */
+const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const phoneOk = v => v.replace(/[^\d]/g,"").length >= 10;
+const clean   = v => v.trim().replace(/^@+/,"");
+const at      = v => clean(v) ? "@" + clean(v) : "";
+
+function markInvalid(name, bad){
+  const row = document.querySelector('[data-field="'+name+'"]');
+  if (row) row.classList.toggle("invalid", !!bad);
+}
+function showErr(n, msg){
+  const box = document.querySelector('[data-error="'+n+'"]');
+  box.textContent = msg; box.classList.add("show");
+}
+function hideErr(n){
+  document.querySelector('[data-error="'+n+'"]').classList.remove("show");
+}
+
+/* ---------------- step navigation ---------------- */
+function goto(n){
+  step = n;
+  furthest = Math.max(furthest, n);
+  document.querySelectorAll(".card[data-step]").forEach(c =>
+    c.classList.toggle("hidden", Number(c.dataset.step) !== n));
+  document.querySelectorAll(".stepper li").forEach(li => {
+    const s = Number(li.dataset.s);
+    li.classList.toggle("here", s === n);
+    li.classList.toggle("done", s < n);
+    li.querySelector("button").disabled = s > furthest;
+  });
+  const titles = {1:"About you", 2:"Your handles", 3:"Check and send"};
+  $("liveStep").textContent = "Step " + n + " of 3: " + titles[n];
+  if (n === 3) buildReview();
+  const card = $("card" + n);
+  card.scrollIntoView({ behavior:"smooth", block:"start" });
+  const firstInput = card.querySelector("input:not([type=file]), select");
+  if (firstInput) setTimeout(() => firstInput.focus({ preventScroll:true }), 340);
+}
+
+document.querySelectorAll("[data-next]").forEach(b =>
+  b.addEventListener("click", () => { if (validateStep(step)) goto(Number(b.dataset.next)); }));
+document.querySelectorAll("[data-back]").forEach(b =>
+  b.addEventListener("click", () => goto(Number(b.dataset.back))));
+document.querySelectorAll("[data-goto]").forEach(b =>
+  b.addEventListener("click", () => {
+    const target = Number(b.dataset.goto);
+    if (target <= furthest) goto(target);
+  }));
+
+/* ---------------- per-step validation ---------------- */
+function validateStep(n){
+  let firstBad = null;
+  const fail = k => { markInvalid(k, true); if (!firstBad) firstBad = k; };
+
+  if (n === 1){
+    if (!fields.fullName.value.trim()) fail("fullName");
+    if (!emailOk(fields.email.value))  fail("email");
+    if (!phoneOk(fields.phone.value))  fail("phone");
+    if (!fields.cohort.value)          fail("cohort");
+    const otherNeeded = fields.cohort.value === "Other" && !fields.cohortOther.value.trim();
+    $("otherErr").style.display = otherNeeded ? "block" : "none";
+    if (otherNeeded && !firstBad) firstBad = "cohort";
+  }
+
+  if (n === 2){
+    const li = fields.linkedin.value.trim();
+    if (li && !/linkedin\.com\/(in|pub)\//i.test(li)) fail("linkedin");
+    const anyHandle = SOCIALS.some(k => fields[k].value.trim());
+    if (!anyHandle){
+      showErr(2, "Add at least one handle so we have somewhere to tag you.");
+      return false;
+    }
+  }
+
+  if (n === 3){
+    if (!$("consent").checked){
+      $("consentErr").style.display = "block";
+      showErr(3, "Tick the consent box before sending.");
+      return false;
+    }
+  }
+
+  if (firstBad){
+    showErr(n, "A few things need fixing before you continue.");
+    document.querySelector('[data-field="'+firstBad+'"]')
+      .scrollIntoView({ behavior:"smooth", block:"center" });
+    return false;
+  }
+  hideErr(n);
+  return true;
+}
+
+/* ---------------- review list ---------------- */
+function currentValues(){
+  const cohort = fields.cohort.value === "Other"
+    ? fields.cohortOther.value.trim() : fields.cohort.value;
+  return {
+    fullName:  fields.fullName.value.trim(),
+    email:     fields.email.value.trim(),
+    phone:     fields.phone.value.trim(),
+    cohort:    cohort,
+    linkedin:  fields.linkedin.value.trim(),
+    instagram: at(fields.instagram.value),
+    facebook:  fields.facebook.value.trim(),
+    x:         at(fields.x.value),
+    tiktok:    at(fields.tiktok.value),
+    youtube:   fields.youtube.value.trim(),
+    other:     fields.other.value.trim()
+  };
+}
+
+function buildReview(){
+  const v = currentValues();
+  const rows = [];
+  const add = (key, val, backTo) => {
+    rows.push(
+      '<li><span class="k">' + LABELS[key] + '</span>' +
+      '<span class="v' + (val ? '' : ' empty') + '">' + (val ? escapeHtml(val) : 'Not added') + '</span>' +
+      '<button type="button" class="edit" data-goto="' + backTo + '">Edit</button></li>'
+    );
+  };
+  ["fullName","email","phone","cohort"].forEach(k => add(k, v[k], 1));
+  SOCIALS.forEach(k => { if (v[k]) add(k, v[k], 2); });
+
+  const list = $("review");
+  list.innerHTML = rows.join("");
+  list.querySelectorAll("[data-goto]").forEach(b =>
+    b.addEventListener("click", () => goto(Number(b.dataset.goto))));
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+
+/* ---------------- cohort "Other" ---------------- */
+fields.cohort.addEventListener("change", () => {
+  const other = fields.cohort.value === "Other";
+  $("otherWrap").classList.toggle("hidden", !other);
+  if (other) fields.cohortOther.focus();
+  markInvalid("cohort", false);
+  paint();
+});
+
+/* ---------------- live record ---------------- */
+function initials(n){
+  const p = n.trim().split(/\s+/).filter(Boolean);
+  if (!p.length) return "DL";
+  return (p[0][0] + (p.length > 1 ? p[p.length-1][0] : "")).toUpperCase();
+}
+
+function paint(){
+  const v = currentValues();
+  const rName = $("rName");
+  rName.textContent = v.fullName || "Your name";
+  rName.classList.toggle("empty", !v.fullName);
+  $("rAvatar").textContent = initials(v.fullName);
+
+  const rC = $("rCohort");
+  rC.textContent = v.cohort || "Cohort";
+  rC.classList.toggle("empty", !v.cohort);
+
+  let filled = 0;
+  SOCIALS.forEach(k => {
+    const on = !!v[k];
+    if (on) filled++;
+    document.querySelector('.chip[data-for="' + k + '"]').classList.toggle("on", on);
+  });
+
+  const core = [!!v.fullName, emailOk(v.email), phoneOk(v.phone), !!v.cohort]
+    .filter(Boolean).length;
+  const total = core + filled;
+  $("meterCount").textContent = total + " / 11";
+  $("meterFill").style.width = Math.round(total / 11 * 100) + "%";
+}
+
+form.addEventListener("input", paint);
+Object.keys(fields).forEach(k =>
+  fields[k].addEventListener("input", () => { markInvalid(k, false); hideErr(step); }));
+$("consent").addEventListener("change", () => {
+  $("consentErr").style.display = "none"; hideErr(3);
+});
+
+/* ---------------- submit ---------------- */
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!validateStep(3)) return;
+
+  const v = currentValues();
+  const payload = Object.assign({}, v, { consent:"Yes" });
+
+  const btn = $("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+
+  try {
+    if (!SCRIPT_URL) throw new Error("no-endpoint");
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json();
+    if (out.status !== "ok") throw new Error(out.message || "server");
+
+    $("doneMsg").textContent = "Thanks " + v.fullName.split(" ")[0] + ", we've got your handles.";
+    form.classList.add("hidden");
+    $("done").classList.add("show");
+    window.scrollTo({ top:0, behavior:"smooth" });
+
+  } catch (err) {
+    if (err.message === "no-endpoint"){
+      showErr(3, "This form isn't connected to a destination yet. Add your Apps Script URL to SCRIPT_URL in the page script.");
+    } else {
+      showErr(3, "Couldn't send your details. Check your connection and tap Send again.");
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send my details";
+  }
+});
+
+/* ---------------- reset ---------------- */
+$("againBtn").addEventListener("click", () => {
+  form.reset();
+  furthest = 1;
+  $("rAvatar").textContent = "DL";
+  $("otherWrap").classList.add("hidden");
+  $("otherErr").style.display = "none";
+  $("consentErr").style.display = "none";
+  document.querySelectorAll(".field").forEach(f => f.classList.remove("invalid"));
+  document.querySelectorAll(".formerror").forEach(f => f.classList.remove("show"));
+  $("done").classList.remove("show");
+  form.classList.remove("hidden");
+  paint();
+  goto(1);
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+
+goto(1);
+paint();
+</script>
+</body>
+</html>
