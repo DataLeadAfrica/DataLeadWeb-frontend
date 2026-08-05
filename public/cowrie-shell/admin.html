@@ -234,6 +234,45 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .qrow .t span{font-size:12px;color:var(--muted);display:block}
 .rowbtn{padding:5px 11px;font-size:12px}
 
+.rqwrap{border-bottom:1px solid var(--line)}
+.rqwrap:last-child{border:none}
+.rqwrap .qrow{border-bottom:none}
+.rqd{padding:2px 0 14px 0}
+.rqd-note{color:var(--faint);font-size:12.5px;padding:8px 0}
+.rqd-row{display:flex;align-items:baseline;gap:12px;font-size:12.5px;padding:7px 0 7px 14px;
+  border-left:2px solid var(--orange-light)}
+.rqd-row .d{flex:1;color:var(--gray);overflow-wrap:anywhere}
+.rqd-row .w{color:var(--faint);font-size:11.5px;white-space:nowrap}
+.rqd-row .r{font-size:11.5px;white-space:nowrap}
+.rqd-row .a{font-family:var(--display-md);font-weight:500;white-space:nowrap;text-align:right;min-width:86px}
+.rqd-row.total{border-left-color:var(--orange);margin-top:4px;padding-top:9px}
+.rqd-row.total .d,.rqd-row.total .a{color:var(--ink)}
+@media(max-width:640px){
+  .rqd-row{flex-wrap:wrap;gap:3px 10px}
+  .rqd-row .d{flex-basis:100%}
+  .rqd-row .a{margin-left:auto}
+}
+
+.mnav{display:flex;gap:7px;align-items:center}
+.mnav button:disabled{opacity:.4;cursor:not-allowed}
+.daylist{margin-top:16px;border-top:1px solid var(--line);padding-top:4px}
+.daylist .dhead{font-family:var(--display-md);font-size:11px;text-transform:uppercase;
+  letter-spacing:.13em;color:var(--faint);padding:12px 0 6px}
+.dayrow{display:flex;align-items:flex-start;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--line);font-size:13px}
+.dayrow:last-child{border:none}
+.dayrow .dd{width:104px;flex-shrink:0;font-family:var(--display-md);font-weight:500;
+  font-size:13px;color:var(--ink)}
+.dayrow .dh{width:52px;flex-shrink:0;color:var(--muted);font-size:12.5px}
+.dayrow .da{flex:1;color:var(--gray);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.dayrow.gap .dd,.dayrow.gap .da{color:var(--faint)}
+.dayrow.off .dd,.dayrow.off .da{color:var(--muted)}
+.dayrow .fl{color:var(--amber);font-size:12px;flex-shrink:0}
+@media(max-width:640px){
+  .dayrow{flex-wrap:wrap;gap:4px 10px}
+  .dayrow .da{flex-basis:100%}
+}
+
 .gate{min-height:100vh;display:grid;place-items:center;padding:24px}
 .plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
 .plate h2{font-size:24px;margin-bottom:4px}
@@ -447,6 +486,10 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     <div class="panel">
       <div class="panel-head">
         <div><h3 id="p-month-h">This month</h3><div class="ps" id="p-month-s">&mdash;</div></div>
+        <div class="mnav">
+          <button class="rowbtn" id="p-prev" onclick="pShiftMonth(-1)">&larr; Earlier</button>
+          <button class="rowbtn" id="p-next" onclick="pShiftMonth(1)">Later &rarr;</button>
+        </div>
       </div>
       <div class="strip" id="p-strip"></div>
       <div class="legend">
@@ -456,6 +499,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         <span><i style="background:var(--blue)"></i>Holiday</span>
         <span style="color:var(--amber)">&#9873; Flagged</span>
       </div>
+      <div class="daylist" id="p-days"></div>
     </div>
 
     <div class="panel">
@@ -853,7 +897,7 @@ const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day
 // existed they reached nobody: they went to 'awaiting_approval' and sat
 // there, and Finance never saw them.
 // ============================================================
-window.loadReqs = loadReqs; window.decideReq = decideReq;
+window.loadReqs = loadReqs; window.decideReq = decideReq; window.toggleReqDetail = toggleReqDetail;
 
 async function loadReqs(){
   const { data, error } = await db.from("requisitions_to_approve").select("*");
@@ -892,12 +936,58 @@ async function loadReqs(){
                disbursed:"confirmed", closed:"role", draft:"role" };
   $("rq-all").innerHTML = !all || !all.length
     ? '<p style="color:var(--faint);font-size:13px">None yet.</p>'
-    : all.map(r => '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+    : all.map(r => '<div class="rqwrap"><div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
         '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
         (r.project_code ? " \u00b7 " + esc(r.project_code) : "") +
         (r.receipts_owed > 0 ? ' \u00b7 <span style="color:var(--amber)">' + r.receipts_owed +
           " receipt" + (r.receipts_owed===1?"":"s") + " owed</span>" : "") + '</span></span>' +
-        '<span class="tag ' + (CL[r.status]||"role") + '">' + (LB[r.status]||r.status) + '</span></div>').join("");
+        '<span class="tag ' + (CL[r.status]||"role") + '">' + (LB[r.status]||r.status) + '</span>' +
+        '<button class="rowbtn" style="margin-left:8px" id="rqb-' + r.id + '" onclick="toggleReqDetail(' + r.id + ')">Items</button>' +
+        '</div><div class="rqd hidden" id="rqd-' + r.id + '"></div></div>').join("");
+}
+
+// ============================================================
+// WHAT A REQUISITION IS ACTUALLY MADE OF
+// The list gives you a total. A total is not a decision. requisition_detail
+// already lets the CEO and COO read the items; nothing on this page had ever
+// asked it.
+// ============================================================
+async function toggleReqDetail(id){
+  const box = $("rqd-" + id), b = $("rqb-" + id);
+  if(!box) return;
+  if(!box.classList.contains("hidden")){
+    box.classList.add("hidden"); if(b) b.textContent = "Items"; return;
+  }
+  box.classList.remove("hidden"); if(b) b.textContent = "Hide";
+  if(box.dataset.loaded === "1") return;
+
+  box.innerHTML = '<p class="rqd-note">Loading&hellip;</p>';
+  const { data, error } = await db.rpc("requisition_detail", { p_req_id: id });
+  if(error){
+    box.innerHTML = '<div class="alert err" style="margin:10px 0 0"><b>Could not load the items</b>' +
+      esc(error.message) + '</div>';
+    return;
+  }
+  if(!data || !data.length){
+    box.innerHTML = '<p class="rqd-note">No items on this requisition. Nothing was itemised, so there is nothing to check the total against.</p>';
+    box.dataset.loaded = "1"; return;
+  }
+
+  let sum = 0;
+  const rows = data.map(i => {
+    sum += Number(i.amount || 0);
+    return '<div class="rqd-row"><span class="d">' + esc(i.description || "\u2014") + '</span>' +
+      '<span class="w">' + (i.needed_by ? "needed " + fmtDate(i.needed_by) : "") + '</span>' +
+      '<span class="r">' + (i.has_receipt
+        ? '<span style="color:var(--green)">receipt in</span>'
+        : '<span style="color:var(--amber)">no receipt</span>') + '</span>' +
+      '<span class="a">' + N(i.amount) + '</span></div>';
+  }).join("");
+
+  box.innerHTML = rows +
+    '<div class="rqd-row total"><span class="d">' + data.length + " item" + (data.length===1?"":"s") +
+    '</span><span class="w"></span><span class="r"></span><span class="a">' + N(sum) + '</span></div>';
+  box.dataset.loaded = "1";
 }
 
 async function decideReq(id, approve, email, name, total){
@@ -1279,6 +1369,11 @@ function paintRegister(){
 // ONE PERSON
 // ============================================================
 let P = null, P_PAY = [];
+// The month currently on screen for this person. Starts at today's month and
+// moves with the Earlier / Later buttons. Kept apart from the real current
+// month, because the pay effective date below must not follow the browsing.
+let P_Y = 0, P_M = 0;
+window.pShiftMonth = pShiftMonth;
 window.togglePromo = togglePromo; window.promoCalc = promoCalc; window.changeSalary = changeSalary;
 window.toggleStatus = toggleStatus; window.statusChange = statusChange; window.setStatus = setStatus;
 
@@ -1287,6 +1382,7 @@ async function openPerson(id){
   if(!P) return;
   go("person");
   const now = new Date(), Y = now.getFullYear(), M = now.getMonth() + 1;
+  P_Y = Y; P_M = M;
 
   $("p-av").textContent   = ini(P.full_name);
   $("p-name").textContent = P.display_name || P.full_name;
@@ -1306,7 +1402,7 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, Y, M), pMonth(id, Y, M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id) ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id) ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
   $("promo").classList.add("hidden"); $("stat").classList.add("hidden");
@@ -1319,7 +1415,7 @@ async function pGlance(id, Y, M){
   const STATE = { draft:"Not submitted", submitted:"With their manager", manager_approved:"With the director",
                   director_approved:"Approved", returned:"Returned to them" };
   $("p-glance").innerHTML =
-    '<div><div class="k">This month</div><div class="v">' + (g.days_logged||0) +
+    '<div><div class="k">' + MONTHS[M-1] + " " + Y + '</div><div class="v">' + (g.days_logged||0) +
       ' <small>/ ' + (g.working_days||0) + ' days</small></div>' +
       '<div class="s">' + (STATE[g.submission_state] || "Nothing yet") +
       ((g.days_flagged||0) > 0 ? " \u00b7 " + g.days_flagged + " flagged" : "") + '</div></div>' +
@@ -1330,6 +1426,20 @@ async function pGlance(id, Y, M){
       '<div class="s">' + (g.annual_accruing ? "First year, still accruing" : (Number(g.annual_taken||0)) + " taken") + '</div></div>' +
     '<div><div class="k">Last payslip</div><div class="v">' + esc(g.last_payslip || "None") + '</div>' +
       '<div class="s">' + esc(g.last_payslip_state || "Nothing run yet") + '</div></div>';
+}
+
+// Move the person view backwards or forwards a month. There is nothing to see
+// in the future, so Later stops at the current month.
+async function pShiftMonth(n){
+  if(!P) return;
+  const now = new Date(), curY = now.getFullYear(), curM = now.getMonth() + 1;
+  let y = P_Y, m = P_M + n;
+  if(m < 1){ m = 12; y--; }
+  if(m > 12){ m = 1; y++; }
+  if(y > curY || (y === curY && m > curM)) return;
+  P_Y = y; P_M = m;
+  $("p-days").innerHTML = '<p style="color:var(--faint);font-size:13px;padding:14px 0">Loading&hellip;</p>';
+  await Promise.all([ pGlance(P.id, P_Y, P_M), pMonth(P.id, P_Y, P_M) ]);
 }
 
 async function pMonth(id, Y, M){
@@ -1349,14 +1459,17 @@ async function pMonth(id, Y, M){
   (lRes.data||[]).forEach(r => LEAVE[r.day] = r);
   (hRes.data||[]).forEach(h => HOL[h.holiday] = h.name);
 
-  let html = "", logged = 0, flagged = 0, working = 0;
+  const todayISO = new Date().toLocaleDateString("en-CA");   // local date, not UTC
+
+  let html = "", rows = "", logged = 0, flagged = 0, working = 0, gaps = 0, hours = 0;
   for(let d = 1; d <= lastD; d++){
     const dt = new Date(Y, M-1, d), w = dt.getDay();
     if(w === 0 || w === 6) continue;
     const i = Y + "-" + String(M).padStart(2,"0") + "-" + String(d).padStart(2,"0");
     const hol = HOL[i], lev = LEAVE[i], rec = DAYS[i];
     if(!hol) working++;
-    if(rec){ logged++; if(rec.ai_flag) flagged++; }
+    if(rec){ logged++; hours += Number(rec.hours || 0); if(rec.ai_flag) flagged++; }
+    if(!hol && !lev && !rec && i <= todayISO) gaps++;
     let cls = "shell";
     if(hol) cls += " hol"; else if(lev) cls += " leave"; else if(rec) cls += " on";
     if(rec && rec.ai_flag) cls += " flag";
@@ -1365,7 +1478,41 @@ async function pMonth(id, Y, M){
     html += '<span class="shell ' + cls.replace("shell ","") + '" title="' + esc(lab) + '">' +
       '<svg viewBox="0 0 22 31"><ellipse class="sb" cx="11" cy="15.5" rx="8.5" ry="13.5"/>' +
       '<path class="sl" d="M11 4v23" fill="none" stroke-linecap="round"/></svg></span>';
+
+    // ----- the readable row: what they actually say they did -----
+    const dayLabel = DOWFULL[w].slice(0,3) + " " + d + " " + MONTHS[M-1].slice(0,3);
+    let rcls = "dayrow", hcell = "", acell = "", flagCell = "";
+    if(hol){
+      rcls += " off"; hcell = "\u2014"; acell = "Public holiday: " + esc(hol);
+    } else if(lev){
+      rcls += " off"; hcell = "\u2014"; acell = "On leave: " + esc(lev.label || "leave");
+    } else if(rec){
+      hcell = Number(rec.hours) + "h";
+      acell = rec.activity ? esc(rec.activity) : '<em style="color:var(--faint)">Left blank</em>';
+      if(rec.kind && rec.kind !== "normal") acell += ' <span class="tag month">' + esc(String(rec.kind).replace(/_/g," ")) + '</span>';
+      if(rec.ai_flag) flagCell = '<span class="fl" title="Flagged as thin">&#9873;</span>';
+    } else {
+      rcls += " gap"; hcell = "\u2014";
+      acell = i > todayISO ? "Not yet" : "Nothing logged";
+    }
+    rows += '<div class="' + rcls + '"><span class="dd">' + dayLabel + '</span>' +
+      '<span class="dh">' + hcell + '</span><span class="da">' + acell + '</span>' + flagCell + '</div>';
   }
+
+  $("p-days").innerHTML =
+    '<div class="dhead">Day by day</div>' +
+    (rows || '<p style="color:var(--faint);font-size:13px;padding:10px 0">No working days in this month.</p>') +
+    (logged ? '<div class="dhead" style="border-top:1px solid var(--line);margin-top:6px">' +
+      logged + " day" + (logged===1?"":"s") + " logged \u00b7 " + Math.round(hours*10)/10 + " hours" +
+      (gaps ? " \u00b7 " + gaps + " working day" + (gaps===1?"":"s") + " gone by with nothing against " + (gaps===1?"it":"them") : "") +
+      '</div>' : "");
+
+  const nextBtn = $("p-next");
+  if(nextBtn){
+    const now = new Date();
+    nextBtn.disabled = (Y === now.getFullYear() && M === now.getMonth() + 1);
+  }
+
   $("p-strip").innerHTML = html;
   $("p-month-h").textContent = MONTHS[M-1] + " " + Y;
   $("p-month-s").textContent = logged + " of " + working + " working days logged" +
