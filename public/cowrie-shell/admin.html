@@ -247,6 +247,14 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .rqd-row .a{font-family:var(--display-md);font-weight:500;white-space:nowrap;text-align:right;min-width:86px}
 .rqd-row.total{border-left-color:var(--orange);margin-top:4px;padding-top:9px}
 .rqd-row.total .d,.rqd-row.total .a{color:var(--ink)}
+.rqd-row.gone .d{opacity:.55}
+.rqd-row .d .dn{display:block;font-style:normal;font-size:11.5px;color:var(--clay);margin-top:2px}
+.rqd-row .a s{color:var(--faint);font-weight:400}
+.rqd-row .a .cut{color:var(--clay)}
+.rqd-row .a .ref{color:var(--red);font-size:11px}
+.rqd-row .a .asis{color:var(--green);font-size:10.5px;font-weight:400}
+.rqd-row .acts{display:flex;gap:5px;flex-shrink:0;min-width:150px;justify-content:flex-end}
+.rqd-row .acts .rowbtn{padding:3px 8px;font-size:11px}
 @media(max-width:640px){
   .rqd-row{flex-wrap:wrap;gap:3px 10px}
   .rqd-row .d{flex-basis:100%}
@@ -268,6 +276,22 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .dayrow.gap .dd,.dayrow.gap .da{color:var(--faint)}
 .dayrow.off .dd,.dayrow.off .da{color:var(--muted)}
 .dayrow .fl{color:var(--amber);font-size:12px;flex-shrink:0}
+.daybtn{border:none;background:none;padding:0 2px;font-size:13px;opacity:.35;flex-shrink:0;
+  line-height:1;border-radius:6px}
+.daybtn:hover{opacity:1;border:none;background:var(--orange-light)}
+.dayrow.noted .daybtn{opacity:1;color:var(--clay)}
+.dnotes{padding:0 0 0 116px}
+.dnote{background:var(--orange-light);border-radius:10px;padding:9px 12px;margin:0 0 7px;font-size:12.5px}
+.dnote.mine{background:var(--sand)}
+.dnote .who{font-family:var(--display-md);font-weight:500;font-size:12px;color:var(--ink)}
+.dnote .when{font-size:11px;color:var(--muted);margin-left:8px}
+.dnote .body{margin-top:3px;color:var(--gray);white-space:pre-wrap;overflow-wrap:anywhere}
+.dask{margin:0 0 10px}
+.dask textarea{width:100%;font:inherit;font-size:12.5px;padding:9px 11px;border:1px solid #dae2e7;
+  border-radius:9px;resize:vertical}
+.dask textarea:focus{outline:2px solid var(--orange);outline-offset:-1px;border-color:var(--orange)}
+.dask-f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:6px;font-size:11.5px}
+@media(max-width:640px){ .dnotes{padding-left:0} }
 @media(max-width:640px){
   .dayrow{flex-wrap:wrap;gap:4px 10px}
   .dayrow .da{flex-basis:100%}
@@ -898,6 +922,9 @@ const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day
 // there, and Finance never saw them.
 // ============================================================
 window.loadReqs = loadReqs; window.decideReq = decideReq; window.toggleReqDetail = toggleReqDetail;
+window.intervene = intervene; window.decideItem = decideItem; window.binDraft = binDraft;
+// which requisitions are still open to a line by line decision
+let CAN_DECIDE = {};
 
 async function loadReqs(){
   const { data, error } = await db.from("requisitions_to_approve").select("*");
@@ -934,6 +961,9 @@ async function loadReqs(){
                disbursed:"Paid", closed:"Closed", draft:"Draft" };
   const CL = { awaiting_approval:"acting", with_finance:"probationary", declined:"suspended",
                disbursed:"confirmed", closed:"role", draft:"role" };
+  // Lines can only be decided while it is still waiting or with Finance.
+  CAN_DECIDE = {};
+  (all||[]).forEach(r => { CAN_DECIDE[r.id] = (r.status === "awaiting_approval" || r.status === "with_finance"); });
   $("rq-all").innerHTML = !all || !all.length
     ? '<p style="color:var(--faint);font-size:13px">None yet.</p>'
     : all.map(r => '<div class="rqwrap"><div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
@@ -942,8 +972,74 @@ async function loadReqs(){
         (r.receipts_owed > 0 ? ' \u00b7 <span style="color:var(--amber)">' + r.receipts_owed +
           " receipt" + (r.receipts_owed===1?"":"s") + " owed</span>" : "") + '</span></span>' +
         '<span class="tag ' + (CL[r.status]||"role") + '">' + (LB[r.status]||r.status) + '</span>' +
+        (r.status === "with_finance"
+          ? '<button class="rowbtn" style="margin-left:8px" onclick="intervene(' + r.id + ',\'halt\',\'' +
+              esc(r.staff).replace(/'/g,"\\'") + '\',' + Number(r.total||0) + ')">Halt</button>' +
+            '<button class="btn-primary rowbtn" style="margin-left:6px" onclick="intervene(' + r.id + ',\'approve\',\'' +
+              esc(r.staff).replace(/'/g,"\\'") + '\',' + Number(r.total||0) + ')">Approve</button>'
+          : "") +
+        (r.status === "draft" && !Number(r.total)
+          ? '<button class="rowbtn" style="margin-left:8px" onclick="binDraft(' + r.id + ',\'' +
+              esc(r.staff).replace(/'/g,"\\'") + '\')">Delete</button>'
+          : "") +
         '<button class="rowbtn" style="margin-left:8px" id="rqb-' + r.id + '" onclick="toggleReqDetail(' + r.id + ')">Items</button>' +
         '</div><div class="rqd hidden" id="rqd-' + r.id + '"></div></div>').join("");
+}
+
+// An empty draft was never submitted, so no decision was ever made about
+// it and there is nothing to keep. Anything with items in it, or anything
+// that has been submitted, is somebody's record and stays.
+async function binDraft(id, name){
+  if(!confirm("Delete " + name + "'s empty draft requisition?\n\n" +
+              "It was never submitted and has nothing in it. This cannot be undone.")) return;
+  const { error } = await db.rpc("delete_empty_draft", { p_req_id: id });
+  if(error){ toast("Could not. " + error.message); return; }
+  toast("Deleted.");
+  await loadReqs();
+}
+
+// ============================================================
+// ACTING ON SOMETHING THAT WENT STRAIGHT TO FINANCE
+// Anything under the threshold skips the approval queue entirely, so
+// nobody ever put their name to it and the person who raised it is told
+// nothing until the money lands. These two buttons close that gap.
+//
+// Approve does not move the status: 'with_finance' already means cleared
+// to pay. What it changes is that a person authorised it, and the person
+// who raised it hears so.
+//
+// Halt pulls it back into your own queue. Finance then cannot pay it,
+// because disburse_requisition only accepts 'with_finance'.
+// ============================================================
+async function intervene(id, action, name, total){
+  let note = null;
+  if(action === "halt"){
+    note = prompt("Why are you halting " + name + "'s " + N(total) + " requisition?\n\n" +
+                  "It goes back into your own queue and Finance cannot pay it until you decide.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed. Finance and " + name + " both have to know why."); return; }
+  } else {
+    if(!confirm("Approve " + N(total) + " for " + name + "?\n\n" +
+                "This puts your name to it and tells them it is approved.")) return;
+    note = prompt("A note for them (optional).") || null;
+  }
+
+  const { data, error } = await db.rpc("ceo_intervene",
+    { p_req_id: id, p_action: action, p_note: note });
+  if(error){ toast("Could not. " + error.message); return; }
+
+  const res = data || {};
+  if(res.action === "approved"){
+    // requisitions_overview carries no email, so the function hands it back
+    const sent = res.staff_email &&
+      await notify("requisition_approved", res.staff_email, res.staff_name || name,
+                   { amount: N(total), reason: note });
+    toast("Approved." + (sent ? " " + String(name).split(" ")[0] + " has been told." : "") +
+          " Finance can pay it.");
+  } else {
+    toast("Halted. It is back in your queue and Finance cannot pay it.");
+  }
+  await loadReqs();
 }
 
 // ============================================================
@@ -973,21 +1069,94 @@ async function toggleReqDetail(id){
     box.dataset.loaded = "1"; return;
   }
 
-  let sum = 0;
+  let sum = 0, appr = 0, adjusted = 0;
   const rows = data.map(i => {
-    sum += Number(i.amount || 0);
-    return '<div class="rqd-row"><span class="d">' + esc(i.description || "\u2014") + '</span>' +
+    const asked = Number(i.amount || 0);
+    const decided = i.approved_amount !== null && i.approved_amount !== undefined;
+    const ok = decided ? Number(i.approved_amount) : asked;
+    sum += asked; appr += ok;
+    if(decided && ok < asked) adjusted++;
+
+    let money;
+    if(!decided)      money = '<span class="a">' + N(asked) + '</span>';
+    else if(ok === 0) money = '<span class="a"><s>' + N(asked) + '</s> <b class="ref">refused</b></span>';
+    else if(ok < asked) money = '<span class="a"><s>' + N(asked) + '</s> <b class="cut">' + N(ok) + '</b></span>';
+    else              money = '<span class="a">' + N(asked) + ' <b class="asis">as asked</b></span>';
+
+    return '<div class="rqd-row' + (decided && ok === 0 ? " gone" : "") + '">' +
+      '<span class="d">' + esc(i.description || "\u2014") +
+        (i.decision_note ? '<em class="dn">' + esc(i.decision_note) +
+          (i.decided_by ? " \u00b7 " + esc(i.decided_by) : "") + '</em>' : "") + '</span>' +
       '<span class="w">' + (i.needed_by ? "needed " + fmtDate(i.needed_by) : "") + '</span>' +
       '<span class="r">' + (i.has_receipt
         ? '<span style="color:var(--green)">receipt in</span>'
         : '<span style="color:var(--amber)">no receipt</span>') + '</span>' +
-      '<span class="a">' + N(i.amount) + '</span></div>';
+      money +
+      (CAN_DECIDE[id]
+        ? '<span class="acts">' +
+            '<button class="rowbtn" onclick="decideItem(' + i.item_id + ',' + id + ',' + asked + ',\'offer\')">Offer</button>' +
+            '<button class="rowbtn" onclick="decideItem(' + i.item_id + ',' + id + ',' + asked + ',\'refuse\')">Refuse</button>' +
+            (decided ? '<button class="rowbtn" onclick="decideItem(' + i.item_id + ',' + id + ',' + asked + ',\'undo\')">Undo</button>' : "") +
+          '</span>'
+        : "") +
+      '</div>';
   }).join("");
 
   box.innerHTML = rows +
     '<div class="rqd-row total"><span class="d">' + data.length + " item" + (data.length===1?"":"s") +
-    '</span><span class="w"></span><span class="r"></span><span class="a">' + N(sum) + '</span></div>';
+    (adjusted ? " \u00b7 " + adjusted + " adjusted" : "") +
+    '</span><span class="w"></span><span class="r"></span>' +
+    '<span class="a">' + (appr !== sum
+      ? '<s>' + N(sum) + '</s> <b class="cut">' + N(appr) + '</b>'
+      : N(sum)) + '</span>' +
+    (CAN_DECIDE[id] ? '<span class="acts"></span>' : "") + '</div>' +
+    (appr === 0 && sum > 0
+      ? '<div class="alert warn" style="margin:10px 0 0"><b>Every line is refused</b>' +
+        'This will not decline itself. Halt it, then decline it from your queue so the reason is recorded and they are told.</div>'
+      : "");
   box.dataset.loaded = "1";
+}
+
+// ============================================================
+// DECIDING A LINE
+// Offer, refuse, or undo. What was asked for is never overwritten:
+// the requested figure stays on the row and the approved one sits
+// beside it, so the record shows both and the reason for the gap.
+// ============================================================
+async function decideItem(itemId, reqId, asked, mode){
+  let amount = null, note = null;
+
+  if(mode === "undo"){
+    if(!confirm("Undo the decision on this line?\n\nIt goes back to undecided, and the full " +
+                N(asked) + " stands.")) return;
+    const { error } = await db.rpc("clear_requisition_item_decision", { p_item_id: itemId });
+    if(error){ toast("Could not. " + error.message); return; }
+  } else {
+    if(mode === "refuse"){
+      amount = 0;
+      note = prompt("Why are you refusing this line?\n\nThey will see this.");
+      if(note === null) return;
+      if(!note.trim()){ toast("A reason is needed. A refusal with no reason cannot be answered."); return; }
+    } else {
+      const raw = prompt("They asked for " + N(asked) + ".\n\nWhat do you approve for this line?", asked);
+      if(raw === null) return;
+      amount = Number(String(raw).replace(/[^0-9.]/g, ""));
+      if(!isFinite(amount) || amount < 0){ toast("Enter an amount."); return; }
+      if(amount > asked){ toast("You cannot approve more than the " + N(asked) + " they asked for."); return; }
+      if(amount < asked){
+        note = prompt("Why is it reduced to " + N(amount) + "?\n\nThey will see this.");
+        if(note === null) return;
+        if(!note.trim()){ toast("A reason is needed. A number changed without one cannot be queried."); return; }
+      }
+    }
+    const { error } = await db.rpc("decide_requisition_item",
+      { p_item_id: itemId, p_amount: amount, p_note: note });
+    if(error){ toast("Could not. " + error.message); return; }
+  }
+
+  const box = $("rqd-" + reqId);
+  if(box){ box.dataset.loaded = ""; box.classList.add("hidden"); }
+  await toggleReqDetail(reqId);
 }
 
 async function decideReq(id, approve, email, name, total){
@@ -1369,6 +1538,9 @@ function paintRegister(){
 // ONE PERSON
 // ============================================================
 let P = null, P_PAY = [];
+// Notes on this person's days, keyed by date. Filled by pMonth.
+let NOTES = {};
+window.askDay = askDay; window.saveDayNote = saveDayNote;
 // The month currently on screen for this person. Starts at today's month and
 // moves with the Earlier / Later buttons. Kept apart from the real current
 // month, because the pay effective date below must not follow the browsing.
@@ -1428,6 +1600,63 @@ async function pGlance(id, Y, M){
       '<div class="s">' + esc(g.last_payslip_state || "Nothing run yet") + '</div></div>';
 }
 
+// ============================================================
+// COMMENTS ON A SINGLE DAY
+// The portal has always told staff "your manager may query the day".
+// Nothing could. This is that.
+//
+// A note hangs on a person and a date, so an empty day can be asked
+// about too, which is usually the day worth asking about.
+// ============================================================
+function renderNotes(notes, iso){
+  if(!notes.length) return "";
+  return notes.map(n =>
+    '<div class="dnote' + (n.is_me ? " mine" : "") + '">' +
+      '<span class="who">' + esc(n.author) + '</span>' +
+      '<span class="when">' + new Date(n.created_at).toLocaleDateString("en-GB",
+        { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }) + '</span>' +
+      '<div class="body">' + esc(n.body) + '</div>' +
+    '</div>').join("");
+}
+
+function askDay(iso){
+  const box = $("dn-" + iso);
+  if(!box) return;
+  if($("dna-" + iso)){ $("dna-" + iso).remove(); return; }   // second click closes it
+  const form = document.createElement("div");
+  form.className = "dask";
+  form.id = "dna-" + iso;
+  form.innerHTML =
+    '<textarea id="dnt-' + iso + '" rows="2" placeholder="Ask about this day, or leave a note. They will see it when they next open their portal."></textarea>' +
+    '<div class="dask-f"><span id="dnm-' + iso + '"></span>' +
+    '<button class="btn-primary rowbtn" onclick="saveDayNote(\'' + iso + '\')">Post</button></div>';
+  box.appendChild(form);
+  const t = $("dnt-" + iso); if(t) t.focus();
+}
+
+async function saveDayNote(iso){
+  const t = $("dnt-" + iso), m = $("dnm-" + iso);
+  if(!t || !P) return;
+  const body = String(t.value || "").trim();
+  if(!body){ if(m){ m.textContent = "Write something first."; m.style.color = "var(--red)"; } return; }
+
+  t.disabled = true;
+  const { error } = await db.rpc("add_day_note", { p_staff: P.id, p_date: iso, p_body: body });
+  t.disabled = false;
+  if(error){
+    if(m){ m.textContent = error.message; m.style.color = "var(--red)"; }
+    return;
+  }
+  const box = $("dn-" + iso), form = $("dna-" + iso);
+  if(form) form.remove();
+  const fresh = { author: (ME && ME.full_name) || "You", is_me: true, body, created_at: new Date().toISOString() };
+  (NOTES[iso] = NOTES[iso] || []).push(fresh);
+  if(box) box.innerHTML = renderNotes(NOTES[iso], iso);
+  const row = box && box.previousElementSibling;
+  if(row) row.classList.add("noted");
+  toast("Posted. They will see it on that day in their portal.");
+}
+
 // Move the person view backwards or forwards a month. There is nothing to see
 // in the future, so Later stops at the current month.
 async function pShiftMonth(n){
@@ -1447,12 +1676,17 @@ async function pMonth(id, Y, M){
   const lastD = new Date(Y, M, 0).getDate();
   const last  = Y + "-" + String(M).padStart(2,"0") + "-" + lastD;
 
-  const [dRes, lRes, hRes] = await Promise.all([
+  const [dRes, lRes, hRes, nRes] = await Promise.all([
     db.rpc("staff_month", { p_staff: id, p_year: Y, p_month: M }),
     db.rpc("staff_leave_days", { p_staff: id, p_from: first, p_to: last }),
-    db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last)
+    db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last),
+    db.rpc("day_notes", { p_staff: id, p_from: first, p_to: last })
   ]);
   if(oops("Their month", dRes.error) || oops("Their leave", lRes.error) || oops("Holidays", hRes.error)) return;
+  // Notes are an extra, not a reason to fail the whole panel.
+  if(nRes.error) console.warn("day_notes:", nRes.error.message);
+  NOTES = {};
+  (nRes.data||[]).forEach(n => { (NOTES[n.work_date] = NOTES[n.work_date] || []).push(n); });
 
   const DAYS = {}, LEAVE = {}, HOL = {};
   (dRes.data||[]).forEach(r => DAYS[r.work_date] = r);
@@ -1495,8 +1729,13 @@ async function pMonth(id, Y, M){
       rcls += " gap"; hcell = "\u2014";
       acell = i > todayISO ? "Not yet" : "Nothing logged";
     }
-    rows += '<div class="' + rcls + '"><span class="dd">' + dayLabel + '</span>' +
-      '<span class="dh">' + hcell + '</span><span class="da">' + acell + '</span>' + flagCell + '</div>';
+    const notes = NOTES[i] || [];
+    const noteBtn = '<button class="daybtn" onclick="askDay(\'' + i + '\')" title="Comment on this day">' +
+      (notes.length ? "\uD83D\uDDE8 " + notes.length : "\uD83D\uDDE8") + '</button>';
+
+    rows += '<div class="' + rcls + (notes.length ? " noted" : "") + '"><span class="dd">' + dayLabel + '</span>' +
+      '<span class="dh">' + hcell + '</span><span class="da">' + acell + '</span>' + flagCell + noteBtn + '</div>' +
+      '<div class="dnotes" id="dn-' + i + '">' + renderNotes(notes, i) + '</div>';
   }
 
   $("p-days").innerHTML =
