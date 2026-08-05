@@ -276,6 +276,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .dayrow.gap .dd,.dayrow.gap .da{color:var(--faint)}
 .dayrow.off .dd,.dayrow.off .da{color:var(--muted)}
 .dayrow .fl{color:var(--amber);font-size:12px;flex-shrink:0}
+.dayrow .da .lr{display:block;font-style:normal;font-size:11.5px;color:var(--clay);margin-top:3px}
 .daybtn{border:none;background:none;padding:0 2px;font-size:13px;opacity:.35;flex-shrink:0;
   line-height:1;border-radius:6px}
 .daybtn:hover{opacity:1;border:none;background:var(--orange-light)}
@@ -1724,6 +1725,8 @@ async function pMonth(id, Y, M){
       hcell = Number(rec.hours) + "h";
       acell = rec.activity ? esc(rec.activity) : '<em style="color:var(--faint)">Left blank</em>';
       if(rec.kind && rec.kind !== "normal") acell += ' <span class="tag month">' + esc(String(rec.kind).replace(/_/g," ")) + '</span>';
+      if(rec.provisional) acell += ' <span class="tag wait">planned, not yet worked</span>';
+      if(rec.late_reason) acell += '<em class="lr">Filed late: ' + esc(rec.late_reason) + '</em>';
       if(rec.ai_flag) flagCell = '<span class="fl" title="Flagged as thin">&#9873;</span>';
     } else {
       rcls += " gap"; hcell = "\u2014";

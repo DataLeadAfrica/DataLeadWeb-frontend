@@ -81,6 +81,34 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
   padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
   opacity:0;pointer-events:none;transition:.22s}
+
+/* ------------------------------------------------------------
+   THE DAY BOX
+   The markup and the open/close code for this were always here, but
+   no styling ever was, so it rendered as a plain block at the very
+   bottom of the page and everyone had to scroll to find it. These
+   rules are what make it behave like the panel it was written to be.
+   ------------------------------------------------------------ */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(20,35,46,.46);
+  backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;
+  padding:20px;overflow-y:auto;animation:fadein .16s ease-out}
+.modal-bg.hidden{display:none}
+.modal{background:var(--paper);border-radius:18px;padding:26px 28px;width:100%;max-width:560px;
+  max-height:calc(100vh - 40px);overflow-y:auto;box-shadow:0 24px 60px rgba(20,35,46,.28);
+  animation:rise .2s cubic-bezier(.2,.9,.3,1.05)}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}
+  to{opacity:1;transform:none}}
+@media(max-width:640px){
+  /* on a phone it sits at the bottom, where the thumb already is */
+  .modal-bg{align-items:flex-end;padding:0}
+  .modal{max-width:none;border-radius:18px 18px 0 0;padding:22px 18px 26px;
+    max-height:92vh;animation:slideup .22s cubic-bezier(.2,.9,.3,1.05)}
+}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .modal-bg,.modal{animation:none}
+}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast.good{background:var(--green-bg);color:var(--green);border-color:var(--green)}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
@@ -134,6 +162,12 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
   border-radius:50%;background:var(--amber);border:1.5px solid var(--paper)}
 .shell.noted::after{content:"";position:absolute;bottom:-2px;left:-1px;width:6px;height:6px;
   border-radius:50%;background:var(--clr-orange);border:1.5px solid var(--paper)}
+
+/* days the rule has shut, and days it will question */
+.shell.shut{opacity:.3;cursor:default}
+.shell.shut:hover{transform:none}
+.shell.late .sbody{stroke-dasharray:3 3}
+.shell.plan .sbody{fill:#fff;stroke-dasharray:3 3}
 
 .mshift{display:flex;gap:6px;align-items:center;margin-left:14px}
 .mshift button{padding:4px 11px;font-size:12.5px;border-radius:9px}
@@ -1052,6 +1086,8 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
       <div class="fld"><label>Standard for this day</label><input id="mo-std" disabled></div>
     </div>
     <div class="fld"><label>What you did</label><textarea id="mo-act" placeholder="e.g. Cleaned and coded the Chad baseline dataset, drafted the WASH indicators."></textarea></div>
+    <div class="fld hidden" id="mo-late-wrap"><label id="mo-late-lab">Why are you submitting your timesheet late?</label>
+      <input id="mo-late" placeholder="You are expected to fill your timesheet daily."></div>
     <div id="mo-ai" class="ai-note hidden"></div>
     <div id="mo-notes" class="mo-notes hidden"></div>
     <div class="actions">
@@ -1494,6 +1530,8 @@ async function loadTimesheet(){
       else (nt.data||[]).forEach(n => { (NOTES[n.work_date] = NOTES[n.work_date] || []).push(n); });
     } catch(err){ console.warn("day notes:", err); }
 
+    if(!WINDOW) await loadWindow();
+
     // this month's submission, if any
     const pid = await periodId();
     if(pid === null || pid === undefined) throw new Error("Could not open the month. Has file 16 been run?");
@@ -1573,10 +1611,22 @@ function buildStrip(){
     if(rec && rec.ai_flag) cls += " flag";
     if((NOTES[iso]||[]).length) cls += " noted";
 
-    // a holiday or approved leave is not a day you log
-    const click = (hol || lev) ? "" : ' onclick="openDay(\'' + iso + '\')"';
-    html += '<button class="' + cls + '"' + click + ' aria-label="' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '">' +
-      '<span class="tip">' + esc(shellLabel(dt, d, hol, rec, iso === todayISO)) + '</span>' +
+    // What the database would say if they tried. Shut days are dimmed
+    // rather than silently accepting a day that will be thrown back.
+    const st = dayState(iso);
+    let extraTip = "";
+    if(!hol && !lev){
+      if(st === "closed"){ cls += " shut"; extraTip = " \u00b7 closed, speak to the Head of Operations"; }
+      else if(st === "future"){ cls += " shut"; extraTip = " \u00b7 not yet"; }
+      else if(st === "late"){ cls += " late"; extraTip = " \u00b7 late, a reason is needed"; }
+      else if(st === "plan"){ cls += " plan"; extraTip = rec ? " \u00b7 planned" : " \u00b7 plan ahead for payroll"; }
+    }
+
+    // a holiday, approved leave, or a day the rule has shut is not clickable
+    const click = (hol || lev || st === "closed" || st === "future") ? "" : ' onclick="openDay(\'' + iso + '\')"';
+    const lab = shellLabel(dt, d, hol, rec, iso === todayISO) + extraTip;
+    html += '<button class="' + cls + '"' + click + ' aria-label="' + esc(lab) + '">' +
+      '<span class="tip">' + esc(lab) + '</span>' +
       '<svg viewBox="0 0 26 36" aria-hidden="true">' +
         '<ellipse class="sbody" cx="13" cy="18" rx="10" ry="15.5"/>' +
         '<path class="slit" d="M13 4.5v27" fill="none" stroke-linecap="round"/>' +
@@ -1636,6 +1686,7 @@ function openDay(iso){
   $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
   $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
   $("mo-ai").className = "ai-note hidden";
+  showDayContext(iso);
   renderDayNotes(iso);
   thinAcknowledged = false;
   const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
@@ -1718,7 +1769,57 @@ function renderMonthNav(){
   if(nw) nw.classList.toggle("hidden", isNow);
 }
 
+// ============================================================
+// WHAT THE RULE IS TODAY
+// The database is the thing that enforces this. Everything here is a
+// courtesy: it greys out what would be refused and explains why, so
+// nobody types out a whole day and only then gets told no.
+// ============================================================
+let WINDOW = null;
+
+async function loadWindow(){
+  try {
+    const { data, error } = await db.rpc("timesheet_window");
+    if(error){ console.warn("timesheet_window:", error.message); return; }
+    WINDOW = data || null;
+  } catch(err){ console.warn("timesheet_window:", err); }
+}
+
+// "open", "late" (allowed but needs a reason), "closed", "plan", "future"
+function dayState(iso){
+  if(!WINDOW) return "open";                       // rule unknown, do not block anyone
+  if(iso > WINDOW.today){
+    if(iso > WINDOW.month_end) return "future";
+    return WINDOW.today >= WINDOW.window_opens ? "plan" : "future";
+  }
+  if(iso === WINDOW.today) return "open";
+  if(iso < WINDOW.rule_from) return "open";        // before the rule started, always free
+  if(DAYS[iso]) return "open";                     // already filed, editing is fine
+  if(iso < WINDOW.earliest) return "closed";
+  return "late";
+}
+
+function showDayContext(iso){
+  const st = dayState(iso), wrap = $("mo-late-wrap"), ai = $("mo-ai");
+  wrap.classList.toggle("hidden", st !== "late");
+  if(st === "late") $("mo-late").value = "";
+  if(st === "plan"){
+    ai.className = "ai-note";
+    ai.innerHTML = "<b>This day has not happened yet</b>You are recording what you plan to do, so the month can be closed for payroll. " +
+      "Open it again on the day and save it to turn the plan into a record.";
+  }
+}
+
 function closeModal(){ $("modal").classList.add("hidden"); editing = null; }
+
+// Clicking the dimmed area or pressing Escape closes it. Clicking inside
+// the panel must not, or a stray click while typing throws away the day.
+document.addEventListener("click", e => {
+  if(e.target && e.target.id === "modal") closeModal();
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && !$("modal").classList.contains("hidden")) closeModal();
+});
 
 // Typing more after a warning means they took the hint: re-check on the next save.
 document.addEventListener("input", e => {
@@ -1762,9 +1863,22 @@ async function saveDay(){
     : "<b>\u2713 " + f.why + "</b>";
   ai.classList.remove("hidden");
 
+  const lateBox = $("mo-late");
+  const lateReason = (lateBox && !lateBox.parentElement.classList.contains("hidden"))
+    ? String(lateBox.value || "").trim() : "";
+  if(lateBox && !lateBox.parentElement.classList.contains("hidden") && !lateReason){
+    ai.className = "ai-note ai-thin";
+    ai.innerHTML = "<b>Why are you submitting your timesheet late?</b>This day has already passed. " +
+      "You are expected to fill your timesheet daily, so say what stopped you.";
+    ai.classList.remove("hidden");
+    lateBox.focus();
+    return;
+  }
+
   const { error } = await db.rpc("log_day", {
     p_date: editing, p_hours: hours, p_activity: act || null,
-    p_ai_flag: f.thin, p_ai_note: f.thin ? f.why : null
+    p_ai_flag: f.thin, p_ai_note: f.thin ? f.why : null,
+    p_late_reason: lateReason || null
   });
   if(error){ alert("Could not save: " + error.message); return; }
   await loadTimesheet();
