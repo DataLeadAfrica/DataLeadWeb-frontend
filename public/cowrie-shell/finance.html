@@ -697,14 +697,25 @@ async function loadReqs(){
     ? '<p style="color:var(--faint);font-size:13px">Nothing waiting to be paid.</p>'
     : data.map(r => {
       const noBank = !r.account_number;
-      return '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(r.total) + '</b>' +
+      // Pay what was APPROVED, not what was asked. The CEO can trim a
+      // line, and if this row keeps showing the requested total then the
+      // whole adjustment is decorative and the wrong money goes out.
+      const asked = Number(r.total || 0);
+      const pay   = (r.approved_total === null || r.approved_total === undefined)
+                      ? asked : Number(r.approved_total);
+      const trimmed = pay !== asked;
+      return '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(pay) +
+        (trimmed ? ' <s style="color:var(--faint);font-weight:400">' + N(asked) + '</s>' : "") + '</b>' +
+        (trimmed ? '<span style="color:var(--clay)">Adjusted from ' + N(asked) + ' \u00b7 ' +
+          (r.adjusted_items || 0) + ' line' + ((r.adjusted_items||0)===1?"":"s") +
+          ' changed. Open the requisition to see which. Pay ' + N(pay) + '.</span>' : "") +
         '<span>' + esc(r.purpose || "Requisition") + " \u00b7 " + fmtDate(r.raised_on) +
         (r.project_code ? " \u00b7 " + esc(r.project_code) : "") +
         (r.needs_approval ? " \u00b7 approved by " + esc(r.approved_by || "a senior") : " \u00b7 within the line") + '</span>' +
         (noBank ? '<span style="color:var(--red)">No bank details on file. They cannot be paid.</span>'
                 : '<span>' + esc(r.bank_name) + " \u00b7 " + esc(r.account_number) + '</span>') + '</span>' +
         '<button class="btn-primary rowbtn" onclick="disburse(' + r.id + ',\'' + esc(r.staff_email) +
-        '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + r.total + ')"' + (noBank ? " disabled" : "") + '>Mark paid</button></div>';
+        '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + pay + ')"' + (noBank ? " disabled" : "") + '>Mark paid</button></div>';
     }).join("");
 
   // disbursed, every receipt in, but never closed. Nothing moved them on.
