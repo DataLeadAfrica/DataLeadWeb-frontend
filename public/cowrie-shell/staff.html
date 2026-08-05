@@ -132,6 +132,27 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .shell.hol:hover{transform:none}
 .shell.flag::before{content:"";position:absolute;top:-2px;right:-1px;width:6px;height:6px;
   border-radius:50%;background:var(--amber);border:1.5px solid var(--paper)}
+.shell.noted::after{content:"";position:absolute;bottom:-2px;left:-1px;width:6px;height:6px;
+  border-radius:50%;background:var(--clr-orange);border:1.5px solid var(--paper)}
+
+.mshift{display:flex;gap:6px;align-items:center;margin-left:14px}
+.mshift button{padding:4px 11px;font-size:12.5px;border-radius:9px}
+.mshift button:disabled{opacity:.35;cursor:not-allowed}
+.mshift button:disabled:hover{border-color:var(--line)}
+
+/* notes on a day, inside the day box */
+.mo-notes{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+.mo-notes .mn-head{font-family:var(--display-md);font-size:11px;text-transform:uppercase;
+  letter-spacing:.13em;color:var(--faint);margin-bottom:9px}
+.mnote{background:var(--sand);border-radius:10px;padding:9px 12px;margin-bottom:7px;font-size:12.5px}
+.mnote.mine{background:var(--clr-blue)}
+.mnote .who{font-family:var(--display-md);font-weight:500;font-size:12px}
+.mnote .when{font-size:11px;color:var(--muted);margin-left:8px}
+.mnote .body{margin-top:3px;white-space:pre-wrap;overflow-wrap:anywhere}
+.mo-notes textarea{width:100%;font:inherit;font-size:12.5px;padding:9px 11px;border:1px solid #dae2e7;
+  border-radius:9px;resize:vertical;margin-top:4px}
+.mo-notes .mn-f{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:6px;font-size:11.5px}
 /* the moment a day is logged: it fills from the base up */
 @keyframes fillup{0%{transform:scaleY(0);transform-origin:13px 33.5px;opacity:.4}
   60%{opacity:1}100%{transform:scaleY(1);transform-origin:13px 33.5px;opacity:1}}
@@ -327,6 +348,11 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     <section class="hero">
       <div class="hero-head">
         <h1 class="hero-month" id="h-month">&mdash;<em id="h-year"></em></h1>
+        <div class="mshift">
+          <button id="ts-prev" onclick="shiftMonth(-1)" title="The month before">&larr;</button>
+          <button id="ts-now" onclick="shiftMonth(0)" class="hidden">This month</button>
+          <button id="ts-next" onclick="shiftMonth(1)" title="The month after">&rarr;</button>
+        </div>
         <div class="hero-count">
           <b id="h-logged">0</b><span class="of" id="h-of"> / 0</span>
           <span>Days logged</span>
@@ -1027,6 +1053,7 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
     </div>
     <div class="fld"><label>What you did</label><textarea id="mo-act" placeholder="e.g. Cleaned and coded the Chad baseline dataset, drafted the WASH indicators."></textarea></div>
     <div id="mo-ai" class="ai-note hidden"></div>
+    <div id="mo-notes" class="mo-notes hidden"></div>
     <div class="actions">
       <button onclick="closeModal()">Cancel</button>
       <button onclick="clearDay()" style="color:var(--red)">Clear day</button>
@@ -1094,6 +1121,7 @@ window.signIn=signIn; window.signUp=signUp; window.signOut=signOut; window.showT
 window.go=go; window.savePersonal=savePersonal; window.saveNok=saveNok; window.saveFinancial=saveFinancial;
 
 window.openDay=openDay; window.saveDay=saveDay; window.clearDay=clearDay; window.closeModal=closeModal;
+window.postReply=postReply; window.shiftMonth=shiftMonth;
 window.submitTimesheet=submitTimesheet; window.planTab=planTab; window.addItem=addItem;
 window.removeItem=removeItem; window.submitPlan=submitPlan;
 
@@ -1409,7 +1437,7 @@ async function loadPolicies(){
 // ============================================================
 const NOW = new Date();
 let TS_YEAR = NOW.getFullYear(), TS_MONTH = NOW.getMonth() + 1;
-let DAYS = {}, HOLIDAYS = {}, LEAVE = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
+let DAYS = {}, HOLIDAYS = {}, LEAVE = {}, NOTES = {}, WORKING_DAYS = 0, SUB_STATUS = "draft", editing = null;
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOW = ["Mon","Tue","Wed","Thu","Fri"];
 
@@ -1457,6 +1485,15 @@ async function loadTimesheet(){
     if(lv.error) throw new Error("Your leave: " + lv.error.message);
     (lv.data||[]).forEach(x => LEAVE[x.day] = x);
 
+    // anything the office has asked about a particular day. An extra:
+    // if this fails the timesheet must still open.
+    NOTES = {};
+    try {
+      const nt = await db.rpc("my_day_notes", { p_from: first, p_to: last });
+      if(nt.error) console.warn("day notes:", nt.error.message);
+      else (nt.data||[]).forEach(n => { (NOTES[n.work_date] = NOTES[n.work_date] || []).push(n); });
+    } catch(err){ console.warn("day notes:", err); }
+
     // this month's submission, if any
     const pid = await periodId();
     if(pid === null || pid === undefined) throw new Error("Could not open the month. Has file 16 been run?");
@@ -1471,6 +1508,7 @@ async function loadTimesheet(){
       set("rp3", sub.report_challenges); set("rp4", sub.report_next);
     }
     renderLock(sub);
+    renderMonthNav();
     buildStrip();
     await refreshHours();
     renderNow();
@@ -1533,6 +1571,7 @@ function buildStrip(){
     else if(rec) cls += (Number(rec.hours) < standardFor(dt) ? " half" : " on");
     else if(iso === todayISO) cls += " today";
     if(rec && rec.ai_flag) cls += " flag";
+    if((NOTES[iso]||[]).length) cls += " noted";
 
     // a holiday or approved leave is not a day you log
     const click = (hol || lev) ? "" : ' onclick="openDay(\'' + iso + '\')"';
@@ -1597,10 +1636,88 @@ function openDay(iso){
   $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
   $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
   $("mo-ai").className = "ai-note hidden";
+  renderDayNotes(iso);
   thinAcknowledged = false;
   const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
   $("modal").classList.remove("hidden");
 }
+// ============================================================
+// WHAT THE OFFICE ASKED ABOUT THIS DAY
+// A note is not a telling off. It is a question that has been waiting
+// for you, and you can answer it here rather than by email.
+// ============================================================
+function renderDayNotes(iso){
+  const box = $("mo-notes");
+  if(!box) return;
+  const notes = NOTES[iso] || [];
+  box.classList.remove("hidden");
+  box.innerHTML =
+    (notes.length
+      ? '<div class="mn-head">' + notes.length + " note" + (notes.length===1?"":"s") + ' on this day</div>' +
+        notes.map(n => '<div class="mnote' + (n.is_me ? " mine" : "") + '">' +
+          '<span class="who">' + esc(n.is_me ? "You" : n.author) + '</span>' +
+          '<span class="when">' + new Date(n.created_at).toLocaleDateString("en-GB",
+            { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }) + '</span>' +
+          '<div class="body">' + esc(n.body) + '</div></div>').join("")
+      : '<div class="mn-head">Notes on this day</div>') +
+    '<textarea id="mo-reply" rows="2" placeholder="' +
+      (notes.length ? "Reply" : "Leave a note about this day") + '"></textarea>' +
+    '<div class="mn-f"><span id="mo-reply-msg"></span>' +
+    '<button class="rowbtn" id="mo-reply-btn" onclick="postReply()">Post note</button></div>';
+}
+
+async function postReply(){
+  if(!editing) return;
+  const t = $("mo-reply"), m = $("mo-reply-msg"), b = $("mo-reply-btn");
+  const body = String(t && t.value || "").trim();
+  if(!body){ if(m){ m.textContent = "Write something first."; m.style.color = "var(--red)"; } return; }
+  if(b){ b.disabled = true; b.textContent = "Posting"; }
+  const { error } = await db.rpc("add_day_note", { p_staff: PROFILE.id, p_date: editing, p_body: body });
+  if(b){ b.disabled = false; b.textContent = "Post note"; }
+  if(error){ if(m){ m.textContent = error.message; m.style.color = "var(--red)"; } return; }
+  (NOTES[editing] = NOTES[editing] || []).push({
+    author: PROFILE.full_name, is_me: true, body, created_at: new Date().toISOString()
+  });
+  renderDayNotes(editing);
+  buildStrip();
+}
+
+// ============================================================
+// MOVING BETWEEN MONTHS
+// The portal used to be fixed to the current month, which meant a day
+// in a month that had rolled over was unreachable: not locked, simply
+// not on the screen. If you were away, or the portal was not usable
+// yet, there was no way back to those days.
+//
+// Back as far as twelve months. Forward no further than the month we
+// are actually in, because there is nothing there.
+// ============================================================
+function shiftMonth(n){
+  const now = new Date(), curY = now.getFullYear(), curM = now.getMonth() + 1;
+  let y, m;
+  if(n === 0){ y = curY; m = curM; }
+  else {
+    y = TS_YEAR; m = TS_MONTH + n;
+    if(m < 1){ m = 12; y--; }
+    if(m > 12){ m = 1; y++; }
+  }
+  if(y > curY || (y === curY && m > curM)) return;          // no future months
+  const back = (curY - y) * 12 + (curM - m);
+  if(back > 12) return;                                      // and not for ever
+  TS_YEAR = y; TS_MONTH = m;
+  loadTimesheet();
+}
+
+function renderMonthNav(){
+  const now = new Date(), curY = now.getFullYear(), curM = now.getMonth() + 1;
+  const isNow = (TS_YEAR === curY && TS_MONTH === curM);
+  const back  = (curY - TS_YEAR) * 12 + (curM - TS_MONTH);
+  const nx = $("ts-next"), pv = $("ts-prev"), nw = $("ts-now");
+  if(nx) nx.disabled = isNow;
+  if(pv) pv.disabled = back >= 12;
+  if(nw) nw.classList.toggle("hidden", isNow);
+}
+
 function closeModal(){ $("modal").classList.add("hidden"); editing = null; }
 
 // Typing more after a warning means they took the hint: re-check on the next save.
