@@ -193,6 +193,12 @@ export default function Header() {
     "Employability Placements": "/giz/employability",
   };
 
+  // Career pages are static files in /public, so these are plain
+  // <a href> links (staticLinks below), not <Link to>.
+  const careerLinks: Record<string, string> = {
+    "Enumerator Application": "/careers/enumerator-application/",
+  };
+
   const courseLinks: Record<string, string> = {
     "Data Analytics": routes.coursesDataAnalytics,
     "AI & Machine Learning": routes.coursesDataScience,
@@ -246,6 +252,8 @@ export default function Header() {
           <Link className="nav__link" to={routes.blog}>
             Blog
           </Link>
+          {/* Career pages live in /public, so they are plain <a>, not <Link>. */}
+          <DropDown title="Career" links={careerLinks} staticLinks />
           {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
           <DropDown title="GIZ-ZME Programme" links={gizLinks} staticLinks />
           {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
@@ -272,6 +280,8 @@ export default function Header() {
               >
                 Blog
               </Link>
+              {/* Career pages live in /public, so they are plain <a>, not <Link>. */}
+              <MobileDropDown title="Career" links={careerLinks} staticLinks />
               <Link
                 className="menu__link"
                 to={routes.research}
