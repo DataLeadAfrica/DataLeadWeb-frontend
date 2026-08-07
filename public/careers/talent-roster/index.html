@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Field Enumerator Application | Data-Lead Africa</title>
-<meta name="description" content="Apply as a field enumerator for the endline evaluation in Lagos and Ekiti States.">
+<title>Join our talent roster | Data-Lead Africa</title>
+<meta name="description" content="Send us your CV and we will contact you when a study or role matching your skills opens.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -419,6 +419,32 @@
     .next-steps { grid-template-columns: 1fr; }
     .welcome-photo img { aspect-ratio: 16 / 10; }
   }
+  /* Dropdown, used for the Nigerian state list */
+  select {
+    width: 100%; font-family: inherit; font-size: 15px;
+    padding: 13px 14px; border: 1.5px solid var(--line);
+    border-radius: var(--radius); background: var(--paper); color: var(--ink);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355606E' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
+    padding-inline-end: 42px;
+  }
+  select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245,110,15,0.15); }
+  .field.invalid select { border-color: var(--bad); }
+
+  /* Multi-select checkboxes */
+  .check {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 13px 14px; border: 1.5px solid var(--line); border-radius: var(--radius);
+    cursor: pointer; margin-bottom: 10px; transition: all 0.15s; background: var(--paper);
+  }
+  .check input {
+    margin-top: 2px; width: 17px; height: 17px;
+    accent-color: var(--orange); flex: 0 0 17px; cursor: pointer;
+  }
+  .check span { font-size: 14px; line-height: 1.5; }
+  .check:has(input:checked) { border-color: var(--orange); background: var(--orange-soft); }
+
 </style>
 </head>
 <body>
@@ -432,25 +458,24 @@
 
 <div class="layout">
 
-<aside class="rail" aria-label="Role summary and application progress">
+<aside class="rail" aria-label="Roster summary and progress">
   <div class="rail__inner">
-    <span class="rail__eyebrow">Now recruiting</span>
-    <h2 class="rail__title">Field Enumerator, Lagos and Ekiti</h2>
+    <span class="rail__eyebrow">Talent roster</span>
+    <h2 class="rail__title">Be first in line for the next study</h2>
     <div class="rail__meta">
-      <div><b>Location</b>Lagos and Ekiti States</div>
-      <div><b>Dates</b>August 2026</div>
-      <div><b>Type</b>Short-term engagement</div>
+      <div><b>Covers</b>Fieldwork, research, analytics, consultancy and training</div>
+      <div><b>Where</b>Nigeria, Benin, Guinea-Bissau, Togo and Chad</div>
+      <div><b>Takes</b>About 3 minutes</div>
     </div>
     <ol class="rail__steps" id="railSteps">
       <li data-rail="1"><span>1</span>About you</li>
-      <li data-rail="2"><span>2</span>Language</li>
-      <li data-rail="3"><span>3</span>Experience</li>
-      <li data-rail="4"><span>4</span>Availability and CV</li>
+      <li data-rail="2"><span>2</span>Where you are</li>
+      <li data-rail="3"><span>3</span>Your work and CV</li>
     </ol>
   </div>
   <figure class="rail__photo">
-    <img src="/careers/images/fieldwork.jpg" alt="A Data-Lead Africa team member working through a survey instrument" onerror="this.parentElement.style.display='none'">
-    <figcaption>Every instrument is worked through before anyone goes to the field</figcaption>
+    <img src="/careers/images/audience.jpg" alt="A Data-Lead Africa training event" onerror="this.parentElement.style.display='none'">
+    <figcaption>Training and dissemination events bring our teams and partners together</figcaption>
   </figure>
 </aside>
 
@@ -458,7 +483,7 @@
 
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-meta">
-      <span class="progress-step" id="progressStep">Step 1 of 4</span>
+      <span class="progress-step" id="progressStep">Step 1 of 3</span>
       <span class="progress-title" id="progressTitle">About you</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -466,40 +491,25 @@
 
   <!-- ================= STEP 0: Welcome ================= -->
   <section class="step active" data-step="0">
-    <span class="eyebrow">Now recruiting</span>
-    <h1>Field Enumerator, Lagos and Ekiti</h1>
-    <figure class="welcome-photo">
-      <img src="/careers/images/audience.jpg" alt="A Data-Lead Africa training event" onerror="this.remove()">
-      <figcaption>Data-Lead Africa teams at work</figcaption>
-    </figure>
-    <div class="meta-chips">
-      <span class="meta-chip"><i>Where</i> Lagos and Ekiti States</span>
-      <span class="meta-chip"><i>When</i> August 2026</span>
-      <span class="meta-chip"><i>Takes</i> About 5 minutes</span>
-    </div>
+    <span class="eyebrow">Talent roster</span>
+    <h1>Join our talent roster</h1>
     <p class="intro-text">
-      Data-Lead Africa is recruiting experienced field enumerators for an endline
-      evaluation of a climate-smart agriculture programme in <b>Lagos and Ekiti</b>.
+      We build teams study by study, so roles often open with little notice. Tell us who
+      you are and what you do, and we will contact you when something matching your
+      skills comes up.
     </p>
     <p class="intro-text">
-      This is grassroots work. You will spend your days in rural communities, sitting
-      with the farmers, traders and households who keep the food chain moving, earning
-      their trust and getting their answers down faithfully.
-    </p>
-    <p class="intro-text">
-      You must live in the state of data collection. The ability to read and write in
-      Yoruba is required, and knowledge of the Ekiti dialect is an added advantage.
-      Have your CV ready before you start.
+      This takes about three minutes. Have your CV ready as a PDF or Word file.
     </p>
     <div class="nav-row">
-      <button class="btn btn-primary" onclick="goTo(1)">Start my application</button>
+      <button class="btn btn-primary" onclick="goTo(1)">Start</button>
     </div>
   </section>
 
   <!-- ================= STEP 1: About you ================= -->
   <section class="step" data-step="1" data-title="About you">
     <h2>About you</h2>
-    <p class="step-note">Who you are, and where you would be working from.</p>
+    <p class="step-note">Who you are and how to reach you.</p>
     <div class="step-err" id="stepErr1">Please complete the highlighted questions before continuing.</div>
 
     <div class="field" data-name="fullName" data-type="text">
@@ -508,23 +518,24 @@
       <div class="err">Please enter your full name.</div>
     </div>
 
-    <div class="field" data-name="phone" data-type="phone">
-      <label class="q-label" for="phone">Phone number (WhatsApp) <span class="req">*</span></label>
-      <input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="e.g. 0803 123 4567">
-      <div class="err">Please enter a valid phone number.</div>
-    </div>
-
     <div class="field" data-name="email" data-type="email">
       <label class="q-label" for="email">Email address <span class="req">*</span></label>
       <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="e.g. adaeze@example.com">
       <div class="err">Please enter a valid email address.</div>
     </div>
 
-    <div class="field" data-name="sex" data-type="radio">
-      <span class="q-label">Sex <span class="req">*</span></span>
+    <div class="field" data-name="phone" data-type="phone">
+      <label class="q-label" for="phone">Phone number (WhatsApp) <span class="req">*</span></label>
+      <input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="e.g. 0803 123 4567">
+      <div class="err">Please enter a valid phone number.</div>
+    </div>
+
+    <div class="field" data-name="gender" data-type="radio">
+      <span class="q-label">Gender <span class="req">*</span></span>
       <div class="options">
-        <label class="opt"><input type="radio" name="sex" value="Female"><span class="opt-face"><span class="dot"></span>Female</span></label>
-        <label class="opt"><input type="radio" name="sex" value="Male"><span class="opt-face"><span class="dot"></span>Male</span></label>
+        <label class="opt"><input type="radio" name="gender" value="Female"><span class="opt-face"><span class="dot"></span>Female</span></label>
+        <label class="opt"><input type="radio" name="gender" value="Male"><span class="opt-face"><span class="dot"></span>Male</span></label>
+        <label class="opt"><input type="radio" name="gender" value="Prefer not to say"><span class="opt-face"><span class="dot"></span>Prefer not to say</span></label>
       </div>
       <div class="err">Please select an option.</div>
     </div>
@@ -532,6 +543,8 @@
     <div class="field" data-name="qualification" data-type="radio">
       <span class="q-label">Highest qualification <span class="req">*</span></span>
       <div class="options">
+        <label class="opt"><input type="radio" name="qualification" value="SSCE"><span class="opt-face"><span class="dot"></span>SSCE</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="OND / NCE"><span class="opt-face"><span class="dot"></span>OND / NCE</span></label>
         <label class="opt"><input type="radio" name="qualification" value="HND"><span class="opt-face"><span class="dot"></span>HND</span></label>
         <label class="opt"><input type="radio" name="qualification" value="BSc"><span class="opt-face"><span class="dot"></span>BSc</span></label>
         <label class="opt"><input type="radio" name="qualification" value="PGD"><span class="opt-face"><span class="dot"></span>PGD</span></label>
@@ -541,88 +554,62 @@
       <div class="err">Please select an option.</div>
     </div>
 
-    <div class="field" data-name="state" data-type="radio" data-specify="stateOther">
-      <span class="q-label">State of residence <span class="req">*</span></span>
-      <p class="q-hint">Enumerators work in the state where they live.</p>
-      <div class="options">
-        <label class="opt"><input type="radio" name="state" value="Lagos" onchange="stateChanged()"><span class="opt-face"><span class="dot"></span>Lagos</span></label>
-        <label class="opt"><input type="radio" name="state" value="Ekiti" onchange="stateChanged()"><span class="opt-face"><span class="dot"></span>Ekiti</span></label>
-        <label class="opt"><input type="radio" name="state" value="Other" onchange="stateChanged()"><span class="opt-face"><span class="dot"></span>Other</span></label>
-      </div>
-      <div class="specify" id="stateOtherBox">
-        <label class="q-label" for="stateOther" style="font-size:13px">Please type your state</label>
-        <input type="text" id="stateOther" placeholder="e.g. Ogun">
-      </div>
-      <div class="notice" id="stateNotice">
-        This role is for people living in Lagos or Ekiti. You are welcome to apply anyway,
-        and we will keep your CV on file for future studies in your area.
-      </div>
-      <div class="err">Please select an option, and type your state if you chose Other.</div>
-    </div>
-
-    <div class="field" data-name="lgaLagos" data-type="radio" data-specify="lgaLagosOther" id="lgaLagosField" style="display:none">
-      <span class="q-label">Which LGA do you live in? <span class="req">*</span></span>
-      <div class="options">
-        <label class="opt"><input type="radio" name="lgaLagos" value="Ikorodu" onchange="lgaChanged('lgaLagos')"><span class="opt-face"><span class="dot"></span>Ikorodu</span></label>
-        <label class="opt"><input type="radio" name="lgaLagos" value="Badagry" onchange="lgaChanged('lgaLagos')"><span class="opt-face"><span class="dot"></span>Badagry</span></label>
-        <label class="opt"><input type="radio" name="lgaLagos" value="Others" onchange="lgaChanged('lgaLagos')"><span class="opt-face"><span class="dot"></span>Others</span></label>
-      </div>
-      <div class="specify" id="lgaLagosOtherBox">
-        <label class="q-label" for="lgaLagosOther" style="font-size:13px">Please type your LGA</label>
-        <input type="text" id="lgaLagosOther" placeholder="e.g. Epe">
-      </div>
-      <div class="err">Please select an option, and type your LGA if you chose Others.</div>
-    </div>
-
-    <div class="field" data-name="lgaEkiti" data-type="radio" data-specify="lgaEkitiOther" id="lgaEkitiField" style="display:none">
-      <span class="q-label">Which LGA do you live in? <span class="req">*</span></span>
-      <div class="options stack">
-        <label class="opt"><input type="radio" name="lgaEkiti" value="Ekiti South West" onchange="lgaChanged('lgaEkiti')"><span class="opt-face"><span class="dot"></span>Ekiti South West</span></label>
-        <label class="opt"><input type="radio" name="lgaEkiti" value="Ekiti West" onchange="lgaChanged('lgaEkiti')"><span class="opt-face"><span class="dot"></span>Ekiti West</span></label>
-        <label class="opt"><input type="radio" name="lgaEkiti" value="Gbonyin" onchange="lgaChanged('lgaEkiti')"><span class="opt-face"><span class="dot"></span>Gbonyin</span></label>
-        <label class="opt"><input type="radio" name="lgaEkiti" value="Irepodun / Ifelodun" onchange="lgaChanged('lgaEkiti')"><span class="opt-face"><span class="dot"></span>Irepodun / Ifelodun</span></label>
-        <label class="opt"><input type="radio" name="lgaEkiti" value="Others" onchange="lgaChanged('lgaEkiti')"><span class="opt-face"><span class="dot"></span>Others</span></label>
-      </div>
-      <div class="specify" id="lgaEkitiOtherBox">
-        <label class="q-label" for="lgaEkitiOther" style="font-size:13px">Please type your LGA</label>
-        <input type="text" id="lgaEkitiOther" placeholder="e.g. Ise / Orun">
-      </div>
-      <div class="err">Please select an option, and type your LGA if you chose Others.</div>
-    </div>
-
     <div class="nav-row">
       <button class="btn btn-ghost" onclick="goTo(0)">Back</button>
       <button class="btn btn-primary" onclick="next(1)">Continue</button>
     </div>
   </section>
 
-  <!-- ================= STEP 2: Language ================= -->
-  <section class="step" data-step="2" data-title="Language">
-    <h2>Language</h2>
-    <p class="step-note">Interviews are conducted in Yoruba.</p>
+  <!-- ================= STEP 2: Where you are ================= -->
+  <section class="step" data-step="2" data-title="Where you are">
+    <h2>Where you are</h2>
+    <p class="step-note">We match people to studies by location, so this matters.</p>
     <div class="step-err" id="stepErr2">Please complete the highlighted questions before continuing.</div>
 
-    <div class="field" data-name="yorubaRW" data-type="radio">
-      <span class="q-label">How well do you read and write Yoruba? <span class="req">*</span></span>
+    <div class="field" data-name="country" data-type="radio" data-specify="countryOther">
+      <span class="q-label">Country of residence <span class="req">*</span></span>
       <div class="options">
-        <label class="opt"><input type="radio" name="yorubaRW" value="Basic"><span class="opt-face"><span class="dot"></span>Basic</span></label>
-        <label class="opt"><input type="radio" name="yorubaRW" value="Fair"><span class="opt-face"><span class="dot"></span>Fair</span></label>
-        <label class="opt"><input type="radio" name="yorubaRW" value="Fluent"><span class="opt-face"><span class="dot"></span>Fluent</span></label>
-        <label class="opt"><input type="radio" name="yorubaRW" value="Native"><span class="opt-face"><span class="dot"></span>Native</span></label>
+        <label class="opt"><input type="radio" name="country" value="Nigeria" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Nigeria</span></label>
+        <label class="opt"><input type="radio" name="country" value="Benin" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Benin</span></label>
+        <label class="opt"><input type="radio" name="country" value="Guinea-Bissau" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Guinea-Bissau</span></label>
+        <label class="opt"><input type="radio" name="country" value="Togo" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Togo</span></label>
+        <label class="opt"><input type="radio" name="country" value="Chad" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Chad</span></label>
+        <label class="opt"><input type="radio" name="country" value="Other" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Other</span></label>
       </div>
-      <div class="err">Please select an option.</div>
+      <div class="specify" id="countryOtherBox">
+        <label class="q-label" for="countryOther" style="font-size:13px">Please type your country</label>
+        <input type="text" id="countryOther" placeholder="e.g. Ghana">
+      </div>
+      <div class="err">Please select an option, and type your country if you chose Other.</div>
     </div>
 
-    <!-- Shown only to Ekiti applicants, since dialect is irrelevant in Lagos -->
-    <div class="field" data-name="ekitiDialect" data-type="radio" id="ekitiDialectField" style="display:none">
-      <span class="q-label">Can you speak the Ekiti dialect? <span class="req">*</span></span>
-      <p class="q-hint">An added advantage, not a requirement.</p>
-      <div class="options">
-        <label class="opt"><input type="radio" name="ekitiDialect" value="Yes, fluently"><span class="opt-face"><span class="dot"></span>Yes, fluently</span></label>
-        <label class="opt"><input type="radio" name="ekitiDialect" value="Yes, a little"><span class="opt-face"><span class="dot"></span>Yes, a little</span></label>
-        <label class="opt"><input type="radio" name="ekitiDialect" value="No"><span class="opt-face"><span class="dot"></span>No</span></label>
-      </div>
-      <div class="err">Please select an option.</div>
+    <!-- Shown only for Nigeria -->
+    <div class="field" data-name="stateNg" data-type="select" id="stateNgField" style="display:none">
+      <label class="q-label" for="stateNg">State of residence <span class="req">*</span></label>
+      <select id="stateNg">
+        <option value="">Select your state</option>
+        <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+        <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+        <option>Benue</option><option>Borno</option><option>Cross River</option>
+        <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+        <option>Ekiti</option><option>Enugu</option><option>Federal Capital Territory</option>
+        <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+        <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+        <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+        <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+        <option>Ogun</option><option>Ondo</option><option>Osun</option>
+        <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+        <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+        <option>Zamfara</option>
+      </select>
+      <div class="err">Please select your state.</div>
+    </div>
+
+    <div class="field" data-name="address" data-type="text">
+      <label class="q-label" for="address">Residential address <span class="req">*</span></label>
+      <p class="q-hint">Street and town or city is enough.</p>
+      <textarea id="address" rows="3" placeholder="e.g. 12 Adeyemi Street, Igbogbo, Ikorodu"></textarea>
+      <div class="err">Please enter your residential address.</div>
     </div>
 
     <div class="nav-row">
@@ -631,77 +618,42 @@
     </div>
   </section>
 
-  <!-- ================= STEP 3: Experience ================= -->
-  <section class="step" data-step="3" data-title="Experience">
-    <h2>Your experience</h2>
-    <p class="step-note">Tell us what you have done in the field.</p>
+  <!-- ================= STEP 3: Work, access and CV ================= -->
+  <section class="step" data-step="3" data-title="Your work and CV">
+    <h2>Your work and your CV</h2>
+    <p class="step-note">Last step.</p>
     <div class="step-err" id="stepErr3">Please complete the highlighted questions before continuing.</div>
 
-    <div class="field" data-name="kobo" data-type="radio">
-      <span class="q-label">Have you collected data using KoboCollect or ODK? <span class="req">*</span></span>
-      <div class="options stack">
-        <label class="opt"><input type="radio" name="kobo" value="Yes, several times"><span class="opt-face"><span class="dot"></span>Yes, several times</span></label>
-        <label class="opt"><input type="radio" name="kobo" value="Yes, once or twice"><span class="opt-face"><span class="dot"></span>Yes, once or twice</span></label>
-        <label class="opt"><input type="radio" name="kobo" value="No"><span class="opt-face"><span class="dot"></span>No</span></label>
-      </div>
-      <div class="err">Please select an option.</div>
+    <div class="field" data-name="interests" data-type="checks-required">
+      <span class="q-label">What kind of work are you interested in? <span class="req">*</span></span>
+      <p class="q-hint">Choose as many as apply. This is how we search the roster.</p>
+      <label class="check"><input type="checkbox" class="interest" value="Field data collection"><span>Field data collection</span></label>
+      <label class="check"><input type="checkbox" class="interest" value="Research and evaluation"><span>Research and evaluation</span></label>
+      <label class="check"><input type="checkbox" class="interest" value="Data analytics"><span>Data analytics</span></label>
+      <label class="check"><input type="checkbox" class="interest" value="Consultancy"><span>Consultancy</span></label>
+      <label class="check"><input type="checkbox" class="interest" value="Training and facilitation"><span>Training and facilitation</span></label>
+      <div class="err">Please choose at least one.</div>
     </div>
 
-    <div class="field" data-name="agric" data-type="radio">
-      <span class="q-label">Have you collected data on agriculture or agro-allied projects? <span class="req">*</span></span>
+    <div class="field" data-name="disability" data-type="radio">
+      <span class="q-label">Do you have a disability?</span>
+      <div class="notice visible" style="margin-bottom:12px; margin-top:0">
+        Data-Lead Africa is an equal opportunity employer. Your answer plays no part in
+        whether you are selected for a role. We ask only so that we can plan any
+        adjustments you may need to work with us comfortably. This question is optional
+        and you may choose "Prefer not to say".
+      </div>
       <div class="options">
-        <label class="opt"><input type="radio" name="agric" value="Yes" onchange="agricChanged()"><span class="opt-face"><span class="dot"></span>Yes</span></label>
-        <label class="opt"><input type="radio" name="agric" value="No" onchange="agricChanged()"><span class="opt-face"><span class="dot"></span>No</span></label>
+        <label class="opt"><input type="radio" name="disability" value="No" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>No</span></label>
+        <label class="opt"><input type="radio" name="disability" value="Yes" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>Yes</span></label>
+        <label class="opt"><input type="radio" name="disability" value="Prefer not to say" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>Prefer not to say</span></label>
       </div>
-      <div class="err">Please select an option.</div>
     </div>
 
-    <div class="field" data-name="agricDetail" data-type="optional-text" id="agricDetailField" style="display:none">
-      <label class="q-label" for="agricDetail">Briefly describe that agriculture work</label>
-      <textarea id="agricDetail" placeholder="e.g. Baseline survey of cassava farmers, Ogun State, 2024"></textarea>
-    </div>
-
-    <div class="field" data-name="smartphone" data-type="radio">
-      <span class="q-label">Do you own an Android smartphone with a working camera, GPS and free storage that you can use for the assignment? <span class="req">*</span></span>
-      <div class="options">
-        <label class="opt"><input type="radio" name="smartphone" value="Yes"><span class="opt-face"><span class="dot"></span>Yes</span></label>
-        <label class="opt"><input type="radio" name="smartphone" value="No"><span class="opt-face"><span class="dot"></span>No</span></label>
-      </div>
-      <div class="err">Please select an option.</div>
-    </div>
-
-    <div class="field" data-name="experienceStory" data-type="longtext">
-      <label class="q-label" for="experienceStory">Tell us about one data collection assignment you have worked on <span class="req">*</span></label>
-      <p class="q-hint">
-        Name the project and the organisation, say what your role was, and describe one
-        difficulty you handled in the field. About 60 to 100 words. If this would be your
-        first assignment, say so and tell us why you want to do this work.
-      </p>
-      <textarea id="experienceStory" rows="6" placeholder="Write in your own words"></textarea>
-      <div class="wordcount" id="wordCount">0 words</div>
-      <div class="err">Please write at least 40 words so we can understand your experience.</div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
-      <button class="btn btn-primary" onclick="next(3)">Continue</button>
-    </div>
-  </section>
-
-  <!-- ================= STEP 4: Availability and CV ================= -->
-  <section class="step" data-step="4" data-title="Availability and CV">
-    <h2>Availability and your CV</h2>
-    <p class="step-note">Last step. Applications without a CV are not assessed.</p>
-    <div class="step-err" id="stepErr4">Please answer the availability question and attach your CV.</div>
-
-    <div class="field" data-name="available" data-type="radio">
-      <span class="q-label">Are you available for the training and fieldwork dates in August 2026? <span class="req">*</span></span>
-      <p class="q-hint">Exact dates will be confirmed on shortlisting.</p>
-      <div class="options stack">
-        <label class="opt"><input type="radio" name="available" value="Yes, fully available"><span class="opt-face"><span class="dot"></span>Yes, fully available</span></label>
-        <label class="opt"><input type="radio" name="available" value="No"><span class="opt-face"><span class="dot"></span>No</span></label>
-      </div>
-      <div class="err">Please select an option.</div>
+    <div class="field" data-name="accommodation" data-type="optional-text" id="accommodationField" style="display:none">
+      <label class="q-label" for="accommodation">What adjustments would help you work with us?</label>
+      <p class="q-hint">Optional. For example a sign language interpreter, accessible venues, or materials in a particular format.</p>
+      <textarea id="accommodation" rows="3" placeholder="Tell us what would help"></textarea>
     </div>
 
     <div class="field" data-name="cv" data-type="file">
@@ -721,31 +673,25 @@
       <div class="err" id="cvErr">Please attach your CV as a PDF or Word document (max 5 MB).</div>
     </div>
 
-    <div class="step-err" id="submitErr">We could not send your application. Please check your internet connection and try again.</div>
+    <div class="step-err" id="submitErr">We could not send your details. Please check your internet connection and try again.</div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(3)">Back</button>
-      <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Submit application</button>
+      <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Join the roster</button>
     </div>
   </section>
 
-  <!-- ================= STEP 5: Success ================= -->
-  <section class="step success-card" data-step="5">
+  <!-- ================= STEP 4: Success ================= -->
+  <section class="step success-card" data-step="4">
     <div class="success-icon">&#10003;</div>
-    <h2>Application received</h2>
-    <p>Thank you for applying to work with Data-Lead Africa on the endline evaluation in Lagos and Ekiti.</p>
-    <p><b>Shortlisted applicants will be contacted.</b></p>
-    <div class="next-steps">
-      <div class="next-step"><b>1. We screen</b><span>Your experience, language and location are checked against the study.</span></div>
-      <div class="next-step"><b>2. You train</b><span>Shortlisted applicants attend compulsory training and an assessment.</span></div>
-      <div class="next-step"><b>3. You deploy</b><span>Those who pass go to the field, with supervision throughout.</span></div>
-    </div>
+    <h2>You are on the roster</h2>
+    <p>Thank you. Your details and CV are with us, and we will contact you when a study or role matching your skills opens.</p>
     <div class="nav-row" style="justify-content:center">
-      <a class="btn btn-primary" href="/careers/" style="text-decoration:none; text-align:center; flex:0 1 auto;">See other roles</a>
+      <a class="btn btn-primary" href="/careers/" style="text-decoration:none; text-align:center; flex:0 1 auto;">See open roles</a>
     </div>
   </section>
 
-  <p class="foot">Data-Lead Africa &middot; Your information is used only for this recruitment.</p>
+  <p class="foot">Data-Lead Africa &middot; Your information is used only for recruitment.</p>
 </main>
 
 </div>
@@ -753,28 +699,25 @@
 <script>
   /* ==========================================================
      CONFIGURATION
-     This is the live Google Apps Script backend. If the script
-     is ever redeployed as a NEW deployment (rather than a new
+     This is the live TALENT ROSTER backend, a separate Google
+     Sheet and Apps Script from the enumerator form. If it is
+     ever redeployed as a NEW deployment (rather than a new
      version of the same one), the URL changes and must be
      updated here.
      ========================================================== */
-  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7Nk3W0r_kKpESEcQlVnDFMX8RrfMQoByD90djrGOWzBGXC08o6D03D-UHGZqi6EBh/exec";
+  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtcCx2GAesgip29LzGRpb6aMrlVAAbo6SVCkNP9Mg2omLRPjYoo4ZrDPLLYbQKvkl7/exec";
 
-  var TOTAL_STEPS = 4;
+  var TOTAL_STEPS = 3;
   var currentStep = 0;
   var cvFile = null;
-  var MIN_STORY_WORDS = 40;
 
-  var stepTitles = {
-    1: "About you", 2: "Language", 3: "Experience", 4: "Availability and CV"
-  };
+  var stepTitles = { 1: "About you", 2: "Where you are", 3: "Your work and CV" };
 
   function goTo(n) {
     var steps = document.querySelectorAll(".step");
     for (var i = 0; i < steps.length; i++) steps[i].classList.remove("active");
     document.querySelector('.step[data-step="' + n + '"]').classList.add("active");
     currentStep = n;
-
     var wrap = document.getElementById("progressWrap");
     if (n >= 1 && n <= TOTAL_STEPS) {
       wrap.classList.add("visible");
@@ -816,25 +759,20 @@
     return r ? r.value : "";
   }
 
-  function countWords(s) {
-    var t = String(s).trim();
-    return t ? t.split(/\s+/).length : 0;
-  }
-
   function validateField(field) {
     var type = field.getAttribute("data-type");
     var ok = true;
     if (!isVisible(field)) return true;
 
     if (type === "text") {
-      ok = field.querySelector("input, textarea").value.trim().length >= 2;
+      ok = field.querySelector("input, textarea").value.trim().length >= 3;
     } else if (type === "phone") {
       var p = field.querySelector("input").value.replace(/[\s\-()]/g, "");
-      ok = /^\+?\d{10,14}$/.test(p);
+      ok = /^\+?\d{7,15}$/.test(p);
     } else if (type === "email") {
       ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.querySelector("input").value.trim());
-    } else if (type === "longtext") {
-      ok = countWords(field.querySelector("textarea").value) >= MIN_STORY_WORDS;
+    } else if (type === "select") {
+      ok = field.querySelector("select").value !== "";
     } else if (type === "radio") {
       var checked = field.querySelector("input:checked");
       ok = !!checked;
@@ -842,6 +780,8 @@
       if (ok && specifyId && /^others?$/i.test(checked.value)) {
         ok = document.getElementById(specifyId).value.trim().length >= 2;
       }
+    } else if (type === "checks-required") {
+      ok = field.querySelectorAll("input:checked").length > 0;
     } else if (type === "file") {
       ok = !!cvFile;
     }
@@ -852,7 +792,8 @@
 
   function validateStep(n) {
     var stepEl = document.querySelector('.step[data-step="' + n + '"]');
-    var fields = stepEl.querySelectorAll(".field");
+    /* The disability question is deliberately optional, so it is skipped. */
+    var fields = stepEl.querySelectorAll('.field:not([data-name="disability"])');
     var allOk = true, firstBad = null;
     for (var i = 0; i < fields.length; i++) {
       if (!validateField(fields[i])) {
@@ -877,61 +818,23 @@
     if (!show) box.querySelector("input").value = "";
   }
 
-  function clearRadios(name) {
-    var r = document.querySelectorAll('input[name="' + name + '"]');
-    for (var i = 0; i < r.length; i++) r[i].checked = false;
+  /* The state list is only relevant to Nigeria */
+  function countryChanged() {
+    var v = radioValue("country");
+    var f = document.getElementById("stateNgField");
+    f.style.display = (v === "Nigeria") ? "" : "none";
+    if (v !== "Nigeria") {
+      document.getElementById("stateNg").value = "";
+      f.classList.remove("invalid");
+    }
+    toggleSpecify("country", "countryOtherBox");
   }
 
-  /* State drives the LGA list, the out-of-area notice, and whether the
-     Ekiti dialect question is asked at all. */
-  function stateChanged() {
-    var v = radioValue("state");
-    var lagos = document.getElementById("lgaLagosField");
-    var ekiti = document.getElementById("lgaEkitiField");
-    lagos.style.display = (v === "Lagos") ? "" : "none";
-    ekiti.style.display = (v === "Ekiti") ? "" : "none";
-
-    if (v !== "Lagos") {
-      clearRadios("lgaLagos");
-      document.getElementById("lgaLagosOther").value = "";
-      document.getElementById("lgaLagosOtherBox").classList.remove("visible");
-    }
-    if (v !== "Ekiti") {
-      clearRadios("lgaEkiti");
-      document.getElementById("lgaEkitiOther").value = "";
-      document.getElementById("lgaEkitiOtherBox").classList.remove("visible");
-    }
-    lagos.classList.remove("invalid");
-    ekiti.classList.remove("invalid");
-
-    var dialect = document.getElementById("ekitiDialectField");
-    dialect.style.display = (v === "Ekiti") ? "" : "none";
-    if (v !== "Ekiti") {
-      clearRadios("ekitiDialect");
-      dialect.classList.remove("invalid");
-    }
-
-    document.getElementById("stateNotice").classList.toggle("visible", v === "Other");
-    toggleSpecify("state", "stateOtherBox");
+  function disabilityChanged() {
+    document.getElementById("accommodationField").style.display =
+      (radioValue("disability") === "Yes") ? "" : "none";
   }
 
-  function lgaChanged(name) { toggleSpecify(name, name + "OtherBox"); }
-
-  function agricChanged() {
-    document.getElementById("agricDetailField").style.display =
-      (radioValue("agric") === "Yes") ? "" : "none";
-  }
-
-  /* Live word count on the open experience question */
-  var storyEl = document.getElementById("experienceStory");
-  var wordEl = document.getElementById("wordCount");
-  storyEl.addEventListener("input", function () {
-    var n = countWords(storyEl.value);
-    wordEl.textContent = n + (n === 1 ? " word" : " words");
-    wordEl.classList.toggle("ok", n >= MIN_STORY_WORDS);
-  });
-
-  /* CV upload */
   function cvChanged(input) {
     var f = input.files[0];
     var field = input.closest(".field");
@@ -960,7 +863,6 @@
     document.getElementById("uploadBox").style.display = "";
   }
 
-  /* Clear errors live as the person fixes them */
   document.addEventListener("input", function (ev) {
     var field = ev.target.closest(".field");
     if (field && field.classList.contains("invalid")) validateField(field);
@@ -983,50 +885,40 @@
   }
 
   function collectAnswers() {
-    var state = radioValue("state");
-    var lga = "", lgaOther = "";
-    if (state === "Lagos") {
-      lga = radioValue("lgaLagos");
-      lgaOther = document.getElementById("lgaLagosOther").value.trim();
-    } else if (state === "Ekiti") {
-      lga = radioValue("lgaEkiti");
-      lgaOther = document.getElementById("lgaEkitiOther").value.trim();
-    }
+    var interests = [];
+    var boxes = document.querySelectorAll("input.interest:checked");
+    for (var i = 0; i < boxes.length; i++) interests.push(boxes[i].value);
+
     return {
-      formVersion: "enumerator-application-v2",
+      formVersion: "talent-roster-v1",
       fullName: document.getElementById("fullName").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
       email: document.getElementById("email").value.trim(),
-      sex: radioValue("sex"),
+      phone: document.getElementById("phone").value.trim(),
+      gender: radioValue("gender"),
       qualification: radioValue("qualification"),
-      state: state,
-      stateOther: document.getElementById("stateOther").value.trim(),
-      lga: lga,
-      lgaOther: lgaOther,
-      yorubaRW: radioValue("yorubaRW"),
-      ekitiDialect: radioValue("ekitiDialect"),
-      kobo: radioValue("kobo"),
-      agric: radioValue("agric"),
-      agricDetail: document.getElementById("agricDetail").value.trim(),
-      smartphone: radioValue("smartphone"),
-      experienceStory: storyEl.value.trim(),
-      available: radioValue("available")
+      country: radioValue("country"),
+      countryOther: document.getElementById("countryOther").value.trim(),
+      stateNg: document.getElementById("stateNg").value,
+      address: document.getElementById("address").value.trim(),
+      interests: interests.join(", "),
+      disability: radioValue("disability"),
+      accommodation: document.getElementById("accommodation").value.trim()
     };
   }
 
   function submitForm() {
-    if (!validateStep(4)) return;
+    if (!validateStep(3)) return;
     var btn = document.getElementById("submitBtn");
     var errBanner = document.getElementById("submitErr");
     errBanner.classList.remove("visible");
     btn.disabled = true;
-    btn.textContent = "Submitting...";
+    btn.textContent = "Sending...";
 
     if (APPS_SCRIPT_URL.indexOf("PASTE_YOUR") === 0) {
       setTimeout(function () {
         btn.disabled = false;
-        btn.textContent = "Submit application";
-        goTo(5);
+        btn.textContent = "Join the roster";
+        goTo(4);
       }, 900);
       return;
     }
@@ -1036,10 +928,6 @@
       payload.cvFileName = cvFile.name;
       payload.cvMimeType = cvFile.type || "application/octet-stream";
       payload.cvBase64 = cvBase64;
-
-      /* no-cors plus text/plain avoids the CORS preflight that breaks
-         Google Apps Script. The response cannot be read, so a completed
-         request is treated as success. */
       return fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -1048,11 +936,11 @@
       });
     }).then(function () {
       btn.disabled = false;
-      btn.textContent = "Submit application";
-      goTo(5);
+      btn.textContent = "Join the roster";
+      goTo(4);
     }).catch(function () {
       btn.disabled = false;
-      btn.textContent = "Submit application";
+      btn.textContent = "Join the roster";
       errBanner.classList.add("visible");
     });
   }

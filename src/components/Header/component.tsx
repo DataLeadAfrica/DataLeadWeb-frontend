@@ -195,8 +195,11 @@ export default function Header() {
 
   // Career pages are static files in /public, so these are plain
   // <a href> links (staticLinks below), not <Link to>.
+  // When a role opens or closes, update /public/careers/index.html.
+  // Only add a second entry here for a role worth surfacing in the menu.
   const careerLinks: Record<string, string> = {
-    "Enumerator Application": "/careers/enumerator-application/",
+    "Open roles": "/careers/",
+    "Field Enumerator, B-SLiC Endline": "/careers/enumerator-application/",
   };
 
   const courseLinks: Record<string, string> = {
