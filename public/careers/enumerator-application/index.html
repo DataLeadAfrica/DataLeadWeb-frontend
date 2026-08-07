@@ -51,26 +51,12 @@
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
-    color: var(--ink);
   }
-  .brand-mark {
-    width: 34px; height: 34px;
-    background: var(--orange);
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: 15px;
-  }
-  .brand-name {
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+  .brand-logo {
+    height: 46px;
+    width: auto;
+    display: block;
   }
   .topbar-tag {
     font-size: 12px;
@@ -180,22 +166,6 @@
     margin-bottom: 14px;
   }
 
-  /* ============ Welcome facts ============ */
-  .facts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 22px 0;
-  }
-  .fact {
-    background: var(--mist);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 14px;
-  }
-  .fact b { display: block; font-size: 15px; margin-bottom: 2px; }
-  .fact span { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; display: block; }
-
   /* ============ Fields ============ */
   .field { margin-bottom: 22px; }
   .field:last-of-type { margin-bottom: 6px; }
@@ -292,32 +262,6 @@
     box-shadow: 0 0 0 3px rgba(245, 130, 13, 0.25);
   }
   .opt:hover .opt-face { border-color: #D9B98F; }
-
-  /* Checkboxes (declaration) */
-  .check {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 13px 14px;
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius);
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: all 0.15s;
-    background: var(--paper);
-  }
-  .check input {
-    margin-top: 3px;
-    width: 17px; height: 17px;
-    accent-color: var(--orange);
-    flex: 0 0 17px;
-    cursor: pointer;
-  }
-  .check span { font-size: 13.5px; line-height: 1.55; }
-  .check:has(input:checked) {
-    border-color: var(--orange);
-    background: var(--orange-soft);
-  }
 
   /* File upload */
   .upload {
@@ -457,7 +401,6 @@
     .step { padding: 24px 18px; }
     h1 { font-size: 22px; }
     h2 { font-size: 19px; }
-    .facts { grid-template-columns: 1fr; }
     .topbar-tag { display: none; }
   }
 </style>
@@ -466,8 +409,7 @@
 
 <header class="topbar">
   <a class="brand" href="/">
-    <span class="brand-mark">DA</span>
-    <span class="brand-name">Data<br>Lead<br>Africa</span>
+    <img src="/assets/logo-header.svg" alt="Data-Lead Africa" class="brand-logo">
   </a>
   <span class="topbar-tag">Careers at Data-Lead Africa</span>
 </header>
@@ -501,12 +443,6 @@
       Field Enumerators must be resident in the state where data collection takes place
       and have a working knowledge of its cultural context.
     </p>
-    <div class="facts">
-      <div class="fact"><b>5 minutes</b><span>8 short sections, one question group at a time</span></div>
-      <div class="fact"><b>CV required</b><span>Have your CV ready as a PDF or Word file</span></div>
-      <div class="fact"><b>Lagos and Ekiti</b><span>You should live in the state you will work in</span></div>
-      <div class="fact"><b>Paid fieldwork</b><span>2 training days plus 7 working days of data collection</span></div>
-    </div>
     <div class="nav-row">
       <button class="btn btn-primary" onclick="goTo(1)">Start my application</button>
     </div>
@@ -678,7 +614,7 @@
     </div>
   </section>
 
-  <!-- ================= STEP 4: Experience ================= -->
+  <!-- ================= STEP 4: Experience (incl. agriculture) ================= -->
   <section class="step" data-step="4" data-title="Data collection experience">
     <h2>Data collection experience</h2>
     <p class="step-note">Tell us about your fieldwork background.</p>
@@ -714,20 +650,9 @@
       <div class="err">Please select an option.</div>
     </div>
 
-    <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(3)">Back</button>
-      <button class="btn btn-primary" onclick="next(4)">Continue</button>
-    </div>
-  </section>
-
-  <!-- ================= STEP 5: Agriculture ================= -->
-  <section class="step" data-step="5" data-title="Agriculture background">
-    <h2>Agriculture background</h2>
-    <p class="step-note">Preferred but not required.</p>
-    <div class="step-err" id="stepErr5">Please complete the highlighted questions before continuing.</div>
-
     <div class="field" data-name="agric" data-type="radio">
       <span class="q-label">Do you have experience or training in agriculture or an agro-allied field? <span class="req">*</span></span>
+      <p class="q-hint">Preferred but not required.</p>
       <div class="options">
         <label class="opt"><input type="radio" name="agric" value="Yes" onchange="agricChanged()"><span class="opt-face"><span class="dot"></span>Yes</span></label>
         <label class="opt"><input type="radio" name="agric" value="No" onchange="agricChanged()"><span class="opt-face"><span class="dot"></span>No</span></label>
@@ -741,16 +666,16 @@
     </div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(4)">Back</button>
-      <button class="btn btn-primary" onclick="next(5)">Continue</button>
+      <button class="btn btn-ghost" onclick="goTo(3)">Back</button>
+      <button class="btn btn-primary" onclick="next(4)">Continue</button>
     </div>
   </section>
 
-  <!-- ================= STEP 6: Independence ================= -->
-  <section class="step" data-step="6" data-title="Independence">
+  <!-- ================= STEP 5: Independence ================= -->
+  <section class="step" data-step="5" data-title="Independence">
     <h2>Independence</h2>
     <p class="step-note">These questions help us keep the evaluation independent and credible. Please answer honestly; a Yes does not automatically disqualify you.</p>
-    <div class="step-err" id="stepErr6">Please complete the highlighted questions before continuing.</div>
+    <div class="step-err" id="stepErr5">Please complete the highlighted questions before continuing.</div>
 
     <div class="field" data-name="beneficiary" data-type="radio">
       <span class="q-label">Are you, or is anyone in your household, a registered B-SLiC beneficiary? <span class="req">*</span></span>
@@ -780,16 +705,16 @@
     </div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(5)">Back</button>
-      <button class="btn btn-primary" onclick="next(6)">Continue</button>
+      <button class="btn btn-ghost" onclick="goTo(4)">Back</button>
+      <button class="btn btn-primary" onclick="next(5)">Continue</button>
     </div>
   </section>
 
-  <!-- ================= STEP 7: Availability ================= -->
-  <section class="step" data-step="7" data-title="Availability">
-    <h2>Availability</h2>
+  <!-- ================= STEP 6: Availability + CV ================= -->
+  <section class="step" data-step="6" data-title="Availability and CV">
+    <h2>Availability and your CV</h2>
     <p class="step-note">Fieldwork runs for 7 working days in August 2026, preceded by two compulsory training days. Exact dates will be confirmed on shortlisting.</p>
-    <div class="step-err" id="stepErr7">Please complete the highlighted questions before continuing.</div>
+    <div class="step-err" id="stepErr6">Please answer the availability question and attach your CV.</div>
 
     <div class="field" data-name="available" data-type="radio">
       <span class="q-label">Are you available for 2 days of training and 7 working days of fieldwork in August 2026? <span class="req">*</span></span>
@@ -800,21 +725,9 @@
       <div class="err">Please select an option.</div>
     </div>
 
-    <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(6)">Back</button>
-      <button class="btn btn-primary" onclick="next(7)">Continue</button>
-    </div>
-  </section>
-
-  <!-- ================= STEP 8: CV + Declaration ================= -->
-  <section class="step" data-step="8" data-title="CV and declaration">
-    <h2>Attach your CV and confirm</h2>
-    <p class="step-note">Nearly done. Applications without a CV will not be assessed.</p>
-    <div class="step-err" id="stepErr8">Please attach your CV and tick all four declaration boxes.</div>
-
     <div class="field" data-name="cv" data-type="file">
       <span class="q-label">Upload your CV <span class="req">*</span></span>
-      <p class="q-hint">PDF or Word document, maximum 5 MB.</p>
+      <p class="q-hint">PDF or Word document, maximum 5 MB. Applications without a CV will not be assessed.</p>
       <label class="upload" id="uploadBox">
         <input type="file" id="cvInput" accept=".pdf,.doc,.docx" onchange="cvChanged(this)">
         <span class="up-icon">&#8679;</span>
@@ -829,26 +742,16 @@
       <div class="err" id="cvErr">Please attach your CV as a PDF or Word document (max 5 MB).</div>
     </div>
 
-    <div class="field" data-name="declaration" data-type="checks">
-      <span class="q-label">Declaration <span class="req">*</span></span>
-      <p class="q-hint">Please tick all four boxes to confirm.</p>
-      <label class="check"><input type="checkbox" class="decl"><span>The information I have given is true and complete.</span></label>
-      <label class="check"><input type="checkbox" class="decl"><span>I understand this is a short-term engagement of 2 training days and 7 fieldwork days. It is not employment.</span></label>
-      <label class="check"><input type="checkbox" class="decl"><span>I understand that attendance at the training is compulsory, and that I must pass the end-of-training assessment to be deployed.</span></label>
-      <label class="check"><input type="checkbox" class="decl"><span>I understand that payment is made directly into my personal bank account after my interviews are completed and have passed quality checks.</span></label>
-      <div class="err">Please tick all four boxes.</div>
-    </div>
-
     <div class="step-err" id="submitErr">We could not send your application. Please check your internet connection and try again.</div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(7)">Back</button>
+      <button class="btn btn-ghost" onclick="goTo(5)">Back</button>
       <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Submit application</button>
     </div>
   </section>
 
   <!-- ================= STEP 9: Success ================= -->
-  <section class="step success-card" data-step="9">
+  <section class="step success-card" data-step="7">
     <div class="success-icon">&#10003;</div>
     <h2>Application received</h2>
     <p>Thank you for applying to work with Data-Lead Africa on the B-SLiC Endline Evaluation.</p>
@@ -871,14 +774,14 @@
      ========================================================== */
   var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7Nk3W0r_kKpESEcQlVnDFMX8RrfMQoByD90djrGOWzBGXC08o6D03D-UHGZqi6EBh/exec";
 
-  var TOTAL_STEPS = 8;
+  var TOTAL_STEPS = 6;
   var currentStep = 0;
   var cvFile = null;
 
   var stepTitles = {
     1: "About you", 2: "Where you live", 3: "Language",
-    4: "Data collection experience", 5: "Agriculture background",
-    6: "Independence", 7: "Availability", 8: "CV and declaration"
+    4: "Data collection experience", 5: "Independence",
+    6: "Availability and CV"
   };
 
   function goTo(n) {
@@ -940,10 +843,6 @@
       }
     } else if (type === "file") {
       ok = !!cvFile;
-    } else if (type === "checks") {
-      var boxes = field.querySelectorAll("input.decl");
-      ok = true;
-      for (var i = 0; i < boxes.length; i++) if (!boxes[i].checked) ok = false;
     } else {
       ok = true; /* optional-text */
     }
@@ -1098,13 +997,12 @@
       beneficiary: radioValue("beneficiary"),
       caritas: radioValue("caritas"),
       dismissed: radioValue("dismissed"),
-      available: radioValue("available"),
-      declarationAccepted: "Yes"
+      available: radioValue("available")
     };
   }
 
   function submitForm() {
-    if (!validateStep(8)) return;
+    if (!validateStep(6)) return;
     var btn = document.getElementById("submitBtn");
     var errBanner = document.getElementById("submitErr");
     errBanner.classList.remove("visible");
@@ -1116,7 +1014,7 @@
       setTimeout(function () {
         btn.disabled = false;
         btn.textContent = "Submit application";
-        goTo(9);
+        goTo(7);
       }, 900);
       return;
     }
@@ -1139,7 +1037,7 @@
     }).then(function () {
       btn.disabled = false;
       btn.textContent = "Submit application";
-      goTo(9);
+      goTo(7);
     }).catch(function () {
       btn.disabled = false;
       btn.textContent = "Submit application";
