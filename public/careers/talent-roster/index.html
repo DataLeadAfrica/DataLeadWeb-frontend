@@ -4,7 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join our talent roster | Data-Lead Africa</title>
-<meta name="description" content="Send us your CV and we will contact you when a study or role matching your skills opens.">
+<meta name="description" content="Join Data-Lead Africa's network of researchers, evaluators, data professionals, sector specialists, field teams, trainers and consultants delivering assignments across Africa.">
+<link rel="canonical" href="https://www.dataleadafrica.com/careers/talent-roster/">
+<meta property="og:title" content="Join the Data-Lead Africa talent roster">
+<meta property="og:description" content="A growing network of research and development professionals supporting assignments across Africa.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.dataleadafrica.com/careers/talent-roster/">
+<meta property="og:site_name" content="Data-Lead Africa">
+<meta property="og:image" content="https://www.dataleadafrica.com/careers/images/audience.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join the Data-Lead Africa talent roster">
+<meta name="twitter:description" content="A growing network of research and development professionals supporting assignments across Africa.">
+<meta name="twitter:image" content="https://www.dataleadafrica.com/careers/images/audience.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -445,6 +456,44 @@
   .check span { font-size: 14px; line-height: 1.5; }
   .check:has(input:checked) { border-color: var(--orange); background: var(--orange-soft); }
 
+  /* Opportunity chips on the welcome step */
+  .chips-label {
+    display: block;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 6px 0 10px;
+  }
+  .area-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .area-chip {
+    font-size: 12.5px; font-weight: 500; color: var(--navy);
+    background: var(--mist); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px;
+  }
+
+  /* "Looking for a current vacancy?" line under the main button */
+  .alt-link {
+    margin-top: 16px;
+    font-size: 13.5px; color: var(--ink-soft);
+    text-align: center;
+  }
+  .alt-link a { color: var(--orange-dark); font-weight: 600; text-decoration: none; }
+  .alt-link a:hover { text-decoration: underline; }
+  /* Compact two-column grid for long checkbox lists */
+  .check-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .check-grid .check { margin-bottom: 0; padding: 11px 12px; }
+  @media (max-width: 560px) { .check-grid { grid-template-columns: 1fr; } }
+
+  /* Group headings inside the job role list */
+  .group-label {
+    display: block;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 18px 0 9px;
+  }
+  .field .group-label:first-of-type { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -461,16 +510,17 @@
 <aside class="rail" aria-label="Roster summary and progress">
   <div class="rail__inner">
     <span class="rail__eyebrow">Talent roster</span>
-    <h2 class="rail__title">Be first in line for the next study</h2>
+    <h2 class="rail__title">A growing network of professionals</h2>
     <div class="rail__meta">
-      <div><b>Covers</b>Fieldwork, research, analytics, consultancy and training</div>
-      <div><b>Where</b>Nigeria, Benin, Guinea-Bissau, Togo and Chad</div>
-      <div><b>Takes</b>About 3 minutes</div>
+      <div><b>Opportunities include</b>Research, data, technology, creative, programme, training, sector and field operations roles</div>
+      <div><b>Where we work</b>Across Africa, from country-level assignments to regional engagements</div>
+      <div><b>Application time</b>About 5 minutes</div>
     </div>
     <ol class="rail__steps" id="railSteps">
       <li data-rail="1"><span>1</span>About you</li>
-      <li data-rail="2"><span>2</span>Where you are</li>
-      <li data-rail="3"><span>3</span>Your work and CV</li>
+      <li data-rail="2"><span>2</span>Education</li>
+      <li data-rail="3"><span>3</span>Location and availability</li>
+      <li data-rail="4"><span>4</span>Your work and CV</li>
     </ol>
   </div>
   <figure class="rail__photo">
@@ -483,7 +533,7 @@
 
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-meta">
-      <span class="progress-step" id="progressStep">Step 1 of 3</span>
+      <span class="progress-step" id="progressStep">Step 1 of 4</span>
       <span class="progress-title" id="progressTitle">About you</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -492,18 +542,46 @@
   <!-- ================= STEP 0: Welcome ================= -->
   <section class="step active" data-step="0">
     <span class="eyebrow">Talent roster</span>
-    <h1>Join our talent roster</h1>
+    <h1>Join our network of research and development professionals</h1>
     <p class="intro-text">
-      We build teams study by study, so roles often open with little notice. Tell us who
-      you are and what you do, and we will contact you when something matching your
-      skills comes up.
+      Data-Lead Africa works with researchers, evaluators, data professionals, sector
+      specialists, field teams, trainers and consultants to deliver assignments
+      <b>across Africa</b>, from country-level work to multi-country and regional
+      engagements.
     </p>
-    <p class="intro-text">
-      This takes about three minutes. Have your CV ready as a PDF or Word file.
-    </p>
-    <div class="nav-row">
-      <button class="btn btn-primary" onclick="goTo(1)">Start</button>
+
+    <span class="chips-label">Opportunities include</span>
+    <div class="area-chips">
+      <span class="area-chip">Research and Evaluation</span>
+      <span class="area-chip">Data Analytics and Statistics</span>
+      <span class="area-chip">Monitoring, Evaluation and Learning</span>
+      <span class="area-chip">Field Research</span>
+      <span class="area-chip">Technical and Sector Consultancy</span>
+      <span class="area-chip">Data Visualisation and Digital Solutions</span>
+      <span class="area-chip">Training and Facilitation</span>
+      <span class="area-chip">Programme and Project Support</span>
     </div>
+
+    <p class="intro-text">
+      Tell us about your expertise, experience, location and availability. When an
+      opportunity matches your profile, our team may contact you to discuss the
+      assignment. It takes about 5 minutes; please have your CV ready as a PDF or
+      Word file.
+    </p>
+
+    <div class="notice visible" style="margin-bottom:20px">
+      Joining the talent roster is not an application for a specific vacancy and does
+      not guarantee an engagement. If you are interested in an advertised position,
+      please apply directly through the relevant vacancy.
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-primary" onclick="goTo(1)">Join the talent roster</button>
+    </div>
+    <p class="alt-link">
+      Looking for a current vacancy?
+      <a href="/careers/enumerator-application/">View open roles</a>
+    </p>
   </section>
 
   <!-- ================= STEP 1: About you ================= -->
@@ -526,7 +604,7 @@
 
     <div class="field" data-name="phone" data-type="phone">
       <label class="q-label" for="phone">Phone number (WhatsApp) <span class="req">*</span></label>
-      <input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="e.g. 0803 123 4567">
+      <input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="Include your country code, e.g. +234 803 123 4567">
       <div class="err">Please enter a valid phone number.</div>
     </div>
 
@@ -540,50 +618,97 @@
       <div class="err">Please select an option.</div>
     </div>
 
-    <div class="field" data-name="qualification" data-type="radio">
-      <span class="q-label">Highest qualification <span class="req">*</span></span>
-      <div class="options">
-        <label class="opt"><input type="radio" name="qualification" value="SSCE"><span class="opt-face"><span class="dot"></span>SSCE</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="OND / NCE"><span class="opt-face"><span class="dot"></span>OND / NCE</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="HND"><span class="opt-face"><span class="dot"></span>HND</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="BSc"><span class="opt-face"><span class="dot"></span>BSc</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="PGD"><span class="opt-face"><span class="dot"></span>PGD</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="MSc"><span class="opt-face"><span class="dot"></span>MSc</span></label>
-        <label class="opt"><input type="radio" name="qualification" value="Ph.D"><span class="opt-face"><span class="dot"></span>Ph.D</span></label>
-      </div>
-      <div class="err">Please select an option.</div>
-    </div>
-
     <div class="nav-row">
       <button class="btn btn-ghost" onclick="goTo(0)">Back</button>
       <button class="btn btn-primary" onclick="next(1)">Continue</button>
     </div>
   </section>
 
-  <!-- ================= STEP 2: Where you are ================= -->
-  <section class="step" data-step="2" data-title="Where you are">
-    <h2>Where you are</h2>
-    <p class="step-note">We match people to studies by location, so this matters.</p>
+  <!-- ================= STEP 2: Education ================= -->
+  <section class="step" data-step="2" data-title="Education">
+    <h2>Education</h2>
+    <p class="step-note">Your highest qualification and where you studied.</p>
     <div class="step-err" id="stepErr2">Please complete the highlighted questions before continuing.</div>
 
-    <div class="field" data-name="country" data-type="radio" data-specify="countryOther">
-      <span class="q-label">Country of residence <span class="req">*</span></span>
-      <div class="options">
-        <label class="opt"><input type="radio" name="country" value="Nigeria" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Nigeria</span></label>
-        <label class="opt"><input type="radio" name="country" value="Benin" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Benin</span></label>
-        <label class="opt"><input type="radio" name="country" value="Guinea-Bissau" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Guinea-Bissau</span></label>
-        <label class="opt"><input type="radio" name="country" value="Togo" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Togo</span></label>
-        <label class="opt"><input type="radio" name="country" value="Chad" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Chad</span></label>
-        <label class="opt"><input type="radio" name="country" value="Other" onchange="countryChanged()"><span class="opt-face"><span class="dot"></span>Other</span></label>
+    <div class="field" data-name="qualification" data-type="radio">
+      <span class="q-label">Highest qualification <span class="req">*</span></span>
+      <div class="options stack">
+        <label class="opt"><input type="radio" name="qualification" value="Secondary school certificate"><span class="opt-face"><span class="dot"></span>Secondary school certificate (SSCE, WASSCE, high school diploma or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Diploma / Certificate"><span class="opt-face"><span class="dot"></span>Diploma or certificate (OND, NCE, technical certificate or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Higher National Diploma"><span class="opt-face"><span class="dot"></span>Higher National Diploma (HND or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Bachelor's degree"><span class="opt-face"><span class="dot"></span>Bachelor's degree (BSc, BA, BEng or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Postgraduate diploma"><span class="opt-face"><span class="dot"></span>Postgraduate diploma (PGD or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Master's degree"><span class="opt-face"><span class="dot"></span>Master's degree (MSc, MA, MBA or equivalent)</span></label>
+        <label class="opt"><input type="radio" name="qualification" value="Doctorate"><span class="opt-face"><span class="dot"></span>Doctorate (Ph.D or equivalent)</span></label>
       </div>
-      <div class="specify" id="countryOtherBox">
-        <label class="q-label" for="countryOther" style="font-size:13px">Please type your country</label>
-        <input type="text" id="countryOther" placeholder="e.g. Ghana">
-      </div>
-      <div class="err">Please select an option, and type your country if you chose Other.</div>
+      <div class="err">Please select an option.</div>
     </div>
 
-    <!-- Shown only for Nigeria -->
+    <div class="field" data-name="institution" data-type="text">
+      <label class="q-label" for="institution">University, polytechnic or college attended <span class="req">*</span></label>
+      <p class="q-hint">Start typing to search and select. If your institution is not listed, simply type its full name.</p>
+      <input type="text" id="institution" list="institutionList" autocomplete="off" placeholder="Start typing, e.g. University of...">
+      <datalist id="institutionList"></datalist>
+      <div class="err">Please enter the institution you attended.</div>
+    </div>
+
+    <div class="field" data-name="gradYear" data-type="select">
+      <label class="q-label" for="gradYear">Year of graduation <span class="req">*</span></label>
+      <select id="gradYear">
+        <option value="">Select a year</option>
+        <option>Still studying</option>
+      </select>
+      <div class="err">Please select your graduation year, or Still studying.</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(1)">Back</button>
+      <button class="btn btn-primary" onclick="next(2)">Continue</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 3: Location and availability ================= -->
+  <section class="step" data-step="3" data-title="Location and availability">
+    <h2>Location and availability</h2>
+    <p class="step-note">We match people to assignments by location and mobility, so this matters.</p>
+    <div class="step-err" id="stepErr3">Please complete the highlighted questions before continuing.</div>
+
+    <div class="field" data-name="country" data-type="select-country">
+      <label class="q-label" for="country">Country of residence <span class="req">*</span></label>
+      <select id="country" onchange="countryChanged()">
+        <option value="">Select your country</option>
+        <option>Algeria</option><option>Angola</option><option>Benin</option>
+        <option>Botswana</option><option>Burkina Faso</option><option>Burundi</option>
+        <option>Cabo Verde</option><option>Cameroon</option>
+        <option>Central African Republic</option><option>Chad</option>
+        <option>Comoros</option><option>Congo, Democratic Republic of the</option>
+        <option>Congo, Republic of the</option><option>Cote d'Ivoire</option>
+        <option>Djibouti</option><option>Egypt</option>
+        <option>Equatorial Guinea</option><option>Eritrea</option>
+        <option>Eswatini</option><option>Ethiopia</option>
+        <option>Gabon</option><option>Gambia</option><option>Ghana</option>
+        <option>Guinea</option><option>Guinea-Bissau</option><option>Kenya</option>
+        <option>Lesotho</option><option>Liberia</option><option>Libya</option>
+        <option>Madagascar</option><option>Malawi</option><option>Mali</option>
+        <option>Mauritania</option><option>Mauritius</option><option>Morocco</option>
+        <option>Mozambique</option><option>Namibia</option><option>Niger</option>
+        <option>Nigeria</option><option>Rwanda</option>
+        <option>Sao Tome and Principe</option><option>Senegal</option>
+        <option>Seychelles</option><option>Sierra Leone</option>
+        <option>Somalia</option><option>South Africa</option>
+        <option>South Sudan</option><option>Sudan</option><option>Tanzania</option>
+        <option>Togo</option><option>Tunisia</option><option>Uganda</option>
+        <option>Zambia</option><option>Zimbabwe</option>
+        <option>Outside Africa</option>
+      </select>
+      <div class="specify" id="countryOtherBox">
+        <label class="q-label" for="countryOther" style="font-size:13px">Please type your country</label>
+        <input type="text" id="countryOther" placeholder="e.g. United Kingdom">
+      </div>
+      <div class="err">Please select your country, and type it if you are based outside Africa.</div>
+    </div>
+
+    <!-- Nigeria gets its state dropdown; everyone else types their region -->
     <div class="field" data-name="stateNg" data-type="select" id="stateNgField" style="display:none">
       <label class="q-label" for="stateNg">State of residence <span class="req">*</span></label>
       <select id="stateNg">
@@ -605,55 +730,141 @@
       <div class="err">Please select your state.</div>
     </div>
 
-    <div class="field" data-name="address" data-type="text">
-      <label class="q-label" for="address">Residential address <span class="req">*</span></label>
-      <p class="q-hint">Street and town or city is enough.</p>
-      <textarea id="address" rows="3" placeholder="e.g. 12 Adeyemi Street, Igbogbo, Ikorodu"></textarea>
-      <div class="err">Please enter your residential address.</div>
+    <div class="field" data-name="stateRegion" data-type="text" id="stateRegionField">
+      <label class="q-label" for="stateRegion">State / Province / Region <span class="req">*</span></label>
+      <input type="text" id="stateRegion" placeholder="e.g. Greater Accra">
+      <div class="err">Please enter your state, province or region.</div>
+    </div>
+
+    <div class="field" data-name="city" data-type="text">
+      <label class="q-label" for="city">City / Town <span class="req">*</span></label>
+      <input type="text" id="city" placeholder="e.g. Ikorodu">
+      <div class="err">Please enter your city or town.</div>
+    </div>
+
+    <div class="field" data-name="workRegions" data-type="checks-required">
+      <span class="q-label">Countries or regions where you are available to work <span class="req">*</span></span>
+      <p class="q-hint">Choose as many as apply.</p>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="workregion" value="Home country only"><span>Home country only</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="West Africa"><span>West Africa</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="Central Africa"><span>Central Africa</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="East Africa"><span>East Africa</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="Southern Africa"><span>Southern Africa</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="North Africa"><span>North Africa</span></label>
+        <label class="check"><input type="checkbox" class="workregion" value="Across Africa"><span>Across Africa</span></label>
+      </div>
+      <div class="err">Please choose at least one.</div>
+    </div>
+
+    <div class="field" data-name="travel" data-type="radio">
+      <span class="q-label">Are you willing to travel for assignments? <span class="req">*</span></span>
+      <div class="options stack">
+        <label class="opt"><input type="radio" name="travel" value="Within my country"><span class="opt-face"><span class="dot"></span>Within my country</span></label>
+        <label class="opt"><input type="radio" name="travel" value="Within my sub-region"><span class="opt-face"><span class="dot"></span>Within my sub-region</span></label>
+        <label class="opt"><input type="radio" name="travel" value="Across Africa"><span class="opt-face"><span class="dot"></span>Across Africa</span></label>
+        <label class="opt"><input type="radio" name="travel" value="Remote assignments only"><span class="opt-face"><span class="dot"></span>Remote assignments only</span></label>
+      </div>
+      <div class="err">Please select an option.</div>
     </div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(1)">Back</button>
-      <button class="btn btn-primary" onclick="next(2)">Continue</button>
+      <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
+      <button class="btn btn-primary" onclick="next(3)">Continue</button>
     </div>
   </section>
 
-  <!-- ================= STEP 3: Work, access and CV ================= -->
-  <section class="step" data-step="3" data-title="Your work and CV">
+  <!-- ================= STEP 4: Work and CV ================= -->
+  <section class="step" data-step="4" data-title="Your work and CV">
     <h2>Your work and your CV</h2>
     <p class="step-note">Last step.</p>
-    <div class="step-err" id="stepErr3">Please complete the highlighted questions before continuing.</div>
+    <div class="step-err" id="stepErr4">Please complete the highlighted questions before continuing.</div>
 
     <div class="field" data-name="interests" data-type="checks-required">
       <span class="q-label">What kind of work are you interested in? <span class="req">*</span></span>
       <p class="q-hint">Choose as many as apply. This is how we search the roster.</p>
-      <label class="check"><input type="checkbox" class="interest" value="Field data collection"><span>Field data collection</span></label>
-      <label class="check"><input type="checkbox" class="interest" value="Research and evaluation"><span>Research and evaluation</span></label>
-      <label class="check"><input type="checkbox" class="interest" value="Data analytics"><span>Data analytics</span></label>
-      <label class="check"><input type="checkbox" class="interest" value="Consultancy"><span>Consultancy</span></label>
-      <label class="check"><input type="checkbox" class="interest" value="Training and facilitation"><span>Training and facilitation</span></label>
-      <div class="err">Please choose at least one.</div>
-    </div>
 
-    <div class="field" data-name="disability" data-type="radio">
-      <span class="q-label">Do you have a disability?</span>
-      <div class="notice visible" style="margin-bottom:12px; margin-top:0">
-        Data-Lead Africa is an equal opportunity employer. Your answer plays no part in
-        whether you are selected for a role. We ask only so that we can plan any
-        adjustments you may need to work with us comfortably. This question is optional
-        and you may choose "Prefer not to say".
+      <span class="group-label">Research, Data and MEL</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Field Enumerator"><span>Field Enumerator</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Field Supervisor / Coordinator"><span>Field Supervisor / Coordinator</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Research Assistant"><span>Research Assistant</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Qualitative Researcher"><span>Qualitative Researcher</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Research and Evaluation Specialist"><span>Research and Evaluation Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Monitoring, Evaluation and Learning Officer"><span>Monitoring, Evaluation and Learning Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Data Analyst"><span>Data Analyst</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Statistician"><span>Statistician</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Data Scientist"><span>Data Scientist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Data Entry Officer"><span>Data Entry Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="GIS and Mapping Specialist"><span>GIS and Mapping Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Transcriber / Translator"><span>Transcriber / Translator</span></label>
       </div>
-      <div class="options">
-        <label class="opt"><input type="radio" name="disability" value="No" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>No</span></label>
-        <label class="opt"><input type="radio" name="disability" value="Yes" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>Yes</span></label>
-        <label class="opt"><input type="radio" name="disability" value="Prefer not to say" onchange="disabilityChanged()"><span class="opt-face"><span class="dot"></span>Prefer not to say</span></label>
-      </div>
-    </div>
 
-    <div class="field" data-name="accommodation" data-type="optional-text" id="accommodationField" style="display:none">
-      <label class="q-label" for="accommodation">What adjustments would help you work with us?</label>
-      <p class="q-hint">Optional. For example a sign language interpreter, accessible venues, or materials in a particular format.</p>
-      <textarea id="accommodation" rows="3" placeholder="Tell us what would help"></textarea>
+      <span class="group-label">Technology and Digital</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Software / Web Developer"><span>Software / Web Developer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Mobile App Developer"><span>Mobile App Developer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Data Visualisation / Dashboard Developer"><span>Data Visualisation / Dashboard Developer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Database Administrator"><span>Database Administrator</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="IT Support Officer"><span>IT Support Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Cybersecurity Specialist"><span>Cybersecurity Specialist</span></label>
+      </div>
+
+      <span class="group-label">Creative and Communications</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Graphic Designer"><span>Graphic Designer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Video Editor"><span>Video Editor</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Photographer / Videographer"><span>Photographer / Videographer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Social Media Manager"><span>Social Media Manager</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Communications Officer"><span>Communications Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Content Writer / Copywriter"><span>Content Writer / Copywriter</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Public Relations Officer"><span>Public Relations Officer</span></label>
+      </div>
+
+      <span class="group-label">Programme and Administration</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Programme / Project Officer"><span>Programme / Project Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Project Manager"><span>Project Manager</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Administrative Officer"><span>Administrative Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Executive Assistant"><span>Executive Assistant</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Human Resources Officer"><span>Human Resources Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Accountant / Finance Officer"><span>Accountant / Finance Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Procurement Officer"><span>Procurement Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Business Development Officer"><span>Business Development Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Customer Service Officer"><span>Customer Service Officer</span></label>
+      </div>
+
+      <span class="group-label">Training and Facilitation</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Trainer / Facilitator"><span>Trainer / Facilitator</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Curriculum Developer"><span>Curriculum Developer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Sign Language Interpreter"><span>Sign Language Interpreter</span></label>
+      </div>
+
+      <span class="group-label">Sector Specialists and Consultancy</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Public Health Specialist"><span>Public Health Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Agriculture Specialist"><span>Agriculture Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Education Specialist"><span>Education Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Gender and Inclusion Specialist"><span>Gender and Inclusion Specialist</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Independent Consultant"><span>Independent Consultant</span></label>
+      </div>
+
+      <span class="group-label">Field Operations and Support</span>
+      <div class="check-grid">
+        <label class="check"><input type="checkbox" class="interest" value="Driver"><span>Driver</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Logistics Officer"><span>Logistics Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Community Mobiliser"><span>Community Mobiliser</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Office Assistant"><span>Office Assistant</span></label>
+        <label class="check"><input type="checkbox" class="interest" value="Security Officer"><span>Security Officer</span></label>
+        <label class="check"><input type="checkbox" class="interest" id="interestOther" value="Other"><span>Other</span></label>
+      </div>
+
+      <div class="specify" id="interestOtherBox">
+        <label class="q-label" for="interestOtherText" style="font-size:13px">Please describe the kind of work</label>
+        <input type="text" id="interestOtherText" placeholder="e.g. Drone pilot">
+      </div>
+      <div class="err">Please choose at least one, and describe it if you chose Other.</div>
     </div>
 
     <div class="field" data-name="cv" data-type="file">
@@ -676,18 +887,18 @@
     <div class="step-err" id="submitErr">We could not send your details. Please check your internet connection and try again.</div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
+      <button class="btn btn-ghost" onclick="goTo(3)">Back</button>
       <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Join the roster</button>
     </div>
   </section>
 
-  <!-- ================= STEP 4: Success ================= -->
-  <section class="step success-card" data-step="4">
+  <!-- ================= STEP 5: Success ================= -->
+  <section class="step success-card" data-step="5">
     <div class="success-icon">&#10003;</div>
     <h2>You are on the roster</h2>
-    <p>Thank you. Your details and CV are with us, and we will contact you when a study or role matching your skills opens.</p>
+    <p>Thank you. Your details and CV are with us, and a confirmation email is on its way to you. When an opportunity matches your profile, our team may contact you to discuss the assignment.</p>
     <div class="nav-row" style="justify-content:center">
-      <a class="btn btn-primary" href="/careers/" style="text-decoration:none; text-align:center; flex:0 1 auto;">See open roles</a>
+      <a class="btn btn-primary" href="/careers/" style="text-decoration:none; text-align:center; flex:0 1 auto;">Back to careers</a>
     </div>
   </section>
 
@@ -707,11 +918,14 @@
      ========================================================== */
   var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtcCx2GAesgip29LzGRpb6aMrlVAAbo6SVCkNP9Mg2omLRPjYoo4ZrDPLLYbQKvkl7/exec";
 
-  var TOTAL_STEPS = 3;
+  var TOTAL_STEPS = 4;
   var currentStep = 0;
   var cvFile = null;
 
-  var stepTitles = { 1: "About you", 2: "Where you are", 3: "Your work and CV" };
+  var stepTitles = {
+    1: "About you", 2: "Education",
+    3: "Location and availability", 4: "Your work and CV"
+  };
 
   function goTo(n) {
     var steps = document.querySelectorAll(".step");
@@ -761,11 +975,12 @@
 
   function validateField(field) {
     var type = field.getAttribute("data-type");
+    var name = field.getAttribute("data-name");
     var ok = true;
     if (!isVisible(field)) return true;
 
     if (type === "text") {
-      ok = field.querySelector("input, textarea").value.trim().length >= 3;
+      ok = field.querySelector("input, textarea").value.trim().length >= 2;
     } else if (type === "phone") {
       var p = field.querySelector("input").value.replace(/[\s\-()]/g, "");
       ok = /^\+?\d{7,15}$/.test(p);
@@ -773,15 +988,23 @@
       ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.querySelector("input").value.trim());
     } else if (type === "select") {
       ok = field.querySelector("select").value !== "";
-    } else if (type === "radio") {
-      var checked = field.querySelector("input:checked");
-      ok = !!checked;
-      var specifyId = field.getAttribute("data-specify");
-      if (ok && specifyId && /^others?$/i.test(checked.value)) {
-        ok = document.getElementById(specifyId).value.trim().length >= 2;
+    } else if (type === "select-country") {
+      var v = field.querySelector("select").value;
+      ok = v !== "";
+      if (ok && v === "Outside Africa") {
+        ok = document.getElementById("countryOther").value.trim().length >= 2;
       }
+    } else if (type === "radio") {
+      ok = !!field.querySelector("input:checked");
     } else if (type === "checks-required") {
       ok = field.querySelectorAll("input:checked").length > 0;
+      /* If Other is among the interests, the description is required */
+      if (ok && name === "interests") {
+        var other = document.getElementById("interestOther");
+        if (other && other.checked) {
+          ok = document.getElementById("interestOtherText").value.trim().length >= 2;
+        }
+      }
     } else if (type === "file") {
       ok = !!cvFile;
     }
@@ -792,8 +1015,7 @@
 
   function validateStep(n) {
     var stepEl = document.querySelector('.step[data-step="' + n + '"]');
-    /* The disability question is deliberately optional, so it is skipped. */
-    var fields = stepEl.querySelectorAll('.field:not([data-name="disability"])');
+    var fields = stepEl.querySelectorAll(".field");
     var allOk = true, firstBad = null;
     for (var i = 0; i < fields.length; i++) {
       if (!validateField(fields[i])) {
@@ -811,29 +1033,193 @@
 
   function next(n) { if (validateStep(n)) goTo(n + 1); }
 
-  function toggleSpecify(name, boxId) {
-    var box = document.getElementById(boxId);
-    var show = /^others?$/i.test(radioValue(name));
-    box.classList.toggle("visible", show);
-    if (!show) box.querySelector("input").value = "";
-  }
-
-  /* The state list is only relevant to Nigeria */
+  /* Country drives which state question shows */
   function countryChanged() {
-    var v = radioValue("country");
-    var f = document.getElementById("stateNgField");
-    f.style.display = (v === "Nigeria") ? "" : "none";
-    if (v !== "Nigeria") {
+    var v = document.getElementById("country").value;
+
+    var otherBox = document.getElementById("countryOtherBox");
+    var showOther = (v === "Outside Africa");
+    otherBox.classList.toggle("visible", showOther);
+    if (!showOther) document.getElementById("countryOther").value = "";
+
+    var ngField = document.getElementById("stateNgField");
+    var regionField = document.getElementById("stateRegionField");
+    var isNigeria = (v === "Nigeria");
+    ngField.style.display = isNigeria ? "" : "none";
+    regionField.style.display = isNigeria ? "none" : "";
+    if (isNigeria) {
+      document.getElementById("stateRegion").value = "";
+      regionField.classList.remove("invalid");
+    } else {
       document.getElementById("stateNg").value = "";
-      f.classList.remove("invalid");
+      ngField.classList.remove("invalid");
     }
-    toggleSpecify("country", "countryOtherBox");
   }
 
-  function disabilityChanged() {
-    document.getElementById("accommodationField").style.display =
-      (radioValue("disability") === "Yes") ? "" : "none";
+  /* Other interest opens its description box */
+  function interestOtherChanged() {
+    var box = document.getElementById("interestOtherBox");
+    var checked = document.getElementById("interestOther").checked;
+    box.classList.toggle("visible", checked);
+    if (!checked) document.getElementById("interestOtherText").value = "";
   }
+  document.getElementById("interestOther").addEventListener("change", interestOtherChanged);
+
+  /* Graduation year list: current year down to 1970, after Still studying */
+  (function buildYears() {
+    var sel = document.getElementById("gradYear");
+    for (var y = 2026; y >= 1970; y--) {
+      var opt = document.createElement("option");
+      opt.textContent = String(y);
+      sel.appendChild(opt);
+    }
+  })();
+
+  /* Institution search list. A curated list of universities,
+     polytechnics and colleges, Africa first. Typing filters it
+     natively; anything not listed can be typed in full. */
+  var INSTITUTIONS = [
+    /* ---- Nigeria: universities ---- */
+    "University of Lagos, Nigeria","University of Ibadan, Nigeria",
+    "Obafemi Awolowo University, Ile-Ife, Nigeria","University of Nigeria, Nsukka",
+    "Ahmadu Bello University, Zaria, Nigeria","University of Benin, Nigeria",
+    "University of Port Harcourt, Nigeria","University of Ilorin, Nigeria",
+    "Nnamdi Azikiwe University, Awka, Nigeria","University of Calabar, Nigeria",
+    "Bayero University Kano, Nigeria","University of Jos, Nigeria",
+    "University of Maiduguri, Nigeria","Usmanu Danfodiyo University, Sokoto, Nigeria",
+    "Federal University of Technology, Akure, Nigeria","Federal University of Technology, Minna, Nigeria",
+    "Federal University of Technology, Owerri, Nigeria","Lagos State University, Nigeria",
+    "Ekiti State University, Ado-Ekiti, Nigeria","Ladoke Akintola University of Technology, Nigeria",
+    "Olabisi Onabanjo University, Ago-Iwoye, Nigeria","Rivers State University, Nigeria",
+    "Delta State University, Abraka, Nigeria","Ambrose Alli University, Ekpoma, Nigeria",
+    "Enugu State University of Science and Technology, Nigeria","Imo State University, Owerri, Nigeria",
+    "Abia State University, Uturu, Nigeria","Benue State University, Makurdi, Nigeria",
+    "Kaduna State University, Nigeria","Kano University of Science and Technology, Wudil, Nigeria",
+    "Osun State University, Nigeria","Ondo State University of Science and Technology, Nigeria",
+    "Adekunle Ajasin University, Akungba, Nigeria","Federal University, Oye-Ekiti, Nigeria",
+    "Federal University, Dutse, Nigeria","Federal University, Lokoja, Nigeria",
+    "Federal University Lafia, Nigeria","Federal University Otuoke, Nigeria",
+    "Federal University Wukari, Nigeria","Federal University Birnin Kebbi, Nigeria",
+    "University of Abuja, Nigeria","Nasarawa State University, Keffi, Nigeria",
+    "Ibrahim Badamasi Babangida University, Lapai, Nigeria","Akwa Ibom State University, Nigeria",
+    "Cross River University of Technology, Nigeria","Ebonyi State University, Abakaliki, Nigeria",
+    "Covenant University, Ota, Nigeria","Babcock University, Ilishan-Remo, Nigeria",
+    "Afe Babalola University, Ado-Ekiti, Nigeria","American University of Nigeria, Yola",
+    "Pan-Atlantic University, Lagos, Nigeria","Bowen University, Iwo, Nigeria",
+    "Redeemer's University, Ede, Nigeria","Landmark University, Omu-Aran, Nigeria",
+    "Bells University of Technology, Ota, Nigeria","Baze University, Abuja, Nigeria",
+    "Nile University of Nigeria, Abuja","Veritas University, Abuja, Nigeria",
+    "Lead City University, Ibadan, Nigeria","Ajayi Crowther University, Oyo, Nigeria",
+    "Caleb University, Lagos, Nigeria","Elizade University, Ilara-Mokin, Nigeria",
+    "Nigerian Defence Academy, Kaduna","National Open University of Nigeria",
+    /* ---- Nigeria: polytechnics and colleges ---- */
+    "Yaba College of Technology, Lagos, Nigeria","Lagos State Polytechnic (LASUSTECH), Nigeria",
+    "The Polytechnic, Ibadan, Nigeria","Federal Polytechnic, Ado-Ekiti, Nigeria",
+    "Federal Polytechnic, Ilaro, Nigeria","Federal Polytechnic, Nekede, Owerri, Nigeria",
+    "Federal Polytechnic, Bida, Nigeria","Federal Polytechnic, Auchi, Nigeria",
+    "Federal Polytechnic, Oko, Nigeria","Federal Polytechnic, Offa, Nigeria",
+    "Federal Polytechnic, Ede, Nigeria","Federal Polytechnic, Bauchi, Nigeria",
+    "Federal Polytechnic, Mubi, Nigeria","Federal Polytechnic, Nasarawa, Nigeria",
+    "Kaduna Polytechnic, Nigeria","Kwara State Polytechnic, Ilorin, Nigeria",
+    "Institute of Management and Technology, Enugu, Nigeria","Moshood Abiola Polytechnic, Abeokuta, Nigeria",
+    "Osun State Polytechnic, Iree, Nigeria","Rufus Giwa Polytechnic, Owo, Nigeria",
+    "Delta State Polytechnic, Ogwashi-Uku, Nigeria","Rivers State Polytechnic, Bori, Nigeria",
+    "Federal College of Education, Zaria, Nigeria","Adeyemi College of Education, Ondo, Nigeria",
+    /* ---- Ghana ---- */
+    "University of Ghana, Legon","Kwame Nkrumah University of Science and Technology, Ghana",
+    "University of Cape Coast, Ghana","University for Development Studies, Tamale, Ghana",
+    "Ghana Institute of Management and Public Administration","Ashesi University, Ghana",
+    "University of Education, Winneba, Ghana","Accra Technical University, Ghana",
+    "Kumasi Technical University, Ghana","Central University, Ghana",
+    /* ---- West Africa (other) ---- */
+    "Universite d'Abomey-Calavi, Benin","Universite de Parakou, Benin",
+    "Universite de Lome, Togo","Universite de Kara, Togo",
+    "Universidade Amilcar Cabral, Guinea-Bissau","Universite Cheikh Anta Diop, Dakar, Senegal",
+    "Universite Gaston Berger, Saint-Louis, Senegal","Universite Felix Houphouet-Boigny, Cote d'Ivoire",
+    "Universite Joseph Ki-Zerbo, Ouagadougou, Burkina Faso","Universite de Bamako (USTTB), Mali",
+    "Universite Abdou Moumouni, Niamey, Niger","University of Sierra Leone (Fourah Bay College)",
+    "Njala University, Sierra Leone","University of Liberia, Monrovia",
+    "University of The Gambia","Universite Gamal Abdel Nasser de Conakry, Guinea",
+    "Universidade de Cabo Verde","Universite de Nouakchott, Mauritania",
+    /* ---- Central Africa ---- */
+    "Universite de N'Djamena, Chad","University of Yaounde I, Cameroon",
+    "University of Yaounde II, Cameroon","University of Buea, Cameroon",
+    "University of Douala, Cameroon","Universite de Kinshasa, DR Congo",
+    "Universite de Lubumbashi, DR Congo","Universite Marien Ngouabi, Republic of the Congo",
+    "Universite de Bangui, Central African Republic","Universite Omar Bongo, Gabon",
+    "Universidad Nacional de Guinea Ecuatorial","Universite du Burundi",
+    /* ---- East Africa ---- */
+    "University of Nairobi, Kenya","Kenyatta University, Kenya",
+    "Strathmore University, Kenya","Moi University, Kenya",
+    "Jomo Kenyatta University of Agriculture and Technology, Kenya","Egerton University, Kenya",
+    "Makerere University, Uganda","Mbarara University of Science and Technology, Uganda",
+    "Kyambogo University, Uganda","University of Dar es Salaam, Tanzania",
+    "Sokoine University of Agriculture, Tanzania","Nelson Mandela African Institution of Science and Technology, Tanzania",
+    "University of Rwanda","Addis Ababa University, Ethiopia",
+    "Jimma University, Ethiopia","Hawassa University, Ethiopia",
+    "Bahir Dar University, Ethiopia","University of Khartoum, Sudan",
+    "University of Juba, South Sudan","Somali National University, Somalia",
+    "Universite de Djibouti","University of Seychelles",
+    "Universite d'Antananarivo, Madagascar","Universite des Comores",
+    /* ---- Southern Africa ---- */
+    "University of Cape Town, South Africa","University of the Witwatersrand, South Africa",
+    "Stellenbosch University, South Africa","University of Pretoria, South Africa",
+    "University of KwaZulu-Natal, South Africa","University of Johannesburg, South Africa",
+    "Rhodes University, South Africa","University of the Western Cape, South Africa",
+    "North-West University, South Africa","University of South Africa (UNISA)",
+    "University of Botswana","University of Namibia",
+    "Namibia University of Science and Technology","University of Zimbabwe",
+    "National University of Science and Technology, Zimbabwe","University of Zambia",
+    "Copperbelt University, Zambia","University of Malawi",
+    "Lilongwe University of Agriculture and Natural Resources, Malawi","Universidade Eduardo Mondlane, Mozambique",
+    "Universidade Agostinho Neto, Angola","National University of Lesotho",
+    "University of Eswatini","University of Mauritius",
+    /* ---- North Africa ---- */
+    "Cairo University, Egypt","Ain Shams University, Egypt",
+    "Alexandria University, Egypt","The American University in Cairo, Egypt",
+    "Al-Azhar University, Egypt","Mohammed V University, Rabat, Morocco",
+    "Cadi Ayyad University, Marrakesh, Morocco","Hassan II University of Casablanca, Morocco",
+    "Universite de Tunis El Manar, Tunisia","Universite de Sfax, Tunisia",
+    "University of Algiers, Algeria","Universite des Sciences et de la Technologie Houari Boumediene, Algeria",
+    "University of Tripoli, Libya","University of Benghazi, Libya",
+    /* ---- Pan-African and regional ---- */
+    "African Leadership University","Pan African University",
+    "United States International University Africa, Kenya","Africa Nazarene University, Kenya",
+    /* ---- Selected world institutions ---- */
+    "University of Oxford, United Kingdom","University of Cambridge, United Kingdom",
+    "London School of Economics, United Kingdom","University College London, United Kingdom",
+    "Imperial College London, United Kingdom","University of Manchester, United Kingdom",
+    "University of Edinburgh, United Kingdom","London School of Hygiene and Tropical Medicine, United Kingdom",
+    "Harvard University, United States","Massachusetts Institute of Technology, United States",
+    "Stanford University, United States","Johns Hopkins University, United States",
+    "Columbia University, United States","University of California, Berkeley, United States",
+    "Yale University, United States","Cornell University, United States",
+    "University of Toronto, Canada","McGill University, Canada",
+    "University of British Columbia, Canada","Sorbonne Universite, France",
+    "Sciences Po, France","Universite Paris-Saclay, France",
+    "ETH Zurich, Switzerland","University of Geneva, Switzerland",
+    "Wageningen University, Netherlands","University of Amsterdam, Netherlands",
+    "Erasmus University Rotterdam, Netherlands","KU Leuven, Belgium",
+    "Heidelberg University, Germany","Humboldt University of Berlin, Germany",
+    "University of Melbourne, Australia","Australian National University",
+    "University of Sydney, Australia","National University of Singapore",
+    "University of Hong Kong","Tsinghua University, China",
+    "Peking University, China","University of Tokyo, Japan",
+    "Indian Institute of Technology Delhi, India","University of Delhi, India",
+    "American University of Beirut, Lebanon","King Saud University, Saudi Arabia",
+    "United Arab Emirates University","Qatar University",
+    "University of Sao Paulo, Brazil","Universidad Nacional Autonoma de Mexico"
+  ];
+  (function buildInstitutions() {
+    var dl = document.getElementById("institutionList");
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < INSTITUTIONS.length; i++) {
+      var opt = document.createElement("option");
+      opt.value = INSTITUTIONS[i];
+      frag.appendChild(opt);
+    }
+    dl.appendChild(frag);
+  })();
 
   function cvChanged(input) {
     var f = input.files[0];
@@ -884,50 +1270,62 @@
     });
   }
 
+  function checkedValues(cls) {
+    var out = [];
+    var boxes = document.querySelectorAll("input." + cls + ":checked");
+    for (var i = 0; i < boxes.length; i++) out.push(boxes[i].value);
+    return out;
+  }
+
   function collectAnswers() {
-    var interests = [];
-    var boxes = document.querySelectorAll("input.interest:checked");
-    for (var i = 0; i < boxes.length; i++) interests.push(boxes[i].value);
+    var country = document.getElementById("country").value;
+    var state = (country === "Nigeria")
+      ? document.getElementById("stateNg").value
+      : document.getElementById("stateRegion").value.trim();
+
+    /* If Other was ticked, the typed description replaces the word Other */
+    var interests = checkedValues("interest");
+    var idx = interests.indexOf("Other");
+    if (idx !== -1) {
+      var typed = document.getElementById("interestOtherText").value.trim();
+      interests[idx] = typed ? "Other: " + typed : "Other";
+    }
 
     return {
-      formVersion: "talent-roster-v1",
+      formVersion: "talent-roster-v3",
       fullName: document.getElementById("fullName").value.trim(),
       email: document.getElementById("email").value.trim(),
       phone: document.getElementById("phone").value.trim(),
       gender: radioValue("gender"),
       qualification: radioValue("qualification"),
-      country: radioValue("country"),
+      institution: document.getElementById("institution").value.trim(),
+      gradYear: document.getElementById("gradYear").value,
+      country: country,
       countryOther: document.getElementById("countryOther").value.trim(),
-      stateNg: document.getElementById("stateNg").value,
-      address: document.getElementById("address").value.trim(),
-      interests: interests.join(", "),
-      disability: radioValue("disability"),
-      accommodation: document.getElementById("accommodation").value.trim()
+      stateRegion: state,
+      city: document.getElementById("city").value.trim(),
+      workRegions: checkedValues("workregion").join(", "),
+      travel: radioValue("travel"),
+      interests: interests.join(", ")
     };
   }
 
   function submitForm() {
-    if (!validateStep(3)) return;
+    if (!validateStep(4)) return;
     var btn = document.getElementById("submitBtn");
     var errBanner = document.getElementById("submitErr");
     errBanner.classList.remove("visible");
     btn.disabled = true;
     btn.textContent = "Sending...";
 
-    if (APPS_SCRIPT_URL.indexOf("PASTE_YOUR") === 0) {
-      setTimeout(function () {
-        btn.disabled = false;
-        btn.textContent = "Join the roster";
-        goTo(4);
-      }, 900);
-      return;
-    }
-
     readCvAsBase64().then(function (cvBase64) {
       var payload = collectAnswers();
       payload.cvFileName = cvFile.name;
       payload.cvMimeType = cvFile.type || "application/octet-stream";
       payload.cvBase64 = cvBase64;
+      /* no-cors plus text/plain avoids the CORS preflight that breaks
+         Google Apps Script. The response cannot be read, so a completed
+         request is treated as success. */
       return fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -937,7 +1335,7 @@
     }).then(function () {
       btn.disabled = false;
       btn.textContent = "Join the roster";
-      goTo(4);
+      goTo(5);
     }).catch(function () {
       btn.disabled = false;
       btn.textContent = "Join the roster";

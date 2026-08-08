@@ -193,15 +193,6 @@ export default function Header() {
     "Employability Placements": "/giz/employability",
   };
 
-  // Career pages are static files in /public, so these are plain
-  // <a href> links (staticLinks below), not <Link to>.
-  // When a role opens or closes, update /public/careers/index.html.
-  // Only add a second entry here for a role worth surfacing in the menu.
-  const careerLinks: Record<string, string> = {
-    "Open roles": "/careers/",
-    "Field Enumerator, B-SLiC Endline": "/careers/enumerator-application/",
-  };
-
   const courseLinks: Record<string, string> = {
     "Data Analytics": routes.coursesDataAnalytics,
     "AI & Machine Learning": routes.coursesDataScience,
@@ -255,8 +246,10 @@ export default function Header() {
           <Link className="nav__link" to={routes.blog}>
             Blog
           </Link>
-          {/* Career pages live in /public, so they are plain <a>, not <Link>. */}
-          <DropDown title="Career" links={careerLinks} staticLinks />
+          {/* Career is a static page in /public, so a plain <a>, not <Link>. */}
+          <a className="nav__link" href="/careers/">
+            Career
+          </a>
           {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
           <DropDown title="GIZ-ZME Programme" links={gizLinks} staticLinks />
           {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
@@ -283,8 +276,10 @@ export default function Header() {
               >
                 Blog
               </Link>
-              {/* Career pages live in /public, so they are plain <a>, not <Link>. */}
-              <MobileDropDown title="Career" links={careerLinks} staticLinks />
+              {/* Career is a static page in /public, so a plain <a>, not <Link>. */}
+              <a className="menu__link" href="/careers/" onClick={handleClick}>
+                Career
+              </a>
               <Link
                 className="menu__link"
                 to={routes.research}
