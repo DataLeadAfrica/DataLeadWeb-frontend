@@ -99,6 +99,52 @@
 
   .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: 24px; }
 
+  /* ============ Calls to action ============ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: inherit; font-size: 16.5px; font-weight: 700;
+    padding: 17px 34px; border-radius: 999px; border: none;
+    text-decoration: none; cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: transform 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  /* Arrow affordance so the calls to action read as actions */
+  .btn::after {
+    content: "\2192";
+    font-weight: 700;
+    transition: transform 0.15s;
+  }
+  .btn:hover::after { transform: translateX(4px); }
+
+  .btn--orange {
+    background: linear-gradient(180deg, var(--orange) 0%, #E56008 100%);
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(245,110,15,0.45), 0 3px 8px rgba(245,110,15,0.35);
+  }
+  .btn--orange:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(245,110,15,0.5), 0 4px 10px rgba(245,110,15,0.4);
+  }
+  /* On navy: solid white so it can never disappear into the background */
+  .btn--ghost-light {
+    background: #fff; color: var(--navy);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.28);
+  }
+  .btn--ghost-light:hover { background: var(--orange-light); transform: translateY(-2px); }
+  /* On white: solid navy so it reads as a real button, not a caption */
+  .btn--ghost-dark {
+    background: var(--navy); color: #fff;
+    box-shadow: 0 10px 24px rgba(16,36,94,0.35);
+  }
+  .btn--ghost-dark:hover { background: var(--navy-ink); transform: translateY(-2px); }
+  .btn:focus-visible { outline: 3px solid rgba(245,110,15,0.55); outline-offset: 3px; }
+
+  /* On phones the main calls to action span the screen */
+  @media (max-width: 720px) {
+    .hero__cta .btn, .closing__cta .btn { width: 100%; }
+  }
+
   /* ============ Main site header (static replica) ============ */
   .site-header {
     position: fixed; top: 0; left: 0; right: 0;
@@ -367,7 +413,7 @@
   .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 11px; border-radius: 6px; }
   .tag--type { background: var(--navy); color: #fff; }
   .tag--open { background: #DFF3E7; color: #14703F; }
-  .opp .btn { align-self: flex-start; }
+  .opp .btn { align-self: stretch; width: 100%; }
 
   /* ================= Closing band ================= */
   .closing {
