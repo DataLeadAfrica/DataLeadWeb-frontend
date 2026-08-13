@@ -189,8 +189,6 @@ export default function Header() {
   // so these are plain <a href> links (staticLinks below), not <Link to>.
   const gizLinks: Record<string, string> = {
     "Remote Work Training": "/giz",
-    "Register / Update progress": "/giz/remote-work/register",
-    "Programme dashboard": "/giz/remote-work/dashboard",
     "Host an Intern": "/giz/host-an-intern",
     "Employability Placements": "/giz/employability",
   };
@@ -248,6 +246,10 @@ export default function Header() {
           <Link className="nav__link" to={routes.blog}>
             Blog
           </Link>
+          {/* Career is a static page in /public, so a plain <a>, not <Link>. */}
+          <a className="nav__link" href="/careers/">
+            Career
+          </a>
           {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
           <DropDown title="GIZ-ZME Programme" links={gizLinks} staticLinks />
           {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
@@ -274,6 +276,10 @@ export default function Header() {
               >
                 Blog
               </Link>
+              {/* Career is a static page in /public, so a plain <a>, not <Link>. */}
+              <a className="menu__link" href="/careers/" onClick={handleClick}>
+                Career
+              </a>
               <Link
                 className="menu__link"
                 to={routes.research}
