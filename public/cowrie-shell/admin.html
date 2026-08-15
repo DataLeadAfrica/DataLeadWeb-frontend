@@ -233,6 +233,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .qrow .t b{font-family:var(--display-md);font-weight:500;font-size:14px;display:block}
 .qrow .t span{font-size:12px;color:var(--muted);display:block}
 .rowbtn{padding:5px 11px;font-size:12px}
+.qrow .amt{font-family:var(--display-md);font-variant-numeric:tabular-nums;flex:none;font-size:13px}
 
 .rqwrap{border-bottom:1px solid var(--line)}
 .rqwrap:last-child{border:none}
@@ -842,6 +843,38 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
   </section>
 
   <!-- ============ POLICIES ============ -->
+  <section id="v-projects" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Projects</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Every requisition is charged to one of these. Add a project here and it appears
+      in the staff dropdown straight away.</p>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Add a project</h3></div></div>
+      <div class="grid3">
+        <div class="fld"><label>Code</label><input id="apj-code" placeholder="B-SLIC"></div>
+        <div class="fld"><label>Name</label><input id="apj-name" placeholder="What it is called in full"></div>
+        <div class="fld"><label>Funder</label><input id="apj-funder" placeholder="Who is paying"></div>
+      </div>
+      <div class="grid3">
+        <div class="fld"><label>Budget (&#8358;, optional)</label><input id="apj-budget" type="number"></div>
+        <div class="fld"><label>Starts</label><input id="apj-start" type="date"></div>
+        <div class="fld"><label>Ends</label><input id="apj-end" type="date"></div>
+      </div>
+      <div id="apj-msg"></div>
+      <button class="btn-primary" id="apj-btn" onclick="addProject()">Add it</button>
+      <p class="hint" style="margin-top:10px">The code is what people pick from the list, so keep it short
+        and recognisable. It is stored in capitals whatever you type.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>The projects</h3>
+        <div class="ps">A project is never deleted. Close it instead, and the history of what it
+          spent stays where it is.</div></div>
+        <button class="rowbtn" onclick="loadProjects()">Refresh</button></div>
+      <div id="apj-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
   <section id="v-policies" class="hidden">
     <button class="back" onclick="go('hub')">&larr; Admin</button>
     <h1 style="font-size:27px;margin-bottom:4px">Policies</h1>
@@ -1409,7 +1442,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf"];
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1424,6 +1457,7 @@ function go(v){
   if(v === "emails")   loadEmails();
   if(v === "reqs")     loadReqs();
   if(v === "perf")     initPerf();
+  if(v === "projects") loadProjects();
 }
 
 // ============================================================
@@ -1468,6 +1502,9 @@ async function loadHub(){
     { v:"perf", ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
       t:"Performance", s:"Set the week, the month, the quarter, the year. See how anyone is tracking.",
       flag:(f.targets_open||0) + " target" + ((f.targets_open||0)===1?"":"s") + " open", warn:false },
+    { v:"projects", ic:'<path d="M3 7h18M3 12h18M3 17h10"/>',
+      t:"Projects", s:"What money can be charged to. Add one and it appears for everyone.",
+      flag:"Manage", warn:false },
     { v:"policies", ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
       t:"Policies", s:"Publish a document and every staff member can download it.",
       flag:(f.policies||0) + " published", warn:false },
@@ -1484,6 +1521,87 @@ async function loadHub(){
     '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + d.ic + '</svg>' +
     '<b>' + d.t + '</b><span>' + d.s + '</span>' +
     '<span class="flag ' + (d.warn ? "warn" : "ok") + '">' + esc(d.flag) + '</span></button>').join("");
+}
+
+// ============================================================
+// PROJECTS
+// admin_add_project has always permitted the CEO and the COO, but the
+// only screen that called it lived in the Finance portal, which the CEO
+// cannot open without the finance role. So the database said yes and
+// nothing ever asked. This is the missing door.
+//
+// There is no delete, deliberately. A project with spend charged to it
+// cannot be removed without orphaning cashflow rows and requisitions.
+// Closing it stops new spend and keeps the record, which is what you
+// actually want.
+// ============================================================
+window.addProject = addProject; window.loadProjects = loadProjects;
+window.setProjState = setProjState;
+
+const KM = v => {
+  const n = Number(v || 0), a = Math.abs(n);
+  if(a >= 1e6) return "\u20a6" + (n/1e6).toFixed(1) + "m";
+  if(a >= 1e3) return "\u20a6" + Math.round(n/1e3) + "k";
+  return "\u20a6" + Math.round(n);
+};
+
+async function addProject(){
+  const code = val("apj-code"), name = val("apj-name");
+  if(!code || !name){ msg("apj-msg","err","Missing details","A project needs a code and a name."); return; }
+  btn("apj-btn", true, "Adding");
+  const { error } = await db.rpc("admin_add_project", {
+    p_code: code, p_name: name, p_funder: val("apj-funder"),
+    p_budget: val("apj-budget") ? Number(val("apj-budget")) : null,
+    p_starts_on: val("apj-start"), p_ends_on: val("apj-end")
+  });
+  btn("apj-btn", false, "Add it");
+  if(error){ msg("apj-msg","err","Not added", error.message); return; }
+  msg("apj-msg","ok","Added", code.toUpperCase() + " can now be charged against. Staff will see it immediately.");
+  ["apj-code","apj-name","apj-funder","apj-budget","apj-start","apj-end"].forEach(id => set(id,""));
+  await loadProjects();
+}
+
+async function loadProjects(){
+  const { data, error } = await db.from("project_money").select("*");
+  if(oops("The projects", error)) return;
+  const wrap = $("apj-list");
+  if(!data || !data.length){
+    wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">None yet. Add the first one above.</p>';
+    return;
+  }
+  wrap.innerHTML = data.map(p => {
+    const net = Number(p.net||0), burn = p.budget_used_pct;
+    const states = p.is_overhead ? "" :
+      '<select onchange="setProjState(\'' + esc(p.code) + '\', this.value)" style="width:auto;padding:3px 7px;font-size:11px;margin-left:8px">' +
+      ["active","on_hold","closed"].map(x => '<option value="' + x + '"' + (p.state === x ? " selected" : "") + '>' +
+        (x === "active" ? "Active" : x === "on_hold" ? "On hold" : "Closed") + '</option>').join("") + '</select>';
+    return '<div class="qrow"><span class="t"><b>' + esc(p.code) + ' \u00b7 ' + esc(p.name) +
+      (p.is_overhead ? ' <span class="tag role">not chargeable</span>' : "") +
+      (p.state && p.state !== "active" ? ' <span class="tag role">' + esc(String(p.state).replace("_"," ")) + '</span>' : "") + '</b>' +
+      '<span>' + (p.funder ? esc(p.funder) + " \u00b7 " : "") +
+      (p.budget ? "budget " + KM(p.budget) + (burn !== null && burn !== undefined ? " \u00b7 " + burn + "% used" : "") + " \u00b7 " : "") +
+      "in " + KM(p.money_in) + " \u00b7 out " + KM(p.money_out) + '</span>' +
+      (Number(p.no_receipt) > 0 ? '<span style="color:var(--amber)">' + p.no_receipt +
+        ' expense' + (Number(p.no_receipt)===1?"":"s") + ' with no receipt</span>' : "") + '</span>' +
+      (p.is_overhead
+        ? '<span class="amt" style="color:var(--muted)">' + KM(p.money_out) + ' out</span>'
+        : '<span class="amt" style="color:' + (net < 0 ? "var(--red)" : "var(--green)") + '">' +
+          (net >= 0 ? "+" : "") + KM(net) + '</span>') +
+      (burn !== null && burn !== undefined && burn > 100 ? '<span class="tag suspended">over budget</span>' : "") +
+      states + '</div>';
+  }).join("") +
+  '<p class="hint" style="margin-top:10px">Payroll and PAYE sit under overhead. Only requisitions and typed entries carry a project.</p>';
+}
+
+async function setProjState(code, state){
+  if(state === "closed" && !confirm("Close " + code + "?\n\nNo new requisition can be charged to it. " +
+      "Everything already spent stays exactly where it is.")){
+    await loadProjects(); return;
+  }
+  const { error } = await db.rpc("admin_set_project_state", { p_code: code, p_state: state });
+  if(error){ toast("Could not. " + error.message); await loadProjects(); return; }
+  toast(code + " is now " + (state === "on_hold" ? "on hold" : state) + ".");
+  await loadProjects();
 }
 
 // ============================================================
@@ -1725,7 +1843,7 @@ async function pMonth(id, Y, M){
       hcell = Number(rec.hours) + "h";
       acell = rec.activity ? esc(rec.activity) : '<em style="color:var(--faint)">Left blank</em>';
       if(rec.kind && rec.kind !== "normal") acell += ' <span class="tag month">' + esc(String(rec.kind).replace(/_/g," ")) + '</span>';
-      if(rec.provisional) acell += ' <span class="tag wait">planned, not yet worked</span>';
+      if(rec.provisional) acell += ' <span class="tag acting">planned, not yet worked</span>';
       if(rec.late_reason) acell += '<em class="lr">Filed late: ' + esc(rec.late_reason) + '</em>';
       if(rec.ai_flag) flagCell = '<span class="fl" title="Flagged as thin">&#9873;</span>';
     } else {
