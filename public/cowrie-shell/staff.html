@@ -831,8 +831,9 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 
     <!-- receipts owed: the thing that gets forgotten -->
     <div class="card hidden" id="rq-owed-card">
-      <h3>Receipts you owe</h3>
-      <p class="cardsub">Money was paid to you against these. Finance needs the receipt to close them.</p>
+      <h3>Receipts to send in</h3>
+      <p class="cardsub">Every naira has to be evidenced. If the money was paid to you, Finance needs
+        the receipt to close it. If you spent your own money, the receipt is what gets you paid back.</p>
       <div id="rq-owed"></div>
     </div>
 
@@ -3087,22 +3088,35 @@ async function loadReqList(){
   const rows = (data||[]).filter(r => r.status !== "draft");
   const wrap = $("rq-list");
 
-  // receipts owed, up front, because this is what gets forgotten
-  const owed = (data||[]).filter(r => r.status === "disbursed" && r.receipts_owed > 0);
-  $("rq-owed-card").classList.toggle("hidden", !owed.length);
-  if(owed.length){
-    $("rq-owed").innerHTML = owed.map(r =>
-      '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
-      '<span>Paid ' + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null) + " \u00b7 " +
-      r.receipts_owed + ' receipt' + (r.receipts_owed===1?"":"s") + ' outstanding</span></span>' +
-      '<button class="rowbtn" onclick="uploadReceipt(' + r.id + ')">Add receipts</button></div>').join("");
-  }
-
-  if(!rows.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not raised any.</p>'; return; }
   const LB = { awaiting_approval:"With the CEO or COO", with_finance:"With Finance",
                declined:"Declined", disbursed:"Paid", closed:"Closed" };
   const CL = { awaiting_approval:"submitted", with_finance:"submitted", declined:"returned",
                disbursed:"approved", closed:"draft" };
+
+  // receipts owed, up front, because this is what gets forgotten
+  // A receipt can arrive at two different moments, and both are real:
+  // money went out of the office and this proves it was spent properly,
+  // or the person paid from their own pocket and this is the claim.
+  // So anything still live accepts a receipt. A draft does not, because
+  // the items can still change, and a declined one has nothing to prove.
+  const LIVE = ["awaiting_approval","with_finance","disbursed"];
+  const owed = (data||[]).filter(r => LIVE.includes(r.status) && r.receipts_owed > 0);
+  $("rq-owed-card").classList.toggle("hidden", !owed.length);
+  if(owed.length){
+    $("rq-owed").innerHTML = owed.map(r => {
+      const paid = r.status === "disbursed";
+      return '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+      '<span>' + (paid
+        ? "Paid " + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null)
+        : (LB[r.status] || r.status)) + " \u00b7 " +
+      r.receipts_owed + ' receipt' + (r.receipts_owed===1?"":"s") + ' outstanding</span>' +
+      (paid ? "" : '<span style="color:var(--muted)">Not paid out yet. If you spent your own money, ' +
+        'put the receipt up now and it becomes your claim.</span>') + '</span>' +
+      '<button class="rowbtn" onclick="uploadReceipt(' + r.id + ')">Add receipts</button></div>';
+    }).join("");
+  }
+
+  if(!rows.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not raised any.</p>'; return; }
   wrap.innerHTML = rows.map(r =>
     '<div class="rqwrap"><div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
     '<span>' + fmtDate(r.raised_on) + " \u00b7 " + r.item_count + ' item' + (r.item_count===1?"":"s") +
