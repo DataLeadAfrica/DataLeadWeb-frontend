@@ -189,6 +189,37 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .rqd-row.total{border-left-color:var(--clr-orange);margin-top:4px;padding-top:9px}
 .rqd-row.gone .d{opacity:.55}
 .rcp{padding:4px 0 0}
+
+/* the receipts panel: one row per outstanding item */
+.rcpq{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.rcpq:last-child{margin-bottom:0}
+.rcpq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.rcpq-h .t{display:flex;flex-direction:column;gap:2px}
+.rcpq-h .t b{font-family:var(--display-md);font-size:14px}
+.rcpq-h .t span{font-size:12px;color:var(--muted)}
+.rcpq-n{font-size:12px;color:var(--clay);margin:8px 0 0;line-height:1.5}
+.rcpq .tag.paidt{background:var(--clr-blue);color:var(--ink)}
+.rcpq .tag.claimt{background:var(--sand);color:var(--clay)}
+table.rcpt{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+table.rcpt th{font-family:var(--display-md);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--faint);text-align:left;padding:0 8px 6px;font-weight:500}
+table.rcpt td{padding:9px 8px;border-top:1px solid var(--line);vertical-align:middle}
+table.rcpt td.c,table.rcpt th.c{width:30px;text-align:center;padding-left:0}
+table.rcpt td.m,table.rcpt th.m{text-align:right;white-space:nowrap;
+  font-family:var(--display-md);font-variant-numeric:tabular-nums}
+table.rcpt td.a,table.rcpt th.a{text-align:right;width:120px;padding-right:0}
+table.rcpt td input[type=checkbox]{width:auto;margin:0}
+table.rcpt tr.in td{color:var(--muted)}
+table.rcpt .ok{font-size:11.5px;color:var(--green)}
+table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);margin-top:2px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rcp-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:10px;padding:9px 12px;background:var(--sand);border-radius:10px;font-size:12.5px}
+@media(max-width:640px){
+  table.rcpt td.a,table.rcpt th.a{width:auto}
+  table.rcpt th.m,table.rcpt td.m{font-size:12px}
+  .rcpq-h{flex-direction:column;gap:6px}
+}
 .rcp-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;
   border-bottom:1px solid var(--line);cursor:pointer}
 .rcp-row:last-of-type{border:none}
@@ -2969,8 +3000,9 @@ async function loadLeaveInfo(){
 // ============================================================
 let RQ_ID = null, RQ_ITEMS = [], RQ_THRESHOLD = 0, RQ_MONTH_SO_FAR = 0, PROJECTS = [];
 window.loadReq = loadReq; window.rqProject = rqProject; window.addReqItem = addReqItem;
-window.dropReqItem = dropReqItem; window.submitReq = submitReq; window.uploadReceipt = uploadReceipt;
+window.dropReqItem = dropReqItem; window.submitReq = submitReq;
 window.myLines = myLines; window.pickReceiptFile = pickReceiptFile;
+window.oneReceipt = oneReceipt; window.syncReceiptBar = syncReceiptBar; window.renderReceiptRows = renderReceiptRows;
 
 async function loadReq(){
   // open (or reuse) a draft
@@ -3105,15 +3137,21 @@ async function loadReqList(){
   if(owed.length){
     $("rq-owed").innerHTML = owed.map(r => {
       const paid = r.status === "disbursed";
-      return '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
-      '<span>' + (paid
-        ? "Paid " + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null)
-        : (LB[r.status] || r.status)) + " \u00b7 " +
-      r.receipts_owed + ' receipt' + (r.receipts_owed===1?"":"s") + ' outstanding</span>' +
-      (paid ? "" : '<span style="color:var(--muted)">Not paid out yet. If you spent your own money, ' +
-        'put the receipt up now and it becomes your claim.</span>') + '</span>' +
-      '<button class="rowbtn" onclick="uploadReceipt(' + r.id + ')">Add receipts</button></div>';
+      return '<div class="rcpq" id="rcpq-' + r.id + '">' +
+        '<div class="rcpq-h"><span class="t"><b>' + esc(r.purpose || "Requisition") + '</b>' +
+          '<span>' + N(r.total) + " \u00b7 " + (paid
+            ? "paid " + fmtDate(r.disbursed_at ? r.disbursed_at.slice(0,10) : null)
+            : esc(LB[r.status] || r.status)) +
+          " \u00b7 " + r.receipts_owed + ' outstanding</span></span>' +
+          '<span class="tag ' + (paid ? "paidt" : "claimt") + '">' +
+            (paid ? "money advanced" : "your claim") + '</span></div>' +
+        (paid ? "" : '<p class="rcpq-n">Not paid out yet. If you spent your own money, ' +
+          'the receipt you put up here is what gets you paid back.</p>') +
+        '<div class="rcpq-b" id="rcpb-' + r.id + '"><p class="rqd-note">Loading items&hellip;</p></div>' +
+      '</div>';
     }).join("");
+    // each requisition loads its own outstanding items
+    owed.forEach(r => renderReceiptRows(r.id));
   }
 
   if(!rows.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">You have not raised any.</p>'; return; }
@@ -3185,10 +3223,11 @@ async function myLines(reqId){
 
 // ============================================================
 // RECEIPTS
-// The old version picked whichever item happened to be first without
-// a receipt and gave the person no say. But one Bolt receipt often
-// covers the ride AND the fuel, and there was no way to say so, so the
-// same photo went up twice under two names.
+// Every item that still needs a receipt is a row you can see, with its
+// own button. One receipt for one thing is a single click, which is the
+// common case. If a single receipt covers several lines, a Bolt ride and
+// its fuel for instance, tick those lines and one file covers all of
+// them, stored once instead of the same photo under several names.
 //
 // Photos are shrunk here before they leave the phone. A modern camera
 // produces three or four megabytes; a receipt is legible at a fraction
@@ -3216,64 +3255,97 @@ async function shrinkImage(file){
   }
 }
 
-async function uploadReceipt(reqId){
+async function renderReceiptRows(reqId){
+  const box = $("rcpb-" + reqId);
+  if(!box) return;
   const { data, error } = await db.rpc("my_requisition_lines", { p_req_id: reqId });
-  if(oops("That requisition", error)) return;
+  if(error){ box.innerHTML = '<p class="rqd-note">Could not load the items: ' + esc(error.message) + '</p>'; return; }
   const missing = (data||[]).filter(i => !i.has_receipt);
-  if(!missing.length){ toast("Every item already has a receipt."); return; }
+  const done    = (data||[]).filter(i =>  i.has_receipt);
 
-  const box = $("mrd-" + reqId);
-  if(box){ box.classList.remove("hidden"); }
-  const target = box || $("rq-owed");
+  if(!missing.length){
+    box.innerHTML = '<p class="rqd-note">Every item on this one has a receipt.</p>';
+    return;
+  }
   const spend = i => (i.approved_amount !== null && i.approved_amount !== undefined)
-    ? Number(i.approved_amount) : Number(i.amount||0);
+    ? Number(i.approved_amount) : Number(i.amount || 0);
 
-  target.innerHTML =
-    '<div class="rcp"><div class="mn-head">Which items does this receipt cover?</div>' +
-    missing.map(i => '<label class="rcp-row"><input type="checkbox" class="rcp-pick" value="' + i.item_id + '">' +
-      '<span>' + esc(i.description || "item") + '</span><b>' + N(spend(i)) + '</b></label>').join("") +
-    '<p class="rqd-note">Tick more than one if a single receipt covers them, a Bolt ride and its fuel for instance.</p>' +
-    '<div class="mn-f"><span id="rcp-msg-' + reqId + '"></span>' +
-    '<button class="btn-primary rowbtn" onclick="pickReceiptFile(' + reqId + ')">Choose the file</button></div></div>';
+  box.innerHTML =
+    '<table class="rcpt"><thead><tr>' +
+      '<th class="c"><span class="vh">Pick</span></th><th>Item</th><th class="m">Amount</th><th class="a"></th>' +
+    '</tr></thead><tbody>' +
+    missing.map(i => {
+      const a = Number(i.amount || 0), ok = spend(i), cut = ok !== a;
+      return '<tr><td class="c"><input type="checkbox" class="rcp-pick-' + reqId + '" value="' + i.item_id +
+          '" onchange="syncReceiptBar(' + reqId + ')" aria-label="Include ' + esc(i.description || "item") + '"></td>' +
+        '<td>' + esc(i.description || "item") +
+          (cut ? '<em class="dn">approved at ' + N(ok) + ', not ' + N(a) + '</em>' : "") + '</td>' +
+        '<td class="m">' + N(ok) + '</td>' +
+        '<td class="a"><button class="rowbtn" onclick="oneReceipt(' + reqId + ',' + i.item_id + ')">Add receipt</button></td></tr>';
+    }).join("") +
+    done.map(i => '<tr class="in"><td class="c">\u2713</td><td>' + esc(i.description || "item") +
+        '</td><td class="m">' + N(spend(i)) + '</td>' +
+        '<td class="a"><span class="ok">receipt in</span></td></tr>').join("") +
+    '</tbody></table>' +
+    '<div class="rcp-bar hidden" id="rcpbar-' + reqId + '">' +
+      '<span id="rcpbar-t-' + reqId + '"></span>' +
+      '<button class="btn-primary rowbtn" onclick="pickReceiptFile(' + reqId + ')">One receipt for these</button>' +
+    '</div>' +
+    (missing.length > 1
+      ? '<p class="rqd-note">One receipt per item is the usual thing. If a single receipt covers ' +
+        'more than one line, tick them and send it once.</p>'
+      : "");
+}
+
+function syncReceiptBar(reqId){
+  const picked = [...document.querySelectorAll(".rcp-pick-" + reqId + ":checked")];
+  const bar = $("rcpbar-" + reqId), lab = $("rcpbar-t-" + reqId);
+  if(!bar) return;
+  bar.classList.toggle("hidden", picked.length < 2);
+  if(lab) lab.textContent = picked.length + " items ticked";
+}
+
+// the single item case: no ticking, just a file
+function oneReceipt(reqId, itemId){
+  sendReceipt(reqId, [itemId]);
 }
 
 function pickReceiptFile(reqId){
-  const picked = [...document.querySelectorAll(".rcp-pick:checked")].map(c => Number(c.value));
-  const m = $("rcp-msg-" + reqId);
-  if(!picked.length){
-    if(m){ m.textContent = "Tick at least one item first."; m.style.color = "var(--red)"; }
-    return;
-  }
+  const picked = [...document.querySelectorAll(".rcp-pick-" + reqId + ":checked")].map(c => Number(c.value));
+  if(picked.length < 2){ toast("Tick at least two items, or use the button on a single row."); return; }
+  sendReceipt(reqId, picked);
+}
+
+function sendReceipt(reqId, itemIds){
   const inp = document.createElement("input");
   inp.type = "file"; inp.accept = "application/pdf,image/*";
   inp.onchange = async () => {
     const raw = inp.files[0]; if(!raw) return;
-    if(m){ m.textContent = "Preparing\u2026"; m.style.color = "var(--muted)"; }
+    const box = $("rcpb-" + reqId);
+    if(box) box.insertAdjacentHTML("afterbegin", '<p class="rqd-note" id="rcpw-' + reqId + '">Preparing the file&hellip;</p>');
 
     const f = await shrinkImage(raw);
+    const clear = () => { const w = $("rcpw-" + reqId); if(w) w.remove(); };
+
     if(f.size > 2 * 1024 * 1024){
-      if(m){ m.textContent = "Still too big at " + (f.size/1048576).toFixed(1) +
-        " MB. Photograph just the receipt, or save the PDF smaller."; m.style.color = "var(--red)"; }
+      clear();
+      toast("Still too big at " + (f.size/1048576).toFixed(1) +
+        " MB. Photograph just the receipt, or save the PDF smaller.");
       return;
     }
-
     const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
     const up = await db.storage.from("receipts").upload(PROFILE.id + "/" + name, f);
-    if(up.error){
-      if(m){ m.textContent = "Upload failed. " + up.error.message; m.style.color = "var(--red)"; }
-      return;
-    }
+    if(up.error){ clear(); toast("Upload failed. " + up.error.message); return; }
+
     const { data: n, error: e2 } = await db.rpc("attach_receipt_many",
-      { p_item_ids: picked, p_path: up.data.path });
-    if(e2){
-      if(m){ m.textContent = "Could not attach. " + e2.message; m.style.color = "var(--red)"; }
-      return;
-    }
+      { p_item_ids: itemIds, p_path: up.data.path });
+    clear();
+    if(e2){ toast("Could not attach. " + e2.message); return; }
+
     const saved = raw.size - f.size;
     toast("Receipt added to " + n + " item" + (n===1?"":"s") + "." +
       (saved > 51200 ? " Shrunk from " + (raw.size/1048576).toFixed(1) + " MB to " +
         (f.size/1048576).toFixed(1) + " MB." : ""), true);
-    const box = $("mrd-" + reqId); if(box) box.dataset.loaded = "";
     await loadReqList();
   };
   inp.click();
