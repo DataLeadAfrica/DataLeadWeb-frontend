@@ -170,6 +170,36 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .shell.plan .sbody{fill:#fff;stroke-dasharray:3 3}
 
 .mshift{display:flex;gap:6px;align-items:center;margin-left:14px}
+
+/* a person's own requisition lines, and the receipt picker */
+.rqwrap{border-bottom:1px solid var(--line)}
+.rqwrap:last-child{border:none}
+.rqwrap .qrow{border-bottom:none}
+.rqd{padding:2px 0 14px}
+.rqd-note{color:var(--faint);font-size:12px;padding:7px 0;line-height:1.5}
+.rqd-row{display:flex;align-items:baseline;gap:12px;font-size:12.5px;padding:7px 0 7px 14px;
+  border-left:2px solid var(--clr-orange-light)}
+.rqd-row .d{flex:1;overflow-wrap:anywhere}
+.rqd-row .d .dn{display:block;font-style:normal;font-size:11.5px;color:var(--clay);margin-top:2px}
+.rqd-row .r{font-size:11.5px;white-space:nowrap}
+.rqd-row .a{font-family:var(--display-md);font-weight:500;white-space:nowrap;text-align:right;min-width:110px}
+.rqd-row .a s{color:var(--faint);font-weight:400}
+.rqd-row .a .cut{color:var(--clay)}
+.rqd-row .a .ref{color:var(--red);font-size:11px}
+.rqd-row.total{border-left-color:var(--clr-orange);margin-top:4px;padding-top:9px}
+.rqd-row.gone .d{opacity:.55}
+.rcp{padding:4px 0 0}
+.rcp-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;
+  border-bottom:1px solid var(--line);cursor:pointer}
+.rcp-row:last-of-type{border:none}
+.rcp-row input{width:auto;margin:0}
+.rcp-row span{flex:1}
+.rcp-row b{font-family:var(--display-md);font-weight:500}
+@media(max-width:640px){
+  .rqd-row{flex-wrap:wrap;gap:3px 10px}
+  .rqd-row .d{flex-basis:100%}
+  .rqd-row .a{margin-left:auto}
+}
 .mshift button{padding:4px 11px;font-size:12.5px;border-radius:9px}
 .mshift button:disabled{opacity:.35;cursor:not-allowed}
 .mshift button:disabled:hover{border-color:var(--line)}
@@ -2939,6 +2969,7 @@ async function loadLeaveInfo(){
 let RQ_ID = null, RQ_ITEMS = [], RQ_THRESHOLD = 0, RQ_MONTH_SO_FAR = 0, PROJECTS = [];
 window.loadReq = loadReq; window.rqProject = rqProject; window.addReqItem = addReqItem;
 window.dropReqItem = dropReqItem; window.submitReq = submitReq; window.uploadReceipt = uploadReceipt;
+window.myLines = myLines; window.pickReceiptFile = pickReceiptFile;
 
 async function loadReq(){
   // open (or reuse) a draft
@@ -3073,34 +3104,164 @@ async function loadReqList(){
   const CL = { awaiting_approval:"submitted", with_finance:"submitted", declined:"returned",
                disbursed:"approved", closed:"draft" };
   wrap.innerHTML = rows.map(r =>
-    '<div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
+    '<div class="rqwrap"><div class="qrow"><span class="t"><b>' + esc(r.purpose || "Requisition") + ' \u00b7 ' + N(r.total) + '</b>' +
     '<span>' + fmtDate(r.raised_on) + " \u00b7 " + r.item_count + ' item' + (r.item_count===1?"":"s") +
     (r.project_code ? " \u00b7 " + esc(r.project_code) : "") + '</span>' +
     (r.decision_note ? '<span style="font-style:italic">\u201c' + esc(r.decision_note) + '\u201d</span>' : "") +
-    '</span><span class="st ' + CL[r.status] + '">' + (LB[r.status] || r.status) + '</span></div>').join("");
+    '</span><span class="st ' + CL[r.status] + '">' + (LB[r.status] || r.status) + '</span>' +
+    '<button class="rowbtn" style="margin-left:8px" id="mrb-' + r.id + '" onclick="myLines(' + r.id + ')">Items</button>' +
+    '</div><div class="rqd hidden" id="mrd-' + r.id + '"></div></div>').join("");
+}
+
+// ============================================================
+// WHAT WAS ACTUALLY APPROVED
+// Until now a person saw one total and, if they were lucky, a note.
+// If the CEO approved 7,000 of an 8,000 item, they went on believing
+// they had 8,000, spent accordingly, and were short. The adjustment
+// has to be visible BEFORE the money is spent, line by line.
+// ============================================================
+async function myLines(reqId){
+  const box = $("mrd-" + reqId), b = $("mrb-" + reqId);
+  if(!box) return;
+  if(!box.classList.contains("hidden")){
+    box.classList.add("hidden"); if(b) b.textContent = "Items"; return;
+  }
+  box.classList.remove("hidden"); if(b) b.textContent = "Hide";
+  if(box.dataset.loaded === "1") return;
+
+  box.innerHTML = '<p class="rqd-note">Loading&hellip;</p>';
+  const { data, error } = await db.rpc("my_requisition_lines", { p_req_id: reqId });
+  if(error){ box.innerHTML = '<p class="rqd-note">Could not load: ' + esc(error.message) + '</p>'; return; }
+  if(!data || !data.length){ box.innerHTML = '<p class="rqd-note">No items on this one.</p>'; box.dataset.loaded="1"; return; }
+
+  let asked = 0, appr = 0, cut = 0;
+  const rows2 = data.map(i => {
+    const a = Number(i.amount||0);
+    const decided = i.approved_amount !== null && i.approved_amount !== undefined;
+    const ok = decided ? Number(i.approved_amount) : a;
+    asked += a; appr += ok;
+    if(decided && ok < a) cut++;
+
+    let money;
+    if(!decided)        money = '<span class="a">' + N(a) + '</span>';
+    else if(ok === 0)   money = '<span class="a"><s>' + N(a) + '</s> <b class="ref">not approved</b></span>';
+    else if(ok < a)     money = '<span class="a"><s>' + N(a) + '</s> <b class="cut">' + N(ok) + '</b></span>';
+    else                money = '<span class="a">' + N(a) + '</span>';
+
+    return '<div class="rqd-row' + (decided && ok===0 ? " gone" : "") + '">' +
+      '<span class="d">' + esc(i.description || "\u2014") +
+        (i.decision_note ? '<em class="dn">' + esc(i.decision_note) + '</em>' : "") + '</span>' +
+      '<span class="r">' + (i.has_receipt
+        ? '<span style="color:var(--green)">receipt in</span>'
+        : '<span style="color:var(--amber)">no receipt</span>') + '</span>' + money + '</div>';
+  }).join("");
+
+  box.innerHTML = rows2 +
+    '<div class="rqd-row total"><span class="d">' + data.length + " item" + (data.length===1?"":"s") +
+    '</span><span class="r"></span><span class="a">' +
+    (appr !== asked ? '<s>' + N(asked) + '</s> <b class="cut">' + N(appr) + '</b>' : N(asked)) +
+    '</span></div>' +
+    (cut || appr !== asked
+      ? '<div class="ai-note ai-thin" style="margin-top:10px"><b>This was adjusted before it was approved</b>' +
+        'You have ' + N(appr) + ' to spend, not ' + N(asked) + '. Spend to the approved figure, ' +
+        'and if that is not enough, say so before you buy rather than after.</div>'
+      : "");
+  box.dataset.loaded = "1";
+}
+
+// ============================================================
+// RECEIPTS
+// The old version picked whichever item happened to be first without
+// a receipt and gave the person no say. But one Bolt receipt often
+// covers the ride AND the fuel, and there was no way to say so, so the
+// same photo went up twice under two names.
+//
+// Photos are shrunk here before they leave the phone. A modern camera
+// produces three or four megabytes; a receipt is legible at a fraction
+// of that. The bucket also refuses anything over 2 MB, because a limit
+// that lives only in this page is not a limit at all.
+// ============================================================
+const RECEIPT_MAX_PX = 1600;      // long edge; a receipt is readable well below this
+const RECEIPT_QUALITY = 0.72;
+
+async function shrinkImage(file){
+  if(!file.type.startsWith("image/")) return file;          // leave PDFs alone
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, RECEIPT_MAX_PX / Math.max(bmp.width, bmp.height));
+    const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale);
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(bmp, 0, 0, w, h);
+    const blob = await new Promise(res => c.toBlob(res, "image/jpeg", RECEIPT_QUALITY));
+    if(!blob || blob.size >= file.size) return file;        // no gain, keep the original
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch(err){
+    console.warn("shrink failed, uploading as is:", err);
+    return file;
+  }
 }
 
 async function uploadReceipt(reqId){
-  const { data, error } = await db.rpc("requisition_detail", { p_req_id: reqId });
+  const { data, error } = await db.rpc("my_requisition_lines", { p_req_id: reqId });
   if(oops("That requisition", error)) return;
   const missing = (data||[]).filter(i => !i.has_receipt);
   if(!missing.length){ toast("Every item already has a receipt."); return; }
 
-  const item = missing[0];
+  const box = $("mrd-" + reqId);
+  if(box){ box.classList.remove("hidden"); }
+  const target = box || $("rq-owed");
+  const spend = i => (i.approved_amount !== null && i.approved_amount !== undefined)
+    ? Number(i.approved_amount) : Number(i.amount||0);
+
+  target.innerHTML =
+    '<div class="rcp"><div class="mn-head">Which items does this receipt cover?</div>' +
+    missing.map(i => '<label class="rcp-row"><input type="checkbox" class="rcp-pick" value="' + i.item_id + '">' +
+      '<span>' + esc(i.description || "item") + '</span><b>' + N(spend(i)) + '</b></label>').join("") +
+    '<p class="rqd-note">Tick more than one if a single receipt covers them, a Bolt ride and its fuel for instance.</p>' +
+    '<div class="mn-f"><span id="rcp-msg-' + reqId + '"></span>' +
+    '<button class="btn-primary rowbtn" onclick="pickReceiptFile(' + reqId + ')">Choose the file</button></div></div>';
+}
+
+function pickReceiptFile(reqId){
+  const picked = [...document.querySelectorAll(".rcp-pick:checked")].map(c => Number(c.value));
+  const m = $("rcp-msg-" + reqId);
+  if(!picked.length){
+    if(m){ m.textContent = "Tick at least one item first."; m.style.color = "var(--red)"; }
+    return;
+  }
   const inp = document.createElement("input");
   inp.type = "file"; inp.accept = "application/pdf,image/*";
   inp.onchange = async () => {
-    const f = inp.files[0]; if(!f) return;
+    const raw = inp.files[0]; if(!raw) return;
+    if(m){ m.textContent = "Preparing\u2026"; m.style.color = "var(--muted)"; }
+
+    const f = await shrinkImage(raw);
+    if(f.size > 2 * 1024 * 1024){
+      if(m){ m.textContent = "Still too big at " + (f.size/1048576).toFixed(1) +
+        " MB. Photograph just the receipt, or save the PDF smaller."; m.style.color = "var(--red)"; }
+      return;
+    }
+
     const name = Date.now() + "-" + f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
     const up = await db.storage.from("receipts").upload(PROFILE.id + "/" + name, f);
-    if(up.error){ toast("Upload failed. " + up.error.message + " (is the 'receipts' bucket created?)"); return; }
-    const { error: e2 } = await db.rpc("attach_receipt", { p_item_id: item.item_id, p_path: up.data.path });
-    if(e2){ toast("Could not attach. " + e2.message); return; }
-    toast("Receipt added for \u201c" + item.description + "\u201d." +
-          (missing.length > 1 ? " " + (missing.length-1) + " still to go." : " That one is complete."));
+    if(up.error){
+      if(m){ m.textContent = "Upload failed. " + up.error.message; m.style.color = "var(--red)"; }
+      return;
+    }
+    const { data: n, error: e2 } = await db.rpc("attach_receipt_many",
+      { p_item_ids: picked, p_path: up.data.path });
+    if(e2){
+      if(m){ m.textContent = "Could not attach. " + e2.message; m.style.color = "var(--red)"; }
+      return;
+    }
+    const saved = raw.size - f.size;
+    toast("Receipt added to " + n + " item" + (n===1?"":"s") + "." +
+      (saved > 51200 ? " Shrunk from " + (raw.size/1048576).toFixed(1) + " MB to " +
+        (f.size/1048576).toFixed(1) + " MB." : ""), true);
+    const box = $("mrd-" + reqId); if(box) box.dataset.loaded = "";
     await loadReqList();
   };
-  toast("Pick the receipt for: " + item.description + " (" + N(item.amount) + ")");
   inp.click();
 }
 
