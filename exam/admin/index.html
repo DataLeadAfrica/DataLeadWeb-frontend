@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Examinations console</title>
+    <link rel="icon" href="/logo.svg" />
+
+    <script>
+      var CONFIG = {
+        endpoint: "https://script.google.com/macros/s/AKfycby63AP4gjXvn821ejCh315fdKpoHTPj_fBDvV6Qr8LLFqfVHHIEDuPwWxA6KbCooQlV/exec",
+        refreshSeconds: 30
+      };
+    </script>
+
+    <style>
+      @font-face { font-family: "Poppins"; src: url("/fonts/Poppins-Regular.ttf") format("truetype"); font-weight: 300 500; font-display: swap; }
+      @font-face { font-family: "Poppins"; src: url("/fonts/Poppins-Bold.ttf") format("truetype"); font-weight: 600 900; font-display: swap; }
+      @font-face { font-family: "Clash Display"; src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+      @font-face { font-family: "Clash Display"; src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2") format("woff2"); font-weight: 600 700; font-display: swap; }
+
+      :root {
+        --orange: #f56e0f; --orangeMid: #f9a971; --orangeLight: #fde9da;
+        --gradient: linear-gradient(105.6deg,#fde2cf -45.34%,#e7f5fe 51.56%,#fffbeb 87.94%,#fef1e7 105.06%);
+        --bg: #f6f7f9; --panel: #fff; --panel2: #fafbfc; --line: #dae2e7;
+        --text: #17161b; --mute: #6c6b71;
+        --green: #16713d; --greenBg: #e6f6ec; --red: #a72b2b; --redBg: #fdecec; --violet: #6d5ce0;
+        --cta: #232227; --ctaText: #fff;
+      }
+      [data-theme="dark"] {
+        --bg: #0e0d11; --panel: #17161b; --panel2: #1d1c23; --line: #2a2933;
+        --text: #f2f1f4; --mute: #8f8e99;
+        --green: #4ade8b; --greenBg: rgba(31,191,107,.15); --red: #ff8f8f; --redBg: rgba(227,93,93,.16); --violet: #a795ff;
+        --cta: #ffb27a; --ctaText: #2b1400;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", system-ui, sans-serif; }
+      body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; }
+      img { display: block; max-width: 100%; }
+      .clash { font-family: "Clash Display", sans-serif; font-weight: 600; }
+      .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-variant-numeric: tabular-nums; }
+
+      /* ---- gate ---- */
+      .gate { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; background: var(--gradient); }
+      [data-theme="dark"] .gate { background: var(--bg); }
+      .gatecard { width: 100%; max-width: 23rem; padding: 2rem; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); text-align: center; box-shadow: 0 30px 60px -40px rgba(28,27,34,.75); }
+      .gatecard img { height: 2.4rem; width: auto; margin: 0 auto 1.2rem; }
+      [data-theme="dark"] .gatecard img { filter: brightness(0) invert(1); }
+      .gatecard h1 { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.3rem; }
+      .gatecard p.s { margin: .4rem 0 1.4rem; font-size: .8rem; line-height: 1.6; color: var(--mute); }
+      .f { text-align: left; margin-bottom: .9rem; }
+      .f label { display: block; font-size: .72rem; font-weight: 600; margin-bottom: .3rem; }
+      .f select, .f input { width: 100%; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); color: var(--text); font-size: .95rem; }
+      .f input:focus-visible, .f select:focus-visible { outline: 3px solid rgba(245,110,15,.35); border-color: var(--orange); }
+      .btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .95rem; border: 0; border-radius: 12px; background: var(--cta); color: var(--ctaText); font-size: .95rem; font-weight: 500; cursor: pointer; }
+      .btn:disabled { opacity: .55; cursor: not-allowed; }
+      .msg { margin-top: 1rem; padding: .8rem; border-radius: 10px; font-size: .78rem; line-height: 1.5; }
+      .msg.bad { border: 1px solid var(--red); background: var(--redBg); color: var(--red); }
+      .msg:empty { display: none; }
+
+      /* ---- shell ---- */
+      .shell { display: none; grid-template-columns: 224px 1fr; min-height: 100vh; }
+      .shell.on { display: grid; }
+      aside.side { background: var(--panel); border-right: 1px solid var(--line); padding: 1.3rem 0; }
+      .brand { display: flex; align-items: center; gap: .6rem; padding: 0 1.2rem 1.2rem; border-bottom: 1px solid var(--line); }
+      .brand img { height: 1.9rem; width: auto; }
+      [data-theme="dark"] .brand img { filter: brightness(0) invert(1); }
+      .brand b { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: .95rem; }
+      .snav { display: flex; flex-direction: column; gap: .15rem; padding: 1rem .7rem; }
+      .snav button { display: flex; align-items: center; gap: .7rem; padding: .65rem .8rem; border: 0; border-radius: 9px; background: transparent; color: var(--mute); font-size: .87rem; text-align: left; cursor: pointer; }
+      .snav button:hover { background: var(--panel2); color: var(--text); }
+      .snav button.on { background: var(--panel2); color: var(--text); box-shadow: inset 2px 0 0 var(--orange); font-weight: 500; }
+      .snav svg { width: 17px; height: 17px; flex: 0 0 auto; }
+      .sep { height: 1px; margin: .8rem; background: var(--line); }
+
+      main.body { padding: 1.5rem 1.8rem 3rem; overflow: hidden; }
+      .top { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+      .top h2 { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.6rem; }
+      .top p { margin-top: .2rem; font-size: .8rem; color: var(--mute); }
+      .topr { margin-left: auto; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+      .toggle { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+      .toggle button { display: flex; align-items: center; gap: .35rem; padding: .4rem .7rem; border: 0; border-radius: 999px; background: transparent; color: var(--mute); font-size: .7rem; font-weight: 600; cursor: pointer; }
+      .toggle button[aria-pressed="true"] { background: var(--orange); color: #fff; }
+      .toggle svg { width: 14px; height: 14px; }
+      .pill { padding: .45rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font-size: .74rem; color: var(--mute); }
+      .pill b { color: var(--text); }
+      .ghostbtn { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem .9rem; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); color: var(--text); font-size: .78rem; cursor: pointer; }
+      .ghostbtn:hover { border-color: var(--orange); }
+      .ghostbtn svg { width: 14px; height: 14px; }
+
+      select.paperpick { padding: .5rem .8rem; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); color: var(--text); font-size: .8rem; }
+
+      .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.2rem; }
+      .kpi { padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 12px 28px -26px rgba(28,27,34,.5); }
+      [data-theme="dark"] .kpi { box-shadow: none; }
+      .kpi .row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+      .kpi .lab { font-size: .74rem; color: var(--mute); }
+      .kpi .num { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.85rem; line-height: 1.1; }
+      .kpi .ic { display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; border-radius: 9px; flex: 0 0 auto; }
+      .kpi .ic svg { width: 18px; height: 18px; }
+      .kpi .sub { margin-top: .35rem; font-size: .72rem; color: var(--mute); }
+
+      .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; }
+      .panel { padding: 1.15rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 12px 28px -26px rgba(28,27,34,.5); }
+      [data-theme="dark"] .panel { box-shadow: none; }
+      .panel h3 { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.02rem; margin-bottom: 1rem; }
+      .donutwrap { display: grid; grid-template-columns: auto 1fr; gap: 1.4rem; align-items: center; }
+      .legend { display: flex; flex-direction: column; gap: .55rem; font-size: .8rem; }
+      .legend div { display: flex; align-items: center; gap: .55rem; }
+      .legend i { width: .8rem; height: .8rem; border-radius: 3px; flex: 0 0 auto; }
+      .legend b { margin-left: auto; }
+
+      table { width: 100%; border-collapse: collapse; }
+      th { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; color: var(--mute); white-space: nowrap; }
+      td { padding: .7rem; border-bottom: 1px solid var(--line); font-size: .82rem; white-space: nowrap; }
+      tr:hover td { background: var(--panel2); }
+      .who { display: flex; align-items: center; gap: .6rem; }
+      .av { width: 2rem; height: 2rem; border-radius: 50%; background: var(--orangeLight); border: 1px solid var(--orangeMid); color: #8a3c05; font-size: .68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+      [data-theme="dark"] .av { background: rgba(245,110,15,.18); border-color: rgba(245,110,15,.4); color: #ffb27a; }
+      .who small { display: block; color: var(--mute); font-size: .68rem; }
+      .tag { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .6rem; border-radius: 999px; font-size: .66rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+      .tag i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+      .tag.live { background: var(--greenBg); color: var(--green); }
+      .tag.live i { animation: beat 1.5s ease-in-out infinite; }
+      .tag.done { background: rgba(128,128,128,.14); color: var(--text); }
+      .tag.flag { background: var(--redBg); color: var(--red); }
+      @keyframes beat { 0%,100%{opacity:1} 50%{opacity:.3} }
+      .bar { display: flex; align-items: center; gap: .6rem; min-width: 7rem; }
+      .bar i { flex: 1; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+      .bar i span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--orange), var(--orangeMid)); }
+      .scroll { overflow-x: auto; }
+      .foot { display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; font-size: .74rem; color: var(--mute); }
+      .empty { padding: 2rem 1rem; text-align: center; font-size: .84rem; color: var(--mute); }
+      .view { display: none; }
+      .view.on { display: block; }
+      .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: sp .7s linear infinite; }
+      @keyframes sp { to { transform: rotate(360deg); } }
+
+      @media (max-width: 1000px) {
+        .shell.on { grid-template-columns: 1fr; }
+        aside.side { display: none; }
+        main.body { padding: 1rem; }
+        .kpis { grid-template-columns: repeat(2, 1fr); }
+        .panels { grid-template-columns: 1fr; }
+        .mobnav { display: flex !important; }
+      }
+      .mobnav { display: none; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+      .mobnav button { padding: .5rem .9rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--mute); font-size: .78rem; cursor: pointer; }
+      .mobnav button.on { background: var(--orange); border-color: var(--orange); color: #fff; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+    </style>
+  </head>
+
+  <body>
+    <!-- ================= GATE ================= -->
+    <div class="gate" id="gate">
+      <div class="gatecard">
+        <img src="/assets/logo-header.svg" alt="Data-Lead Africa" />
+        <h1 class="clash">Examinations console</h1>
+        <p class="s">Restricted to Data-Lead Africa staff and the nominated FULafia representative.</p>
+        <div class="f">
+          <label for="pass">Passcode</label>
+          <input id="pass" type="password" autocomplete="off" placeholder="Enter your passcode" />
+        </div>
+        <button class="btn" id="btnIn">Open the console</button>
+        <div class="msg" id="gateMsg"></div>
+      </div>
+    </div>
+
+    <!-- ================= CONSOLE ================= -->
+    <div class="shell" id="shell">
+      <aside class="side">
+        <div class="brand">
+          <img src="/assets/logo-header.svg" alt="" />
+          <b>Exams</b>
+        </div>
+        <nav class="snav" id="snav">
+          <button class="on" data-view="vOver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 12 5l8 7v7a1 1 0 0 1-1 1h-4v-5H9v5H5a1 1 0 0 1-1-1z"/></svg>Overview</button>
+          <button data-view="vLive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>Sitting now</button>
+          <button data-view="vRes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V5M19 20v-7"/></svg>Results</button>
+          <div class="sep"></div>
+          <button id="btnOut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l-7 7 7 7M7 12h13"/></svg>Sign out</button>
+        </nav>
+      </aside>
+
+      <main class="body">
+        <div class="top">
+          <div>
+            <h2 class="clash" id="pageTitle">Overview</h2>
+            <p id="pageSub">Deaf-in-Tech and FULafia</p>
+          </div>
+          <span class="topr">
+            <select class="paperpick" id="paperPick"><option value="">All papers</option></select>
+            <span class="pill">Signed in as <b id="roleName">-</b></span>
+            <span class="pill mono" id="lastSync">-</span>
+            <span class="toggle" role="group" aria-label="Colour theme">
+              <button type="button" data-theme-set="light" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg>Light</button>
+              <button type="button" data-theme-set="dark" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.2 8.2 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>Dark</button>
+            </span>
+            <button class="ghostbtn" id="btnRefresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Refresh</button>
+          </span>
+        </div>
+
+        <div class="mobnav" id="mobnav">
+          <button class="on" data-view="vOver">Overview</button>
+          <button data-view="vLive">Sitting now</button>
+          <button data-view="vRes">Results</button>
+          <button id="btnOut2">Sign out</button>
+        </div>
+
+        <div class="msg bad" id="err"></div>
+
+        <!-- OVERVIEW -->
+        <section class="view on" id="vOver">
+          <div class="kpis">
+            <div class="kpi"><div class="row"><div><div class="lab">Registered candidates</div><div class="num" id="kReg">-</div></div>
+              <span class="ic" style="background:var(--orangeLight);color:#8a3c05"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><path d="M3 19a6 6 0 0 1 12 0"/></svg></span></div>
+              <div class="sub">Signed up on the portal</div></div>
+            <div class="kpi"><div class="row"><div><div class="lab">Sitting right now</div><div class="num" id="kLive" style="color:var(--green)">-</div></div>
+              <span class="ic" style="background:var(--greenBg);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span></div>
+              <div class="sub">Active in the last two minutes</div></div>
+            <div class="kpi"><div class="row"><div><div class="lab">Submitted</div><div class="num" id="kSub">-</div></div>
+              <span class="ic" style="background:rgba(109,92,224,.14);color:var(--violet)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg></span></div>
+              <div class="sub">Papers completed</div></div>
+            <div class="kpi"><div class="row"><div><div class="lab">Average score</div><div class="num" id="kAvg">-</div></div>
+              <span class="ic" style="background:var(--orangeLight);color:#8a3c05"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V6M19 19v-5"/></svg></span></div>
+              <div class="sub">Marked on the server</div></div>
+          </div>
+
+          <div class="panels">
+            <div class="panel">
+              <h3 class="clash">Candidate status</h3>
+              <div class="donutwrap">
+                <svg width="168" height="168" viewBox="0 0 168 168" id="donut" role="img" aria-label="Candidate status breakdown"></svg>
+                <div class="legend" id="donutLegend"></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3 class="clash">By paper</h3>
+              <div class="scroll">
+                <table><thead><tr><th>Paper</th><th>State</th><th>Roster</th><th>Sitting</th><th>Submitted</th><th>Absent</th></tr></thead>
+                <tbody id="byPaper"></tbody></table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="clash">Recent submissions</h3>
+            <div class="scroll"><table><thead><tr><th>Candidate</th><th>Paper</th><th>Submitted</th><th>Answered</th><th>Score</th><th>Left page</th><th>Reference</th></tr></thead><tbody id="recent"></tbody></table></div>
+          </div>
+        </section>
+
+        <!-- SITTING NOW -->
+        <section class="view" id="vLive">
+          <div class="panel">
+            <h3 class="clash">Candidates sitting now</h3>
+            <div class="scroll"><table><thead><tr><th>Candidate</th><th>Paper</th><th>Started</th><th>Clock</th><th>Must finish by</th><th>Last seen</th><th>State</th></tr></thead><tbody id="liveRows"></tbody></table></div>
+            <div class="foot"><span>Anyone not seen for two minutes is shown as dropped. The server submits their saved answers when their time runs out.</span></div>
+          </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section class="view" id="vRes">
+          <div class="panel">
+            <h3 class="clash">All results</h3>
+            <div class="scroll"><table><thead><tr><th>Candidate</th><th>Paper</th><th>Submitted</th><th>Answered</th><th>Correct</th><th>Score</th><th>Left page</th><th>Auto</th><th>Reference</th></tr></thead><tbody id="resRows"></tbody></table></div>
+            <div class="foot">
+              <button class="ghostbtn" id="btnCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M8 11.5l4 4 4-4M5 20h14"/></svg>Download CSV</button>
+              <span id="resCount"></span>
+              <span style="margin-left:auto" id="dupNote"></span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+    (function () {
+      "use strict";
+      var $ = function (id) { return document.getElementById(id); };
+      var two = function (n) { return (n < 10 ? "0" : "") + n; };
+      var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+
+      var mem = {};
+      var store = {
+        get: function (k) { try { return sessionStorage.getItem(k); } catch (e) { return mem[k] || null; } },
+        set: function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) { mem[k] = v; } },
+        del: function (k) { try { sessionStorage.removeItem(k); } catch (e) { delete mem[k]; } }
+      };
+      var theme = {
+        get: function () { try { return localStorage.getItem("dit_theme"); } catch (e) { return null; } },
+        set: function (v) { try { localStorage.setItem("dit_theme", v); } catch (e) {} }
+      };
+
+      function setTheme(m) {
+        document.documentElement.setAttribute("data-theme", m);
+        var b = document.querySelectorAll("[data-theme-set]");
+        for (var i = 0; i < b.length; i++) b[i].setAttribute("aria-pressed", String(b[i].getAttribute("data-theme-set") === m));
+        theme.set(m);
+      }
+      document.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-theme-set]");
+        if (t) setTheme(t.getAttribute("data-theme-set"));
+      });
+      setTheme(theme.get() || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+      function jsonp(params) {
+        return new Promise(function (resolve, reject) {
+          var cb = "ad_" + Math.random().toString(36).slice(2);
+          var url = CONFIG.endpoint + "?callback=" + cb;
+          Object.keys(params).forEach(function (k) { url += "&" + encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); });
+          var s = document.createElement("script");
+          var t = setTimeout(function () { cleanup(); reject(new Error("timeout")); }, 25000);
+          function cleanup() { clearTimeout(t); delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); }
+          window[cb] = function (d) { cleanup(); resolve(d); };
+          s.onerror = function () { cleanup(); reject(new Error("network")); };
+          s.src = url;
+          document.head.appendChild(s);
+        });
+      }
+      function report(passcode) {
+        return fetch(CONFIG.endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "report", passcode: passcode })
+        }).then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
+          .catch(function () { return jsonp({ action: "report", passcode: passcode }); });
+      }
+
+      var DATA = null, PASS = "", TIMER = null;
+
+      /* ---- gate ---- */
+      function openConsole(pc, r) {
+        PASS = pc; store.set("dit_admin", pc);
+        DATA = r;
+        $("gate").style.display = "none";
+        $("shell").classList.add("on");
+        $("roleName").textContent = r.role || "-";
+        render();
+        if (TIMER) clearInterval(TIMER);
+        TIMER = setInterval(refresh, CONFIG.refreshSeconds * 1000);
+      }
+      function tryIn(pc, btn) {
+        if (!pc) { $("gateMsg").className = "msg bad"; $("gateMsg").textContent = "Enter your passcode."; return; }
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Checking'; }
+        report(pc).then(function (r) {
+          if (btn) { btn.disabled = false; btn.textContent = "Open the console"; }
+          if (!r || !r.ok) {
+            $("gateMsg").className = "msg bad";
+            $("gateMsg").textContent = (r && r.error) || "That passcode was not recognised.";
+            store.del("dit_admin");
+            return;
+          }
+          $("gateMsg").textContent = "";
+          openConsole(pc, r);
+        }).catch(function () {
+          if (btn) { btn.disabled = false; btn.textContent = "Open the console"; }
+          $("gateMsg").className = "msg bad";
+          $("gateMsg").textContent = "Could not reach the examination service. Check your connection.";
+        });
+      }
+      $("btnIn").addEventListener("click", function () { tryIn($("pass").value.trim(), this); });
+      $("pass").addEventListener("keydown", function (e) { if (e.key === "Enter") tryIn(this.value.trim(), $("btnIn")); });
+
+      function signOut() {
+        store.del("dit_admin"); PASS = ""; DATA = null;
+        if (TIMER) clearInterval(TIMER);
+        $("shell").classList.remove("on");
+        $("gate").style.display = "flex";
+        $("pass").value = "";
+      }
+      $("btnOut").addEventListener("click", signOut);
+      $("btnOut2").addEventListener("click", signOut);
+
+      function refresh() {
+        if (!PASS) return;
+        report(PASS).then(function (r) {
+          if (r && r.ok) { DATA = r; $("err").textContent = ""; render(); }
+          else if (r && !r.ok) { $("err").textContent = r.error || "Could not refresh."; }
+        }).catch(function () { $("err").textContent = "Could not reach the examination service. Showing the last figures loaded."; });
+      }
+      $("btnRefresh").addEventListener("click", function () { $("lastSync").textContent = "refreshing"; refresh(); });
+
+      /* ---- navigation ---- */
+      var TITLES = { vOver: ["Overview", "Live figures, refreshed automatically"],
+                     vLive: ["Sitting now", "Candidates with a paper open"],
+                     vRes: ["Results", "Every submission recorded"] };
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-view]");
+        if (!b) return;
+        var v = b.getAttribute("data-view");
+        ["vOver", "vLive", "vRes"].forEach(function (x) { $(x).classList.toggle("on", x === v); });
+        var all = document.querySelectorAll("[data-view]");
+        for (var i = 0; i < all.length; i++) all[i].classList.toggle("on", all[i].getAttribute("data-view") === v);
+        $("pageTitle").textContent = TITLES[v][0];
+        $("pageSub").textContent = TITLES[v][1];
+      });
+      $("paperPick").addEventListener("change", render);
+
+      /* ---- rendering ---- */
+      function initials(n) { return String(n || "?").split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase(); }
+      function tm(iso) {
+        if (!iso) return "-";
+        var d = new Date(iso);
+        return isNaN(d.getTime()) ? String(iso) : d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+      }
+      function pickedPaper() { return $("paperPick").value; }
+      function filt(list, key) {
+        var p = pickedPaper();
+        return p ? list.filter(function (x) { return String(x[key || "paper"]) === p; }) : list;
+      }
+
+      function render() {
+        if (!DATA) return;
+        $("lastSync").textContent = "updated " + new Date().toLocaleTimeString("en-GB");
+
+        // paper picker
+        var pick = $("paperPick");
+        if (pick.options.length <= 1 && DATA.statusByPaper) {
+          DATA.statusByPaper.forEach(function (p) {
+            var o = document.createElement("option");
+            o.value = p.code; o.textContent = p.code;
+            pick.appendChild(o);
+          });
+        }
+
+        var responses = filt(DATA.responses || []);
+        var sessions = filt(DATA.sessions || []);
+        var stat = DATA.statusByPaper || [];
+        var picked = pickedPaper();
+        var scope = picked ? stat.filter(function (p) { return p.code === picked; }) : stat;
+
+        var live = sessions.filter(function (s) { return s.state === "sitting"; }).length;
+        var totalRoster = scope.reduce(function (t, p) { return t + (p.total || 0); }, 0);
+        var totalSub = scope.reduce(function (t, p) { return t + (p.submitted || 0); }, 0);
+        var totalSit = scope.reduce(function (t, p) { return t + (p.sitting || 0); }, 0);
+        var totalNot = scope.reduce(function (t, p) { return t + (p.notStarted || 0); }, 0);
+        var totalAbs = scope.reduce(function (t, p) { return t + (p.absent || 0); }, 0);
+
+        var scored = responses.filter(function (r) { return typeof r.percent === "number" && !isNaN(r.percent); });
+        var avg = scored.length ? Math.round(scored.reduce(function (t, r) { return t + r.percent; }, 0) / scored.length * 10) / 10 : null;
+
+        $("kReg").textContent = picked ? totalRoster : ((DATA.counts && DATA.counts.registered) || 0);
+        $("kLive").textContent = live;
+        $("kSub").textContent = responses.length;
+        $("kAvg").textContent = avg === null ? "-" : avg + "%";
+
+        drawDonut([
+          { label: "Submitted", value: totalSub, colour: getComputedStyle(document.documentElement).getPropertyValue("--green").trim() || "#16713d" },
+          { label: "Sitting now", value: totalSit, colour: "#f56e0f" },
+          { label: "Not started", value: totalNot, colour: "#6d5ce0" },
+          { label: "Absent", value: totalAbs, colour: "#c3c8cd" }
+        ], totalRoster);
+
+        $("byPaper").innerHTML = stat.length ? stat.map(function (p) {
+          return "<tr><td><b>" + esc(p.code) + "</b></td><td>" +
+            '<span class="tag ' + (p.state === "open" ? "live" : "done") + '">' +
+            (p.state === "open" ? '<i></i>Open' : p.state === "closed" ? "Closed" : "Scheduled") + "</span></td><td>" +
+            p.total + "</td><td>" + p.sitting + "</td><td>" + p.submitted + "</td><td>" + p.absent + "</td></tr>";
+        }).join("") : '<tr><td colspan="6" class="empty">No papers configured.</td></tr>';
+
+        var recent = responses.slice().sort(function (a, b) { return String(b.submittedAt).localeCompare(String(a.submittedAt)); }).slice(0, 12);
+        $("recent").innerHTML = recent.length ? recent.map(rowRes).join("") :
+          '<tr><td colspan="7" class="empty">No submissions yet.</td></tr>';
+
+        $("liveRows").innerHTML = sessions.length ? sessions.map(function (s) {
+          var dropped = s.state !== "sitting";
+          return "<tr><td>" + who(s.matric, s.matric) + "</td><td>" + esc(s.paper) + "</td><td>" + tm(s.startedAt) +
+            "</td><td>" + s.clockMin + " min</td><td>" + tm(s.mustFinishBy) + "</td><td>" + tm(s.lastSeen) +
+            '</td><td><span class="tag ' + (dropped ? "flag" : "live") + '">' + (dropped ? esc(s.state) : "<i></i>Sitting") + "</span></td></tr>";
+        }).join("") : '<tr><td colspan="7" class="empty">Nobody is sitting a paper at the moment.</td></tr>';
+
+        $("resRows").innerHTML = responses.length ? responses.slice().sort(function (a, b) {
+          return String(b.submittedAt).localeCompare(String(a.submittedAt));
+        }).map(function (r) {
+          return "<tr><td>" + who(r.name, r.matric) + "</td><td>" + esc(r.paper) + "</td><td>" + tm(r.submittedAt) +
+            "</td><td>" + r.answered + "</td><td>" + r.correct + "</td><td>" + bar(r.percent) +
+            "</td><td>" + flagLeft(r.leftPage) + "</td><td>" + (r.autoSubmitted === "YES" ? "Yes" : "No") +
+            '</td><td class="mono" style="color:var(--mute)">' + esc(r.reference) + "</td></tr>";
+        }).join("") : '<tr><td colspan="9" class="empty">No results yet.</td></tr>';
+
+        $("resCount").textContent = responses.length + " result" + (responses.length === 1 ? "" : "s");
+        var dup = DATA.duplicateSubmissions || [];
+        $("dupNote").innerHTML = dup.length
+          ? '<span style="color:var(--red)">' + dup.length + " duplicate submission" + (dup.length === 1 ? "" : "s") + " detected</span>"
+          : "";
+      }
+
+      function who(name, matric) {
+        return '<span class="who"><span class="av">' + esc(initials(name)) + '</span><span>' + esc(name || matric) +
+          "<small>" + esc(matric) + "</small></span></span>";
+      }
+      function bar(p) {
+        if (typeof p !== "number" || isNaN(p)) return "-";
+        return '<span class="bar">' + p + '%<i><span style="width:' + Math.max(0, Math.min(100, p)) + '%"></span></i></span>';
+      }
+      function flagLeft(n) {
+        n = Number(n) || 0;
+        return n >= 5 ? '<span style="color:var(--red);font-weight:600">' + n + "&times;</span>" : n + "&times;";
+      }
+      function rowRes(r) {
+        return "<tr><td>" + who(r.name, r.matric) + "</td><td>" + esc(r.paper) + "</td><td>" + tm(r.submittedAt) +
+          "</td><td>" + r.answered + "</td><td>" + bar(r.percent) + "</td><td>" + flagLeft(r.leftPage) +
+          '</td><td class="mono" style="color:var(--mute)">' + esc(r.reference) + "</td></tr>";
+      }
+
+      function drawDonut(parts, total) {
+        var C = 2 * Math.PI * 60, off = 0, svg = "";
+        var sum = parts.reduce(function (t, p) { return t + p.value; }, 0);
+        if (!sum) {
+          svg = '<circle cx="84" cy="84" r="60" fill="none" stroke="var(--line)" stroke-width="22"/>';
+        } else {
+          parts.forEach(function (p) {
+            if (!p.value) return;
+            var len = (p.value / sum) * C;
+            svg += '<circle cx="84" cy="84" r="60" fill="none" stroke="' + p.colour +
+              '" stroke-width="22" stroke-dasharray="' + len.toFixed(2) + " " + (C - len).toFixed(2) +
+              '" stroke-dashoffset="' + (-off).toFixed(2) + '"/>';
+            off += len;
+          });
+        }
+        $("donut").innerHTML = '<g transform="rotate(-90 84 84)">' + svg + "</g>" +
+          '<text x="84" y="80" text-anchor="middle" fill="var(--text)" font-size="22" font-family="Clash Display" font-weight="600">' + (total || 0) + "</text>" +
+          '<text x="84" y="98" text-anchor="middle" fill="var(--mute)" font-size="9" font-family="Poppins">candidates</text>';
+        $("donutLegend").innerHTML = parts.map(function (p) {
+          return '<div><i style="background:' + p.colour + '"></i>' + p.label + "<b>" + p.value + "</b></div>";
+        }).join("");
+      }
+
+      /* ---- CSV ---- */
+      $("btnCsv").addEventListener("click", function () {
+        var rows = filt((DATA && DATA.responses) || []);
+        if (!rows.length) return;
+        var head = ["Submitted at", "Reference", "Matric number", "Full name", "Paper", "Answered", "Correct", "Score %", "Left page", "Auto submitted"];
+        function cell(v) { var s = String(v == null ? "" : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+        var csv = [head.join(",")].concat(rows.map(function (r) {
+          return [r.submittedAt, r.reference, r.matric, r.name, r.paper, r.answered, r.correct, r.percent, r.leftPage, r.autoSubmitted].map(cell).join(",");
+        })).join("\r\n");
+        var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "exam-results-" + new Date().toISOString().slice(0, 10) + ".csv";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      });
+
+      /* ---- boot ---- */
+      var saved = store.get("dit_admin");
+      if (saved) tryIn(saved, null);
+    })();
+    </script>
+  </body>
+</html>
