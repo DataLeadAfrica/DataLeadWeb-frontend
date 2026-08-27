@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Examinations | Deaf-in-Tech and the Federal University of Lafia</title>
+    <link rel="icon" href="/logo.svg" />
+
+    <script>
+      /* =====================================================================
+         SETTINGS. This is the only part a non-developer needs to touch.
+         ===================================================================== */
+      var CONFIG = {
+        // Paste the Apps Script web app URL here, the one ending in /exec.
+        // Until this is filled in the page shows a clear "not configured" notice.
+        endpoint: "https://script.google.com/macros/s/AKfycby63AP4gjXvn821ejCh315fdKpoHTPj_fBDvV6Qr8LLFqfVHHIEDuPwWxA6KbCooQlV/exec",
+
+        // How often answers are saved while a paper is being sat, in seconds.
+        autosaveSeconds: 3,
+
+        // How often the portal tells the server it is still alive, in seconds.
+        heartbeatSeconds: 45
+      };
+      /* ===================================================================== */
+    </script>
+
+    <style>
+      /* Fonts are served from this site, not from a font CDN. On exam day the
+         page must not depend on a third party being reachable. */
+      @font-face {
+        font-family: "Poppins";
+        src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+        font-weight: 300 500; font-style: normal; font-display: swap;
+      }
+      @font-face {
+        font-family: "Poppins";
+        src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+        font-weight: 600 900; font-style: normal; font-display: swap;
+      }
+      @font-face {
+        font-family: "Clash Display";
+        src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Medium.woff2") format("woff2");
+        font-weight: 500; font-style: normal; font-display: swap;
+      }
+      @font-face {
+        font-family: "Clash Display";
+        src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2") format("woff2");
+        font-weight: 600 700; font-style: normal; font-display: swap;
+      }
+
+      :root {
+        --clr-orange: #f56e0f;
+        --clr-orange-medium: #f9a971;
+        --clr-orange-light: #fde9da;
+        --bg-gradient: linear-gradient(105.6deg, #fde2cf -45.34%, #e7f5fe 51.56%, #fffbeb 87.94%, #fef1e7 105.06%);
+
+        --bg: #f4f6f8;
+        --panel: #fff;
+        --panel2: #fafbfc;
+        --text: #17161b;
+        --mute: #6c6b71;
+        --line: #dae2e7;
+        --chip: #f5f6f7;
+        --cta: #232227;
+        --ctaText: #fff;
+        --green: #16713d;
+        --greenBg: #e6f6ec;
+        --red: #a72b2b;
+        --redBg: #fdecec;
+      }
+      [data-theme="dark"] {
+        --bg: #0b0a0f;
+        --panel: #16151c;
+        --panel2: #1c1b23;
+        --text: #eceaf2;
+        --mute: #9b98a6;
+        --line: #2b2a35;
+        --chip: #201f28;
+        --cta: #ffb27a;
+        --ctaText: #2b1400;
+        --green: #4ade8b;
+        --greenBg: rgba(31, 191, 107, 0.14);
+        --red: #ff9a9a;
+        --redBg: rgba(227, 93, 93, 0.16);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", system-ui, sans-serif; }
+      body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; }
+      .clash { font-family: "Clash Display", sans-serif; font-weight: 600; }
+      .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-variant-numeric: tabular-nums; }
+      img { display: block; max-width: 100%; }
+      button { font: inherit; }
+
+      .wrap { width: 100%; max-width: 72rem; margin-inline: auto; padding-inline: 2rem; }
+      @media (max-width: 700px) { .wrap { padding-inline: 1rem; } }
+
+      /* ---------------- header ---------------- */
+      header.top {
+        position: sticky; top: 0; z-index: 40;
+        display: flex; align-items: center; gap: 1rem;
+        padding: .8rem 2rem;
+        background: var(--panel); border-bottom: 1px solid var(--line);
+      }
+      header.top img { height: 2.3rem; width: auto; }
+      [data-theme="dark"] header.top img { filter: brightness(0) invert(1); }
+      .top__r { margin-left: auto; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+      .who {
+        display: flex; align-items: center; gap: .5rem;
+        padding: .35rem .75rem; border: 1px solid var(--line); border-radius: 999px;
+        font-size: .75rem;
+      }
+      .who i {
+        width: 1.6rem; height: 1.6rem; border-radius: 50%; font-style: normal;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--clr-orange-light); color: #8a3c05; font-size: .6rem; font-weight: 700;
+      }
+      [data-theme="dark"] .who i { background: rgba(245,110,15,.2); color: #ffb27a; }
+      .toggle { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+      .toggle button {
+        display: flex; align-items: center; gap: .35rem; padding: .4rem .7rem;
+        border: 0; border-radius: 999px; background: transparent; color: var(--mute);
+        font-size: .7rem; font-weight: 600; cursor: pointer;
+      }
+      .toggle button[aria-pressed="true"] { background: var(--cta); color: var(--ctaText); }
+      .toggle svg { width: 14px; height: 14px; }
+      .linkish {
+        border: 1px solid var(--line); background: transparent; color: var(--mute);
+        padding: .4rem .8rem; border-radius: 999px; font-size: .72rem; cursor: pointer;
+      }
+      .linkish:hover { color: var(--text); border-color: var(--clr-orange); }
+
+      main { padding-block: 2rem 4rem; }
+      .view { display: none; }
+      .view.on { display: block; }
+
+      h1.clash { font-size: 2rem; line-height: 1.1; }
+      .sub { font-size: .9rem; line-height: 1.65; color: var(--mute); max-width: 44rem; margin-top: .5rem; }
+
+      /* ---------------- notices ---------------- */
+      .note {
+        display: flex; gap: .7rem; align-items: flex-start;
+        padding: .9rem 1rem; border-radius: 10px; margin-bottom: 1.2rem;
+        border: 1px solid var(--clr-orange-medium); background: var(--clr-orange-light);
+        font-size: .82rem; line-height: 1.6; color: #8a3c05;
+      }
+      [data-theme="dark"] .note { background: rgba(245,110,15,.1); border-color: rgba(245,110,15,.4); color: #ffcda6; }
+      .note--bad { border-color: var(--red); background: var(--redBg); color: var(--red); }
+      .note--good { border-color: var(--green); background: var(--greenBg); color: var(--green); }
+      .note:empty, .note[hidden] { display: none; }
+
+      /* Anything that ends a session lands here, so a student is never simply
+         dumped back at the sign-in form wondering what happened. */
+      var ICON_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
+      var ICON_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+      function endSession(reason) {
+        stopTickers();
+        window.removeEventListener("beforeunload", warnLeave);
+        document.removeEventListener("visibilitychange", onHide);
+        store.del("dit_token");
+        S.token = ""; S.paper = null; S.finished = true;
+        setWho();
+
+        var t, m, icon;
+        if (reason === "window") {
+          icon = ICON_CLOCK;
+          t = "The examination window has closed";
+          m = "Everyone is signed out when a paper's window ends. Anything you had answered was saved and submitted for you. Speak to your invigilator if you are unsure whether your paper went through.";
+        } else if (reason === "expired") {
+          icon = ICON_CLOCK;
+          t = "You were signed out";
+          m = "Your sign-in lasts six hours and yours has run out. Nothing is lost. Sign in again with the same matriculation number and email, and any paper you were sitting will pick up where it left off.";
+        } else {
+          icon = ICON_LOCK;
+          t = "You have been signed out";
+          m = "Sign in again with your matriculation number and the email you registered with.";
+        }
+        $("endIcon").innerHTML = icon;
+        $("endTitle").textContent = t;
+        $("endMsg").textContent = m;
+        show("vEnded");
+      }
+
+      /* A reply that says the session has gone should never be shown as a raw
+         error message. It always means one of the two things above. */
+      function isExpired(r) {
+        var e = r && r.error ? String(r.error).toLowerCase() : "";
+        return e.indexOf("expired") !== -1 || e.indexOf("sign in again") !== -1;
+      }
+
+      /* ---------------- auth ---------------- */
+      .authwrap { display: flex; justify-content: center; padding-block: 1rem; }
+      .card {
+        width: 100%; max-width: 34rem; padding: 2rem;
+        border: 1px solid var(--line); border-radius: 18px; background: var(--panel);
+      }
+      .switch {
+        position: relative; display: grid; grid-template-columns: 1fr 1fr;
+        padding: 4px; margin-bottom: 1.5rem;
+        border: 1px solid var(--line); border-radius: 999px; background: var(--chip);
+      }
+      .switch__pill {
+        position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px);
+        border-radius: 999px; background: var(--cta); transition: transform .28s cubic-bezier(.4,0,.2,1);
+      }
+      .switch[data-mode="signin"] .switch__pill { transform: translateX(100%); }
+      .switch button {
+        position: relative; z-index: 1; padding: .7rem; border: 0; border-radius: 999px;
+        background: transparent; color: var(--mute); font-size: .82rem; font-weight: 600; cursor: pointer;
+      }
+      .switch button[aria-selected="true"] { color: var(--ctaText); }
+
+      .fields { display: grid; gap: .9rem; }
+      .field { display: flex; flex-direction: column; gap: .3rem; }
+      .field label { font-size: .74rem; font-weight: 600; }
+      .field small { font-weight: 400; color: var(--mute); }
+      .field input {
+        width: 100%; padding: .8rem .9rem;
+        border: 1px solid var(--line); border-radius: 10px;
+        background: var(--panel2); color: var(--text); font-size: .95rem;
+      }
+      .field input:focus-visible { outline: 3px solid rgba(245,110,15,.35); border-color: var(--clr-orange); }
+      .field input[aria-invalid="true"] { border-color: var(--red); }
+      .err { font-size: .74rem; color: var(--red); }
+      .err:empty { display: none; }
+
+      .btn {
+        display: flex; align-items: center; justify-content: center; gap: .5rem;
+        width: 100%; padding: 1rem; margin-top: 1.3rem;
+        border: 0; border-radius: 12px; background: var(--cta); color: var(--ctaText);
+        font-size: 1rem; font-weight: 500; cursor: pointer;
+        box-shadow: 0 12px 22px -12px rgba(0,0,0,.5);
+      }
+      .btn:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+      .tiny { margin-top: 1rem; font-size: .72rem; line-height: 1.6; color: var(--mute); text-align: center; }
+
+      /* ---------------- paper cards ---------------- */
+      .deck { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+      .pcard { display: flex; flex-direction: column; padding: 1.5rem 1.3rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+      .pcard--open { background: #17161b; border-color: #17161b; color: #fff; }
+      [data-theme="dark"] .pcard--open { background: linear-gradient(180deg, rgba(31,191,107,.16), rgba(31,191,107,.05)); border-color: rgba(31,191,107,.5); color: var(--text); }
+      .pcard--closed, .pcard--done { opacity: .55; }
+      .pcode { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8a3c05; }
+      .pcard--open .pcode, [data-theme="dark"] .pcode { color: #ffb27a; }
+      .ptitle { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.35rem; line-height: 1.1; margin-top: .45rem; }
+      .pmeta { display: flex; flex-direction: column; gap: .5rem; margin-top: 1rem; font-size: .8rem; }
+      .pmeta div { display: flex; align-items: center; gap: .55rem; }
+      .tickc { flex: 0 0 auto; width: 1.25rem; height: 1.25rem; border: 1.5px solid currentColor; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+      .tickc svg { width: 10px; height: 10px; }
+      .pfoot { margin-top: auto; padding-top: 1.3rem; }
+      .st { display: inline-flex; align-items: center; gap: .4rem; padding: .2rem .55rem; border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .st i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+      .st--open { background: var(--greenBg); color: var(--green); }
+      .pcard--open .st--open { background: rgba(74,222,139,.2); color: #4ade8b; }
+      .st--sched { background: var(--clr-orange-light); color: #8a3c05; }
+      [data-theme="dark"] .st--sched { background: rgba(245,110,15,.16); color: #ffb27a; }
+      .st--closed, .st--done { background: var(--chip); color: var(--mute); }
+      .seg { display: flex; gap: .25rem; }
+      .seg__u { display: flex; flex-direction: column; align-items: center; gap: .2rem; flex: 1; }
+      .seg__b { width: 100%; padding: .5rem .2rem; border: 1px solid var(--line); border-radius: 8px; background: var(--chip); font-size: 1.1rem; font-weight: 700; text-align: center; }
+      .seg__k { font-size: .52rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+      .goBtn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .95rem; border: 0; border-radius: 12px; background: #fff; color: #17161b; font-size: .95rem; font-weight: 600; cursor: pointer; }
+      [data-theme="dark"] .goBtn { background: #4ade8b; color: #06301a; }
+      .offBtn { width: 100%; padding: .9rem; border: 1px dashed var(--line); border-radius: 12px; background: transparent; color: var(--mute); font-size: .78rem; }
+      .pnote { margin-top: .6rem; text-align: center; font-size: .7rem; color: var(--mute); }
+      .pcard--open .pnote { color: rgba(255,255,255,.7); }
+
+      /* ---------------- sitting ---------------- */
+      .sitbar { position: sticky; top: 4rem; z-index: 30; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: .8rem 0; margin-bottom: 1rem; border-bottom: 1px solid var(--line); background: var(--bg); }
+      .sitid b { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1rem; }
+      .sitid span { display: block; font-size: .7rem; color: var(--mute); }
+      .sitr { margin-left: auto; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+      .saveflag { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem; border: 1px solid var(--line); border-radius: 999px; font-size: .68rem; color: var(--mute); }
+      .saveflag i { width: .45rem; height: .45rem; border-radius: 50%; background: var(--green); }
+      .saveflag.busy i { background: var(--clr-orange); }
+      .saveflag.bad { border-color: var(--red); color: var(--red); }
+      .saveflag.bad i { background: var(--red); }
+      .clockbox { display: flex; align-items: baseline; gap: .5rem; padding: .5rem .9rem; border: 1px solid var(--line); border-radius: 10px; }
+      .clockbox span { font-size: .56rem; letter-spacing: .13em; text-transform: uppercase; color: var(--mute); }
+      .clockbox b { font-size: 1.45rem; line-height: 1; }
+      .clockbox.low { border-color: var(--red); background: var(--redBg); animation: pulse 1s ease-in-out infinite; }
+      .clockbox.low b, .clockbox.low span { color: var(--red); }
+      @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+      .prog { height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; margin-bottom: 1.5rem; }
+      .prog i { display: block; height: 100%; background: var(--clr-orange); transition: width .3s; }
+      .sitgrid { display: grid; grid-template-columns: 1fr 15rem; gap: 1.5rem; align-items: start; }
+      .qcard { padding: 1.8rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+      .qtop { display: flex; align-items: center; gap: .7rem; margin-bottom: 1rem; }
+      .qnum { display: flex; align-items: center; justify-content: center; width: 2.1rem; height: 2.1rem; border-radius: 8px; background: var(--clr-orange-light); color: #8a3c05; font-size: .8rem; font-weight: 700; }
+      [data-theme="dark"] .qnum { background: rgba(245,110,15,.18); color: #ffb27a; }
+      .qof { font-size: .72rem; color: var(--mute); }
+      .qtext { font-family: "Clash Display", sans-serif; font-weight: 500; font-size: 1.25rem; line-height: 1.4; margin-bottom: 1.3rem; }
+      .opts { display: flex; flex-direction: column; gap: .7rem; }
+      .opt { position: relative; display: flex; align-items: center; gap: 1rem; width: 100%; text-align: left; padding: 1rem 3.2rem 1rem 1rem; border: 1.5px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); font-size: .93rem; line-height: 1.45; cursor: pointer; }
+      .opt:hover { border-color: var(--clr-orange-medium); background: var(--panel2); }
+      .opt:focus-visible { outline: 3px solid var(--clr-orange); outline-offset: 2px; }
+      .optL { flex: 0 0 auto; width: 2.1rem; height: 2.1rem; border-radius: 50%; border: 1.5px solid var(--line); background: var(--chip); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; color: var(--mute); }
+      .optT { position: absolute; right: 1.1rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; border: 2px solid var(--line); }
+      .opt.on { border-color: var(--clr-orange); background: var(--clr-orange-light); }
+      [data-theme="dark"] .opt.on { background: rgba(245,110,15,.14); }
+      .opt.on .optL { background: var(--clr-orange); border-color: var(--clr-orange); color: #fff; }
+      .opt.on .optT { border-color: var(--clr-orange); background: var(--clr-orange); box-shadow: inset 0 0 0 3px var(--panel); }
+      .nav { display: flex; gap: .8rem; margin-top: 1.5rem; }
+      .navbtn { display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.3rem; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); font-size: .88rem; cursor: pointer; }
+      .navbtn:disabled { opacity: .4; cursor: not-allowed; }
+      .navbtn.next { margin-left: auto; background: var(--cta); color: var(--ctaText); border-color: transparent; }
+      .navbtn svg { width: 15px; height: 15px; }
+      .side { position: sticky; top: 9rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); }
+      .side h4 { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); margin-bottom: .8rem; }
+      .qgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .4rem; }
+      .qgrid button { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--mute); font-size: .76rem; font-weight: 600; cursor: pointer; }
+      .qgrid .done { background: var(--clr-orange-light); border-color: var(--clr-orange-medium); color: #8a3c05; }
+      [data-theme="dark"] .qgrid .done { background: rgba(245,110,15,.18); color: #ffb27a; }
+      .qgrid .now { border-color: var(--text); box-shadow: 0 0 0 2px var(--text); color: var(--text); }
+      .sidestat { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .72rem; color: var(--mute); }
+      .sidestat b { color: var(--text); font-size: 1.1rem; }
+      .finish { margin-top: 1.1rem; padding-top: 1.1rem; border-top: 2px dashed var(--line); }
+      .finishWarn { font-size: .7rem; line-height: 1.5; color: #8a3c05; margin-bottom: .6rem; }
+      [data-theme="dark"] .finishWarn { color: #ffb27a; }
+      .finishWarn:empty { display: none; }
+      .finishBtn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .95rem; border: 1.5px solid #16713d; border-radius: 12px; background: #16713d; color: #fff; font-size: .9rem; font-weight: 600; cursor: pointer; }
+      [data-theme="dark"] .finishBtn { background: #1fbf6b; border-color: #1fbf6b; color: #06301a; }
+      .finishBtn:disabled { opacity: .6; cursor: not-allowed; }
+      .finishNote { margin-top: .6rem; font-size: .65rem; line-height: 1.5; color: var(--mute); text-align: center; }
+
+      /* ---------------- dialog ---------------- */
+      .overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(10,9,12,.6); }
+      .overlay[hidden] { display: none; }
+      .dialog { width: 100%; max-width: 26rem; padding: 1.8rem; border-radius: 16px; background: var(--panel); }
+      .dialog h3 { font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 1.15rem; margin-bottom: .6rem; }
+      .dialog p { font-size: .84rem; line-height: 1.6; color: var(--mute); }
+      .dialog .row { display: flex; gap: .7rem; justify-content: flex-end; margin-top: 1.3rem; flex-wrap: wrap; }
+      .dialog button { padding: .75rem 1.2rem; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: .85rem; cursor: pointer; }
+      .dialog button.danger { background: #16713d; border-color: #16713d; color: #fff; }
+
+      /* ---------------- done ---------------- */
+      .done { max-width: 34rem; margin-inline: auto; text-align: center; padding: 2.5rem 1.5rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+      .doneTick { width: 4.2rem; height: 4.2rem; margin: 0 auto 1.2rem; border-radius: 50%; background: var(--greenBg); color: var(--green); display: flex; align-items: center; justify-content: center; }
+      .doneTick svg { width: 34px; height: 34px; }
+      .refbox { margin-top: 1.3rem; padding: 1rem; border: 1px dashed var(--clr-orange-medium); border-radius: 12px; background: var(--clr-orange-light); }
+      [data-theme="dark"] .refbox { background: rgba(245,110,15,.12); }
+      .refbox p { font-size: .72rem; color: #8a3c05; }
+      [data-theme="dark"] .refbox p { color: #ffb27a; }
+      .refbox b { display: block; margin-top: .3rem; font-size: 1.25rem; letter-spacing: .06em; word-break: break-all; color: var(--text); }
+
+      .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: sp .7s linear infinite; }
+      @keyframes sp { to { transform: rotate(360deg); } }
+
+      @media (max-width: 900px) {
+        .sitgrid { grid-template-columns: 1fr; }
+        .side { position: static; }
+        .qgrid { grid-template-columns: repeat(8, 1fr); }
+        .qcard { padding: 1.2rem; }
+        .qtext { font-size: 1.1rem; }
+        .nav { flex-wrap: wrap; }
+        .navbtn { flex: 1; justify-content: center; }
+        header.top { padding-inline: 1rem; }
+        .sitbar { top: 3.9rem; }
+      }
+      .powered { display: flex; justify-content: flex-end; padding: 1.4rem 0 .5rem; }
+      .powered a { display: inline-flex; align-items: center; gap: .55rem; padding: .45rem .8rem .45rem .55rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); text-decoration: none; }
+      .powered img { height: 1.5rem; width: auto; }
+      .powered span { font-size: .72rem; line-height: 1.2; color: var(--mute); }
+      .powered span b { display: block; font-weight: 500; color: var(--text); }
+      @media (max-width: 700px) { .powered { justify-content: center; } }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top">
+      <a href="/partnerships/fulafia"><img src="/assets/logo-header.svg" alt="Data-Lead Africa" /></a>
+      <span class="top__r">
+        <span class="who" id="whoBox" hidden><i id="whoIn"></i><span id="whoName"></span></span>
+        <span class="toggle" role="group" aria-label="Colour theme">
+          <button type="button" data-theme-set="light" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg>Light
+          </button>
+          <button type="button" data-theme-set="dark" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.2 8.2 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>Dark
+          </button>
+        </span>
+        <button class="linkish" id="signOut" hidden>Sign out</button>
+      </span>
+    </header>
+
+    <main class="wrap">
+      <p class="note note--bad" id="configNote" hidden>
+        <span><strong>Not configured yet.</strong> The examination address has not been set on this page, so nothing can be submitted. Tell Data-Lead Africa before students arrive.</span>
+      </p>
+
+      <!-- ============ AUTH ============ -->
+      <section class="view on" id="vAuth">
+        <h1 class="clash">Student examination portal</h1>
+        <p class="sub">Master's in Disability Studies, Federal University of Lafia.</p>
+
+        <div class="authwrap">
+          <div class="card">
+            <div class="switch" id="swch" data-mode="register">
+              <span class="switch__pill"></span>
+              <button type="button" data-mode="register" aria-selected="true">Register</button>
+              <button type="button" data-mode="signin" aria-selected="false">Sign in</button>
+            </div>
+
+            <p class="note note--bad" id="authErr" hidden></p>
+
+            <div id="paneReg">
+              <div class="fields">
+                <div class="field"><label for="rName">Full name</label><input id="rName" type="text" autocomplete="name" placeholder="As on your university record" /></div>
+                <div class="field"><label for="rMatric">Matriculation number</label><input id="rMatric" type="text" placeholder="Your FULafia matric number" /></div>
+                <div class="field"><label for="rEmail">Email address <small>you will sign in with this</small></label><input id="rEmail" type="email" autocomplete="email" placeholder="you@example.com" /></div>
+                <div class="field"><label for="rPhone">Phone number</label><input id="rPhone" type="tel" autocomplete="tel" placeholder="080..." /></div>
+              </div>
+              <button class="btn" id="btnReg">Create my account</button>
+              <p class="tiny">You will sign in with your matriculation number and this email address.</p>
+            </div>
+
+            <div id="paneIn" hidden>
+              <div class="fields">
+                <div class="field"><label for="sMatric">Matriculation number</label><input id="sMatric" type="text" placeholder="Your FULafia matric number" /></div>
+                <div class="field"><label for="sEmail">Email address</label><input id="sEmail" type="email" autocomplete="email" placeholder="The email you registered with" /></div>
+              </div>
+              <button class="btn" id="btnIn">Sign in</button>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PAPERS ============ -->
+      <section class="view" id="vPapers">
+        <h1 class="clash">Your papers</h1>
+        <p class="sub">Papers unlock automatically at their scheduled time.</p>
+        <p class="note note--bad" id="papersErr" hidden></p>
+        <div class="deck" id="deck"></div>
+      </section>
+
+      <!-- ============ SITTING ============ -->
+      <section class="view" id="vSit">
+        <div class="sitbar">
+          <span class="sitid"><b id="sitCode"></b><span id="sitTitle"></span></span>
+          <span class="sitr">
+            <span class="saveflag" id="saveFlag"><i></i><span id="saveTxt">All answers saved</span></span>
+            <span class="clockbox mono" id="clockBox"><span>Time left</span><b id="clock">--:--</b></span>
+          </span>
+        </div>
+        <div class="prog"><i id="prog" style="width:0%"></i></div>
+
+        <div class="sitgrid">
+          <div class="qcard">
+            <div class="qtop"><span class="qnum" id="qNum">1</span><span class="qof" id="qOf"></span></div>
+            <p class="qtext" id="qText" tabindex="-1"></p>
+            <div class="opts" id="qOpts" role="group" aria-label="Answer options"></div>
+            <div class="nav">
+              <button class="navbtn" id="bPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>Previous</button>
+              <button class="navbtn next" id="bNext">Next question<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+            </div>
+          </div>
+
+          <aside class="side">
+            <h4>Your questions</h4>
+            <div class="qgrid" id="qGrid"></div>
+            <div class="sidestat">Answered <b id="qDone">0</b> of <b id="qTot">0</b></div>
+            <div class="finish">
+              <p class="finishWarn" id="fWarn"></p>
+              <button class="finishBtn" id="bSubmit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>Submit examination</button>
+              <p class="finishNote">You cannot return after submitting.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ SESSION ENDED ============ -->
+      <section class="view" id="vEnded">
+        <div class="done">
+          <div class="doneTick" id="endIcon"></div>
+          <h1 class="clash" style="font-size:1.5rem" id="endTitle"></h1>
+          <p class="sub" id="endMsg" style="margin-inline:auto"></p>
+          <button class="btn" id="bEndAgain" style="max-width:16rem;margin-inline:auto">Sign in again</button>
+        </div>
+      </section>
+
+      <!-- ============ DONE ============ -->
+      <section class="view" id="vDone">
+        <div class="done">
+          <div class="doneTick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg></div>
+          <h1 class="clash" style="font-size:1.5rem" id="doneTitle">Submitted successfully</h1>
+          <p class="sub" id="doneMsg" style="margin-inline:auto"></p>
+          <div class="refbox"><p>Your submission reference. Show this to your invigilator.</p><b class="mono" id="doneRef"></b></div>
+          <p class="note note--good" id="doneScore" hidden style="margin-top:1.2rem"></p>
+          <button class="btn" id="bBack" style="max-width:16rem;margin-inline:auto">Back to my papers</button>
+        </div>
+      </section>
+
+      <div class="powered">
+        <a href="/partnerships/fulafia/">
+          <img src="data:image/png;base64,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" alt="" />
+          <span>Powered by<b>Deaf-In-Tech</b></span>
+        </a>
+      </div>
+    </main>
+
+    <div class="overlay" id="ovl" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgT">
+        <h3 id="dlgT">Submit now?</h3>
+        <p id="dlgP"></p>
+        <div class="row">
+          <button id="dlgNo">Go back</button>
+          <button id="dlgYes" class="danger">Submit examination</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      "use strict";
+
+      /* ---------------- small helpers ---------------- */
+      var $ = function (id) { return document.getElementById(id); };
+      var two = function (n) { return (n < 10 ? "0" : "") + n; };
+      var esc = function (s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      };
+
+      /* Session storage, with a memory fallback if the browser blocks it. */
+      var mem = {};
+      var store = {
+        get: function (k) { try { return sessionStorage.getItem(k); } catch (e) { return mem[k] || null; } },
+        set: function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) { mem[k] = v; } },
+        del: function (k) { try { sessionStorage.removeItem(k); } catch (e) { delete mem[k]; } }
+      };
+
+      /* ---------------- transport ----------------
+         A POST with text/plain is a simple request, so it does not trigger a
+         CORS preflight and Apps Script answers it readably. If that ever fails,
+         we fall back to JSONP, which cannot be blocked by CORS at all. */
+      function jsonp(params) {
+        return new Promise(function (resolve, reject) {
+          var cb = "cb_" + Math.random().toString(36).slice(2);
+          var url = CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") === -1 ? "?" : "&") + "callback=" + cb;
+          Object.keys(params).forEach(function (k) {
+            var v = params[k];
+            url += "&" + encodeURIComponent(k) + "=" + encodeURIComponent(typeof v === "object" ? JSON.stringify(v) : v);
+          });
+          var s = document.createElement("script");
+          var done = false;
+          var timer = setTimeout(function () { if (!done) { cleanup(); reject(new Error("timeout")); } }, 25000);
+          function cleanup() { done = true; clearTimeout(timer); delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); }
+          window[cb] = function (data) { cleanup(); resolve(data); };
+          s.onerror = function () { cleanup(); reject(new Error("network")); };
+          s.src = url;
+          document.head.appendChild(s);
+        });
+      }
+
+      function api(action, payload) {
+        payload = payload || {};
+        payload.action = action;
+        if (!CONFIG.endpoint) return Promise.reject(new Error("not configured"));
+
+        return fetch(CONFIG.endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+          .catch(function () { return jsonp(payload); });
+      }
+
+      /* ---------------- state ---------------- */
+      var S = {
+        token: store.get("dit_token") || "",
+        name: store.get("dit_name") || "",
+        matric: store.get("dit_matric") || "",
+        papers: [],
+        offset: 0,           // server time minus device time
+        paper: null,
+        questions: [],
+        answers: {},
+        idx: 0,
+        deadline: 0,
+        leftPage: 0,
+        saveTimer: null,
+        dirty: false,
+        submitting: false,
+        finished: false
+      };
+      var TICKERS = {};
+
+      function serverNow() { return Date.now() + S.offset; }
+
+      /* ---------------- theme ---------------- */
+      function setTheme(m) {
+        document.documentElement.setAttribute("data-theme", m);
+        var b = document.querySelectorAll("[data-theme-set]");
+        for (var i = 0; i < b.length; i++) b[i].setAttribute("aria-pressed", String(b[i].getAttribute("data-theme-set") === m));
+        store.set("dit_theme", m);
+      }
+      document.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-theme-set]");
+        if (t) setTheme(t.getAttribute("data-theme-set"));
+      });
+      setTheme(store.get("dit_theme") ||
+        (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+      /* ---------------- views ---------------- */
+      function show(id) {
+        ["vAuth", "vPapers", "vSit", "vDone", "vEnded"].forEach(function (v) {
+          $(v).classList.toggle("on", v === id);
+        });
+        window.scrollTo({ top: 0 });
+      }
+      function setWho() {
+        var on = !!S.token;
+        $("whoBox").hidden = !on;
+        $("signOut").hidden = !on;
+        if (on) {
+          $("whoName").textContent = S.name || S.matric;
+          $("whoIn").textContent = (S.name || "?").split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase();
+        }
+      }
+      function err(el, msg) {
+        var n = $(el);
+        n.hidden = !msg;
+        n.innerHTML = msg ? "<span>" + esc(msg) + "</span>" : "";
+      }
+      function busy(btn, on, label) {
+        btn.disabled = on;
+        btn.innerHTML = on ? '<span class="spin"></span> ' + esc(label) : esc(btn.getAttribute("data-label") || label);
+      }
+
+      /* Anything that ends a session lands here, so a student is never simply
+         dumped back at the sign-in form wondering what happened. */
+      var ICON_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
+      var ICON_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+      function endSession(reason) {
+        stopTickers();
+        window.removeEventListener("beforeunload", warnLeave);
+        document.removeEventListener("visibilitychange", onHide);
+        store.del("dit_token");
+        S.token = ""; S.paper = null; S.finished = true;
+        setWho();
+
+        var t, m, icon;
+        if (reason === "window") {
+          icon = ICON_CLOCK;
+          t = "The examination window has closed";
+          m = "Everyone is signed out when a paper's window ends. Anything you had answered was saved and submitted for you. Speak to your invigilator if you are unsure whether your paper went through.";
+        } else if (reason === "expired") {
+          icon = ICON_CLOCK;
+          t = "You were signed out";
+          m = "Your sign-in lasts six hours and yours has run out. Nothing is lost. Sign in again with the same matriculation number and email, and any paper you were sitting will pick up where it left off.";
+        } else {
+          icon = ICON_LOCK;
+          t = "You have been signed out";
+          m = "Sign in again with your matriculation number and the email you registered with.";
+        }
+        $("endIcon").innerHTML = icon;
+        $("endTitle").textContent = t;
+        $("endMsg").textContent = m;
+        show("vEnded");
+      }
+
+      /* A reply that says the session has gone should never be shown as a raw
+         error message. It always means one of the two things above. */
+      function isExpired(r) {
+        var e = r && r.error ? String(r.error).toLowerCase() : "";
+        return e.indexOf("expired") !== -1 || e.indexOf("sign in again") !== -1;
+      }
+
+      /* ---------------- auth ---------------- */
+      $("swch").addEventListener("click", function (e) {
+        var b = e.target.closest("[data-mode]");
+        if (!b) return;
+        var m = b.getAttribute("data-mode");
+        $("swch").setAttribute("data-mode", m);
+        var all = $("swch").querySelectorAll("button");
+        for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-selected", String(all[i].getAttribute("data-mode") === m));
+        $("paneReg").hidden = m !== "register";
+        $("paneIn").hidden = m !== "signin";
+        err("authErr", "");
+      });
+
+      function afterAuth(res) {
+        S.token = res.token; S.name = res.fullName || ""; S.matric = res.matric || "";
+        store.set("dit_token", S.token); store.set("dit_name", S.name); store.set("dit_matric", S.matric);
+        setWho();
+        loadPapers();
+      }
+
+      $("btnReg").setAttribute("data-label", "Create my account");
+      $("btnReg").addEventListener("click", function () {
+        err("authErr", "");
+        var p = {
+          fullName: $("rName").value.trim(),
+          matric: $("rMatric").value.trim(),
+          email: $("rEmail").value.trim(),
+          phone: $("rPhone").value.trim()
+        };
+        if (p.fullName.length < 2) return err("authErr", "Enter your full name.");
+        if (p.matric.length < 3) return err("authErr", "Enter your matriculation number.");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return err("authErr", "Enter a valid email address.");
+        if (p.phone.replace(/\D/g, "").length < 7) return err("authErr", "Enter a valid phone number.");
+
+        busy($("btnReg"), true, "Creating");
+        api("register", p).then(function (r) {
+          busy($("btnReg"), false, "Create my account");
+          if (!r || !r.ok) return err("authErr", (r && r.error) || "Could not register. Try again.");
+          afterAuth(r);
+        }).catch(function () {
+          busy($("btnReg"), false, "Create my account");
+          err("authErr", "Could not reach the examination service. Check your connection and try again.");
+        });
+      });
+
+      $("btnIn").setAttribute("data-label", "Sign in");
+      $("btnIn").addEventListener("click", function () {
+        err("authErr", "");
+        var p = { matric: $("sMatric").value.trim(), email: $("sEmail").value.trim() };
+        if (!p.matric || !p.email) return err("authErr", "Enter your matriculation number and email address.");
+        busy($("btnIn"), true, "Signing in");
+        api("signin", p).then(function (r) {
+          busy($("btnIn"), false, "Sign in");
+          if (!r || !r.ok) return err("authErr", (r && r.error) || "Could not sign in.");
+          afterAuth(r);
+        }).catch(function () {
+          busy($("btnIn"), false, "Sign in");
+          err("authErr", "Could not reach the examination service. Check your connection and try again.");
+        });
+      });
+
+      $("signOut").addEventListener("click", function () {
+        if (S.paper && !S.finished) { if (!confirm("You are in the middle of a paper. Sign out anyway?")) return; }
+        store.del("dit_name"); store.del("dit_matric");
+        endSession("manual");
+      });
+      $("bEndAgain").addEventListener("click", function () { show("vAuth"); });
+
+      /* ---------------- papers ---------------- */
+      function loadPapers() {
+        show("vPapers");
+        err("papersErr", "");
+        $("deck").innerHTML = '<p class="sub">Loading your papers.</p>';
+        api("bootstrap", { token: S.token }).then(function (r) {
+          if (isExpired(r)) return endSession("expired");
+          if (!r || !r.ok) { err("papersErr", (r && r.error) || "Could not load papers."); $("deck").innerHTML = ""; return; }
+          S.offset = r.serverTimeMs - Date.now();
+          S.papers = r.papers || [];
+          renderPapers();
+          startTicker("papers", renderPapers, 1000);
+        }).catch(function () {
+          $("deck").innerHTML = "";
+          err("papersErr", "Could not reach the examination service. Check your connection.");
+        });
+      }
+
+      function seg(ms) {
+        var s = Math.max(0, Math.floor(ms / 1000));
+        var d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+        function u(n, k) { return '<span class="seg__u"><span class="seg__b mono">' + two(n) + '</span><span class="seg__k">' + k + "</span></span>"; }
+        return '<div class="seg">' + (d > 0 ? u(d, "days") : "") + u(h, "hrs") + u(m, "min") + u(x, "sec") + "</div>";
+      }
+      var TICK = '<span class="tickc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg></span>';
+
+      function renderPapers() {
+        var now = serverNow();
+        $("deck").innerHTML = S.papers.map(function (p) {
+          var state = now < p.opensMs ? "sched" : now > p.closesMs ? "closed" : "open";
+          var d = new Date(p.opensMs);
+          var foot;
+          if (state === "open") {
+            var mins = Math.max(0, Math.min(p.durationMin, Math.ceil((p.closesMs - now) / 60000)));
+            foot = '<button class="goBtn" data-begin="' + esc(p.code) + '">Begin paper</button>' +
+                   '<p class="pnote">You would get <b>' + mins + " min</b></p>";
+          } else if (state === "sched") {
+            foot = seg(p.opensMs - now) + '<p class="pnote mono">Unlocks ' +
+                   d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + "</p>";
+          } else {
+            foot = '<button class="offBtn" disabled>Paper closed</button>';
+          }
+          return '<article class="pcard pcard--' + state + '">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">' +
+              '<span class="pcode mono">' + esc(p.code) + '</span>' +
+              '<span class="st st--' + state + '"><i></i>' + (state === "open" ? "Live now" : state === "sched" ? "Scheduled" : "Closed") + "</span>" +
+            "</div>" +
+            '<h3 class="ptitle">' + esc(p.title) + "</h3>" +
+            '<div class="pmeta">' +
+              "<div>" + TICK + "<span><b>" + p.questions + "</b> questions</span></div>" +
+              "<div>" + TICK + "<span><b>" + p.durationMin + " minutes</b> on your own clock</span></div>" +
+              "<div>" + TICK + "<span>" + d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + "</span></div>" +
+            "</div>" +
+            '<div class="pfoot">' + foot + "</div></article>";
+        }).join("");
+      }
+
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-begin]");
+        if (b) beginPaper(b.getAttribute("data-begin"), b);
+      });
+
+      /* ---------------- sitting ---------------- */
+      function beginPaper(code, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spin"></span> Opening';
+        api("start", { token: S.token, paper: code }).then(function (r) {
+          if (isExpired(r)) return endSession("expired");
+          if (!r || !r.ok) {
+            btn.disabled = false; btn.textContent = "Begin paper";
+            err("papersErr", (r && r.error) || "Could not open this paper.");
+            return;
+          }
+          stopTickers();
+          S.offset = r.serverTimeMs - Date.now();
+          S.paper = r.paper;
+          S.questions = r.questions || [];
+          S.answers = {};
+          var saved = r.savedAnswers || {};
+          Object.keys(saved).forEach(function (n) { S.answers[n] = saved[n]; });
+          S.deadline = r.deadlineMs;
+          S.idx = 0; S.leftPage = 0; S.finished = false; S.dirty = false;
+
+          $("sitCode").textContent = S.paper.code;
+          $("sitTitle").textContent = S.paper.title;
+          $("qTot").textContent = S.questions.length;
+
+          show("vSit");
+          renderQ();
+          startTicker("clock", tickClock, 1000);
+          startTicker("beat", beat, CONFIG.heartbeatSeconds * 1000);
+          window.addEventListener("beforeunload", warnLeave);
+          document.addEventListener("visibilitychange", onHide);
+        }).catch(function () {
+          btn.disabled = false; btn.textContent = "Begin paper";
+          err("papersErr", "Could not reach the examination service.");
+        });
+      }
+
+      function warnLeave(e) { if (S.paper && !S.finished) { e.preventDefault(); e.returnValue = ""; } }
+      function onHide() { if (document.visibilityState === "hidden" && S.paper && !S.finished) S.leftPage++; }
+
+      function renderQ() {
+        var q = S.questions[S.idx];
+        if (!q) return;
+        $("qNum").textContent = S.idx + 1;
+        $("qOf").textContent = "Question " + (S.idx + 1) + " of " + S.questions.length;
+        $("qText").textContent = q.question;
+        $("qOpts").innerHTML = q.options.map(function (t, k) {
+          var L = "ABCD"[k];
+          var on = S.answers[q.n] === L;
+          return '<button class="opt' + (on ? " on" : "") + '" data-pick="' + L + '" aria-pressed="' + on + '">' +
+            '<span class="optL">' + L + "</span><span>" + esc(t) + '</span><span class="optT"></span></button>';
+        }).join("");
+
+        var done = Object.keys(S.answers).length;
+        $("qDone").textContent = done;
+        $("prog").style.width = (S.questions.length ? (done / S.questions.length) * 100 : 0) + "%";
+        $("bPrev").disabled = S.idx === 0;
+        $("bNext").disabled = S.idx === S.questions.length - 1;
+        var blank = S.questions.length - done;
+        $("fWarn").textContent = blank ? blank + " question" + (blank === 1 ? "" : "s") + " still unanswered." : "";
+
+        $("qGrid").innerHTML = S.questions.map(function (qq, k) {
+          var cls = (k === S.idx ? "now " : "") + (S.answers[qq.n] ? "done" : "");
+          return '<button class="' + cls.trim() + '" data-jump="' + k + '" aria-label="Question ' + (k + 1) +
+            (S.answers[qq.n] ? ", answered" : ", not answered") + '">' + (k + 1) + "</button>";
+        }).join("");
+      }
+
+      document.addEventListener("click", function (e) {
+        var p = e.target.closest("[data-pick]");
+        if (p && S.paper && !S.finished) {
+          S.answers[S.questions[S.idx].n] = p.getAttribute("data-pick");
+          S.dirty = true;
+          renderQ();
+          queueSave();
+          return;
+        }
+        var j = e.target.closest("[data-jump]");
+        if (j) { S.idx = Number(j.getAttribute("data-jump")); renderQ(); $("qText").focus(); }
+      });
+      $("bPrev").addEventListener("click", function () { S.idx = Math.max(0, S.idx - 1); renderQ(); $("qText").focus(); });
+      $("bNext").addEventListener("click", function () { S.idx = Math.min(S.questions.length - 1, S.idx + 1); renderQ(); $("qText").focus(); });
+
+      /* ---- autosave ---- */
+      function flag(cls, txt) {
+        $("saveFlag").className = "saveflag" + (cls ? " " + cls : "");
+        $("saveTxt").textContent = txt;
+      }
+      function queueSave() {
+        clearTimeout(S.saveTimer);
+        flag("busy", "Saving");
+        S.saveTimer = setTimeout(doSave, CONFIG.autosaveSeconds * 1000);
+      }
+      function doSave() {
+        if (!S.paper || S.finished) return;
+        api("save", { token: S.token, paper: S.paper.code, answers: S.answers })
+          .then(function (r) {
+            if (r && r.ok) { S.dirty = false; flag("", "All answers saved"); }
+            else flag("bad", "Not saved, retrying");
+          })
+          .catch(function () { flag("bad", "Not saved, retrying"); setTimeout(doSave, 5000); });
+      }
+      function beat() {
+        if (!S.paper || S.finished) return;
+        api("heartbeat", { token: S.token, paper: S.paper.code }).catch(function () {});
+        if (S.dirty) doSave();
+      }
+
+      /* ---- clock ---- */
+      function tickClock() {
+        if (!S.paper) return;
+        var left = Math.max(0, Math.floor((S.deadline - serverNow()) / 1000));
+        var m = Math.floor(left / 60), s = left % 60;
+        $("clock").textContent = two(m) + ":" + two(s);
+        $("clockBox").classList.toggle("low", left <= 60);
+        if (left <= 0 && !S.finished && !S.submitting) submit(true);
+      }
+
+      /* ---- submit ---- */
+      $("bSubmit").addEventListener("click", function () {
+        var blank = S.questions.length - Object.keys(S.answers).length;
+        if (blank > 0) {
+          $("dlgP").textContent = "You have answered " + Object.keys(S.answers).length + " of " +
+            S.questions.length + " questions. Unanswered questions are marked as incorrect, and you cannot return to the paper.";
+          $("ovl").hidden = false;
+          $("dlgNo").focus();
+        } else {
+          submit(false);
+        }
+      });
+      $("dlgNo").addEventListener("click", function () { $("ovl").hidden = true; });
+      $("dlgYes").addEventListener("click", function () { $("ovl").hidden = true; submit(false); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") $("ovl").hidden = true; });
+
+      function submit(auto) {
+        if (S.submitting || S.finished) return;
+        S.submitting = true;
+        clearTimeout(S.saveTimer);
+        $("bSubmit").disabled = true;
+        $("bSubmit").innerHTML = '<span class="spin"></span> Submitting';
+
+        api("submit", {
+          token: S.token, paper: S.paper.code, answers: S.answers,
+          autoSubmitted: !!auto, leftPage: S.leftPage
+        }).then(function (r) {
+          S.submitting = false;
+          if (isExpired(r)) return endSession(auto ? "window" : "expired");
+          if (!r || !r.ok) {
+            $("bSubmit").disabled = false;
+            $("bSubmit").textContent = "Submit examination";
+            alert((r && r.error) || "Could not submit. Try again, and tell your invigilator if it keeps failing.");
+            return;
+          }
+          finish(r, auto);
+        }).catch(function () {
+          S.submitting = false;
+          $("bSubmit").disabled = false;
+          $("bSubmit").textContent = "Submit examination";
+          alert("Could not reach the examination service. Your answers are saved. Try again, and tell your invigilator if it keeps failing.");
+        });
+      }
+
+      function finish(r, auto) {
+        S.finished = true;
+        stopTickers();
+        window.removeEventListener("beforeunload", warnLeave);
+        document.removeEventListener("visibilitychange", onHide);
+        $("doneTitle").textContent = auto ? "Time up, paper submitted" : "Submitted successfully";
+        $("doneMsg").textContent = (auto
+          ? "Your time ran out, so your paper was submitted for you. "
+          : "") + "Your answers have been received and recorded" +
+          (typeof r.answered === "number" && typeof r.total === "number"
+            ? ", " + r.answered + " of " + r.total + " questions answered." : ".") +
+          " There is nothing else you need to do.";
+        $("doneRef").textContent = r.reference || "";
+        if (typeof r.percent === "number") {
+          $("doneScore").hidden = false;
+          $("doneScore").innerHTML = "<span>Score: <strong>" + r.correct + "</strong> of " + r.total + ", " + r.percent + " per cent</span>";
+        } else {
+          $("doneScore").hidden = true;
+        }
+        S.paper = null;
+        show("vDone");
+      }
+      $("bBack").addEventListener("click", loadPapers);
+
+      /* ---------------- tickers ---------------- */
+      function startTicker(k, fn, ms) { stopTicker(k); fn(); TICKERS[k] = setInterval(fn, ms); }
+      function stopTicker(k) { if (TICKERS[k]) { clearInterval(TICKERS[k]); delete TICKERS[k]; } }
+      function stopTickers() { Object.keys(TICKERS).forEach(stopTicker); }
+
+      /* ---------------- boot ---------------- */
+      if (!CONFIG.endpoint) $("configNote").hidden = false;
+      setWho();
+      if (S.token) loadPapers(); else show("vAuth");
+    })();
+    </script>
+  </body>
+</html>
