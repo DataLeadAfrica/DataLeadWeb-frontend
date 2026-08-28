@@ -278,6 +278,13 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .dayrow.off .dd,.dayrow.off .da{color:var(--muted)}
 .dayrow .fl{color:var(--amber);font-size:12px;flex-shrink:0}
 .dayrow .da .lr{display:block;font-style:normal;font-size:11.5px;color:var(--clay);margin-top:3px}
+.dayrow.counted .dd{color:var(--ink)}
+.dayrow .da .cnt{font-family:var(--display-md);font-weight:500;font-size:12.5px;color:var(--clay)}
+.paytick{display:flex;align-items:center;gap:4px;flex-shrink:0;cursor:pointer;
+  font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+.paytick input{width:auto;margin:0;cursor:pointer}
+.paytick:hover{color:var(--clay)}
+.dayrow.counted .paytick{color:var(--clay)}
 .daybtn{border:none;background:none;padding:0 2px;font-size:13px;opacity:.35;flex-shrink:0;
   line-height:1;border-radius:6px}
 .daybtn:hover{opacity:1;border:none;background:var(--orange-light)}
@@ -1659,6 +1666,37 @@ function paintRegister(){
 let P = null, P_PAY = [];
 // Notes on this person's days, keyed by date. Filled by pMonth.
 let NOTES = {};
+// Days they did not log that a manager has judged were worked.
+let MARKS = {};
+window.tickPaid = tickPaid;
+
+// ============================================================
+// COUNTING A DAY THAT WAS WORKED BUT NEVER LOGGED
+// compute_pay pro-rates salary by days counted, so a working day with
+// nothing against it costs that person a day's pay. Ticking this says
+// a named person judged the day was worked. It writes no activity: the
+// timesheet stays a record of what the person themselves said, and this
+// is a decision recorded beside it, not a forgery of one.
+// ============================================================
+async function tickPaid(iso, el){
+  if(!P) return;
+  const on = el.checked;
+  let reason = null;
+  if(on){
+    reason = prompt("Count " + iso + " as worked for " + (P.display_name || P.full_name) + "?\n\n" +
+                    "Their pay is worked out from days counted, so this puts back the day they lost " +
+                    "by not logging it. Say why you know it was worked.");
+    if(reason === null || reason === undefined){ el.checked = false; return; }
+    if(!String(reason).trim()){ el.checked = false; toast("A reason is needed. It is the only record of why."); return; }
+  }
+  el.disabled = true;
+  const { data, error } = await db.rpc("mark_day_paid",
+    { p_staff: P.id, p_date: iso, p_on: on, p_reason: reason });
+  el.disabled = false;
+  if(error){ el.checked = !on; toast("Could not. " + error.message); return; }
+  toast(on ? "Counted. Payroll will pay for it." : "Taken off. It no longer counts.");
+  await pMonth(P.id, P_Y, P_M);
+}
 window.askDay = askDay; window.saveDayNote = saveDayNote;
 // The month currently on screen for this person. Starts at today's month and
 // moves with the Earlier / Later buttons. Kept apart from the real current
@@ -1795,17 +1833,21 @@ async function pMonth(id, Y, M){
   const lastD = new Date(Y, M, 0).getDate();
   const last  = Y + "-" + String(M).padStart(2,"0") + "-" + lastD;
 
-  const [dRes, lRes, hRes, nRes] = await Promise.all([
+  const [dRes, lRes, hRes, nRes, mRes] = await Promise.all([
     db.rpc("staff_month", { p_staff: id, p_year: Y, p_month: M }),
     db.rpc("staff_leave_days", { p_staff: id, p_from: first, p_to: last }),
     db.from("public_holidays").select("*").gte("holiday", first).lte("holiday", last),
-    db.rpc("day_notes", { p_staff: id, p_from: first, p_to: last })
+    db.rpc("day_notes", { p_staff: id, p_from: first, p_to: last }),
+    db.rpc("paid_day_marks_for", { p_staff: id, p_year: Y, p_month: M })
   ]);
   if(oops("Their month", dRes.error) || oops("Their leave", lRes.error) || oops("Holidays", hRes.error)) return;
   // Notes are an extra, not a reason to fail the whole panel.
   if(nRes.error) console.warn("day_notes:", nRes.error.message);
   NOTES = {};
   (nRes.data||[]).forEach(n => { (NOTES[n.work_date] = NOTES[n.work_date] || []).push(n); });
+  if(mRes.error) console.warn("paid_day_marks:", mRes.error.message);
+  MARKS = {};
+  (mRes.data||[]).forEach(m => { MARKS[m.work_date] = m; });
 
   const DAYS = {}, LEAVE = {}, HOL = {};
   (dRes.data||[]).forEach(r => DAYS[r.work_date] = r);
@@ -1834,7 +1876,7 @@ async function pMonth(id, Y, M){
 
     // ----- the readable row: what they actually say they did -----
     const dayLabel = DOWFULL[w].slice(0,3) + " " + d + " " + MONTHS[M-1].slice(0,3);
-    let rcls = "dayrow", hcell = "", acell = "", flagCell = "";
+    let rcls = "dayrow", hcell = "", acell = "", flagCell = "", payTick = "";
     if(hol){
       rcls += " off"; hcell = "\u2014"; acell = "Public holiday: " + esc(hol);
     } else if(lev){
@@ -1848,24 +1890,45 @@ async function pMonth(id, Y, M){
       if(rec.ai_flag) flagCell = '<span class="fl" title="Flagged as thin">&#9873;</span>';
     } else {
       rcls += " gap"; hcell = "\u2014";
-      acell = i > todayISO ? "Not yet" : "Nothing logged";
+      const mk = MARKS[i];
+      if(mk){
+        rcls = rcls.replace(" gap", " counted");
+        acell = '<b class="cnt">Counted for pay</b>' +
+          '<em class="lr">Not logged. ' + esc(mk.marked_by) + " judged it was worked" +
+          (mk.reason ? ": " + esc(mk.reason) : "") + '</em>';
+      } else {
+        acell = i > todayISO ? "Not yet" : "Nothing logged";
+      }
+      // pay is pro-rated by days counted, so an unlogged working day in
+      // the past costs them a day's salary. This is how it gets put right,
+      // without anybody writing an activity on their behalf.
+      if(i <= todayISO && !hol){
+        payTick = '<label class="paytick" title="Count this day for pay">' +
+          '<input type="checkbox"' + (mk ? " checked" : "") +
+          ' onchange="tickPaid(\'' + i + '\', this)"><span>pay</span></label>';
+      }
     }
     const notes = NOTES[i] || [];
     const noteBtn = '<button class="daybtn" onclick="askDay(\'' + i + '\')" title="Comment on this day">' +
       (notes.length ? "\uD83D\uDDE8 " + notes.length : "\uD83D\uDDE8") + '</button>';
 
     rows += '<div class="' + rcls + (notes.length ? " noted" : "") + '"><span class="dd">' + dayLabel + '</span>' +
-      '<span class="dh">' + hcell + '</span><span class="da">' + acell + '</span>' + flagCell + noteBtn + '</div>' +
+      '<span class="dh">' + hcell + '</span><span class="da">' + acell + '</span>' + flagCell + payTick + noteBtn + '</div>' +
       '<div class="dnotes" id="dn-' + i + '">' + renderNotes(notes, i) + '</div>';
   }
 
+  const counted = Object.keys(MARKS).length;
   $("p-days").innerHTML =
     '<div class="dhead">Day by day</div>' +
     (rows || '<p style="color:var(--faint);font-size:13px;padding:10px 0">No working days in this month.</p>') +
-    (logged ? '<div class="dhead" style="border-top:1px solid var(--line);margin-top:6px">' +
+    (logged || counted ? '<div class="dhead" style="border-top:1px solid var(--line);margin-top:6px">' +
       logged + " day" + (logged===1?"":"s") + " logged \u00b7 " + Math.round(hours*10)/10 + " hours" +
+      (counted ? " \u00b7 " + counted + " counted without a log" : "") +
       (gaps ? " \u00b7 " + gaps + " working day" + (gaps===1?"":"s") + " gone by with nothing against " + (gaps===1?"it":"them") : "") +
-      '</div>' : "");
+      '<span style="display:block;text-transform:none;letter-spacing:0;font-size:12px;color:var(--muted);margin-top:5px">' +
+      'Pay is worked out from ' + (logged + counted) + ' of ' + working + ' working days' +
+      (gaps ? ". Tick the pay box on any day that was worked but not logged." : ".") +
+      '</span></div>' : "");
 
   const nextBtn = $("p-next");
   if(nextBtn){
