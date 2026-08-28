@@ -433,10 +433,31 @@ function msg(id, kind, title, body){ const e = $(id); if(e) e.innerHTML = '<div 
 function btn(id, busy, label){ const b = $(id); if(!b) return; b.disabled = busy;
   b.innerHTML = busy ? '<span class="spin"></span>'+label+"\u2026" : label; }
 
+// A notification is a courtesy. It must never be the reason a button
+// sits on "Working" for ever over work that has already been saved.
+//
+// The chain behind this is long: browser to Edge Function to Apps Script
+// to Gmail. If any link stalls there is nothing telling the browser, so
+// the await simply never returns. Ten seconds and we stop waiting. The
+// email may still arrive; we just stop holding the screen for it.
+const NOTIFY_TIMEOUT_MS = 10000;
+
 async function notify(event, toEmail, toName, extra = {}){
+  if(!toEmail) return false;
   try {
-    const { error } = await db.functions.invoke("notify", { body: { event, to_email: toEmail, to_name: toName, ...extra } });
-    if(error){ console.warn("notify:", error.message); return false; }
+    const sending = db.functions.invoke("notify", {
+      body: { event, to_email: toEmail, to_name: toName, ...extra }
+    });
+    const result = await Promise.race([
+      sending,
+      new Promise(res => setTimeout(() => res({ timedOut: true }), NOTIFY_TIMEOUT_MS))
+    ]);
+    if(result && result.timedOut){
+      console.warn("notify: gave up waiting after " + (NOTIFY_TIMEOUT_MS/1000) + "s for", event);
+      sending.catch(e => console.warn("notify (late):", e));
+      return false;
+    }
+    if(result && result.error){ console.warn("notify:", result.error.message); return false; }
     return true;
   } catch(e){ console.warn("notify:", e); return false; }
 }
