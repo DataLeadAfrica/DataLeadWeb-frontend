@@ -127,8 +127,61 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
         <div id="li-msg"></div>
         <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+        <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:12px">
+          <a href="#" onclick="showClaim();return false" style="color:var(--faint)">Forgotten your password?</a>
+        </p>
         <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:14px">
           First time here? <a href="/cowrie-shell/staff.html" style="color:var(--orange)">Set up your account</a>.
+        </p>
+      </div>
+
+      <!-- Somebody the office has approved, setting their own password.
+           No link, no email: the approval is the proof, and it lasts an hour. -->
+      <div class="plate hidden" id="claim">
+        <p style="font-size:13px;color:var(--faint);line-height:1.6;margin-bottom:16px">
+          Ask the Head of Operations or the CEO to approve a password change for you.
+          Once they have, you have one hour to set a new one here.
+        </p>
+        <div class="fld"><label>Your work email</label>
+          <input type="email" id="cl-email" autocomplete="username"></div>
+        <div class="fld"><label>New password</label>
+          <input type="password" id="cl-pass" autocomplete="new-password"></div>
+        <div class="fld"><label>Type it again</label>
+          <input type="password" id="cl-again" autocomplete="new-password"></div>
+        <div id="cl-msg"></div>
+        <button class="btn-primary" style="width:100%" id="cl-btn" onclick="claimPassword()">Set my password</button>
+        <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:12px">
+          <a href="#" onclick="showSignIn();return false" style="color:var(--faint)">Back to signing in</a>
+          &nbsp;&middot;&nbsp;
+          <a href="#" onclick="showForgot();return false" style="color:var(--faint)">Email me a link instead</a>
+        </p>
+      </div>
+
+      <!-- asking for a link. Hidden until someone says they have forgotten. -->
+      <div class="plate hidden" id="forgot">
+        <div class="fld"><label>Your work email</label>
+          <input type="email" id="fg-email" autocomplete="username"></div>
+        <div id="fg-msg"></div>
+        <button class="btn-primary" style="width:100%" id="fg-btn" onclick="sendReset()">Send me a link</button>
+        <p style="font-size:12.5px;color:var(--faint);text-align:center;margin-top:12px">
+          <a href="#" onclick="showSignIn();return false" style="color:var(--faint)">Back to signing in</a>
+        </p>
+        <p style="font-size:12px;color:var(--faint);line-height:1.6;margin-top:14px">
+          The link takes a few minutes and sometimes lands in spam. If nothing arrives,
+          ask the Head of Operations to reset it for you rather than trying again and again.
+        </p>
+      </div>
+
+      <!-- where the link lands. Only ever shown when Supabase says this is a recovery. -->
+      <div class="plate hidden" id="recover">
+        <div class="fld"><label>New password</label>
+          <input type="password" id="rc-new" autocomplete="new-password"></div>
+        <div class="fld"><label>Type it again</label>
+          <input type="password" id="rc-again" autocomplete="new-password"></div>
+        <div id="rc-msg"></div>
+        <button class="btn-primary" style="width:100%" id="rc-btn" onclick="setNewPassword()">Set it</button>
+        <p style="font-size:12px;color:var(--faint);text-align:center;margin-top:12px">
+          Eight characters at least.
         </p>
       </div>
       <p class="why">
@@ -166,13 +219,129 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt
 const ini = n => String(n||"").replace(/^(Dr|Prof|Mr|Mrs|Ms|Miss|Engr|Barr|Chief)\.?\s+/i,"")
                   .split(/\s+/).map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
 window.signIn = signIn; window.signOut = signOut;
+window.showForgot = showForgot; window.showSignIn = showSignIn;
+window.sendReset = sendReset; window.setNewPassword = setNewPassword;
+window.showClaim = showClaim; window.claimPassword = claimPassword;
 
 function msg(kind, title, body){
   $("li-msg").innerHTML = '<div class="msg ' + kind + '"><b>' + title + '</b>' + esc(body) + '</div>';
 }
 
-db.auth.onAuthStateChange((_e, s) => { if(s) show(); });
-(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) show(); })();
+// A recovery link signs you in with a session that exists only to let you
+// set a new password. If we treated it as an ordinary sign in, the doors
+// would open and the person would never get the chance to change it.
+let RECOVERING = false;
+
+db.auth.onAuthStateChange((e, s) => {
+  if(e === "PASSWORD_RECOVERY"){ RECOVERING = true; showRecover(); return; }
+  if(s && !RECOVERING) show();
+});
+(async () => {
+  // Supabase puts the recovery marker in the fragment, which never reaches
+  // the server, so it has to be read here.
+  if(location.hash && location.hash.includes("type=recovery")){
+    RECOVERING = true; showRecover(); return;
+  }
+  const { data:{ session } } = await db.auth.getSession();
+  if(session && !RECOVERING) show();
+})();
+
+function showForgot(){
+  $("gate").querySelector(".plate").classList.add("hidden");
+  $("claim").classList.add("hidden");
+  $("forgot").classList.remove("hidden");
+  const e = $("li-email").value || $("cl-email").value; if(e) $("fg-email").value = e;
+  $("fg-email").focus();
+}
+function showClaim(){
+  $("gate").querySelector(".plate").classList.add("hidden");
+  $("forgot").classList.add("hidden");
+  $("claim").classList.remove("hidden");
+  const e = $("li-email").value; if(e) $("cl-email").value = e;
+  $("cl-email").focus();
+}
+function showSignIn(){
+  $("forgot").classList.add("hidden");
+  $("claim").classList.add("hidden");
+  $("gate").querySelector(".plate").classList.remove("hidden");
+}
+
+// Setting your own password after the office has approved it. The hour
+// they opened is the proof; there is no link and no email in this path,
+// which is why it works when email does not.
+async function claimPassword(){
+  const email = ($("cl-email").value||"").trim().toLowerCase();
+  const a = String($("cl-pass").value||""), b2 = String($("cl-again").value||"");
+  const say = (k,t,body) => { $("cl-msg").innerHTML = '<div class="msg ' + k + '"><b>' + t + '</b>' + esc(body) + '</div>'; };
+
+  if(!email){ say("err","Missing email","Enter the address you sign in with."); return; }
+  if(a.length < 8){ say("err","Too short","Eight characters at least."); return; }
+  if(a !== b2){ say("err","They do not match","The two boxes have to be the same."); return; }
+
+  const btn = $("cl-btn"); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Setting\u2026';
+  let res = null, err = null;
+  try {
+    const r = await db.functions.invoke("claim-password", { body: { email, password: a } });
+    res = r.data; err = r.error;
+    // invoke() calls any 4xx an error, but the reason is in the body and
+    // "non-2xx status code" tells the person nothing they can act on.
+    if(err && r.data && r.data.error) err = { message: r.data.error };
+  } catch(e){ err = { message: String(e) }; }
+  btn.disabled = false; btn.textContent = "Set my password";
+
+  if(err || !res || !res.ok){
+    say("err","Not set", (err && err.message) || "It did not go through.");
+    return;
+  }
+  say("ok","Done","Signing you in\u2026");
+  $("cl-pass").value = ""; $("cl-again").value = "";
+  const { error: sErr } = await db.auth.signInWithPassword({ email, password: a });
+  if(sErr){ say("ok","Password set","Now sign in with it."); showSignIn(); $("li-email").value = email; }
+}
+function showRecover(){
+  $("gate").classList.remove("hidden");
+  $("gate").querySelector(".plate").classList.add("hidden");
+  $("forgot").classList.add("hidden");
+  $("recover").classList.remove("hidden");
+  const h = $("gate").querySelector("h1");
+  if(h) h.innerHTML = "Set a new<br>password.";
+  const p = $("gate").querySelector(".hero p");
+  if(p) p.textContent = "Choose something you will remember. You will be signed in straight afterwards.";
+}
+
+async function sendReset(){
+  const email = ($("fg-email").value||"").trim().toLowerCase();
+  if(!email){ fmsg("err","Missing email","Enter the address you sign in with."); return; }
+  const b = $("fg-btn"); b.disabled = true; b.innerHTML = '<span class="spin"></span>Sending\u2026';
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + "/cowrie-shell/index.html"
+  });
+  b.disabled = false; b.textContent = "Send me a link";
+  // Deliberately the same answer either way. Telling a stranger which
+  // addresses exist is how you hand somebody a list of staff emails.
+  fmsg("ok","Check your email",
+    "If " + email + " is on the register, a link is on its way. It expires in an hour.");
+}
+
+async function setNewPassword(){
+  const a = String($("rc-new").value||""), c = String($("rc-again").value||"");
+  const box = $("rc-msg");
+  const say = (k,t,b2) => { box.innerHTML = '<div class="msg ' + k + '"><b>' + t + '</b>' + esc(b2) + '</div>'; };
+  if(a.length < 8){ say("err","Too short","Eight characters at least."); return; }
+  if(a !== c){ say("err","They do not match","The two boxes have to be the same."); return; }
+  const b = $("rc-btn"); b.disabled = true; b.innerHTML = '<span class="spin"></span>Setting\u2026';
+  const { error } = await db.auth.updateUser({ password: a });
+  b.disabled = false; b.textContent = "Set it";
+  if(error){ say("err","Could not set it", error.message); return; }
+  say("ok","Done","Signing you in\u2026");
+  RECOVERING = false;
+  history.replaceState(null, "", location.pathname);   // drop the token from the address bar
+  setTimeout(show, 900);
+}
+
+function fmsg(kind, title, body){
+  $("fg-msg").innerHTML = '<div class="msg ' + kind + '"><b>' + title + '</b>' + esc(body) + '</div>';
+}
 
 async function signIn(){
   const email = ($("li-email").value||"").trim(), pass = $("li-pass").value;

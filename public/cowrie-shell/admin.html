@@ -234,6 +234,9 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .qrow .t span{font-size:12px;color:var(--muted);display:block}
 .rowbtn{padding:5px 11px;font-size:12px}
 .qrow .amt{font-family:var(--display-md);font-variant-numeric:tabular-nums;flex:none;font-size:13px}
+.pwout{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;letter-spacing:.06em;
+  background:var(--paper);border:1px dashed var(--orange);border-radius:10px;
+  padding:12px 16px;margin:10px 0;user-select:all;text-align:center;color:var(--ink)}
 
 .rqwrap{border-bottom:1px solid var(--line)}
 .rqwrap:last-child{border:none}
@@ -578,6 +581,23 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         <div id="pr-msg"></div>
         <button class="btn-primary" style="width:100%" id="pr-btn" onclick="changeSalary()">Record the change</button>
       </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>Signing in</h3>
+        <div class="ps">If they have lost their password, open an hour for them. They then go to
+          the sign in page, choose <b>I have been approved</b>, and type a new password themselves.
+          You never see it, so it never has to travel.</div></div>
+        <button class="btn-primary" id="pp-btn" onclick="allowPasswordChange()">Let them set one</button></div>
+      <div id="pp-state" class="ps" style="margin-bottom:10px"></div>
+      <div id="rp-msg"></div>
+      <div id="rp-out"></div>
+      <details style="margin-top:14px">
+        <summary style="cursor:pointer;font-size:12.5px;color:var(--muted)">Or set one for them yourself</summary>
+        <p class="hint" style="margin:8px 0 10px">Only if they cannot get to a computer. You would have to
+          read the password out, which means it travels. Letting them type their own is better.</p>
+        <button id="rp-btn" onclick="resetPassword()">Set a new password</button>
+      </details>
     </div>
 
     <div class="panel">
@@ -1874,6 +1894,110 @@ let P_Y = 0, P_M = 0;
 window.pShiftMonth = pShiftMonth;
 window.togglePromo = togglePromo; window.promoCalc = promoCalc; window.changeSalary = changeSalary;
 window.toggleStatus = toggleStatus; window.statusChange = statusChange; window.setStatus = setStatus;
+window.resetPassword = resetPassword;
+window.allowPasswordChange = allowPasswordChange; window.closePasswordWindow = closePasswordWindow;
+
+// ============================================================
+// LETTING SOMEBODY SET THEIR OWN PASSWORD
+// An email and a new password prove nothing on their own: staff emails
+// are on the company website. This is the missing proof. You open an
+// hour for one named person, and only in that hour, and only for that
+// address, can a password be set without signing in first.
+//
+// Better than handing one over: the password never travels. Not down a
+// phone, not on WhatsApp, not on paper. Only they ever know it.
+// ============================================================
+async function allowPasswordChange(){
+  if(!P) return;
+  const who = P.display_name || P.full_name;
+  if(!confirm("Let " + who + " set a new password?\n\n" +
+              "They get one hour, and one go. Their current password keeps working until they use it.")) return;
+
+  btn("pp-btn", true, "Opening");
+  const { data, error } = await db.rpc("grant_password_permit", { p_staff: P.id });
+  btn("pp-btn", false, "Let them set one");
+  if(error){ msg("rp-msg","err","Not opened", error.message); return; }
+
+  $("rp-msg").innerHTML = "";
+  $("rp-out").innerHTML =
+    '<div class="alert ok"><b>Open for the next hour</b>' +
+      'Tell ' + esc(data.full_name) + ' to go to <b>dataleadafrica.com/cowrie</b>, click ' +
+      '<b>I have been approved to set a new password</b>, and use ' + esc(data.email) + '. ' +
+      'They pick the password themselves and you never see it.' +
+    '</div>';
+  await paintPermit();
+}
+
+async function closePasswordWindow(){
+  if(!P) return;
+  const { data, error } = await db.rpc("revoke_password_permit", { p_staff: P.id });
+  if(error){ toast("Could not. " + error.message); return; }
+  toast(data ? "Closed. They can no longer set one." : "There was nothing open.");
+  $("rp-out").innerHTML = "";
+  await paintPermit();
+}
+
+async function paintPermit(){
+  const box = $("pp-state"); if(!box || !P) return;
+  const { data, error } = await db.rpc("password_permit_state", { p_staff: P.id });
+  if(error || !data){ box.textContent = ""; return; }
+  const when = t => t ? new Date(t).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}) : "";
+  if(data.state === "open"){
+    box.innerHTML = '<span style="color:var(--clay)">Open until ' + when(data.expires_at) +
+      ', granted by ' + esc(data.by || "") + '.</span> ' +
+      '<button class="rowbtn" onclick="closePasswordWindow()">Close it now</button>';
+  } else if(data.state === "used"){
+    box.innerHTML = '<span style="color:var(--green)">They set a new password at ' + when(data.used_at) + '.</span>';
+  } else if(data.state === "expired"){
+    box.textContent = "The last hour ran out without being used.";
+  } else if(data.state === "revoked"){
+    box.textContent = "The last one was closed early.";
+  } else {
+    box.textContent = "";
+  }
+}
+
+// ============================================================
+// SETTING SOMEBODY'S PASSWORD FOR THEM
+// The service role key can do anything to the database, so it cannot
+// be in this page. The Edge Function holds it: this asks, it checks
+// who is asking, and it sends back a new password once.
+//
+// Read it out to them and let them change it under My details. It is
+// shown here and never stored anywhere legible, so if it is lost the
+// answer is to set another one.
+// ============================================================
+async function resetPassword(){
+  if(!P) return;
+  const who = P.display_name || P.full_name;
+  if(!confirm("Set a new password for " + who + "?\n\n" +
+              "Their current one stops working immediately. You will see the new one once, " +
+              "so have somewhere to write it down.")) return;
+
+  btn("rp-btn", true, "Setting");
+  $("rp-out").innerHTML = "";
+  let res, err = null;
+  try {
+    const r = await db.functions.invoke("set-password", { body: { staff_id: P.id } });
+    res = r.data; err = r.error;
+    // invoke() reports a 4xx as an error but the reason is in the body,
+    // and "Edge Function returned a non-2xx status code" tells nobody anything.
+    if(err && r.data && r.data.error) err = { message: r.data.error };
+  } catch(e){ err = { message: String(e) }; }
+  btn("rp-btn", false, "Set a new password");
+
+  if(err || !res || !res.ok){
+    msg("rp-msg","err","Not changed", (err && err.message) || (res && res.error) || "It did not go through.");
+    return;
+  }
+  $("rp-msg").innerHTML = "";
+  $("rp-out").innerHTML =
+    '<div class="alert ok" style="margin-top:14px"><b>Done. Here it is, once.</b>' +
+      '<div class="pwout">' + esc(res.password) + '</div>' +
+      'Give this to ' + esc(res.full_name) + ' yourself, not by email. They sign in at ' +
+      'dataleadafrica.com/cowrie with ' + esc(res.email) + ' and change it under My details.' +
+    '</div>';
+}
 
 async function openPerson(id){
   P = REG.find(r => r.id === id);
@@ -1881,6 +2005,8 @@ async function openPerson(id){
   go("person");
   const now = new Date(), Y = now.getFullYear(), M = now.getMonth() + 1;
   P_Y = Y; P_M = M;
+  if($("rp-out")) $("rp-out").innerHTML = "";
+  if($("rp-msg")) $("rp-msg").innerHTML = "";
 
   $("p-av").textContent   = ini(P.full_name);
   $("p-name").textContent = P.display_name || P.full_name;
@@ -1900,7 +2026,7 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id) ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit() ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
   $("promo").classList.add("hidden"); $("stat").classList.add("hidden");

@@ -1136,6 +1136,20 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       </div>
     </div>
     </div>
+
+    <div class="card" style="margin-top:22px">
+      <h3>Change your password</h3>
+      <p class="cardsub">You are signed in, so you do not need the old one. Pick something you will
+        remember: eight characters at least.</p>
+      <div class="grid2">
+        <div class="fld"><label>New password</label>
+          <input type="password" id="pw-new" autocomplete="new-password"></div>
+        <div class="fld"><label>Type it again</label>
+          <input type="password" id="pw-again" autocomplete="new-password"></div>
+      </div>
+      <div id="pw-msg"></div>
+      <button class="btn-primary" id="pw-btn" onclick="changePassword()">Change it</button>
+    </div>
   </section>
 </div>
 
@@ -1299,6 +1313,27 @@ async function signUp(){
 }
 
 async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+// ============================================================
+// CHANGING YOUR OWN PASSWORD
+// No email involved, because you are already signed in and Supabase
+// will take the change on the strength of that. Which matters here:
+// the project has no mail server of its own, so anything that depends
+// on an email arriving is the least reliable path available.
+// ============================================================
+window.changePassword = changePassword;
+async function changePassword(){
+  const a = String($("pw-new").value || ""), b = String($("pw-again").value || "");
+  if(a.length < 8){ msg("pw-msg","err","Too short","Eight characters at least."); return; }
+  if(a !== b){ msg("pw-msg","err","They do not match","The two boxes have to be the same."); return; }
+
+  btn("pw-btn", true, "Changing");
+  const { error } = await db.auth.updateUser({ password: a });
+  btn("pw-btn", false, "Change it");
+  if(error){ msg("pw-msg","err","Could not change it", error.message); return; }
+  $("pw-new").value = ""; $("pw-again").value = "";
+  msg("pw-msg","ok","Changed","Use the new one next time you sign in. You stay signed in here.");
+}
 
 // ---------- dashboard ----------
 let PROFILE = null;
