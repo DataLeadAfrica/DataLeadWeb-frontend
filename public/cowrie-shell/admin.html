@@ -282,6 +282,14 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .dayrow .da .cnt{font-family:var(--display-md);font-weight:500;font-size:12.5px;color:var(--clay)}
 .paytick{display:flex;align-items:center;gap:4px;flex-shrink:0;cursor:pointer;
   font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+
+.expick{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:11px;padding:4px 12px}
+.expick-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;cursor:pointer;
+  border-bottom:1px solid var(--line)}
+.expick-row:last-child{border:none}
+.expick-row input{width:auto;margin:0;cursor:pointer}
+.expick-row span{flex:1}
+.expick-row em{font-style:normal;font-size:11.5px;color:var(--faint)}
 .paytick input{width:auto;margin:0;cursor:pointer}
 .paytick:hover{color:var(--clay)}
 .dayrow.counted .paytick{color:var(--clay)}
@@ -850,6 +858,31 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
   </section>
 
   <!-- ============ POLICIES ============ -->
+  <section id="v-export" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Download timesheets</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      A month, for everyone or for the people you pick, as a spreadsheet. One row per person
+      per day, with what they wrote and whether the day counts for pay.</p>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Which month</h3></div></div>
+      <div class="grid3">
+        <div class="fld"><label>Year</label><input id="ex-year" type="number"></div>
+        <div class="fld"><label>Month</label><select id="ex-month"></select></div>
+        <div class="fld"><label>Format</label><select id="ex-fmt">
+          <option value="xlsx">Excel workbook (.xlsx)</option>
+          <option value="csv">Comma separated (.csv)</option>
+        </select></div>
+      </div>
+      <div class="fld"><label>Who</label>
+        <div id="ex-who" class="expick"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+        <p class="hint">Nobody ticked means everyone.</p>
+      </div>
+      <div id="ex-msg"></div>
+      <button class="btn-primary" id="ex-btn" onclick="downloadTimesheets()">Download</button>
+    </div>
+  </section>
+
   <section id="v-projects" class="hidden">
     <button class="back" onclick="go('hub')">&larr; Admin</button>
     <h1 style="font-size:27px;margin-bottom:4px">Projects</h1>
@@ -1449,7 +1482,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects"];
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects","export"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1465,6 +1498,7 @@ function go(v){
   if(v === "reqs")     loadReqs();
   if(v === "perf")     initPerf();
   if(v === "projects") loadProjects();
+  if(v === "export")   initExport();
 }
 
 // ============================================================
@@ -1509,6 +1543,9 @@ async function loadHub(){
     { v:"perf", ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
       t:"Performance", s:"Set the week, the month, the quarter, the year. See how anyone is tracking.",
       flag:(f.targets_open||0) + " target" + ((f.targets_open||0)===1?"":"s") + " open", warn:false },
+    { v:"export", ic:'<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/>',
+      t:"Download timesheets", s:"A month as a spreadsheet, for everyone or just the people you pick.",
+      flag:"Export", warn:false },
     { v:"projects", ic:'<path d="M3 7h18M3 12h18M3 17h10"/>',
       t:"Projects", s:"What money can be charged to. Add one and it appears for everyone.",
       flag:"Manage", warn:false },
@@ -1528,6 +1565,138 @@ async function loadHub(){
     '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + d.ic + '</svg>' +
     '<b>' + d.t + '</b><span>' + d.s + '</span>' +
     '<span class="flag ' + (d.warn ? "warn" : "ok") + '">' + esc(d.flag) + '</span></button>').join("");
+}
+
+// ============================================================
+// DOWNLOADING A MONTH
+//
+// One row per person per working day: what they wrote, whether it was
+// counted by hand and by whom, and whether it counts for pay. Everything
+// a reviewer needs is on the row, so nothing has to be looked up once it
+// is open in a spreadsheet.
+//
+// A real .xlsx rather than a zip of files. A workbook with one sheet of
+// days and one of totals is easier to review than a folder of separate
+// files, and it sorts and filters the way you would want.
+// ============================================================
+window.initExport = initExport; window.downloadTimesheets = downloadTimesheets;
+
+function initExport(){
+  const now = new Date();
+  if(!val("ex-year")) set("ex-year", now.getFullYear());
+  if(!$("ex-month").options.length){
+    $("ex-month").innerHTML = MONTHS.map((m,i) =>
+      '<option value="' + (i+1) + '"' + (i+1 === now.getMonth()+1 ? " selected" : "") + '>' + m + '</option>').join("");
+  }
+  loadExportPeople();
+}
+
+async function loadExportPeople(){
+  const { data, error } = await db.from("admin_register").select("id,full_name,department");
+  if(oops("The register", error)) return;
+  $("ex-who").innerHTML = !data || !data.length
+    ? '<p style="color:var(--faint);font-size:13px">Nobody on the register.</p>'
+    : data.map(p => '<label class="expick-row"><input type="checkbox" class="ex-p" value="' + p.id + '">' +
+        '<span>' + esc(p.full_name) + '</span>' +
+        '<em>' + esc(p.department || "") + '</em></label>').join("");
+}
+
+async function downloadTimesheets(){
+  const y = Number(val("ex-year")), m = Number($("ex-month").value);
+  const fmt = $("ex-fmt").value;
+  if(!y || !m){ msg("ex-msg","err","Pick a month","A year and a month are needed."); return; }
+
+  const picked = [...document.querySelectorAll(".ex-p:checked")].map(c => c.value);
+  btn("ex-btn", true, "Gathering");
+  const { data, error } = await db.rpc("month_timesheet_export",
+    { p_year: y, p_month: m, p_staff: picked.length ? picked : null });
+  btn("ex-btn", false, "Download");
+  if(error){ msg("ex-msg","err","Could not gather it", error.message); return; }
+  if(!data || !data.length){
+    msg("ex-msg","warn","Nothing there", "No days for " + MONTHS[m-1] + " " + y +
+        (picked.length ? " for the people you picked." : "."));
+    return;
+  }
+
+  const label = MONTHS[m-1] + "-" + y;
+  const head = ["Staff","Email","Department","Date","Day","Type","Hours","Activity",
+                "Flagged","Late reason","Planned ahead","Counted by","Why counted","Counts for pay"];
+  const rows = data.map(r => [
+    r.staff_name, r.email, r.department || "", r.work_date, r.day_of_week, r.day_type,
+    r.hours === null || r.hours === undefined ? "" : Number(r.hours),
+    r.activity || "", r.flagged ? "yes" : "", r.late_reason || "",
+    r.provisional ? "yes" : "", r.counted_by || "", r.counted_why || "",
+    r.counts_for_pay ? "yes" : "no"
+  ]);
+
+  if(fmt === "csv"){
+    const esc2 = v => {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    };
+    const csv = [head, ...rows].map(r => r.map(esc2).join(",")).join("\r\n");
+    // the BOM is what makes Excel open UTF-8 correctly rather than as mojibake
+    saveBlob(new Blob(["\uFEFF" + csv], { type:"text/csv;charset=utf-8" }),
+             "Timesheets-" + label + ".csv");
+    msg("ex-msg","ok","Downloaded", rows.length + " rows for " + MONTHS[m-1] + " " + y + ".");
+    return;
+  }
+
+  // a summary per person, so the first thing you see is who is short
+  const per = {};
+  data.forEach(r => {
+    const k = r.staff_name;
+    per[k] = per[k] || { name:k, email:r.email, dept:r.department || "",
+                         logged:0, counted:0, leave:0, holiday:0, gaps:0, hours:0, flagged:0 };
+    const p = per[k];
+    if(r.day_type === "Public holiday") p.holiday++;
+    else if(r.day_type === "Counted, not logged") p.counted++;
+    else if(r.day_type === "Nothing logged") p.gaps++;
+    else if(r.hours === null || r.hours === undefined) p.leave++;
+    else { p.logged++; p.hours += Number(r.hours || 0); if(r.flagged) p.flagged++; }
+  });
+  const sumHead = ["Staff","Email","Department","Days logged","Counted by hand",
+                   "Counts for pay","Leave","Holidays","Not logged","Hours","Flagged days"];
+  const sumRows = Object.values(per).map(p => [
+    p.name, p.email, p.dept, p.logged, p.counted, p.logged + p.counted,
+    p.leave, p.holiday, p.gaps, Math.round(p.hours*10)/10, p.flagged
+  ]);
+
+  try {
+    msg("ex-msg","info","Building the workbook","One moment.");
+    const XLSX = await import("https://esm.sh/xlsx@0.18.5");
+    const wb = XLSX.utils.book_new();
+
+    const s1 = XLSX.utils.aoa_to_sheet([sumHead, ...sumRows]);
+    s1["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:15},{wch:15},
+                   {wch:8},{wch:10},{wch:11},{wch:9},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, s1, "Summary");
+
+    const s2 = XLSX.utils.aoa_to_sheet([head, ...rows]);
+    s2["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:6},{wch:20},{wch:7},
+                   {wch:70},{wch:9},{wch:30},{wch:13},{wch:20},{wch:30},{wch:14}];
+    s2["!autofilter"] = { ref: XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:rows.length, c:head.length-1} }) };
+    s2["!freeze"] = { xSplit:0, ySplit:1 };
+    XLSX.utils.book_append_sheet(wb, s2, "Day by day");
+
+    const out = XLSX.write(wb, { bookType:"xlsx", type:"array" });
+    saveBlob(new Blob([out], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+             "Timesheets-" + label + ".xlsx");
+    msg("ex-msg","ok","Downloaded",
+        rows.length + " rows across " + sumRows.length + " people, for " + MONTHS[m-1] + " " + y + ".");
+  } catch(err){
+    console.warn("xlsx:", err);
+    msg("ex-msg","err","The spreadsheet builder would not load",
+        "Choose the comma separated option instead. It opens in Excel just the same.");
+  }
+}
+
+function saveBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
 // ============================================================
@@ -1899,10 +2068,16 @@ async function pMonth(id, Y, M){
       } else {
         acell = i > todayISO ? "Not yet" : "Nothing logged";
       }
-      // pay is pro-rated by days counted, so an unlogged working day in
-      // the past costs them a day's salary. This is how it gets put right,
-      // without anybody writing an activity on their behalf.
-      if(i <= todayISO && !hol){
+      // Pay is pro-rated by days counted, so an unlogged working day
+      // costs them a day's salary. This is how it gets put right, without
+      // anybody writing an activity on their behalf.
+      //
+      // Any working day of this month, including ones still to come:
+      // payroll closes before the month does, so the last working days
+      // are exactly the ones most likely to need it. A holiday is
+      // already paid through working_days and counting it would pay
+      // twice, so it gets no tick.
+      if(!hol){
         payTick = '<label class="paytick" title="Count this day for pay">' +
           '<input type="checkbox"' + (mk ? " checked" : "") +
           ' onchange="tickPaid(\'' + i + '\', this)"><span>pay</span></label>';
