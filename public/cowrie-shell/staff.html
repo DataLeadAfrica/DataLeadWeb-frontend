@@ -87,6 +87,8 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .goals-card .g-t{font-family:var(--display-md);font-weight:500;font-size:15px;
   line-height:1.35;color:var(--ink)}
 .goals-card .g-m{font-size:11.5px;color:var(--clay);margin-top:2px}
+.goals-card .g-m .soon{font-family:var(--display-md);font-weight:500;color:var(--clr-orange)}
+.goals-card .goal.ahead{opacity:.82}
 .goals-card .g-d{font-size:13px;color:var(--gray);margin-top:5px;line-height:1.55}
 .goals-card .g-k{font-size:12.5px;color:var(--clay);margin-top:4px}
 @media(max-width:640px){ .goals-card{padding:16px} .goals-card .g-t{font-size:14px} }
@@ -2819,13 +2821,41 @@ async function checkPayday(){
   const p = data[0];
   if(p.status !== "certified" && p.status !== "paid") return;
   const days = (Date.now() - new Date(p.certified_at)) / 86400000;
-  if(days > 3) return;                        // only while it is news
+  // Certification is news for three days. Being paid is worth showing
+  // for longer: it is the answer to "has my salary come in".
+  if(days > 3 && p.status !== "paid") return;
+  // Has the money actually gone out, or is it only certified? Until
+  // Finance ticks the line these are different things, and telling
+  // somebody their pay "is on its way" when nothing has moved is the
+  // sort of small untruth that costs a system its credibility.
+  let paidOn = null, remitted = null;
+  try {
+    const { data: st } = await db.rpc("my_payment_state", { p_year: p.year, p_month: p.month });
+    if(st && st.state === "paid"){ paidOn = st.paid_on; remitted = st.paye_remitted_on; }
+    else if(st) remitted = st.paye_remitted_on;
+  } catch(e){ console.warn("payment state:", e); }
+
   const el = $("now");
   el.className = "now pay";
+
+  if(paidOn){
+    const pd = Math.floor((Date.now() - new Date(paidOn + "T00:00:00")) / 86400000);
+    el.innerHTML = '<div class="txt"><div class="ey">Paid ' +
+      (pd < 1 ? "today" : pd === 1 ? "yesterday" : fmtDate(paidOn)) + '</div>' +
+      '<h2>You have been paid for ' + MONTHS[p.month-1] + '</h2>' +
+      '<p>' + N(p.transfer_amount) + ' was sent to your account' +
+      (pd < 1 ? " today" : " on " + fmtDate(paidOn)) + '. ' +
+      (remitted ? "Your PAYE was remitted on " + fmtDate(remitted) + ". " : "") +
+      'The full breakdown is in My finance.</p></div>' +
+      '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
+    return;
+  }
+
   el.innerHTML = '<div class="txt"><div class="ey">Certified ' +
     (days < 1 ? "today" : Math.round(days) + " days ago") + '</div>' +
     '<h2>Your ' + MONTHS[p.month-1] + ' payslip is ready</h2>' +
-    '<p>' + N(p.transfer_amount) + ' is on its way to your account. The full breakdown is in My finance.</p></div>' +
+    '<p>' + N(p.transfer_amount) + ' has been approved. Finance will confirm here once the ' +
+    'transfer has gone out. The full breakdown is in My finance.</p></div>' +
     '<button class="go" onclick="go(\'finance\')">See the breakdown \u2192</button>';
 }
 
@@ -2888,9 +2918,15 @@ async function loadGoals(){
     const company = data.filter(g => g.scope === "company");
     const mine    = data.filter(g => g.scope === "department");
 
-    const one = g => '<div class="goal">' +
+    const one = g => '<div class="goal' + (g.state === "ahead" ? " ahead" : "") + '">' +
       '<div class="g-t">' + esc(g.title) + '</div>' +
-      '<div class="g-m">' + esc(g.period) + " \u00b7 to " + fmtDate(g.ends_on) + '</div>' +
+      '<div class="g-m">' +
+        // Say which month it is for, in words. A goal set in August for
+        // September has to be readable as September's, or somebody will
+        // think they are behind on something that has not started.
+        (g.state === "ahead" ? '<b class="soon">Coming: </b>' : "") +
+        esc(g.period_label || g.period) +
+      '</div>' +
       (g.detail  ? '<div class="g-d">' + esc(g.detail) + '</div>' : "") +
       (g.measure ? '<div class="g-k">How we will know: ' + esc(g.measure) + '</div>' : "") +
       '</div>';

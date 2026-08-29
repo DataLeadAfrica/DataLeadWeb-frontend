@@ -2078,7 +2078,12 @@ async function loadGoals(){
   const row = (g, child) => '<div class="goalrow' + (child ? " child" : "") +
       (g.is_live ? "" : " past") + '">' +
     '<span class="t"><b>' + esc(g.title) +
-      (g.is_live ? "" : ' <span class="tag role">not live</span>') + '</b>' +
+      // "not live" alone was ambiguous: a goal set for next month looked
+      // exactly like one whose month had passed. Say which.
+      (g.is_live ? ""
+        : (g.starts_on > new Date().toISOString().slice(0,10)
+            ? ' <span class="tag acting">starts ' + fmtDate(g.starts_on) + '</span>'
+            : ' <span class="tag role">period has passed</span>')) + '</b>' +
     '<span>' + esc(g.period) + " \u00b7 " + fmtDate(g.starts_on) + " to " + fmtDate(g.ends_on) +
       (g.department ? " \u00b7 " + esc(g.department) : "") +
       (g.set_by ? " \u00b7 set by " + esc(g.set_by) : "") + '</span>' +

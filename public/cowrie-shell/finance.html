@@ -134,6 +134,10 @@ th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06e
   font-weight:500;padding:0 10px 8px 0;font-family:var(--display-md)}
 td{padding:10px 10px 10px 0;border-top:1px solid var(--line);vertical-align:top}
 td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center;width:54px;padding-right:0}
+.paytick{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin:0}
+.paytick input{width:auto;margin:0;cursor:pointer;transform:scale(1.2)}
+.paytick input:disabled{cursor:not-allowed;opacity:.32}
 .split{display:flex;height:42px;border-radius:9px;overflow:hidden;margin-top:4px}
 .split i{display:flex;align-items:center;justify-content:center;font-family:var(--display-md);
   font-size:12px;color:#fff;min-width:0}
@@ -573,6 +577,76 @@ async function loadHub(){
 // ============================================================
 window.runPayroll = runPayroll; window.paintPayroll = paintPayroll;
 window.addAdjustment = addAdjustment; window.dropAdjustment = dropAdjustment;
+window.tickPaid = tickPaid; window.tickPaye = tickPaye;
+
+// ============================================================
+// PAID, AND REMITTED
+// Two ticks against each name. payroll_lines has always had a 'paid'
+// status and nothing ever set it, so a month could be computed and
+// certified and then sit there with no record that the money had
+// actually gone out, and no way for the person to know.
+//
+// A line has to be certified before it can be paid. The order is
+// compute, certify, pay: the CEO agrees the figures, then Finance acts
+// on them. The database refuses it either way; this only explains why.
+// ============================================================
+let PAYMARKS = {};
+
+function payCells(x){
+  const m = PAYMARKS[x.staff];
+  if(!m) return '<td class="c">\u2014</td><td class="c">\u2014</td>';
+  const paid = !!m.paid_on, rem = !!m.paye_remitted_on;
+  const noBank = !x.account_number;
+  const cert = m.status !== "draft";
+
+  return '<td class="c"><label class="paytick" title="' +
+      (paid ? "Paid " + fmtDate(m.paid_on) : noBank ? "No bank details on file"
+            : !cert ? "Certify the month first" : "Mark as paid") + '">' +
+      '<input type="checkbox"' + (paid ? " checked" : "") +
+      ((noBank || !cert) && !paid ? " disabled" : "") +
+      ' onchange="tickPaid(' + m.line_id + ', this)"></label></td>' +
+    '<td class="c"><label class="paytick" title="' +
+      (rem ? "Remitted " + fmtDate(m.paye_remitted_on)
+           : Number(m.paye || 0) === 0 ? "No PAYE on this line" : "Mark PAYE as remitted") + '">' +
+      '<input type="checkbox"' + (rem ? " checked" : "") +
+      (Number(m.paye || 0) === 0 && !rem ? " disabled" : "") +
+      ' onchange="tickPaye(' + m.line_id + ', this)"></label></td>';
+}
+
+async function tickPaid(lineId, el){
+  const on = el.checked;
+  let ref = null;
+  if(on){
+    ref = prompt("Mark as paid.\n\nA transfer reference, if you have one. Leave blank if not.");
+    if(ref === null || ref === undefined){ el.checked = false; return; }
+  } else if(!confirm("Untick this? It goes back to certified and unpaid.")){
+    el.checked = true; return;
+  }
+  el.disabled = true;
+  const { data, error } = await db.rpc("mark_line_paid",
+    { p_line_id: lineId, p_on: on, p_reference: ref || null });
+  el.disabled = false;
+  if(error){ el.checked = !on; toast("Could not. " + error.message); return; }
+  toast(on ? (data && data.full_name ? data.full_name.split(" ")[0] : "They") + " is marked paid. They can see it now."
+           : "Unticked.");
+  await paintPayroll();
+}
+
+async function tickPaye(lineId, el){
+  const on = el.checked;
+  let ref = null;
+  if(on){
+    ref = prompt("Mark PAYE as remitted.\n\nThe FIRS reference, if you have one.");
+    if(ref === null || ref === undefined){ el.checked = false; return; }
+  }
+  el.disabled = true;
+  const { error } = await db.rpc("mark_line_paye",
+    { p_line_id: lineId, p_on: on, p_reference: ref || null });
+  el.disabled = false;
+  if(error){ el.checked = !on; toast("Could not. " + error.message); return; }
+  toast(on ? "PAYE marked as remitted." : "Unticked.");
+  await paintPayroll();
+}
 window.exportSchedule = exportSchedule;
 
 async function initPayroll(){
@@ -632,18 +706,32 @@ async function paintPayroll(){
 
   const { data: r, error: re } = await db.from("payroll_roster").select("*").eq("year", y).eq("month", m);
   if(oops("The roster", re)) return;
+
+  // The roster view does not carry the payroll_lines id, and the ticks
+  // need it. This asks the database for the marks by year and month,
+  // keyed on the person's NAME, which is the one thing the roster is
+  // certain to have. Matching on a column I have not seen would be a
+  // guess, and a wrong guess here ticks the wrong person as paid.
+  PAYMARKS = {};
+  try {
+    const pd = await db.rpc("payment_marks_for", { p_year: y, p_month: m });
+    if(pd.error) console.warn("payment marks:", pd.error.message);
+    else (pd.data || []).forEach(l => { PAYMARKS[l.staff_name] = l; });
+  } catch(e){ console.warn("payment marks:", e); }
   $("roster").innerHTML = !r || !r.length
     ? '<p style="color:var(--faint);font-size:13px">Nothing computed.</p>'
     : '<div style="overflow-x:auto"><table style="min-width:660px"><thead><tr>' +
       '<th>Staff</th><th class="n">Gross</th><th class="n">PAYE</th><th class="n">Net</th>' +
-      '<th class="n">Claims</th><th class="n">Transfer</th><th>Bank</th></tr></thead><tbody>' +
+      '<th class="n">Claims</th><th class="n">Transfer</th><th>Bank</th>' +
+      '<th class="c">Paid</th><th class="c">PAYE</th></tr></thead><tbody>' +
       r.map(x => '<tr><td><b style="font-family:var(--display-md);font-weight:500">' + esc(x.staff) + '</b>' +
         '<div style="font-size:11px;color:var(--faint)">' + esc(x.kind) +
         (x.rent_is_assumed ? ' \u00b7 <span style="color:var(--amber)">rent assumed</span>' : "") + '</div></td>' +
         '<td class="n">' + N(x.gross_salary) + '</td><td class="n">' + N(x.paye) + '</td>' +
         '<td class="n">' + N(x.net_pay) + '</td><td class="n">' + N(x.total_claims) + '</td>' +
         '<td class="n"><b>' + N(x.transfer_amount) + '</b></td>' +
-        '<td>' + (x.account_number ? esc(x.bank_name || "") : '<span class="tag bad">no details</span>') + '</td></tr>').join("") +
+        '<td>' + (x.account_number ? esc(x.bank_name || "") : '<span class="tag bad">no details</span>') + '</td>' +
+        payCells(x) + '</tr>').join("") +
       '</tbody></table></div>';
 
   const { data: a, error: ae } = await db.rpc("adjustments_for", { p_year: y, p_month: m });
