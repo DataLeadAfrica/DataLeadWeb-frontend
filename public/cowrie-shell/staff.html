@@ -1387,7 +1387,16 @@ async function enterApp(){
   loadTimesheet();          // the strip is the home screen now
   loadMinis(); loadWaiting(); checkPayday();
 
-  if(isManager()) loadApprovals();
+  // Load the approvals queue for everybody. The three views behind it
+  // already decide who may see what, through can_approve_for, so asking
+  // is safe and an empty answer simply renders nothing.
+  //
+  // It used to be gated on isManager(), which read only ROLES. But most
+  // managers here hold no special role: Gabriel and Onishola are plain
+  // staff who happen to have people reporting to them. Their queue was
+  // never fetched, so they saw nothing while still being emailed that a
+  // timesheet needed them.
+  loadApprovals();
   // Finance and certification have their own doors now.
   if(isFinance() || isCertifier()) showOtherDoors();
 
@@ -2133,8 +2142,26 @@ function fmtRange(a,b){ return fmtDate(a) + " to " + fmtDate(b); }
 const MGR_ROLES = ["head","director","coo","super_admin"];
 let RV_SUB = null, PR_PLAN = null, RV_META = null, PR_META = null;
 
+// isManager is now only used for wording, not for whether the queue
+// loads. Anyone with a report is a manager whatever their role says,
+// and the views decide what they can actually see.
+let HAS_REPORTS = false;
+
 function isManager(){
-  return (PROFILE.roles || []).some(r => MGR_ROLES.includes(r));
+  return HAS_REPORTS || (PROFILE.roles || []).some(r => MGR_ROLES.includes(r));
+}
+
+// These two were CALLED in five places and DEFINED IN NONE. enterApp
+// hit "isFinance is not defined" every time anybody signed in, and
+// everything after that line stopped: the other portal doors, and on
+// some paths the approvals queue with it. It is why leave never
+// appeared for anybody.
+function isFinance(){
+  return (PROFILE.roles || []).includes("finance");
+}
+
+function isCertifier(){
+  return (PROFILE.roles || []).some(r => ["super_admin","coo"].includes(r));
 }
 
 async function loadApprovals(){
@@ -2772,19 +2799,27 @@ async function checkPayday(){
 
 // ---- someone else's clock ----
 async function loadWaiting(){
-  if(!isManager()) return;
-  const [pl, ts] = await Promise.all([
+  // No role check. The three views already decide who may see what, so
+  // asking is safe and an empty answer simply hides the button. Gating
+  // this on ROLES meant Gabriel and Onishola, who manage people but hold
+  // no special role, never saw that anything was waiting on them.
+  const [pl, ts, lv] = await Promise.all([
     db.from("plans_to_review").select("staff,submitted_at"),
-    db.from("timesheets_to_review").select("staff,signed_at")
+    db.from("timesheets_to_review").select("staff,signed_at"),
+    // Leave was never counted here at all, so a leave request on its own
+    // could never make this button appear. It is why Felicia's maternity
+    // request reached nobody.
+    db.from("leave_to_approve").select("staff,created_at")
   ]);
-  const n = (pl.data?.length || 0) + (ts.data?.length || 0);
+  const n = (pl.data?.length || 0) + (ts.data?.length || 0) + (lv.data?.length || 0);
   const w = $("waiting");
   if(!n){ w.classList.add("hidden"); return; }
   w.classList.remove("hidden");
 
   // Name who has waited longest. A number is a nag; a name is a reason.
   const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
-               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"}))]
+               ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"})),
+               ...(lv.data||[]).map(x => ({who:x.staff, at:x.created_at, what:"leave request"}))]
               .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
   let tail = "";
   if(all.length){
@@ -2795,6 +2830,7 @@ async function loadWaiting(){
   const bits = [];
   if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
   if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
+  if(lv.data?.length) bits.push(lv.data.length + " leave request" + (lv.data.length>1?"s":""));
 
   w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
     bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
