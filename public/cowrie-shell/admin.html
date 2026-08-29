@@ -234,6 +234,16 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .qrow .t span{font-size:12px;color:var(--muted);display:block}
 .rowbtn{padding:5px 11px;font-size:12px}
 .qrow .amt{font-family:var(--display-md);font-variant-numeric:tabular-nums;flex:none;font-size:13px}
+
+.goalrow{display:flex;align-items:flex-start;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
+.goalrow:last-child{border:none}
+.goalrow .t{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.goalrow .t b{font-family:var(--display-md);font-weight:500;font-size:14px;overflow-wrap:anywhere}
+.goalrow .t span{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.goalrow.child{padding-left:20px;border-left:2px solid var(--orange-light);margin-left:2px}
+.goalrow.child .t b{font-size:13px;font-weight:400}
+.goalrow.past{opacity:.55}
+@media(max-width:640px){ .goalrow{flex-wrap:wrap} }
 .pwout{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;letter-spacing:.06em;
   background:var(--paper);border:1px dashed var(--orange);border-radius:10px;
   padding:12px 16px;margin:10px 0;user-select:all;text-align:center;color:var(--ink)}
@@ -903,6 +913,57 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     </div>
   </section>
 
+  <section id="v-goals" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Goals</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      What the firm is pointed at for a month or a week. Everybody sees these on their home
+      screen. Each department head then writes what it means for their own people.</p>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3 id="gl-form-h">Set a goal</h3>
+        <div class="ps">Keep it to one sentence somebody could repeat back.</div></div>
+        <button class="rowbtn hidden" id="gl-cancel" onclick="cancelGoalEdit()">Cancel</button></div>
+      <div class="grid3">
+        <div class="fld"><label>For</label>
+          <select id="gl-scope" onchange="glScope()">
+            <option value="">The whole firm</option>
+          </select></div>
+        <div class="fld"><label>Period</label>
+          <select id="gl-period" onchange="glDates()">
+            <option value="week">A week</option>
+            <option value="month" selected>A month</option>
+            <option value="quarter">A quarter</option>
+            <option value="year">A year</option>
+          </select></div>
+        <div class="fld hidden" id="gl-parent-wrap"><label>Serves which company goal</label>
+          <select id="gl-parent"></select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label id="gl-which-lab">Which month</label>
+          <select id="gl-which" onchange="glWhich()"></select></div>
+        <div class="fld"><label>Covers</label>
+          <input id="gl-span" readonly style="background:var(--sand);cursor:default"></div>
+      </div>
+      <div class="fld"><label>The goal</label>
+        <input id="gl-title" placeholder="Every timesheet signed off by the 28th"></div>
+      <div class="fld"><label>What it means (optional)</label>
+        <textarea id="gl-detail" rows="2" placeholder="A sentence or two of context, if the goal needs it."></textarea></div>
+      <div class="fld"><label>How we will know (optional)</label>
+        <input id="gl-measure" placeholder="Thirteen of thirteen, before payroll runs"></div>
+      <div id="gl-msg"></div>
+      <button class="btn-primary" id="gl-btn" onclick="saveGoal()">Set it</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h3>The goals</h3>
+        <div class="ps">A goal is never deleted, only put away. What the firm was pointed at
+          in a given month is part of the record.</div></div>
+        <button class="rowbtn" onclick="loadGoals()">Refresh</button></div>
+      <div id="gl-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
   <section id="v-projects" class="hidden">
     <button class="back" onclick="go('hub')">&larr; Admin</button>
     <h1 style="font-size:27px;margin-bottom:4px">Projects</h1>
@@ -1521,7 +1582,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects","export"];
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects","export","goals"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1538,6 +1599,7 @@ function go(v){
   if(v === "perf")     initPerf();
   if(v === "projects") loadProjects();
   if(v === "export")   initExport();
+  if(v === "goals")    initGoals();
 }
 
 // ============================================================
@@ -1582,6 +1644,9 @@ async function loadHub(){
     { v:"perf", ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
       t:"Performance", s:"Set the week, the month, the quarter, the year. See how anyone is tracking.",
       flag:(f.targets_open||0) + " target" + ((f.targets_open||0)===1?"":"s") + " open", warn:false },
+    { v:"goals", ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>',
+      t:"Goals", s:"What the firm is pointed at this month, and this week. Everybody sees it.",
+      flag:"Set", warn:false },
     { v:"export", ic:'<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/>',
       t:"Download timesheets", s:"A month as a spreadsheet, for everyone or just the people you pick.",
       flag:"Export", warn:false },
@@ -1647,8 +1712,16 @@ async function downloadTimesheets(){
 
   const picked = [...document.querySelectorAll(".ex-p:checked")].map(c => c.value);
   btn("ex-btn", true, "Gathering");
-  const { data, error } = await db.rpc("month_timesheet_export",
-    { p_year: y, p_month: m, p_staff: picked.length ? picked : null });
+  const args = { p_year: y, p_month: m, p_staff: picked.length ? picked : null };
+  const [dRes, rRes] = await Promise.all([
+    db.rpc("month_timesheet_export", args),
+    // The four things people actually WRITE when they sign off a month.
+    // An extra: if it fails the days should still download.
+    db.rpc("month_reports_export", args)
+  ]);
+  const { data, error } = dRes;
+  if(rRes.error) console.warn("month_reports_export:", rRes.error.message);
+  const reports = rRes.data || [];
   btn("ex-btn", false, "Download");
   if(error){ msg("ex-msg","err","Could not gather it", error.message); return; }
   if(!data || !data.length){
@@ -1668,16 +1741,35 @@ async function downloadTimesheets(){
     r.counts_for_pay ? "yes" : "no"
   ]);
 
+  // the monthly reports: what each person wrote about the month itself
+  const repHead = ["Staff","Email","Department","Timesheet","Days logged","Counted by hand",
+                   "Signed off","Approved by","Summary","Achievements","Challenges","What is next"];
+  const repRows = reports.map(r => [
+    r.staff_name, r.email, r.department || "", r.status,
+    Number(r.days_logged || 0), Number(r.counted_days || 0),
+    r.signed_at ? String(r.signed_at).slice(0,10) : "",
+    r.approved_by || "", r.summary || "", r.achievements || "",
+    r.challenges || "", r.what_is_next || ""
+  ]);
+
   if(fmt === "csv"){
     const esc2 = v => {
       const s = String(v ?? "");
       return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
     };
-    const csv = [head, ...rows].map(r => r.map(esc2).join(",")).join("\r\n");
+    const toCsv = (h, r) => [h, ...r].map(x => x.map(esc2).join(",")).join("\r\n");
     // the BOM is what makes Excel open UTF-8 correctly rather than as mojibake
-    saveBlob(new Blob(["\uFEFF" + csv], { type:"text/csv;charset=utf-8" }),
+    saveBlob(new Blob(["\uFEFF" + toCsv(head, rows)], { type:"text/csv;charset=utf-8" }),
              "Timesheets-" + label + ".csv");
-    msg("ex-msg","ok","Downloaded", rows.length + " rows for " + MONTHS[m-1] + " " + y + ".");
+    // CSV holds one table, so the reports go as their own file rather
+    // than being crammed underneath the days where nothing could read them
+    if(repRows.length){
+      saveBlob(new Blob(["\uFEFF" + toCsv(repHead, repRows)], { type:"text/csv;charset=utf-8" }),
+               "Monthly-reports-" + label + ".csv");
+    }
+    msg("ex-msg","ok","Downloaded", rows.length + " day rows" +
+        (repRows.length ? ", and " + repRows.length + " monthly reports as a second file" : "") +
+        " for " + MONTHS[m-1] + " " + y + ".");
     return;
   }
 
@@ -1718,11 +1810,25 @@ async function downloadTimesheets(){
     s2["!freeze"] = { xSplit:0, ySplit:1 };
     XLSX.utils.book_append_sheet(wb, s2, "Day by day");
 
+    // What each person wrote about the month itself. Twenty one rows of
+    // daily activity still do not tell you what somebody thought of
+    // their own month, and until now the only way to read these was to
+    // open each submission on screen, one at a time.
+    if(repRows.length){
+      const s3 = XLSX.utils.aoa_to_sheet([repHead, ...repRows]);
+      s3["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:18},{wch:12},{wch:15},
+                     {wch:12},{wch:22},{wch:60},{wch:60},{wch:60},{wch:60}];
+      s3["!autofilter"] = { ref: XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:repRows.length, c:repHead.length-1} }) };
+      XLSX.utils.book_append_sheet(wb, s3, "Monthly reports");
+    }
+
     const out = XLSX.write(wb, { bookType:"xlsx", type:"array" });
     saveBlob(new Blob([out], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
              "Timesheets-" + label + ".xlsx");
     msg("ex-msg","ok","Downloaded",
-        rows.length + " rows across " + sumRows.length + " people, for " + MONTHS[m-1] + " " + y + ".");
+        rows.length + " day rows across " + sumRows.length + " people" +
+        (repRows.length ? ", and " + repRows.length + " monthly reports" : "") +
+        ", for " + MONTHS[m-1] + " " + y + ".");
   } catch(err){
     console.warn("xlsx:", err);
     msg("ex-msg","err","The spreadsheet builder would not load",
@@ -1736,6 +1842,259 @@ function saveBlob(blob, name){
   a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+// ============================================================
+// GOALS
+// Not the same thing as targets. A target is one person's, with a KPI
+// and a rating at the end, and all that already exists. A goal is what
+// the whole firm is pointed at, and then what each department takes
+// that to mean for their own people.
+//
+// A department goal must hang off a company one. A department pulling
+// in its own direction with nothing above it is exactly what this is
+// meant to prevent.
+// ============================================================
+window.initGoals = initGoals; window.loadGoals = loadGoals; window.saveGoal = saveGoal;
+window.glScope = glScope; window.glDates = glDates; window.glWhich = glWhich; window.editGoal = editGoal;
+window.cancelGoalEdit = cancelGoalEdit; window.binGoal = binGoal;
+
+let GOAL_EDIT = null, GOAL_PARENTS = [];
+
+async function initGoals(){
+  // which departments may this person write for
+  const { data: depts, error } = await db.from("departments").select("id,name").order("name");
+  if(!oops("Departments", error) && depts){
+    $("gl-scope").innerHTML = '<option value="">The whole firm</option>' +
+      depts.map(d => '<option value="' + d.id + '">' + esc(d.name) + '</option>').join("");
+  }
+  glDates();
+  await loadGoals();
+}
+
+// Pick a period, then pick which one. Two date boxes meant typing four
+// numbers that had to agree with each other and with the period, and
+// nothing stopped somebody setting a "month" that ran from the 3rd to
+// the 19th. Choosing "August 2026" cannot be got wrong.
+//
+// GL_SPANS holds the actual dates behind each option, so the form still
+// sends real dates to the database and nothing downstream changes.
+let GL_SPANS = {};
+
+const GL_MONTHS = ["January","February","March","April","May","June",
+                   "July","August","September","October","November","December"];
+
+const glIso = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") +
+                   "-" + String(d.getDate()).padStart(2,"0");
+
+// Monday of the week a date falls in
+function glMonday(d){
+  const x = new Date(d);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+
+function glDates(){
+  const p = $("gl-period").value, now = new Date(), y = now.getFullYear();
+  GL_SPANS = {};
+  let opts = [], label = "Which month", pick = null;
+
+  if(p === "year"){
+    label = "Which year";
+    // last year, this year, next: a goal is sometimes set before the year turns
+    for(let k = -1; k <= 1; k++){
+      const yy = y + k, key = "y" + yy;
+      GL_SPANS[key] = [yy + "-01-01", yy + "-12-31"];
+      opts.push([key, String(yy)]);
+      if(k === 0) pick = key;
+    }
+  } else if(p === "quarter"){
+    label = "Which quarter";
+    for(let yy = y; yy <= y + 1; yy++){
+      for(let q = 0; q < 4; q++){
+        const a = new Date(yy, q*3, 1), b = new Date(yy, q*3+3, 0), key = "q" + yy + "-" + q;
+        GL_SPANS[key] = [glIso(a), glIso(b)];
+        opts.push([key, "Q" + (q+1) + " " + yy + "  (" + GL_MONTHS[q*3].slice(0,3) +
+                   " to " + GL_MONTHS[q*3+2].slice(0,3) + ")"]);
+        if(yy === y && q === Math.floor(now.getMonth()/3)) pick = key;
+      }
+    }
+  } else if(p === "month"){
+    label = "Which month";
+    // three months back to nine forward: enough to set next quarter's
+    // goals without an endless list
+    for(let k = -3; k <= 9; k++){
+      const d = new Date(y, now.getMonth() + k, 1);
+      const a = new Date(d.getFullYear(), d.getMonth(), 1);
+      const b = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+      const key = "m" + d.getFullYear() + "-" + d.getMonth();
+      GL_SPANS[key] = [glIso(a), glIso(b)];
+      opts.push([key, GL_MONTHS[d.getMonth()] + " " + d.getFullYear()]);
+      if(k === 0) pick = key;
+    }
+  } else {
+    label = "Which week";
+    // four weeks back to twelve forward, Monday to Friday
+    for(let k = -4; k <= 12; k++){
+      const mon = glMonday(now); mon.setDate(mon.getDate() + k*7);
+      const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+      const key = "w" + glIso(mon);
+      GL_SPANS[key] = [glIso(mon), glIso(fri)];
+      const same = mon.getMonth() === fri.getMonth();
+      opts.push([key, mon.getDate() + (same ? "" : " " + GL_MONTHS[mon.getMonth()].slice(0,3)) +
+                 " to " + fri.getDate() + " " + GL_MONTHS[fri.getMonth()].slice(0,3) + " " + fri.getFullYear() +
+                 (k === 0 ? "  (this week)" : "")]);
+      if(k === 0) pick = key;
+    }
+  }
+
+  $("gl-which-lab").textContent = label;
+  $("gl-which").innerHTML = opts.map(([v,t]) =>
+    '<option value="' + v + '"' + (v === pick ? " selected" : "") + '>' + esc(t) + '</option>').join("");
+  glWhich();
+}
+
+// Show the dates the choice actually means, so nobody has to trust it blindly.
+function glWhich(){
+  const span = GL_SPANS[$("gl-which").value];
+  set("gl-span", span ? fmtDate(span[0]) + " to " + fmtDate(span[1]) : "");
+}
+
+// A department goal has to say which company goal it serves.
+function glScope(){
+  const isDept = !!$("gl-scope").value;
+  $("gl-parent-wrap").classList.toggle("hidden", !isDept);
+  if(isDept){
+    $("gl-parent").innerHTML = GOAL_PARENTS.length
+      ? GOAL_PARENTS.map(g => '<option value="' + g.id + '">' + esc(g.title) +
+          ' (' + esc(g.period) + ')</option>').join("")
+      : '<option value="">No company goal to hang it off yet</option>';
+  }
+}
+
+async function saveGoal(){
+  const title = val("gl-title");
+  if(!title){ msg("gl-msg","err","No goal","Say what it is, in a sentence."); return; }
+  const dept = $("gl-scope").value ? Number($("gl-scope").value) : null;
+  const parent = dept ? ($("gl-parent").value ? Number($("gl-parent").value) : null) : null;
+  if(dept && !parent){
+    msg("gl-msg","err","Which company goal does it serve?",
+        "A department goal hangs off one of the firm's. Set a company goal first if there is none.");
+    return;
+  }
+
+  const span = GL_SPANS[$("gl-which").value];
+  if(!span){ msg("gl-msg","err","Pick a period","Choose which month, week, quarter or year."); return; }
+
+  btn("gl-btn", true, GOAL_EDIT ? "Saving" : "Setting");
+  const { error } = await db.rpc("set_goal", {
+    p_period: $("gl-period").value,
+    p_starts_on: span[0], p_ends_on: span[1],
+    p_title: title, p_detail: val("gl-detail"), p_measure: val("gl-measure"),
+    p_department: dept, p_parent: parent, p_id: GOAL_EDIT
+  });
+  btn("gl-btn", false, GOAL_EDIT ? "Save the change" : "Set it");
+  if(error){ msg("gl-msg","err","Not set", error.message); return; }
+
+  msg("gl-msg","ok", GOAL_EDIT ? "Changed" : "Set",
+      dept ? "That department sees it now." : "Everybody sees it on their home screen now.");
+  cancelGoalEdit();
+  await loadGoals();
+}
+
+function editGoal(id){
+  const g = (ALL_GOALS || []).find(x => x.id === id);
+  if(!g) return;
+  GOAL_EDIT = id;
+  $("gl-scope").value = g.department_id || "";
+  $("gl-period").value = g.period;
+  glDates();
+  // find the option whose dates match this goal, so editing shows the
+  // period it was actually set for rather than snapping to today's
+  const match = Object.keys(GL_SPANS).find(k =>
+    GL_SPANS[k][0] === g.starts_on && GL_SPANS[k][1] === g.ends_on);
+  if(match){ $("gl-which").value = match; }
+  else {
+    // an older goal whose dates do not line up with any option: keep it
+    // exactly as it is rather than quietly moving it
+    GL_SPANS.__kept = [g.starts_on, g.ends_on];
+    $("gl-which").insertAdjacentHTML("afterbegin",
+      '<option value="__kept" selected>As set: ' + esc(fmtDate(g.starts_on)) +
+      " to " + esc(fmtDate(g.ends_on)) + '</option>');
+    $("gl-which").value = "__kept";
+  }
+  glWhich();
+  set("gl-title", g.title); set("gl-detail", g.detail || ""); set("gl-measure", g.measure || "");
+  glScope();
+  if(g.parent_id) $("gl-parent").value = g.parent_id;
+  $("gl-form-h").textContent = "Change this goal";
+  $("gl-btn").textContent = "Save the change";
+  $("gl-cancel").classList.remove("hidden");
+  $("gl-msg").innerHTML = "";
+  // guarded: an older browser without smooth scrolling should still be
+  // able to edit a goal
+  try { $("v-goals").scrollIntoView({ behavior:"smooth", block:"start" }); } catch(e){}
+}
+
+function cancelGoalEdit(){
+  GOAL_EDIT = null;
+  ["gl-title","gl-detail","gl-measure"].forEach(id => set(id, ""));
+  $("gl-form-h").textContent = "Set a goal";
+  $("gl-btn").textContent = "Set it";
+  $("gl-cancel").classList.add("hidden");
+}
+
+async function binGoal(id, title){
+  if(!confirm("Put away \u201c" + title + "\u201d?\n\n" +
+              "It stops showing on anybody's home screen. Nothing is deleted: what the firm " +
+              "was pointed at in a given month stays on the record.")) return;
+  const { error } = await db.rpc("archive_goal", { p_id: id });
+  if(error){ toast("Could not. " + error.message); return; }
+  toast("Put away.");
+  await loadGoals();
+}
+
+let ALL_GOALS = [];
+
+async function loadGoals(){
+  const { data, error } = await db.rpc("all_goals", { p_include_past: false });
+  if(oops("The goals", error)) return;
+  ALL_GOALS = data || [];
+  GOAL_PARENTS = ALL_GOALS.filter(g => g.scope === "company");
+  glScope();
+
+  const wrap = $("gl-list");
+  if(!ALL_GOALS.length){
+    wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">' +
+      'None yet. Set one for the firm above, then each department head can say what it means for them.</p>';
+    return;
+  }
+
+  const company = ALL_GOALS.filter(g => g.scope === "company");
+  const byParent = {};
+  ALL_GOALS.filter(g => g.scope === "department")
+           .forEach(g => { (byParent[g.parent_id] = byParent[g.parent_id] || []).push(g); });
+
+  const row = (g, child) => '<div class="goalrow' + (child ? " child" : "") +
+      (g.is_live ? "" : " past") + '">' +
+    '<span class="t"><b>' + esc(g.title) +
+      (g.is_live ? "" : ' <span class="tag role">not live</span>') + '</b>' +
+    '<span>' + esc(g.period) + " \u00b7 " + fmtDate(g.starts_on) + " to " + fmtDate(g.ends_on) +
+      (g.department ? " \u00b7 " + esc(g.department) : "") +
+      (g.set_by ? " \u00b7 set by " + esc(g.set_by) : "") + '</span>' +
+    (g.detail  ? '<span>' + esc(g.detail) + '</span>' : "") +
+    (g.measure ? '<span style="color:var(--clay)">How we will know: ' + esc(g.measure) + '</span>' : "") +
+    '</span>' +
+    '<button class="rowbtn" onclick="editGoal(' + g.id + ')">Change</button>' +
+    '<button class="rowbtn" style="margin-left:6px" onclick="binGoal(' + g.id + ',\'' +
+      esc(g.title).replace(/'/g,"\\'") + '\')">Put away</button></div>';
+
+  wrap.innerHTML = company.map(g =>
+    row(g, false) + (byParent[g.id] || []).map(c => row(c, true)).join("")
+  ).join("") +
+  // a department goal whose parent has been put away should not vanish
+  ALL_GOALS.filter(g => g.scope === "department" &&
+                        !company.some(c => c.id === g.parent_id)).map(g => row(g, false)).join("");
 }
 
 // ============================================================

@@ -77,6 +77,19 @@ textarea:focus{outline:2px solid var(--clr-orange);outline-offset:-1px;border-co
 .back:hover{color:var(--clr-gray)}
 .alert.warn{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
 .hint{font-size:12px;color:var(--faint);margin-top:5px}
+/* what the firm is pointed at, on the home screen */
+.goals-card{background:var(--clr-orange-light);border-radius:18px;padding:18px 20px;margin-bottom:22px}
+.goals-card .gh{font-family:var(--display-md);font-size:11px;text-transform:uppercase;
+  letter-spacing:.13em;color:var(--clay);margin-bottom:12px}
+.goals-card .gh.sub{margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,0,0,.07)}
+.goals-card .goal{margin-bottom:12px}
+.goals-card .goal:last-child{margin-bottom:0}
+.goals-card .g-t{font-family:var(--display-md);font-weight:500;font-size:15px;
+  line-height:1.35;color:var(--ink)}
+.goals-card .g-m{font-size:11.5px;color:var(--clay);margin-top:2px}
+.goals-card .g-d{font-size:13px;color:var(--gray);margin-top:5px;line-height:1.55}
+.goals-card .g-k{font-size:12.5px;color:var(--clay);margin-top:4px}
+@media(max-width:640px){ .goals-card{padding:16px} .goals-card .g-t{font-size:14px} }
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;
   background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:12px;
   padding:12px 18px;font-size:13.5px;max-width:min(520px,90vw);box-shadow:0 8px 30px -8px rgba(0,0,0,.25);
@@ -483,6 +496,11 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
         <div class="v" id="m-leave">&mdash;</div>
         <div class="s" id="m-leave-s">&mdash;</div>
       </button>
+    </div>
+
+    <div class="goals-card hidden" id="goals-card">
+      <div class="gh">What we are pointed at</div>
+      <div id="goals-list"></div>
     </div>
 
     <div class="more">
@@ -1385,7 +1403,7 @@ async function enterApp(){
   $("who-av").textContent = ((parts[0]||"")[0] || "") + ((parts[1]||"")[0] || "");
   loadTitles(); loadTargets(); loadPolicies();
   loadTimesheet();          // the strip is the home screen now
-  loadMinis(); loadWaiting(); checkPayday();
+  loadMinis(); loadWaiting(); checkPayday(); loadGoals();
 
   // Load the approvals queue for everybody. The three views behind it
   // already decide who may see what, through can_approve_for, so asking
@@ -2194,7 +2212,21 @@ async function loadApprovals(){
     }).join("");
   }
 
-  // the count lives on the home card now, not a badge here
+  // Leave, and the sick leave a manager has already granted that the
+  // CEO and COO are simply told about.
+  //
+  // Both of these functions were written in full and neither was ever
+  // called from anywhere. That is why "Leave awaiting you" sat on its
+  // Loading placeholder for ever: nothing was ever going to replace it.
+  await Promise.all([
+    loadLeaveQueue().catch(e => {
+      console.warn("leave queue:", e);
+      const w = $("ap-lv");
+      if(w) w.innerHTML = '<div class="alert err"><b>Could not load the leave</b>' +
+        esc(e && e.message ? e.message : String(e)) + '</div>';
+    }),
+    loadLeaveInfo().catch(e => console.warn("leave for information:", e))
+  ]);
 }
 
 // ---- review a timesheet ----
@@ -2834,6 +2866,43 @@ async function loadWaiting(){
 
   w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
     bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
+}
+
+// ============================================================
+// WHAT WE ARE POINTED AT
+// The goals the firm has set for this month or week, and whatever the
+// person's own department has said those mean for them. It sits on the
+// home screen because a goal nobody sees is not a goal.
+//
+// Separate from targets, which are personal, have a KPI, and are rated
+// at the end. Those live under Policies and targets and are untouched.
+// ============================================================
+async function loadGoals(){
+  const card = $("goals-card"), wrap = $("goals-list");
+  if(!card || !wrap) return;
+  try {
+    const { data, error } = await db.rpc("my_goals", { p_on: null });
+    if(error){ console.warn("goals:", error.message); return; }
+    if(!data || !data.length){ card.classList.add("hidden"); return; }
+
+    const company = data.filter(g => g.scope === "company");
+    const mine    = data.filter(g => g.scope === "department");
+
+    const one = g => '<div class="goal">' +
+      '<div class="g-t">' + esc(g.title) + '</div>' +
+      '<div class="g-m">' + esc(g.period) + " \u00b7 to " + fmtDate(g.ends_on) + '</div>' +
+      (g.detail  ? '<div class="g-d">' + esc(g.detail) + '</div>' : "") +
+      (g.measure ? '<div class="g-k">How we will know: ' + esc(g.measure) + '</div>' : "") +
+      '</div>';
+
+    wrap.innerHTML =
+      company.map(one).join("") +
+      (mine.length
+        ? '<div class="gh sub">' + esc(mine[0].department || "Your department") + '</div>' +
+          mine.map(one).join("")
+        : "");
+    card.classList.remove("hidden");
+  } catch(e){ console.warn("goals:", e); }
 }
 
 // ---- the quiet stats ----
