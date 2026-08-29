@@ -794,8 +794,8 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       </div>
 
       <div class="grid2">
-        <div class="fld"><label>From</label><input type="date" id="lv-from" onchange="lvCount()"></div>
-        <div class="fld"><label>To</label><input type="date" id="lv-to" onchange="lvCount()"></div>
+        <div class="fld"><label>From</label><input type="date" id="lv-from" onchange="lvFrom()"></div>
+        <div class="fld"><label>To</label><input type="date" id="lv-to" onchange="lvTo()"></div>
       </div>
 
       <div id="lv-count" class="alert info" style="margin-top:0"></div>
@@ -2870,6 +2870,7 @@ async function loadLeave(){
 }
 
 window.pickKind = k => { $("lv-kind").value = k; lvKind(); $("lv-kind").scrollIntoView({behavior:"smooth", block:"center"}); };
+window.lvFrom = lvFrom; window.lvTo = lvTo;
 
 function lvKind(){
   const k = $("lv-kind").value;
@@ -2891,14 +2892,65 @@ function lvKind(){
   $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
   $("lv-btn").textContent = b.needs_senior
     ? "Send to my line manager" : "Send to my line manager";
+  // changing the kind changes the entitlement, so suggest afresh
+  LV_AUTOFILLED = null;
+  lvFrom();
+}
+
+// ============================================================
+// WHEN DOES THE LEAVE END
+// Maternity is 66 working days. Nobody should have to sit with a
+// calendar counting 66 days forward, skipping weekends and public
+// holidays, to work out their own return date. Pick the kind, pick the
+// start, and the end fills itself in.
+//
+// It is still editable, because people take less than their full
+// entitlement all the time: four days of a ten day paternity leave, a
+// fortnight of the annual fourteen. But if it IS changed, the count
+// panel says so plainly, so neither the person nor their manager can
+// mistake a shortened leave for a full one.
+//
+// Annual leave is deliberately left alone. Nobody takes all fourteen
+// days at once, so prefilling it would be wrong more often than right.
+// ============================================================
+let LV_AUTOFILLED = null;    // the date we suggested, so we can tell if it was changed
+
+async function lvFrom(){
+  await autofillLeaveEnd();
+  await lvCount();
+}
+
+function lvTo(){
+  // They have taken the wheel. Remember, so the note below can say so.
   lvCount();
+}
+
+async function autofillLeaveEnd(){
+  const k = $("lv-kind").value, f = val("lv-from");
+  const b = BAL.find(x => x.kind === k);
+  if(!k || !f || !b) return;
+
+  // Only leave with a fixed statutory entitlement. Annual is taken in
+  // pieces, so filling in all fourteen days would be a nuisance.
+  const days = b.days_per_year;
+  if(k === "annual" || days === null || days === undefined || Number(days) < 1) return;
+
+  // Do not overwrite a date they have already chosen for themselves.
+  const existing = val("lv-to");
+  if(existing && existing !== LV_AUTOFILLED) return;
+
+  try {
+    const { data, error } = await db.rpc("leave_end_after", { p_from: f, p_days: Number(days) });
+    if(error || !data){ console.warn("leave_end_after:", error && error.message); return; }
+    $("lv-to").value = data;
+    LV_AUTOFILLED = data;
+  } catch(e){ console.warn("leave_end_after:", e); }
 }
 
 async function lvCount(){
   const f = val("lv-from"), t = val("lv-to"), k = $("lv-kind").value;
   const box = $("lv-count");
-  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }
-  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
+  if(!f || !t || !k){ box.className = "alert info"; box.innerHTML = "<b>Pick the kind and the dates</b>Weekends and public holidays are not counted."; return; }  if(t < f){ box.className = "alert err"; box.innerHTML = "<b>The end is before the start</b>"; return; }
 
   const { data, error } = await db.rpc("leave_days_in", { p_from: f, p_to: t });
   if(oops("The day count", error)) return;
@@ -2921,8 +2973,20 @@ async function lvCount(){
   if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
   else if(b) bits.push("Your manager decides. It stops there.");
 
+  // If the end date was suggested and they changed it, say so. A short
+  // leave and a full one should never look the same on this screen.
+  const full = b && b.days_per_year !== null && b.days_per_year !== undefined ? Number(b.days_per_year) : null;
+  let changed = "";
+  if(full && k !== "annual" && LV_AUTOFILLED && t !== LV_AUTOFILLED){
+    changed = '<div style="margin-top:7px;color:var(--clay)">' +
+      "You have changed the end date. The full entitlement is " + full +
+      " working days, ending " + fmtDate(LV_AUTOFILLED) + ". You are asking for " + days +
+      (days < full ? ", which is " + (full - days) + " fewer." : ", which is " + (days - full) + " more.") +
+      '</div>';
+  }
+
   box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
-  box.innerHTML = msg + bits.join(" ");
+  box.innerHTML = msg + bits.join(" ") + changed;
 }
 
 async function askLeave(){
