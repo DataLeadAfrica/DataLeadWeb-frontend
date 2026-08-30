@@ -296,6 +296,14 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .paytick{display:flex;align-items:center;gap:4px;flex-shrink:0;cursor:pointer;
   font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
 
+.exwhat{display:flex;flex-direction:column;gap:2px}
+.exwhat label{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;cursor:pointer;
+  border:1px solid var(--line);border-radius:11px;margin-bottom:8px;transition:.15s}
+.exwhat label:hover{border-color:var(--orange)}
+.exwhat input{width:auto;margin:2px 0 0;cursor:pointer;flex-shrink:0}
+.exwhat span{font-size:12.5px;color:var(--muted);line-height:1.5}
+.exwhat span b{display:block;font-family:var(--display-md);font-weight:500;font-size:13.5px;
+  color:var(--ink);margin-bottom:2px}
 .expick{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:11px;padding:4px 12px}
 .expick-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;cursor:pointer;
   border-bottom:1px solid var(--line)}
@@ -893,7 +901,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     <h1 style="font-size:27px;margin-bottom:4px">Download timesheets</h1>
     <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
       A month, for everyone or for the people you pick, as a spreadsheet. One row per person
-      per day, with what they wrote and whether the day counts for pay.</p>
+      per day, and what each person wrote when they signed the month off.</p>
     <div class="panel">
       <div class="panel-head"><div><h3>Which month</h3></div></div>
       <div class="grid3">
@@ -903,6 +911,16 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
           <option value="xlsx">Excel workbook (.xlsx)</option>
           <option value="csv">Comma separated (.csv)</option>
         </select></div>
+      </div>
+      <div class="fld"><label>What to include</label>
+        <div class="exwhat">
+          <label><input type="checkbox" id="ex-days" checked>
+            <span><b>The timesheets</b>One row per person per day: hours, what they did,
+              and whether the day counts for pay.</span></label>
+          <label><input type="checkbox" id="ex-reports" checked>
+            <span><b>The monthly sign-off reports</b>What each person wrote about the month:
+              summary, achievements, challenges, and what is next.</span></label>
+        </div>
       </div>
       <div class="fld"><label>Who</label>
         <div id="ex-who" class="expick"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
@@ -1713,20 +1731,32 @@ async function downloadTimesheets(){
   const picked = [...document.querySelectorAll(".ex-p:checked")].map(c => c.value);
   btn("ex-btn", true, "Gathering");
   const args = { p_year: y, p_month: m, p_staff: picked.length ? picked : null };
+  const wantDays    = $("ex-days").checked;
+  const wantReports = $("ex-reports").checked;
+  if(!wantDays && !wantReports){
+    msg("ex-msg","err","Nothing chosen","Tick the timesheets, the sign-off reports, or both.");
+    return;
+  }
+
   const [dRes, rRes] = await Promise.all([
-    db.rpc("month_timesheet_export", args),
-    // The four things people actually WRITE when they sign off a month.
-    // An extra: if it fails the days should still download.
-    db.rpc("month_reports_export", args)
+    wantDays    ? db.rpc("month_timesheet_export", args) : Promise.resolve({ data: [] }),
+    wantReports ? db.rpc("month_reports_export",  args) : Promise.resolve({ data: [] })
   ]);
-  const { data, error } = dRes;
+  if(dRes.error) console.warn("month_timesheet_export:", dRes.error.message);
   if(rRes.error) console.warn("month_reports_export:", rRes.error.message);
+  const data    = dRes.data || [];
   const reports = rRes.data || [];
   btn("ex-btn", false, "Download");
-  if(error){ msg("ex-msg","err","Could not gather it", error.message); return; }
-  if(!data || !data.length){
-    msg("ex-msg","warn","Nothing there", "No days for " + MONTHS[m-1] + " " + y +
-        (picked.length ? " for the people you picked." : "."));
+
+  if(dRes.error && wantDays && !reports.length){
+    msg("ex-msg","err","Could not gather it", dRes.error.message); return;
+  }
+  // The old version bailed out whenever there were no DAYS, so asking
+  // for the sign-off reports on a month nobody had logged gave you
+  // nothing at all, with no explanation.
+  if(!data.length && !reports.length){
+    msg("ex-msg","warn","Nothing there", "No records for " + MONTHS[m-1] + " " + y +
+        (picked.length ? " for the people you picked." : ".") );
     return;
   }
 
@@ -1759,17 +1789,22 @@ async function downloadTimesheets(){
     };
     const toCsv = (h, r) => [h, ...r].map(x => x.map(esc2).join(",")).join("\r\n");
     // the BOM is what makes Excel open UTF-8 correctly rather than as mojibake
-    saveBlob(new Blob(["\uFEFF" + toCsv(head, rows)], { type:"text/csv;charset=utf-8" }),
-             "Timesheets-" + label + ".csv");
-    // CSV holds one table, so the reports go as their own file rather
-    // than being crammed underneath the days where nothing could read them
+    const bits = [];
+    // CSV holds one table, so each goes as its own file rather than
+    // being crammed together where nothing could read either.
+    if(rows.length){
+      saveBlob(new Blob(["\uFEFF" + toCsv(head, rows)], { type:"text/csv;charset=utf-8" }),
+               "Timesheets-" + label + ".csv");
+      bits.push(rows.length + " day rows");
+    }
     if(repRows.length){
       saveBlob(new Blob(["\uFEFF" + toCsv(repHead, repRows)], { type:"text/csv;charset=utf-8" }),
                "Monthly-reports-" + label + ".csv");
+      bits.push(repRows.length + " sign-off reports");
     }
-    msg("ex-msg","ok","Downloaded", rows.length + " day rows" +
-        (repRows.length ? ", and " + repRows.length + " monthly reports as a second file" : "") +
-        " for " + MONTHS[m-1] + " " + y + ".");
+    msg("ex-msg","ok","Downloaded",
+        bits.join(", ") + (bits.length > 1 ? ", as two files" : "") +
+        ", for " + MONTHS[m-1] + " " + y + ".");
     return;
   }
 
@@ -1798,17 +1833,22 @@ async function downloadTimesheets(){
     const XLSX = await import("https://esm.sh/xlsx@0.18.5");
     const wb = XLSX.utils.book_new();
 
-    const s1 = XLSX.utils.aoa_to_sheet([sumHead, ...sumRows]);
-    s1["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:15},{wch:15},
-                   {wch:8},{wch:10},{wch:11},{wch:9},{wch:12}];
-    XLSX.utils.book_append_sheet(wb, s1, "Summary");
+    // The summary and the day sheet only make sense if the timesheets
+    // were asked for. Asking only for the sign-off reports should give
+    // a workbook of exactly that, not two empty sheets in front of it.
+    if(rows.length){
+      const s1 = XLSX.utils.aoa_to_sheet([sumHead, ...sumRows]);
+      s1["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:15},{wch:15},
+                     {wch:8},{wch:10},{wch:11},{wch:9},{wch:12}];
+      XLSX.utils.book_append_sheet(wb, s1, "Summary");
 
-    const s2 = XLSX.utils.aoa_to_sheet([head, ...rows]);
-    s2["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:6},{wch:20},{wch:7},
-                   {wch:70},{wch:9},{wch:30},{wch:13},{wch:20},{wch:30},{wch:14}];
-    s2["!autofilter"] = { ref: XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:rows.length, c:head.length-1} }) };
-    s2["!freeze"] = { xSplit:0, ySplit:1 };
-    XLSX.utils.book_append_sheet(wb, s2, "Day by day");
+      const s2 = XLSX.utils.aoa_to_sheet([head, ...rows]);
+      s2["!cols"] = [{wch:26},{wch:32},{wch:16},{wch:12},{wch:6},{wch:20},{wch:7},
+                     {wch:70},{wch:9},{wch:30},{wch:13},{wch:20},{wch:14}];
+      s2["!autofilter"] = { ref: XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:rows.length, c:head.length-1} }) };
+      s2["!freeze"] = { xSplit:0, ySplit:1 };
+      XLSX.utils.book_append_sheet(wb, s2, "Day by day");
+    }
 
     // What each person wrote about the month itself. Twenty one rows of
     // daily activity still do not tell you what somebody thought of
@@ -1823,11 +1863,14 @@ async function downloadTimesheets(){
     }
 
     const out = XLSX.write(wb, { bookType:"xlsx", type:"array" });
+    const name = (rows.length && repRows.length) ? "Timesheets-and-reports-"
+               : rows.length ? "Timesheets-" : "Monthly-reports-";
     saveBlob(new Blob([out], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
-             "Timesheets-" + label + ".xlsx");
+             name + label + ".xlsx");
     msg("ex-msg","ok","Downloaded",
-        rows.length + " day rows across " + sumRows.length + " people" +
-        (repRows.length ? ", and " + repRows.length + " monthly reports" : "") +
+        [rows.length ? rows.length + " day rows across " + sumRows.length + " people" : null,
+         repRows.length ? repRows.length + " sign-off reports" : null]
+          .filter(Boolean).join(", and ") +
         ", for " + MONTHS[m-1] + " " + y + ".");
   } catch(err){
     console.warn("xlsx:", err);
