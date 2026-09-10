@@ -262,6 +262,37 @@
         margin-top: 0.15rem;
       }
 
+      /* Places remaining banner. Green while places are left, orange once
+         the batch is full. Hidden until the server answers. */
+      .slots {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        background: #eef7f1;
+        border: 1px solid #bcdcc9;
+        border-radius: var(--radius-3);
+        padding: 0.75rem 0.9rem;
+        font-size: 0.88rem;
+        color: #14532d;
+        margin: 0 0 1rem;
+      }
+      .slots--full {
+        background: var(--clr-orange-light);
+        border-color: #f6d3b6;
+        color: var(--clr-orange-deep);
+      }
+      .slots__dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--clr-green);
+        flex: none;
+        margin-top: 0.42rem;
+      }
+      .slots--full .slots__dot {
+        background: var(--clr-orange-strong);
+      }
+
       /* ---------------- Form ---------------- */
       fieldset {
         border: 0;
@@ -598,6 +629,11 @@
           whether you will be available. It takes less than a minute.
         </p>
 
+        <div class="slots" id="slotsBox" aria-live="polite" hidden>
+          <span class="slots__dot" aria-hidden="true"></span>
+          <span id="slotsText"></span>
+        </div>
+
         <div class="deadline" id="deadlineBox">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9" />
@@ -625,19 +661,7 @@
                   <span class="choice__title"
                     >Yes, I will attend on my scheduled dates</span
                   >
-                </span>
-              </label>
-
-              <label class="choice">
-                <input type="radio" name="response" value="Reschedule" />
-                <span class="choice__mark" aria-hidden="true"></span>
-                <span class="choice__body">
-                  <span class="choice__title"
-                    >I would like a different batch</span
-                  >
-                  <span class="choice__note"
-                    >We will email you a new batch date.</span
-                  >
+                  <span class="choice__note" id="attendingNote"></span>
                 </span>
               </label>
 
@@ -653,13 +677,6 @@
               </label>
             </div>
             <span class="err" id="err-response"></span>
-
-            <div class="reveal" id="rescheduleBlock" hidden>
-              <p class="reveal__note">
-                Thank you. A new batch date will be communicated to you by
-                email once a place becomes available.
-              </p>
-            </div>
           </fieldset>
 
           <fieldset>
@@ -800,6 +817,10 @@
         fillFromLink();
         wireChoices();
         form.addEventListener("submit", handleSubmit);
+
+        /* Asks the server how many places are left. Deliberately not
+           awaited, so a slow or unreachable server never delays the form. */
+        loadSlots();
       });
 
       /* Reads ?ref, ?name, ?email, ?phone from the emailed link.
@@ -825,11 +846,7 @@
 
       function wireChoices() {
         form.querySelectorAll('input[name="response"]').forEach((r) => {
-          r.addEventListener("change", () => {
-            document.getElementById("rescheduleBlock").hidden =
-              r.value !== "Reschedule";
-            clearError("response");
-          });
+          r.addEventListener("change", () => clearError("response"));
         });
         ["fullName", "phone", "email"].forEach((n) => {
           const el = form.elements[n];
@@ -846,7 +863,7 @@
         };
 
         const response = getRadio("response");
-        if (!response) fail("response", "Choose one of the three options.");
+        if (!response) fail("response", "Choose one of the two options.");
 
         if (!form.fullName.value.trim())
           fail("fullName", "Enter your full name.");
@@ -881,8 +898,8 @@
         const payload = collectData();
         setLoading(true);
         try {
-          await saveToSheet(payload);
-          showDone(payload);
+          const result = await saveToSheet(payload);
+          showDone(payload, result);
         } catch (err) {
           console.error(err);
           setLoading(false);
@@ -935,26 +952,89 @@
         return data;
       }
 
+      /* ---------------- Places remaining ---------------- */
+
+      /**
+       * Reads the live count from the same Apps Script deployment. If the
+       * server cannot be reached the banner simply never appears and the
+       * form behaves exactly as before. The server is the authority on the
+       * cap, so anyone who slips past a stale page still gets the correct
+       * email and the correct outcome in the Sheet.
+       */
+      async function loadSlots() {
+        if (!CONFIG.APPS_SCRIPT_URL) return;
+        try {
+          const res = await fetch(
+            CONFIG.APPS_SCRIPT_URL + "?slots=1&t=" + Date.now(),
+            { method: "GET", redirect: "follow" }
+          );
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!data || data.ok !== true) return;
+          /* An older deployment answers without a slot count. Show nothing
+             rather than a broken banner. */
+          if (typeof data.remaining !== "number" || typeof data.full !== "boolean")
+            return;
+          applySlots(data);
+        } catch (err) {
+          console.warn("Places remaining unavailable", err);
+        }
+      }
+
+      function applySlots(data) {
+        const box = document.getElementById("slotsBox");
+        const text = document.getElementById("slotsText");
+        const note = document.getElementById("attendingNote");
+        if (!box || !text) return;
+
+        if (data.full) {
+          box.classList.add("slots--full");
+          /* The total number of places is never shown, only how many are
+             left, and once it is nought that number is not shown either. */
+          text.innerHTML =
+            "<strong>All places are taken.</strong> You can still respond. " +
+            "You will be added to the waiting list, and we will contact " +
+            "you if a place opens up.";
+          if (note)
+            note.textContent = "You will be added to the waiting list.";
+        } else {
+          box.classList.remove("slots--full");
+          const left = Number(data.remaining);
+          text.innerHTML =
+            "<strong>" +
+            escapeHtml(String(left)) +
+            (left === 1 ? " place" : " places") +
+            " left.</strong> Places are given in the order responses arrive.";
+          if (note) note.textContent = "";
+        }
+        box.hidden = false;
+      }
+
       /* ---------------- UI helpers ---------------- */
-      function showDone(d) {
+      /**
+       * The server decides Confirmed against Waiting list, not this page.
+       * result.outcome is what came back from Apps Script.
+       */
+      function showDone(d, result) {
         document.getElementById("formCard").hidden = true;
         const card = document.getElementById("doneCard");
         const title = document.getElementById("doneTitle");
         const text = document.getElementById("doneText");
+        const outcome = (result && result.outcome) || "";
 
-        if (d.response === "Attending") {
-          title.textContent = "You are confirmed";
-          text.textContent =
-            "Thank you. We will send the final joining details closer to the date.";
-        } else if (d.response === "Reschedule") {
-          title.textContent = "Request received";
-          text.textContent =
-            "We have recorded that you would like a different batch. " +
-            "Our team will email you a new batch date once a place becomes available.";
-        } else {
+        if (d.response !== "Attending") {
           title.textContent = "Thank you for letting us know";
           text.textContent =
             "We have recorded that you cannot attend, and your place will be offered to someone on the waiting list.";
+        } else if (outcome === "Waiting list") {
+          title.textContent = "You are on the waiting list";
+          text.textContent =
+            "Thank you. All places for this batch have been taken. You are " +
+            "on the waiting list, and we will contact you if a place opens up.";
+        } else {
+          title.textContent = "You are confirmed";
+          text.textContent =
+            "Thank you. We will send the final joining details closer to the date.";
         }
 
         document.getElementById("doneRef").textContent = d.reference;
