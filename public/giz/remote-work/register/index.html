@@ -450,7 +450,7 @@ const CONFIG = {
   ENDPOINT: 'https://script.google.com/macros/s/AKfycbzFVQG2csaFBb3XfXlPlR4Q15dkt9J63E8kBB9ufV50rvLumsBQWk4NptNxaz2X7jdc/exec'
 };
 
-const TOTAL_BATCHES = 12;
+const TOTAL_BATCHES = 15;
 const MYKEY = 'giz_me';
 const TESTMODE = /[?&]test=1/.test(location.search);
 
@@ -543,8 +543,11 @@ async function fetchBatchState(){
 function buildBatchOptions(state){
   const sel = $('#i-batch');
   const keep = sel.value || (mine && mine.batch) || '';
+  /* TOTAL_BATCHES is a floor. If the server still reports an older, smaller
+     number, we keep showing the full list so late batches can still report. */
+  const total = Math.max(TOTAL_BATCHES, Number(state && state.totalBatches) || 0);
   let html = '<option value="">Select your batch...</option>';
-  for(let i=1;i<=state.totalBatches;i++){
+  for(let i=1;i<=total;i++){
     const v = pad(i);
     /* A plain list. No batch is locked and none carries a status label. This
        is progress reporting, not registration, so every batch stays open and
