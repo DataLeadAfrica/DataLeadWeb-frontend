@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Field Enumerator Application | Data-Lead Africa</title>
 <meta name="description" content="Apply as a field enumerator for an endline evaluation of a climate-smart agriculture programme in Lagos and Ekiti States, August 2026.">
-<link rel="canonical" href="https://www.dataleadafrica.com/careers/enumerator-application/">
+<link rel="canonical" href="https://www.dataleadafrica.com/careers/open-roles/field-enumerator-lagos-ekiti/">
 <meta property="og:title" content="Field Enumerator, Lagos and Ekiti | Data-Lead Africa">
 <meta property="og:description" content="Grassroots data collection with the farmers, traders and households driving the food chain. Apply in about 5 minutes.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.dataleadafrica.com/careers/enumerator-application/">
+<meta property="og:url" content="https://www.dataleadafrica.com/careers/open-roles/field-enumerator-lagos-ekiti/">
 <meta property="og:site_name" content="Data-Lead Africa">
 <meta property="og:image" content="https://www.dataleadafrica.com/careers/images/fieldwork.jpg">
 <meta property="og:image:alt" content="A Data-Lead Africa team member working through a survey instrument">
@@ -42,7 +42,7 @@
     }
   ],
   "directApply": true,
-  "url": "https://www.dataleadafrica.com/careers/enumerator-application/",
+  "url": "https://www.dataleadafrica.com/careers/open-roles/field-enumerator-lagos-ekiti/",
   "qualifications": "Minimum HND. Resident in Lagos or Ekiti State. Able to read and write Yoruba. Knowledge of the Ekiti dialect is an added advantage.",
   "skills": "Household survey data collection, KoboCollect, ODK"
 }
@@ -461,7 +461,110 @@
     .next-steps { grid-template-columns: 1fr; }
     .welcome-photo img { aspect-ratio: 16 / 10; }
   }
+
+  /* ================= Back link in the topbar ================= */
+  .topbar-back {
+    margin-left: auto;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 7px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .topbar-back:hover { color: var(--orange-dark); border-color: var(--orange-medium); background: var(--orange-soft); }
+  .topbar-back span { margin-right: 2px; }
+
+  /* ================= Closed state =================
+     Everything below is driven by one class on <body>, "is-closed",
+     which the script adds after the closing date has passed. Nothing
+     here needs editing when a role closes. Only the closing date in
+     the script needs to change. */
+  .rail__closed {
+    display: none;
+    margin: 2px 0 4px;
+    padding: 9px 13px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.22);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .is-closed .rail__closed { display: block; }
+  .is-closed #railSteps { opacity: 0.34; pointer-events: none; }
+  .is-closed #openCta { display: none; }
+  .is-closed #progressWrap { display: none; }
+
+  .closed-card { display: none; }
+  .is-closed .closed-card {
+    display: block;
+    margin-top: 26px;
+    padding: 26px 24px;
+    background: var(--mist);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--orange);
+    border-radius: var(--radius);
+  }
+  .closed-card__tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #6A6257;
+    background: #ECE9E4;
+    padding: 5px 11px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .closed-card h2 { font-size: 21px; line-height: 1.32; margin-bottom: 12px; }
+  .closed-card p { font-size: 14.5px; line-height: 1.72; color: var(--ink-soft); margin-bottom: 12px; }
+  .closed-card__cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+
+  /* "About 5 minutes" is meaningless once the form is sealed */
+  .is-closed .meta-chip--time { display: none; }
+
+  @media (max-width: 720px) {
+    .closed-card__cta { flex-direction: column; }
+    .closed-card__cta .btn { width: 100%; }
+  }
 </style>
+<script>
+/* ==============================================================
+   IS THIS ROLE OPEN?
+   This is the ONLY line to change when a role opens or closes.
+
+     "closed"                      the role is shut, no date shown
+     ""                            open, with no closing date
+     "2026-09-30T23:59:59+01:00"   open until that moment, then it
+                                   closes on its own. The +01:00 is
+                                   West Africa Time.
+
+   When it closes the form seals itself and visitors see the closed
+   notice with a link to the talent roster instead. This sits in the
+   head so the notice paints straight away, with no flash of the
+   application button.
+   ============================================================== */
+var APPLICATION_CLOSES = "closed";
+
+/* Anything we cannot read is treated as OPEN, so a typo can never
+   lock applicants out of a role that is still live. */
+var IS_CLOSED = (function () {
+  if (!APPLICATION_CLOSES) return false;
+  if (APPLICATION_CLOSES === "closed") return true;
+  var closes = new Date(APPLICATION_CLOSES);
+  if (isNaN(closes.getTime())) return false;
+  return Date.now() > closes.getTime();
+})();
+if (IS_CLOSED) {
+  document.documentElement.className += " is-closed";
+}
+</script>
 </head>
 <body>
 
@@ -469,7 +572,9 @@
   <a class="brand" href="/careers/">
     <img src="/assets/logo-header.svg" alt="Data-Lead Africa" class="brand-logo">
   </a>
-  <span class="topbar-tag">Careers at Data-Lead Africa</span>
+  <a class="topbar-back" href="/careers/open-roles/">
+    <span aria-hidden="true">&larr;</span> All open roles
+  </a>
 </header>
 
 <div class="layout">
@@ -483,6 +588,7 @@
       <div><b>Dates</b>August 2026</div>
       <div><b>Type</b>Short-term engagement</div>
     </div>
+    <p class="rail__closed">Applications closed</p>
     <ol class="rail__steps" id="railSteps">
       <li data-rail="1"><span>1</span>About you</li>
       <li data-rail="2"><span>2</span>Language</li>
@@ -491,7 +597,7 @@
     </ol>
   </div>
   <figure class="rail__photo">
-    <img src="/careers/images/fieldwork.jpg" alt="A Data-Lead Africa team member working through a survey instrument" onerror="this.parentElement.style.display='none'">
+    <img src="/careers/images/field-team-instrument.jpg" alt="Data-Lead Africa field team going through a survey instrument together before fieldwork" onerror="this.parentElement.style.display='none'">
     <figcaption>Every instrument is worked through before anyone goes to the field</figcaption>
   </figure>
 </aside>
@@ -517,7 +623,7 @@
     <div class="meta-chips">
       <span class="meta-chip"><i>Where</i> Lagos and Ekiti States</span>
       <span class="meta-chip"><i>When</i> August 2026</span>
-      <span class="meta-chip"><i>Takes</i> About 5 minutes</span>
+      <span class="meta-chip meta-chip--time"><i>Takes</i> About 5 minutes</span>
     </div>
     <p class="intro-text">
       Data-Lead Africa is recruiting experienced field enumerators for an endline
@@ -533,8 +639,24 @@
       Yoruba is required, and knowledge of the Ekiti dialect is an added advantage.
       Have your CV ready before you start.
     </p>
-    <div class="nav-row">
+    <div class="nav-row" id="openCta">
       <button class="btn btn-primary" onclick="goTo(1)">Start my application</button>
+    </div>
+
+    <div class="closed-card" id="closedCard">
+      <span class="closed-card__tag">Applications closed</span>
+      <h2>This role is no longer accepting applications</h2>
+      <p>
+        Applications for this role are closed. Thank you to everyone who applied.
+      </p>
+      <p>
+        We run projects like this regularly. Join our talent roster and we will get in
+        touch when a role matches your skills, languages and location.
+      </p>
+      <div class="closed-card__cta">
+        <a class="btn btn-primary" href="/careers/talent-roster/">Join the talent roster</a>
+        <a class="btn btn-ghost" href="/careers/open-roles/">See other open roles</a>
+      </div>
     </div>
   </section>
 
@@ -811,7 +933,18 @@
     1: "About you", 2: "Language", 3: "Experience", 4: "Availability and CV"
   };
 
+  /* APPLICATION_CLOSES and IS_CLOSED are set in the small script at the
+     top of this file, inside <head>. Change it there, not here. */
+  function applyClosedCopy() {
+    if (!IS_CLOSED) return;
+    /* "Now recruiting" would contradict the closed notice below it */
+    var eyebrows = document.querySelectorAll(".rail__eyebrow, .step[data-step='0'] .eyebrow");
+    for (var i = 0; i < eyebrows.length; i++) eyebrows[i].textContent = "Recruitment closed";
+  }
+
   function goTo(n) {
+    /* Once closed, the only screen anyone can reach is the role description */
+    if (IS_CLOSED && n !== 0) return;
     var steps = document.querySelectorAll(".step");
     for (var i = 0; i < steps.length; i++) steps[i].classList.remove("active");
     document.querySelector('.step[data-step="' + n + '"]').classList.add("active");
@@ -1057,6 +1190,7 @@
   }
 
   function submitForm() {
+    if (IS_CLOSED) return;
     if (!validateStep(4)) return;
     var btn = document.getElementById("submitBtn");
     var errBanner = document.getElementById("submitErr");
@@ -1098,6 +1232,10 @@
       errBanner.classList.add("visible");
     });
   }
+
+  /* This script sits at the very end of the page, so everything it
+     touches already exists. */
+  applyClosedCopy();
 </script>
 </body>
 </html>
