@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    {
+      "source": "/careers/enumerator-application",
+      "destination": "/careers/open-roles/field-enumerator-lagos-ekiti/",
+      "permanent": true
+    },
+    {
+      "source": "/careers/enumerator-application/",
+      "destination": "/careers/open-roles/field-enumerator-lagos-ekiti/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/certificate/:number",
