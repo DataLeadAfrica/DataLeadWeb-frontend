@@ -70,4 +70,9 @@ export const routes = {
   shareCertificate: "/certificate/:number",
   verifyCertificate: "/verify/:number",
   staffCertificates: "/staff/certificates",
+  learnerLogin: "/sign-in",
+  myLearning: "/my-learning",
+  learnerModule: "/my-learning/:slug",
+  staffPortal: "/staff/portal",
+  certifications: "/certifications",
 };
