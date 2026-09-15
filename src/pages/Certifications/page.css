@@ -1,0 +1,302 @@
+/* Public certifications page. Kept in the light, calm house style of the
+   rest of the marketing site rather than the portal's darker treatment,
+   because this page sits between the normal header and footer. */
+
+.cert {
+  background: #faf8f4;
+  padding: 3.5rem 1.25rem 5rem;
+  color: #171717;
+}
+
+.cert__wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+/* ---------------- hero ---------------- */
+
+.cert__hero {
+  max-width: 720px;
+  margin-bottom: 3.2rem;
+}
+
+.cert__eyebrow {
+  margin: 0 0 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f56e0f;
+}
+
+.cert__h1 {
+  margin: 0 0 1rem;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.cert__h1 span {
+  color: #d95c07;
+}
+
+.cert__lede {
+  margin: 0 0 1.8rem;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: #4a4a4a;
+}
+
+.cert__acts {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+/* ---------------- buttons ---------------- */
+
+.cert__btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.78rem 1.5rem;
+  border-radius: 99px;
+  border: 1px solid rgba(23, 23, 23, 0.16);
+  background: #fff;
+  color: #171717;
+  transition: 0.18s;
+}
+
+.cert__btn:hover {
+  border-color: rgba(23, 23, 23, 0.32);
+  transform: translateY(-1px);
+}
+
+.cert__btn--go {
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #d95c07, #f56e0f 48%, #ff9440);
+  box-shadow: 0 3px 14px rgba(245, 110, 15, 0.34);
+}
+
+.cert__btn--go:hover {
+  box-shadow: 0 7px 22px rgba(245, 110, 15, 0.44);
+}
+
+/* ---------------- headings ---------------- */
+
+.cert__h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.cert__sub {
+  margin: 0 0 1.5rem;
+  font-size: 0.92rem;
+  color: #4a4a4a;
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.cert section {
+  margin-bottom: 3.2rem;
+}
+
+/* ---------------- section cards ---------------- */
+
+.cert__grid {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cert__card {
+  padding: 1.4rem 1.5rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(23, 23, 23, 0.09);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.04);
+}
+
+.cert__area {
+  display: inline-block;
+  font-size: 0.61rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1d6da8;
+  background: rgba(29, 109, 168, 0.08);
+  border: 1px solid rgba(29, 109, 168, 0.2);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  margin-bottom: 0.7rem;
+}
+
+.cert__name {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.cert__blurb {
+  margin: 0 0 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: #4a4a4a;
+}
+
+.cert__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #7a7469;
+}
+
+/* ---------------- steps ---------------- */
+
+.cert__steps {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(4, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cert__step {
+  padding: 1.3rem 1.4rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(23, 23, 23, 0.09);
+}
+
+.cert__stepNo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f56e0f;
+  border: 2px solid #f56e0f;
+  margin-bottom: 0.8rem;
+}
+
+.cert__step h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.cert__step p {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.65;
+  color: #4a4a4a;
+}
+
+/* ---------------- verify band ---------------- */
+
+.cert__band {
+  padding: 2rem 2.1rem;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(23, 23, 23, 0.09);
+  display: flex;
+  gap: 1.6rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.cert__band h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.028em;
+}
+
+.cert__band p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+  max-width: 560px;
+}
+
+/* ---------------- faq ---------------- */
+
+.cert__q {
+  border-bottom: 1px solid rgba(23, 23, 23, 0.09);
+  padding: 1rem 0;
+}
+
+.cert__q summary {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cert__q summary::-webkit-details-marker {
+  display: none;
+}
+
+.cert__q summary::after {
+  content: "+";
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #f56e0f;
+  flex: none;
+}
+
+.cert__q[open] summary::after {
+  content: "\2212";
+}
+
+.cert__q p {
+  margin: 0.8rem 0 0;
+  font-size: 0.89rem;
+  line-height: 1.75;
+  color: #4a4a4a;
+  max-width: 680px;
+}
+
+/* ---------------- responsive ---------------- */
+
+@media (max-width: 900px) {
+  .cert__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cert__steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .cert__grid,
+  .cert__steps {
+    grid-template-columns: 1fr;
+  }
+  .cert__h1 {
+    font-size: 2.05rem;
+  }
+  .cert {
+    padding-top: 2.4rem;
+  }
+}
+
+.cert__faq {
+  max-width: 760px;
+}
