@@ -1552,3 +1552,24 @@ body {
   border-color: var(--red);
   background: rgba(179, 38, 30, 0.1);
 }
+
+/* ---- admin console on phones ---- */
+.adm__scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 720px) {
+  .adm {
+    padding: 2rem 1rem 4rem;
+  }
+  .adm__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .adm__card {
+    min-width: 0;
+    padding: 1.3rem 1.2rem;
+  }
+  .adm__table {
+    min-width: 460px;
+  }
+}
