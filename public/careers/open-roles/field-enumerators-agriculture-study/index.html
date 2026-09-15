@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Field Enumerators, Agricultural Study | Data-Lead Africa</title>
-<meta name="description" content="Data-Lead Africa is recruiting field enumerators for an agricultural baseline and adoption study across Cross River, Kaduna, Kano, Kebbi, Ondo, Oyo and Plateau. Applications close 14 September 2026.">
+<meta name="description" content="Data-Lead Africa is recruiting field enumerators for an agricultural baseline and adoption study across Cross River, Kaduna, Kano, Kebbi, Ondo, Oyo and Plateau. ">
 <link rel="canonical" href="https://www.dataleadafrica.com/careers/open-roles/field-enumerators-agriculture-study/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Data-Lead Africa">
 <meta property="og:title" content="Field Enumerators, Agricultural Baseline and Adoption Study">
-<meta property="og:description" content="Data-Lead Africa is recruiting field enumerators for an agricultural baseline and adoption study across Cross River, Kaduna, Kano, Kebbi, Ondo, Oyo and Plateau. Applications close 14 September 2026.">
+<meta property="og:description" content="Data-Lead Africa is recruiting field enumerators for an agricultural baseline and adoption study across Cross River, Kaduna, Kano, Kebbi, Ondo, Oyo and Plateau. ">
 <meta property="og:url" content="https://www.dataleadafrica.com/careers/open-roles/field-enumerators-agriculture-study/">
 <meta property="og:image" content="https://www.dataleadafrica.com/careers/images/field-team-planning.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -52,7 +52,7 @@
      "2026-09-14T23:59:59+01:00"   open until that moment, then it
                                    closes on its own (+01:00 is WAT)
    ============================================================== */
-var LICATION_CLOSES = "2026-09-14T23:59:59+01:00";
+var APPLICATION_CLOSES = "closed";
 
 /* Anything unreadable is treated as OPEN, so a typo can never lock
    applicants out of a role that is still live. */
@@ -760,6 +760,8 @@ if (IS_CLOSED) document.documentElement.className += " is-closed";
   .is-closed .rail__closed { display: block; }
   .is-closed #railSteps { opacity: 0.34; pointer-events: none; }
   .is-closed #openCta { display: none; }
+  /* a closing date is meaningless once the role is shut */
+  .is-closed .when-open { display: none; }
   .is-closed #progressWrap { display: none; }
 
   .closed-card { display: none; }
@@ -809,7 +811,7 @@ if (IS_CLOSED) document.documentElement.className += " is-closed";
       <div><b>States</b>Cross River, Kaduna, Kano, Kebbi, Ondo, Oyo and Plateau</div>
       <div><b>Fieldwork</b>September 2026, up to 11 working days</div>
       <div><b>Type</b>Short-term field assignment</div>
-      <div><b>Applications close</b>14 September 2026</div>
+      <div class="when-open"><b>Applications close</b>14 September 2026</div>
     </div>
     <p class="rail__closed">Applications closed</p>
     <ol class="rail__steps" id="railSteps">
@@ -1054,7 +1056,7 @@ if (IS_CLOSED) document.documentElement.className += " is-closed";
         <div><span>Fieldwork period</span><strong>September 2026</strong></div>
         <div><span>Duration</span><strong>Up to 11 working days</strong></div>
         <div><span>Location</span><strong>Selected communities in your assigned state</strong></div>
-        <div><span>Applications close</span><strong>14 September 2026</strong></div>
+        <div class="when-open"><span>Applications close</span><strong>14 September 2026</strong></div>
       </div>
       <p style="margin-top:14px">
         Duration is subject to the final deployment schedule. Only applicants
@@ -1580,7 +1582,7 @@ if (IS_CLOSED) document.documentElement.className += " is-closed";
    form below. The Lagos and Ekiti endpoint will not work, because
    this form collects different answers.
    ========================================================== */
-var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0R2TOF_SpSwjXFyMrAuKoqi2wo9qFJ4ABbZ-J1-GM05Fm_UYfmijFu8wnd_JCFbhNqw/exec";
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzULvGpIhlAXU5FeZUG3UQDvDUxFShoWWbHougyHjr0tFz3E38fX8e0bnTUpya-P0mXW/exec";
 
 var TOTAL_STEPS = 5;
 var currentStep = 0;

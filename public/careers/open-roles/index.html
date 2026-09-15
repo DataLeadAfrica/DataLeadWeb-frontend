@@ -652,7 +652,7 @@
 
     <div id="openRoles">
 
-      <article class="post" data-status="open">
+      <article class="post" id="role-agric" data-closes="closed">
         <div>
           <h3>Field Enumerators, Agricultural Baseline and Adoption Study</h3>
           <div class="post__facts">
@@ -670,6 +670,8 @@
         </div>
         <a class="cta" href="/careers/open-roles/field-enumerators-agriculture-study/">View this role and apply</a>
       </article>
+
+
 
     </div>
 
@@ -695,6 +697,18 @@
     </div>
 
     <div class="past">
+      <!-- Revealed automatically once the closing date below has passed.
+           It must match the date on the posting itself. -->
+      <a class="past__row" href="/careers/open-roles/field-enumerators-agriculture-study/"
+         data-reveal-for="role-agric" hidden>
+        <div class="past__title">
+          Field Enumerators, Agricultural Baseline and Adoption Study
+          <span class="past__tag">Closed</span>
+        </div>
+        <div class="past__cell"><span>Location</span><strong>Seven states</strong></div>
+        <div class="past__cell"><span>Fieldwork</span><strong>September 2026</strong></div>
+        <div class="past__go">Read the role</div>
+      </a>
       <a class="past__row" href="/careers/open-roles/field-enumerator-lagos-ekiti/">
         <div class="past__title">
           Field Enumerator, Lagos and Ekiti
@@ -753,6 +767,35 @@
      2. darken the header once you scroll off the hero
      3. draw the sampling field behind the hero
    ========================================================== */
+
+/* ---------- Close roles whose date has passed ----------
+   Each card in "Accepting applications" carries its own data-closes date,
+   matching the one on the posting itself. Once that moment passes the card
+   moves down into "Recently closed" on its own, so this page can never claim
+   a role is open after the posting has already sealed itself.
+   Anything unreadable counts as still open, so a typo cannot hide a live
+   role by mistake. */
+(function () {
+  function hasPassed(value) {
+    if (!value) return false;
+    if (value === "closed") return true;
+    var when = new Date(value);
+    if (isNaN(when.getTime())) return false;
+    return Date.now() > when.getTime();
+  }
+
+  var posts = document.querySelectorAll("#openRoles .post[data-closes]");
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+    var row = document.querySelector('[data-reveal-for="' + post.id + '"]');
+    if (hasPassed(post.getAttribute("data-closes"))) {
+      post.parentNode.removeChild(post);
+      if (row) row.removeAttribute("hidden");
+    } else if (row) {
+      row.parentNode.removeChild(row);
+    }
+  }
+})();
 
 /* ---------- 1. Count the open roles ----------
    Reads the postings in the "Accepting applications" section.
