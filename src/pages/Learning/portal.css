@@ -1423,3 +1423,132 @@ body {
     font-size: 2.4rem;
   }
 }
+
+/* ============================================================
+   PANEL: the signed-out and empty states
+   ============================================================ */
+
+.panel {
+  max-width: 530px;
+  padding: 2rem 2.1rem;
+  border-radius: 16px;
+}
+.panel h1 {
+  margin: 0 0 0.8rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  position: relative;
+  z-index: 1;
+}
+.panel p {
+  margin: 0 0 1.4rem;
+  font-size: 0.9rem;
+  color: var(--txt-2);
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
+}
+.panel .eyebrow,
+.panel .btn {
+  position: relative;
+  z-index: 1;
+}
+.panel a.inl {
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(29, 109, 168, 0.35);
+}
+.panel a.inl:hover {
+  border-bottom-color: var(--blue);
+}
+
+/* ============================================================
+   ADMIN CONSOLE
+   ============================================================ */
+.adm {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 1.25rem 5rem;
+  min-height: 80vh;
+}
+.adm__wrap {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.adm__grid {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 1.8rem;
+}
+.adm__card {
+  padding: 1.5rem 1.6rem;
+  border-radius: 16px;
+}
+.adm__card > * {
+  position: relative;
+  z-index: 1;
+}
+.adm__card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.adm__card p {
+  margin: 0 0 1.1rem;
+  font-size: 0.82rem;
+  color: var(--txt-2);
+  line-height: 1.6;
+}
+.adm__card .lbl {
+  margin-top: 0.2rem;
+}
+.adm__row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.adm__span {
+  grid-column: 1 / -1;
+}
+.adm__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  position: relative;
+  z-index: 1;
+}
+.adm__table th {
+  text-align: left;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--txt-3);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+.adm__table td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.adm__table tr:last-child td {
+  border-bottom: none;
+}
+.adm__no {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+}
+.adm__danger {
+  border-color: rgba(179, 38, 30, 0.35);
+  color: var(--red);
+  background: rgba(179, 38, 30, 0.05);
+}
+.adm__danger:hover:not(:disabled) {
+  border-color: var(--red);
+  background: rgba(179, 38, 30, 0.1);
+}
