@@ -10,7 +10,6 @@ import { routes } from "../routes";
 import LeadForm from "../../components/LeadForm/component";
 import EnrolForm from "../../components/EnrolForm/component";
 import Seo from "../../components/Seo/component";
-import GizStrip from "../../components/GizStrip/component";
 
 type Meta = {
   category: string;
@@ -364,15 +363,6 @@ export default function Courses({
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* GIZ-ZME promo band - TEMPORARY. Remove this whole block and the
-          import when applications close. Sits between courses and kids so it
-          does not crowd the hero. */}
-      <section className="lc-giz-band">
-        <div className="cwrap">
-          <GizStrip />
         </div>
       </section>
 
