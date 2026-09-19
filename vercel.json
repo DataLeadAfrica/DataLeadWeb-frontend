@@ -37,6 +37,14 @@
       "destination": "/giz/employability/record/index.html"
     },
     {
+      "source": "/deaf-in-tech/graphic-design",
+      "destination": "/deaf-in-tech/graphic-design/index.html"
+    },
+    {
+      "source": "/deaf-in-tech/graphic-design/",
+      "destination": "/deaf-in-tech/graphic-design/index.html"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
