@@ -344,7 +344,7 @@ h1{margin:24px 0;font-family:var(--display-bold);font-weight:700;font-size:clamp
 h1 span{color:var(--orange)}
 .lead{margin:0;max-width:560px;font-size:18px;line-height:1.6;color:var(--ink-soft)}
 .facts{margin-top:24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:560px}
-.fact{padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid var(--line)}
+.fact{padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.88);border:1px solid var(--line)}
 .fact small{display:block;font-size:12px;color:var(--muted)}
 .fact b{display:block;font-family:var(--display);font-weight:600;font-size:18px;margin-top:4px}
 .rise{animation:stepIn .8s cubic-bezier(.2,.8,.2,1) both}
@@ -358,7 +358,7 @@ h1 span{color:var(--orange)}
 .eyebrow{font-family:Poppins,"Segoe UI",sans-serif;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-strong);margin:0 0 20px}
 h2{font-family:var(--display);font-weight:600}
 .mods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.card{padding:22px;border-radius:18px;background:rgba(255,255,255,.8);border:1px solid var(--line)}
+.card{padding:22px;border-radius:18px;background:rgba(255,255,255,.9);border:1px solid var(--line)}
 .card .num{font-family:var(--display);font-size:14px;font-weight:600;color:var(--orange)}
 .card h3{font-family:var(--display);font-weight:600;font-size:19px;margin:8px 0 6px}
 .card p{margin:0;font-size:14px;line-height:1.55;color:var(--muted)}
@@ -383,10 +383,12 @@ h2{font-family:var(--display);font-weight:600}
 .who:last-of-type{border-bottom:0}
 .note{margin-top:auto;padding:12px 14px;border-radius:12px;background:rgba(14,143,126,.08);color:var(--teal-deep);font-size:13px;font-weight:500}
 
+.fees-wrap{container-type:inline-size}
 .fees{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.fee{padding:24px;border-radius:18px;background:rgba(255,255,255,.85);border:1px solid var(--line)}
+@container (max-width:659px){.fees{grid-template-columns:minmax(0,1fr)}}
+.fee{container-type:inline-size;min-width:0;padding:24px;border-radius:18px;background:rgba(255,255,255,.93);border:1px solid var(--line)}
 .fee small{display:block;font-size:13px;color:var(--muted)}
-.fee b{display:block;font-family:var(--display-bold);font-weight:700;font-size:clamp(26px,2.4vw,34px);margin:10px 0 4px;letter-spacing:-.01em;white-space:nowrap}
+.fee b{display:block;font-family:var(--display-bold);font-weight:700;font-size:clamp(22px,15cqi,36px);margin:10px 0 4px;letter-spacing:-.01em;white-space:nowrap}
 .fee b span{font-size:16px;font-weight:600;color:var(--muted)}
 .fee b.fee__inst{white-space:normal}.fee b.fee__inst span{white-space:nowrap;display:inline-block}
 .fee p{margin:0;font-size:13px;color:var(--muted)}
@@ -396,7 +398,7 @@ h2{font-family:var(--display);font-weight:600}
 .after{margin:16px 0 0;font-size:14px;color:var(--ink-soft)}
 
 .faq{display:flex;flex-direction:column;gap:14px}
-.faq details{border-radius:14px;background:rgba(255,255,255,.8);border:1px solid var(--line);padding:0 22px}
+.faq details{border-radius:14px;background:rgba(255,255,255,.9);border:1px solid var(--line);padding:0 22px}
 .faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:16px}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:"+";color:var(--orange);font-size:20px;line-height:1;transition:transform .25s}
@@ -408,7 +410,7 @@ h2{font-family:var(--display);font-weight:600}
 .corner{position:absolute;width:28px;height:28px;border:0 solid var(--orange)}
 .corner--tl{top:-10px;left:-10px;border-top-width:2px;border-left-width:2px;border-top-left-radius:8px}
 .corner--br{bottom:-10px;right:-10px;border-bottom-width:2px;border-right-width:2px;border-bottom-right-radius:8px}
-.panel{position:relative;padding:32px;border-radius:24px;background:rgba(255,255,255,.74);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 80px -30px rgba(20,19,23,.28),inset 0 1px 0 #fff;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.panel{position:relative;padding:32px;border-radius:24px;background:rgba(255,255,255,.84);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 80px -30px rgba(20,19,23,.28),inset 0 1px 0 #fff;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .panel__head{display:flex;justify-content:space-between;align-items:baseline}
 .panel__head h2{margin:0;font-size:26px;letter-spacing:-.01em}
 .panel__count{font-size:13px;font-weight:600;color:var(--muted)}
@@ -429,7 +431,7 @@ h2{font-family:var(--display);font-weight:600}
 .field label,.group-label{font-size:13px;font-weight:600}
 .field label span,.group-label span{font-weight:400;color:var(--muted)}
 .field label.check{font-size:14px;font-weight:400}
-.f-in{width:100%;height:48px;padding:0 14px;border:1.5px solid var(--line-2);border-radius:12px;background:rgba(255,255,255,.88);font:inherit;font-size:16px;color:var(--ink);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.f-in{width:100%;height:48px;padding:0 14px;border:1.5px solid var(--line-2);border-radius:12px;background:rgba(255,255,255,.94);font:inherit;font-size:16px;color:var(--ink);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
 select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f5e68' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .f-in:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(245,110,15,.16)}
 .f-in::placeholder{color:#8e8c96}
@@ -442,7 +444,7 @@ select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 .opts--3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .opt{position:relative;display:block;cursor:pointer}
 .opt input{position:absolute;opacity:0;pointer-events:none}
-.opt__box{display:block;height:100%;padding:14px;border-radius:14px;border:1.5px solid var(--line-2);background:rgba(255,255,255,.85);transition:border-color .2s,background .2s,box-shadow .2s,transform .2s}
+.opt__box{display:block;height:100%;padding:14px;border-radius:14px;border:1.5px solid var(--line-2);background:rgba(255,255,255,.92);transition:border-color .2s,background .2s,box-shadow .2s,transform .2s}
 .opt:hover .opt__box{transform:translateY(-2px)}
 .opt input:checked + .opt__box{border-color:var(--orange);background:rgba(245,110,15,.08);box-shadow:0 0 0 4px rgba(245,110,15,.12)}
 .opt input:focus-visible + .opt__box{outline:2px solid var(--ink);outline-offset:2px}
@@ -484,7 +486,7 @@ select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
   .info{margin-top:64px}
 }
 @media (max-width:640px){
-  .facts,.fees,.two,.mods{grid-template-columns:minmax(0,1fr)}
+  .facts,.two,.mods{grid-template-columns:minmax(0,1fr)}
   .card--dark{grid-column:auto}
   .panel{padding:22px 18px}
   .row2{grid-template-columns:minmax(0,1fr)}
@@ -850,7 +852,6 @@ select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
             </div>
             <div class="field" id="nyscField" hidden><label for="nyscCode">NYSC state code</label><input id="nyscCode" name="nyscCode" class="f-in" type="text" placeholder="e.g. FC/26A/1234" autocapitalize="characters"><div class="err" id="nyscCode-err"></div></div>
             <div class="field"><label for="heardFrom">How did you hear about us?</label><select id="heardFrom" name="heardFrom" class="f-in"><option value="">Select</option><option>LinkedIn</option><option>Instagram</option><option>Facebook</option><option>X (Twitter)</option><option>WhatsApp</option><option>A friend or colleague</option><option>Data-Lead Africa website</option><option>Other</option></select></div>
-            <label class="check"><input type="checkbox" name="scholarship">Consider me for a scholarship</label>
             <div class="field">
               <label class="check"><input type="checkbox" id="consent" name="consent">I agree that Data-Lead Africa may contact me about this bootcamp</label>
               <div class="err" id="consent-err"></div>
@@ -933,12 +934,11 @@ select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 
     <section aria-labelledby="fees-h">
       <h2 class="eyebrow" id="fees-h">Fees</h2>
-      <div class="fees">
+      <div class="fees-wrap"><div class="fees">
         <div class="fee fee--dark"><span class="pill">Best value</span><small>One-time payment</small><b>₦250,000</b><p>Paid once, before the cohort starts</p></div>
         <div class="fee"><small>Installment plan</small><b class="fee__inst">₦100,000 <span>× 3 payments</span></b><p>₦300,000 total, spread over the term</p></div>
         <div class="fee"><small>NYSC corps members</small><b>₦150,000</b><p>Show proof of NYSC at onboarding</p></div>
-      </div>
-      <p class="after">Scholarships are available. You can ask to be considered in the form.</p>
+      </div></div>
     </section>
 
     <section aria-labelledby="faq-h">
@@ -1136,7 +1136,6 @@ select.f-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
       plan: form.plan.value,
       nyscCode: form.plan.value === "nysc" ? val("nyscCode") : "",
       heardFrom: val("heardFrom"),
-      scholarship: form.scholarship.checked,
       consent: el("consent").checked,
       website: val("website"),
       sourcePage: location.pathname
