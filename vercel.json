@@ -55,6 +55,14 @@
       "destination": "/deaf-in-tech/web-design/index.html"
     },
     {
+      "source": "/register/data-analytics",
+      "destination": "/register/data-analytics/index.html"
+    },
+    {
+      "source": "/register/data-analytics/",
+      "destination": "/register/data-analytics/index.html"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
