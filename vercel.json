@@ -1,6 +1,16 @@
 {
   "redirects": [
     {
+      "source": "/deaf-in-tech/graphic-design",
+      "destination": "/deaf-in-tech/web-design/",
+      "permanent": true
+    },
+    {
+      "source": "/deaf-in-tech/graphic-design/:path*",
+      "destination": "/deaf-in-tech/web-design/",
+      "permanent": true
+    },
+    {
       "source": "/careers/enumerator-application",
       "destination": "/careers/open-roles/field-enumerator-lagos-ekiti/",
       "permanent": true
@@ -37,12 +47,12 @@
       "destination": "/giz/employability/record/index.html"
     },
     {
-      "source": "/deaf-in-tech/graphic-design",
-      "destination": "/deaf-in-tech/graphic-design/index.html"
+      "source": "/deaf-in-tech/web-design",
+      "destination": "/deaf-in-tech/web-design/index.html"
     },
     {
-      "source": "/deaf-in-tech/graphic-design/",
-      "destination": "/deaf-in-tech/graphic-design/index.html"
+      "source": "/deaf-in-tech/web-design/",
+      "destination": "/deaf-in-tech/web-design/index.html"
     },
     {
       "source": "/((?!api/).*)",
