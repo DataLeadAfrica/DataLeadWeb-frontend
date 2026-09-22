@@ -46,28 +46,54 @@ function clearSession() {
 
 // ---------------------------------------------------------------- sign in
 
-// Ask for a one time code. The reply is deliberately vague either way, so
-// the form cannot be used to discover whether an address is enrolled.
+// Ask for a one time code.
+//
+// The database checks the address against active enrolments first. An
+// enrolled address gets a code. Anything else gets a plain explanation and
+// no email is sent.
+//
+//   sent          enrolled, code on its way
+//   not_enrolled  no active enrolment for this address
+//   invalid       not an email address
+//   error         enrolled, but a code went out very recently
+//   failed        the request itself did not get through
+export type CodeStatus =
+  | "sent"
+  | "not_enrolled"
+  | "invalid"
+  | "error"
+  | "failed";
+
 export async function requestCode(
   email: string,
-): Promise<{ ok: boolean; message: string }> {
+): Promise<{ status: CodeStatus; message: string }> {
   if (!certDb) {
-    return { ok: false, message: "The portal is not configured yet." };
+    return { status: "failed", message: "The portal is not configured yet." };
   }
   const clean = email.trim().toLowerCase();
   if (!clean || !clean.includes("@")) {
-    return { ok: false, message: "Please enter a valid email address." };
+    return {
+      status: "invalid",
+      message: "Please enter a valid email address.",
+    };
   }
-  const { error } = await certDb.rpc("request_certificate_code", {
+  const { data, error } = await certDb.rpc("participant_request_code", {
     p_email: clean,
   });
   if (error) {
-    return { ok: false, message: "Something went wrong. Please try again." };
+    return {
+      status: "failed",
+      message: "Something went wrong. Please try again.",
+    };
   }
-  return {
-    ok: true,
-    message: "If that address is enrolled, a code is on its way.",
-  };
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || !row.status) {
+    return {
+      status: "failed",
+      message: "Something went wrong. Please try again.",
+    };
+  }
+  return { status: row.status as CodeStatus, message: row.message || "" };
 }
 
 export async function signIn(
@@ -96,6 +122,82 @@ export async function signIn(
   return { ok: true, message: "", name: row.full_name || "" };
 }
 
+// ---------------------------------------------------------------- passwords
+
+// Sign in with an email and a password issued by the training team. Creates
+// exactly the same session as the email code, so everything after sign in
+// behaves identically whichever route was used.
+//
+//   ok            signed in
+//   wrong         password did not match
+//   locked        five wrong attempts, locked for 15 minutes
+//   no_password   no password issued to this person yet
+//   not_enrolled  no active enrolment for this address
+//   invalid       blank email or password
+//   failed        the request itself did not get through
+export type PasswordStatus =
+  | "ok"
+  | "wrong"
+  | "locked"
+  | "no_password"
+  | "not_enrolled"
+  | "invalid"
+  | "failed";
+
+export async function passwordSignIn(
+  email: string,
+  password: string,
+): Promise<{ status: PasswordStatus; message: string }> {
+  if (!certDb) {
+    return { status: "failed", message: "The portal is not configured yet." };
+  }
+  const { data, error } = await certDb.rpc("participant_password_login", {
+    p_email: email.trim().toLowerCase(),
+    p_password: password,
+  });
+  if (error) {
+    return {
+      status: "failed",
+      message: "Something went wrong. Please try again.",
+    };
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || !row.status) {
+    return {
+      status: "failed",
+      message: "Something went wrong. Please try again.",
+    };
+  }
+  if (row.status === "ok" && row.token) {
+    setSession(row.token, row.full_name || "");
+    return { status: "ok", message: "" };
+  }
+  return { status: row.status as PasswordStatus, message: row.message || "" };
+}
+
+export async function changePassword(
+  current: string,
+  next: string,
+): Promise<{ ok: boolean; message: string }> {
+  const token = getToken();
+  if (!certDb || !token) {
+    return { ok: false, message: "Please sign in again." };
+  }
+  const { data, error } = await certDb.rpc("participant_change_password", {
+    p_token: token,
+    p_current: current,
+    p_new: next,
+  });
+  if (error) {
+    return { ok: false, message: "Something went wrong. Please try again." };
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  return {
+    ok: Boolean(row?.ok),
+    message: row?.message || "Something went wrong. Please try again.",
+  };
+}
+
 export async function signOut(): Promise<void> {
   const token = getToken();
   clearSession();
@@ -118,6 +220,7 @@ export type SectionRow = {
   closed: boolean;
   cert_number: string | null;
   cert_issued_at: string | null;
+  first_sat_at: string | null;
 };
 
 export async function fetchDashboard(): Promise<{

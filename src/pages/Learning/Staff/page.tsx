@@ -6,35 +6,14 @@ import { isConfigured } from "../../../lib/certificateConfig";
 import LiveBackground from "../LiveBackground";
 import "../portal.css";
 
-// Staff console for the assessment portal. No marking and no queue. It
-// exists for the things that cannot be done by a participant or by the
-// system itself: enrolling people, reopening a section, fixing a name, and
-// withdrawing or restoring a certificate.
-//
-// Enrolling never issues a certificate. It calls staff_enrol_participant,
-// which creates the participant if the email is new and opens every active
-// section of the chosen programme to them. Certificates are only issued
-// when a participant passes an assessment.
+// Staff console for the assessment portal. Deliberately small: no marking,
+// no queue, nothing to do on a normal day. It exists for the four things
+// that cannot be done by a participant or by the system itself.
 //
 // It shares the passcode and the session key with /staff/certificates, so
 // signing in to one signs you in to the other.
 
 const TOKEN_KEY = "dla_staff_token";
-
-type Programme = {
-  slug: string;
-  title: string;
-  module_count: number;
-};
-
-type Enrolled = {
-  enrolmentId: string;
-  fullName: string;
-  email: string;
-  programmeTitle: string;
-  wasNew: boolean;
-  withdrawn: boolean;
-};
 
 type Issued = {
   certificate_number: string;
@@ -46,6 +25,29 @@ type Issued = {
   completed_on: string;
   revoked: boolean;
 };
+
+type Issued2 = { full_name: string; email: string; password: string };
+
+// Build a spreadsheet file in the browser. Nothing is sent anywhere: the
+// passwords only ever exist on this screen and in the file you download.
+function downloadCsv(rows: Issued2[]) {
+  const esc = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
+  const lines = [
+    ["Full name", "Email", "Password"].map(esc).join(","),
+    ...rows.map((r) => [r.full_name, r.email, r.password].map(esc).join(",")),
+  ];
+  const blob = new Blob(["\ufeff" + lines.join("\r\n")], {
+    type: "text/csv;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `portal-passwords-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 export default function StaffPortal() {
   const [token, setToken] = useState("");
@@ -60,14 +62,17 @@ export default function StaffPortal() {
   const [renameEmail, setRenameEmail] = useState("");
   const [renameName, setRenameName] = useState("");
 
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
-  const [enName, setEnName] = useState("");
-  const [enEmail, setEnEmail] = useState("");
-  const [enPhone, setEnPhone] = useState("");
-  const [enProg, setEnProg] = useState("");
-  const [enError, setEnError] = useState("");
-  const [enDone, setEnDone] = useState("");
-  const [enrolled, setEnrolled] = useState<Enrolled[]>([]);
+  const [summary, setSummary] = useState<{
+    enrolled: number;
+    with_password: number;
+    without_email: number;
+  } | null>(null);
+  const [issued, setIssued] = useState<Issued2[]>([]);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetResult, setResetResult] = useState<{
+    name: string;
+    password: string;
+  } | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(TOKEN_KEY);
@@ -83,21 +88,70 @@ export default function StaffPortal() {
     setRecent((data as Issued[]) || []);
   }, []);
 
-  const loadProgrammes = useCallback(async (t: string) => {
+  useEffect(() => {
+    if (token) loadRecent(token);
+  }, [token, loadRecent]);
+
+  const loadSummary = useCallback(async (t: string) => {
     if (!certDb) return;
-    const { data } = await certDb.rpc("staff_programmes", { p_token: t });
-    const list = (data as Programme[]) || [];
-    setProgrammes(list);
-    // With only one programme there is nothing to choose, so pick it.
-    if (list.length === 1) setEnProg(list[0].slug);
+    const { data } = await certDb.rpc("staff_password_summary", { p_token: t });
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row) setSummary(row);
   }, []);
 
   useEffect(() => {
-    if (token) {
-      loadRecent(token);
-      loadProgrammes(token);
+    if (token) loadSummary(token);
+  }, [token, loadSummary]);
+
+  async function issueAll(onlyMissing: boolean) {
+    if (!certDb) return;
+    if (
+      !onlyMissing &&
+      !window.confirm(
+        "Replace EVERY participant's password?\n\nEveryone's current password stops working immediately, including any they chose themselves. Only do this if the list has leaked.",
+      )
+    ) {
+      return;
     }
-  }, [token, loadRecent, loadProgrammes]);
+    setNotice("");
+    setBusy(true);
+    const { data, error: err } = await certDb.rpc("staff_issue_passwords", {
+      p_token: token,
+      p_only_missing: onlyMissing,
+    });
+    setBusy(false);
+    if (err) {
+      setNotice("Could not generate passwords. Please try again.");
+      return;
+    }
+    const rows = (data as Issued2[]) || [];
+    setIssued(rows);
+    setNotice(
+      rows.length === 0
+        ? "Everyone enrolled already has a password. Nothing new to issue."
+        : `${rows.length} ${rows.length === 1 ? "password" : "passwords"} issued. Download the list now: they cannot be shown again.`,
+    );
+    await loadSummary(token);
+  }
+
+  async function resetOne() {
+    if (!certDb) return;
+    setNotice("");
+    setResetResult(null);
+    setBusy(true);
+    const { data } = await certDb.rpc("staff_reset_password", {
+      p_token: token,
+      p_email: resetEmail.trim(),
+    });
+    setBusy(false);
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row?.ok) {
+      setNotice(row?.message || "No reply from the database.");
+      return;
+    }
+    setResetResult({ name: row.full_name, password: row.password });
+    await loadSummary(token);
+  }
 
   async function signIn() {
     if (!certDb) return;
@@ -127,106 +181,6 @@ export default function StaffPortal() {
     sessionStorage.removeItem(TOKEN_KEY);
     setToken("");
     setRecent([]);
-    setProgrammes([]);
-    setEnrolled([]);
-  }
-
-  async function enrol() {
-    if (!certDb) return;
-    setEnError("");
-    setEnDone("");
-    const name = enName.trim().replace(/\s+/g, " ");
-    const mail = enEmail.trim().toLowerCase();
-    if (!name) {
-      setEnError("Enter the participant's full name.");
-      return;
-    }
-    if (!mail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
-      setEnError(
-        "Enter a valid email address. It is how the participant signs in.",
-      );
-      return;
-    }
-    if (!enProg) {
-      setEnError("Choose a programme.");
-      return;
-    }
-    setBusy(true);
-    const { data, error: err } = await certDb.rpc("staff_enrol_participant", {
-      p_token: token,
-      p_full_name: name,
-      p_email: mail,
-      p_phone: enPhone.trim() || null,
-      p_programme_slug: enProg,
-      p_cohort: "default",
-      p_starts_on: null,
-    });
-    setBusy(false);
-    if (err) {
-      setEnError("Could not reach the database. Please try again.");
-      return;
-    }
-    const row = (Array.isArray(data) ? data[0] : data) as
-      | { enrolment_id: string; was_new: boolean }
-      | undefined;
-    if (!row || !row.enrolment_id) {
-      // The database is quiet about why. These are the only causes.
-      setEnError(
-        "Not enrolled. Your staff session may have expired (sign out and sign in again), or the programme is no longer active.",
-      );
-      return;
-    }
-    const prog = programmes.find((p) => p.slug === enProg);
-    setEnrolled((list) => [
-      {
-        enrolmentId: row.enrolment_id,
-        fullName: name,
-        email: mail,
-        programmeTitle: prog ? prog.title : enProg,
-        wasNew: Boolean(row.was_new),
-        withdrawn: false,
-      },
-      ...list.filter((e) => e.enrolmentId !== row.enrolment_id),
-    ]);
-    setEnDone(
-      row.was_new
-        ? `Enrolled ${name}. They can now sign in at dataleadafrica.com/my-learning with ${mail}.`
-        : `${mail} was already registered. Their enrolment on this programme is now active. The name on record was updated to ${name}.`,
-    );
-    setEnName("");
-    setEnEmail("");
-    setEnPhone("");
-  }
-
-  async function setEnrolmentStatus(
-    id: string,
-    status: "withdrawn" | "active",
-  ) {
-    if (!certDb) return;
-    if (
-      status === "withdrawn" &&
-      !window.confirm(
-        "Withdraw this enrolment? The participant will no longer see these sections. You can undo this.",
-      )
-    ) {
-      return;
-    }
-    const { data } = await certDb.rpc("staff_set_enrolment_status", {
-      p_token: token,
-      p_enrolment: id,
-      p_status: status,
-    });
-    if (!data) {
-      setEnError(
-        "That change was not saved. Sign out and sign in again, then retry.",
-      );
-      return;
-    }
-    setEnrolled((list) =>
-      list.map((e) =>
-        e.enrolmentId === id ? { ...e, withdrawn: status === "withdrawn" } : e,
-      ),
-    );
   }
 
   async function revoke(num: string) {
@@ -371,8 +325,7 @@ export default function StaffPortal() {
                   Portal <span>admin</span>
                 </h1>
                 <p className="sub">
-                  Enrol participants here. The other tools are for the rare bad
-                  day. There is no marking and no queue.
+                  Only for the rare bad day. No marking, no queue, no daily use.
                 </p>
               </div>
               <div className="tally">
@@ -394,152 +347,132 @@ export default function StaffPortal() {
             {notice ? <p className="asm__warn">{notice}</p> : null}
 
             <div className="adm__grid">
-              <div className="adm__card glass brk">
-                <h3>Enrol a participant</h3>
+              <div className="adm__card glass brk adm__span">
+                <h3>Participant passwords</h3>
                 <p>
-                  Opens every section of the programme to this person. No
-                  certificate is issued: that only happens when they pass. Type
-                  the name exactly as it should appear on their certificates.
+                  Participants sign in with their email and a password, so they
+                  do not depend on an email code arriving. Generate passwords
+                  here and share them in class or on WhatsApp. Each one is shown
+                  once, when it is created, and cannot be looked up afterwards.
                 </p>
-                <label className="lbl" htmlFor="en-name">
-                  Full name
-                </label>
-                <input
-                  id="en-name"
-                  className="inp"
-                  value={enName}
-                  disabled={busy}
-                  onChange={(e) => setEnName(e.target.value)}
-                />
-                <label className="lbl" htmlFor="en-email">
-                  Email (used to sign in)
-                </label>
-                <input
-                  id="en-email"
-                  className="inp"
-                  type="email"
-                  value={enEmail}
-                  disabled={busy}
-                  onChange={(e) => setEnEmail(e.target.value)}
-                />
-                <label className="lbl" htmlFor="en-phone">
-                  Phone (optional)
-                </label>
-                <input
-                  id="en-phone"
-                  className="inp"
-                  type="tel"
-                  value={enPhone}
-                  disabled={busy}
-                  onChange={(e) => setEnPhone(e.target.value)}
-                />
-                <label className="lbl" htmlFor="en-prog">
-                  Programme
-                </label>
-                <select
-                  id="en-prog"
-                  className="inp"
-                  value={enProg}
-                  disabled={busy}
-                  onChange={(e) => setEnProg(e.target.value)}
-                >
-                  <option value="">
-                    {programmes.length
-                      ? "Choose a programme"
-                      : "Loading programmes"}
-                  </option>
-                  {programmes.map((p) => (
-                    <option key={p.slug} value={p.slug}>
-                      {p.title}
-                      {p.module_count ? ` (${p.module_count} sections)` : ""}
-                    </option>
-                  ))}
-                </select>
-                {enError ? (
-                  <p className="err">
-                    <span>&#9888;</span>
-                    <span>{enError}</span>
-                  </p>
+                {summary ? (
+                  <div className="pwd__stats">
+                    <span>
+                      <b>{summary.enrolled}</b> enrolled
+                    </span>
+                    <span>
+                      <b>{summary.with_password}</b> have a password
+                    </span>
+                    <span>
+                      <b>
+                        {Math.max(
+                          0,
+                          summary.enrolled -
+                            summary.with_password -
+                            summary.without_email,
+                        )}
+                      </b>{" "}
+                      still to issue
+                    </span>
+                    {summary.without_email > 0 ? (
+                      <span>
+                        <b>{summary.without_email}</b> have no email, so cannot
+                        use a password
+                      </span>
+                    ) : null}
+                  </div>
                 ) : null}
-                {enDone ? <p className="asm__warn">{enDone}</p> : null}
-                <button
-                  type="button"
-                  className="btn btn--go"
-                  disabled={busy}
-                  onClick={enrol}
-                >
-                  {busy ? "Working" : "Enrol"}{" "}
-                  <span className="arw">&#8594;</span>
-                </button>
-              </div>
+                <div className="adm__row">
+                  <button
+                    type="button"
+                    className="btn btn--go"
+                    disabled={busy}
+                    onClick={() => issueAll(true)}
+                  >
+                    Generate for everyone without one{" "}
+                    <span className="arw">&#8594;</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn adm__danger"
+                    disabled={busy}
+                    onClick={() => issueAll(false)}
+                  >
+                    Replace everyone&rsquo;s
+                  </button>
+                </div>
 
-              <div className="adm__card glass">
-                <h3>Enrolled in this session</h3>
-                <p>
-                  People you enrolled since signing in. If you made a mistake,
-                  withdraw the enrolment, then enrol again with the right
-                  details. To correct only a name, use Fix a name below. This
-                  list clears when you close the tab.
-                </p>
-                {enrolled.length === 0 ? (
-                  <p className="modMeta">Nobody yet.</p>
-                ) : (
-                  <div className="adm__scroll">
+                {issued.length > 0 ? (
+                  <>
+                    <p className="pwd__warn" style={{ marginTop: "1.2rem" }}>
+                      These {issued.length} passwords will not be shown again.
+                      Download the list before you leave this page.
+                    </p>
+                    <div className="adm__row" style={{ marginBottom: "1rem" }}>
+                      <button
+                        type="button"
+                        className="btn btn--go"
+                        onClick={() => downloadCsv(issued)}
+                      >
+                        Download as spreadsheet
+                      </button>
+                    </div>
                     <table className="adm__table">
                       <thead>
                         <tr>
                           <th>Participant</th>
-                          <th>Programme</th>
-                          <th />
+                          <th>Email</th>
+                          <th>Password</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {enrolled.map((e) => (
-                          <tr key={e.enrolmentId}>
-                            <td>
-                              {e.fullName}
-                              <br />
-                              <span className="modMeta">
-                                {e.email}
-                                {e.wasNew ? "" : " (existing)"}
-                              </span>
-                            </td>
-                            <td>
-                              {e.programmeTitle}
-                              {e.withdrawn ? " (withdrawn)" : ""}
-                            </td>
-                            <td>
-                              {e.withdrawn ? (
-                                <button
-                                  type="button"
-                                  className="btn"
-                                  onClick={() =>
-                                    setEnrolmentStatus(e.enrolmentId, "active")
-                                  }
-                                >
-                                  Undo
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="btn adm__danger"
-                                  onClick={() =>
-                                    setEnrolmentStatus(
-                                      e.enrolmentId,
-                                      "withdrawn",
-                                    )
-                                  }
-                                >
-                                  Withdraw
-                                </button>
-                              )}
+                        {issued.map((r) => (
+                          <tr key={r.email}>
+                            <td data-label="Participant">{r.full_name}</td>
+                            <td data-label="Email">{r.email}</td>
+                            <td data-label="Password" className="pwd__pass">
+                              {r.password}
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
+                  </>
+                ) : null}
+              </div>
+
+              <div className="adm__card glass">
+                <h3>Reset one password</h3>
+                <p>
+                  For someone who has forgotten theirs, or is locked out after
+                  five wrong attempts. Issues a new password and unlocks the
+                  account. Their old password stops working.
+                </p>
+                <label className="lbl">Participant email</label>
+                <input
+                  className="inp"
+                  value={resetEmail}
+                  onChange={(e) => {
+                    setResetEmail(e.target.value);
+                    setResetResult(null);
+                  }}
+                />
+                <button
+                  type="button"
+                  className="btn btn--go"
+                  disabled={busy}
+                  onClick={resetOne}
+                >
+                  Issue new password <span className="arw">&#8594;</span>
+                </button>
+                {resetResult ? (
+                  <div className="pwd__one">
+                    <p className="pwd__oneLbl">
+                      New password for {resetResult.name}
+                    </p>
+                    <p className="pwd__oneVal">{resetResult.password}</p>
                   </div>
-                )}
+                ) : null}
               </div>
 
               <div className="adm__card glass">
@@ -573,7 +506,7 @@ export default function StaffPortal() {
                 </button>
               </div>
 
-              <div className="adm__card glass brk">
+              <div className="adm__card glass">
                 <h3>Fix a name</h3>
                 <p>
                   A participant cannot edit their own name, or a certificate
@@ -608,53 +541,58 @@ export default function StaffPortal() {
                   Anything issued lately, including automatically when a
                   participant passed. A wrong answer key shows up here as a
                   sudden cluster of passes on one section, which is the quickest
-                  way to spot it.
+                  way to spot it. Enrolling someone is still done on the
+                  certificates console.
                 </p>
                 {recent.length === 0 ? (
                   <p className="modMeta">Nothing issued yet.</p>
                 ) : (
-                  <div className="adm__scroll">
-                    <table className="adm__table">
-                      <thead>
-                        <tr>
-                          <th>Number</th>
-                          <th>Participant</th>
-                          <th>Section</th>
-                          <th>Completed</th>
-                          <th />
+                  <table className="adm__table">
+                    <thead>
+                      <tr>
+                        <th>Number</th>
+                        <th>Participant</th>
+                        <th>Section</th>
+                        <th>Completed</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recent.map((r) => (
+                        <tr key={r.certificate_number}>
+                          <td data-label="Number" className="adm__no">
+                            {r.certificate_number}
+                          </td>
+                          <td data-label="Participant">{r.full_name}</td>
+                          <td data-label="Section">
+                            {r.module_title || r.programme_title}
+                          </td>
+                          <td data-label="Completed">
+                            {prettyDate(r.completed_on)}
+                          </td>
+                          <td>
+                            {r.revoked ? (
+                              <button
+                                type="button"
+                                className="btn"
+                                onClick={() => restore(r.certificate_number)}
+                              >
+                                Restore
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn adm__danger"
+                                onClick={() => revoke(r.certificate_number)}
+                              >
+                                Revoke
+                              </button>
+                            )}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {recent.map((r) => (
-                          <tr key={r.certificate_number}>
-                            <td className="adm__no">{r.certificate_number}</td>
-                            <td>{r.full_name}</td>
-                            <td>{r.module_title || r.programme_title}</td>
-                            <td>{prettyDate(r.completed_on)}</td>
-                            <td>
-                              {r.revoked ? (
-                                <button
-                                  type="button"
-                                  className="btn"
-                                  onClick={() => restore(r.certificate_number)}
-                                >
-                                  Restore
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="btn adm__danger"
-                                  onClick={() => revoke(r.certificate_number)}
-                                >
-                                  Revoke
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 )}
               </div>
             </div>

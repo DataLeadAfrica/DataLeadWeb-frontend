@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import Seo from "../../../components/Seo/component";
 import { routes } from "../../routes";
 import {
+  changePassword,
   fetchDashboard,
   getLearnerName,
   signOut,
@@ -27,6 +28,12 @@ export default function LearnerDashboard() {
   const [signedIn, setSignedIn] = useState(true);
   const [sections, setSections] = useState<SectionRow[]>([]);
   const [openRow, setOpenRow] = useState<string | null>(null);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [pwCurrent, setPwCurrent] = useState("");
+  const [pwNext, setPwNext] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
+  const [pwError, setPwError] = useState("");
+  const [pwDone, setPwDone] = useState("");
   const name = getLearnerName();
 
   useEffect(() => {
@@ -42,6 +49,22 @@ export default function LearnerDashboard() {
       live = false;
     };
   }, []);
+
+  async function handleChangePassword() {
+    setPwError("");
+    setPwDone("");
+    setPwBusy(true);
+    const r = await changePassword(pwCurrent, pwNext);
+    setPwBusy(false);
+    if (!r.ok) {
+      setPwError(r.message);
+      return;
+    }
+    setPwDone(r.message);
+    setPwCurrent("");
+    setPwNext("");
+    setPwOpen(false);
+  }
 
   async function handleSignOut() {
     await signOut();
@@ -139,16 +162,22 @@ export default function LearnerDashboard() {
 
   // Numbering follows the order assessments were actually sat, not any planned
   // order. A section with no attempt has no number at all.
+  // A section counts as sat once a paper has been SUBMITTED for it. Opening a
+  // paper and walking away does not count.
   const satOrder = new Map<string, number>();
   sections
-    .filter((t) => t.attempts_used > 0)
-    .sort((a, b) => (a.week_number ?? 99) - (b.week_number ?? 99))
+    .filter((t) => t.first_sat_at !== null)
+    .sort(
+      (a, b) =>
+        new Date(a.first_sat_at as string).getTime() -
+        new Date(b.first_sat_at as string).getTime(),
+    )
     .forEach((t, i) => satOrder.set(t.module_slug, i + 1));
   const totalSat = satOrder.size;
 
   function row(t: SectionRow) {
     const done = t.status === "certified";
-    const tried = t.attempts_used > 0;
+    const tried = t.first_sat_at !== null;
     const cls = done ? "done" : tried ? "retry" : "open";
     const no = satOrder.get(t.module_slug);
     const expandable = tried;
@@ -392,6 +421,84 @@ export default function LearnerDashboard() {
                 <button type="button" className="btn" onClick={handleSignOut}>
                   Sign out
                 </button>
+              </div>
+              <div className="strip glass">
+                <h3>Your password</h3>
+                <p>
+                  Change the password the training team gave you to one you will
+                  remember. At least 8 characters.
+                </p>
+                {pwDone ? <p className="cpw__ok">{pwDone}</p> : null}
+                {pwOpen ? (
+                  <div className="cpw">
+                    <label className="lbl" htmlFor="cpw-cur">
+                      Current password
+                    </label>
+                    <input
+                      id="cpw-cur"
+                      className="inp"
+                      type="password"
+                      autoComplete="current-password"
+                      value={pwCurrent}
+                      disabled={pwBusy}
+                      onChange={(e) => setPwCurrent(e.target.value)}
+                    />
+                    <label className="lbl" htmlFor="cpw-new">
+                      New password
+                    </label>
+                    <input
+                      id="cpw-new"
+                      className="inp"
+                      type="password"
+                      autoComplete="new-password"
+                      value={pwNext}
+                      disabled={pwBusy}
+                      onChange={(e) => setPwNext(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !pwBusy)
+                          handleChangePassword();
+                      }}
+                    />
+                    {pwError ? (
+                      <p className="err">
+                        <span>&#9888;</span>
+                        <span>{pwError}</span>
+                      </p>
+                    ) : null}
+                    <div className="adm__row">
+                      <button
+                        type="button"
+                        className="btn btn--go"
+                        disabled={pwBusy}
+                        onClick={handleChangePassword}
+                      >
+                        {pwBusy ? "Saving" : "Save new password"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn"
+                        disabled={pwBusy}
+                        onClick={() => {
+                          setPwOpen(false);
+                          setPwError("");
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => {
+                      setPwOpen(true);
+                      setPwDone("");
+                    }}
+                  >
+                    Change password
+                  </button>
+                )}
               </div>
             </div>
           </div>

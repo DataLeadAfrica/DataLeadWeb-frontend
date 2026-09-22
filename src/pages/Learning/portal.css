@@ -436,8 +436,13 @@ body {
     0 3px 14px rgba(245, 110, 15, 0.36),
     inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
-.btn--go:hover {
+/* Must outrank ".btn:hover:not(:disabled)", which turns plain buttons white.
+   Without the extra classes here, a hovered orange button went white with
+   white text and effectively disappeared. */
+.btn.btn--go:hover:not(:disabled) {
   transform: translateY(-2px);
+  color: #fff;
+  border-color: transparent;
   background: linear-gradient(
     135deg,
     var(--orange-dk),
@@ -869,7 +874,7 @@ body {
 /* ============ STRIPS ============ */
 .strips {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.1rem;
   margin-top: 2.6rem;
 }
@@ -1083,7 +1088,7 @@ body {
 
 .asm__bar {
   position: sticky;
-  top: 0;
+  top: 5rem;
   z-index: 5;
   margin: -2.4rem -1.25rem 1.6rem;
   padding: 0.9rem 1.25rem;
@@ -1473,13 +1478,13 @@ body {
   min-height: 80vh;
 }
 .adm__wrap {
-  max-width: 880px;
+  max-width: 1080px;
   margin: 0 auto;
 }
 .adm__grid {
   display: grid;
   gap: 1.1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   margin-top: 1.8rem;
 }
 .adm__card {
@@ -1553,23 +1558,211 @@ body {
   background: rgba(179, 38, 30, 0.1);
 }
 
-/* ---- admin console on phones ---- */
-.adm__scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* Keep links inside the sign in card at the size of the text around them,
+   rather than inheriting the site's larger default link size. */
+.err a,
+.foot a,
+.lgn__txt a {
+  font-size: inherit;
+  line-height: inherit;
 }
-@media (max-width: 720px) {
-  .adm {
-    padding: 2rem 1rem 4rem;
-  }
+.err a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================================
+   PASSWORD FIELD, with a show / hide control inside it
+   ============================================================ */
+.pw {
+  position: relative;
+}
+.pw__inp {
+  padding-right: 4.6rem;
+}
+.pw__eye {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--txt-2);
+  background: rgba(23, 23, 23, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0.42rem 0.7rem;
+  cursor: pointer;
+}
+.pw__eye:hover {
+  color: var(--txt);
+  background: rgba(23, 23, 23, 0.09);
+}
+
+/* the link to the email code, made more prominent when it is the way out */
+.lnk--nudge {
+  font-weight: 700;
+  color: var(--orange-dk);
+}
+
+/* ============================================================
+   CHANGE PASSWORD, on the dashboard
+   ============================================================ */
+.cpw {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+}
+.cpw .inp {
+  margin-bottom: 0.8rem;
+}
+.cpw__ok {
+  margin: 0 0 0.9rem;
+  font-size: 0.84rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* ============================================================
+   STAFF: issued passwords
+   ============================================================ */
+.pwd__warn {
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  background: #fdf2e6;
+  border: 1px solid rgba(245, 110, 15, 0.3);
+  color: #8a4206;
+}
+.pwd__pass {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.pwd__one {
+  margin: 0.9rem 0 0;
+  padding: 1rem 1.1rem;
+  border-radius: 11px;
+  background: #e7f3ec;
+  border: 1px solid rgba(13, 122, 74, 0.25);
+}
+.pwd__oneLbl {
+  margin: 0 0 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.pwd__oneVal {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.pwd__stats {
+  display: flex;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.1rem;
+  font-size: 0.84rem;
+  color: var(--txt-2);
+}
+.pwd__stats b {
+  color: var(--txt);
+  font-size: 1.05rem;
+}
+
+/* staff screen: three columns on a laptop, two on a tablet, one on a phone */
+@media (max-width: 980px) {
   .adm__grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
-  .adm__card {
-    min-width: 0;
-    padding: 1.3rem 1.2rem;
+}
+@media (max-width: 680px) {
+  .adm__grid {
+    grid-template-columns: 1fr;
   }
-  .adm__table {
-    min-width: 460px;
+
+  /* On a phone each table row becomes a small stacked card, so nobody has
+     to scroll sideways to read a password or a certificate number. */
+  .adm__table,
+  .adm__table tbody,
+  .adm__table tr,
+  .adm__table td {
+    display: block;
+    width: 100%;
   }
+  .adm__table thead {
+    display: none;
+  }
+  .adm__table tr {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .adm__table tr:last-child {
+    border-bottom: none;
+  }
+  .adm__table td {
+    border-bottom: none;
+    padding: 0.2rem 0;
+    overflow-wrap: anywhere;
+  }
+  .adm__table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--txt-3);
+    margin-bottom: 0.1rem;
+    font-family: "Poppins", system-ui, sans-serif;
+  }
+  .adm__table td .btn {
+    margin-top: 0.4rem;
+  }
+}
+
+/* Grid items otherwise refuse to shrink below their widest content, so a
+   table pushed the staff cards wider than a phone screen. */
+.adm__grid > * {
+  min-width: 0;
+}
+
+/* Error messages keep their red inside cards, where ".strip p" and
+   ".panel p" would otherwise repaint them grey. */
+.strip .err,
+.panel .err,
+.adm__card .err {
+  color: var(--red);
+  margin: 0 0 0.9rem;
+}
+
+/* Links in the dashboard cards stay the size of the text around them. */
+.strip a,
+.panel a,
+.next a,
+.hist a {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* The site header is fixed at the top and 5rem tall, the same offset your
+   mobile menu uses. The progress bar sticks just below it, otherwise it slid
+   underneath the header and vanished as soon as a participant scrolled. */
+
+/* During an assessment, hide the site's floating WhatsApp button. It is fixed
+   to the bottom right corner, so as a participant scrolls it sits over the
+   right hand edge of answer options, and a tap there opens WhatsApp instead of
+   choosing the answer. It stays on every other page, including the dashboard. */
+body:has(.asm__bar) .wa-float {
+  display: none;
 }
