@@ -90,7 +90,6 @@ const courseInfos: Array<CourseInfo> = [
       "Turn raw data into decisions. A hands-on, mentor-led programme that makes you job-ready in three months, online or onsite in Abuja, open to learners across Africa.",
     duration: "3 months",
     cohortNote: "Next cohort now enrolling · limited seats",
-    scholarship: true,
     outcomes: [
       "Collect and clean real-world datasets end to end",
       "Store and query data with SQL",

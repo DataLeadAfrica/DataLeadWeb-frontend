@@ -19,6 +19,16 @@
       "source": "/careers/enumerator-application/",
       "destination": "/careers/open-roles/field-enumerator-lagos-ekiti/",
       "permanent": true
+    },
+    {
+      "source": "/world-cup-2026",
+      "destination": "/courses/data-analytics",
+      "permanent": true
+    },
+    {
+      "source": "/world-cup-2026/:path*",
+      "destination": "/courses/data-analytics",
+      "permanent": true
     }
   ],
   "rewrites": [

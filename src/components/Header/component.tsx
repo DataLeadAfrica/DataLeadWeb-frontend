@@ -252,10 +252,6 @@ export default function Header() {
           </a>
           {/* GIZ-ZME programmes live in /public, so they are plain <a>, not <Link>. */}
           <DropDown title="GIZ-ZME Programme" links={gizLinks} staticLinks />
-          {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
-          <a className="btn nav__predict" href="/world-cup-2026/index.html">
-            {"⚽ Predict & Win"}
-          </a>
         </nav>
         <Link to={routes.contactUs} className="btn nav__contact-us">
           Contact Us
@@ -299,14 +295,6 @@ export default function Header() {
                 links={gizLinks}
                 staticLinks
               />
-              {/* World Cup 2026 - TEMPORARY promo. Remove this <a> after the tournament. */}
-              <a
-                className="menu__predict"
-                href="/world-cup-2026/index.html"
-                onClick={handleClick}
-              >
-                {"⚽ Predict & Win"}
-              </a>
               <Link
                 to={routes.contactUs}
                 className="btn menu__contact-us"

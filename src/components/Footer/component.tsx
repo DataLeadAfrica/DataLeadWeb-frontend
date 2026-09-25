@@ -138,8 +138,6 @@ export default function Footer() {
               <dt>Nigeria</dt>
               <dd>
                 <Link to="tel:+2349166661234">+234 916 666 1234</Link>
-                <span aria-hidden="true"> · </span>
-                <Link to="tel:+2347030500741">+234 703 050 0741</Link>
               </dd>
               <dt>Guinea-Bissau</dt>
               <dd>

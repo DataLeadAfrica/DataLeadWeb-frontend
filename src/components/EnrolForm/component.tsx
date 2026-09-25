@@ -12,9 +12,11 @@ import {
 import { PAYMENTS, PAYSTACK_BASE, naira } from "./payments";
 
 // ── Backend config ───────────────────────────────────────────────────
-// Enrolments Apps Script Web App (runs on datalead.africa@gmail.com). It saves
-// to the sheet AND sends the confirmation email, so EmailJS is no longer used.
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyOO5cvLd1WSFUBR23txtA-m6ClDOicRasHcYtK6UB9c9ne8D0ZpcDsv_wVnP-7tZVOJQ/exec";
+// Enrolments Apps Script Web App (runs on info@dataleadafrica.com, bound to the
+// "Data-Lead Africa Course Enrolments" sheet). It saves to the sheet AND sends
+// the confirmation email. To change the script, use Manage deployments and add
+// a new VERSION so this URL keeps working.
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbymSPu22h1DbQWAi0D1dMRYgm1gK886P5Akw59Yl-J-4RQL3gcYYPy8PEn8-nj0Cg1n/exec";
 
 // Company bank-transfer details (shown on the payment step).
 const BANK = {
