@@ -103,7 +103,6 @@ export default function ContactUs() {
               <i className="nf nf-fa-phone"></i>
               <div className="numbers">
                 <a href="tel:+2349166661234">+234-916-6661-234</a>
-                <a href="tel:+2347030500741">+234-703-0500-741</a>
               </div>
             </div>
             <div className="contact">

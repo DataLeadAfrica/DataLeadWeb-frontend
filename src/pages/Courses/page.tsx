@@ -140,7 +140,7 @@ export default function Courses({
         addressCountry: "NG",
       },
       email: "info@dataleadafrica.com",
-      telephone: "+234-703-050-0741",
+      telephone: "+234-916-666-1234",
     },
     {
       "@context": "https://schema.org",
