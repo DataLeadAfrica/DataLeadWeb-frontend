@@ -966,7 +966,9 @@ async function fillFctTemplate(JSZip, bytes, ps){
   const HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n';
   const zip = await JSZip.loadAsync(bytes);
   const parse = async p => new DOMParser().parseFromString(await zip.file(p).async("string"), "application/xml");
-  const save = (p, doc) => zip.file(p, HEAD + new XMLSerializer().serializeToString(doc));
+  // Some browsers (Chrome, Edge) write the XML declaration themselves and some do not.
+  // Two declarations make the file unreadable, so strip theirs and add exactly one.
+  const save = (p, doc) => zip.file(p, HEAD + new XMLSerializer().serializeToString(doc).replace(/^\s*<\?xml[^>]*\?>\s*/, ""));
   const all = (el, tag) => Array.from(el.getElementsByTagNameNS(NS, tag));
   const sst = await parse("xl/sharedStrings.xml"), sh = await parse("xl/worksheets/sheet1.xml");
   const sstRoot = sst.documentElement;
