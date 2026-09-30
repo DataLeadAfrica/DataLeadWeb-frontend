@@ -123,6 +123,12 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .tag.invited{background:var(--amber-bg);color:var(--amber)}
 .tag.suspended,.tag.resigned,.tag.terminated{background:var(--red-bg);color:var(--red)}
 .tag.exited{background:var(--line);color:var(--muted)}
+.bktbl{width:100%;border-collapse:collapse;font-size:13px}
+.bktbl th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);
+  font-weight:500;padding:0 10px 8px 0;font-family:var(--display-md)}
+.bktbl td{padding:10px 10px 10px 0;border-top:1px solid var(--line);vertical-align:top}
+.tag.bad{background:var(--red-bg);color:var(--red)}
+.tag.calm{background:var(--line);color:var(--muted)}
 .tag.met{background:var(--green-bg);color:var(--green)}
 .tag.week{background:var(--blue);color:#1a4e73}
 .tag.month{background:var(--orange-light);color:var(--clay)}
@@ -620,7 +626,9 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 
     <div class="panel">
       <div class="panel-head"><div><h3>Employment</h3></div>
-        <button onclick="toggleStatus()">Change status</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button onclick="toggleType()">Change type</button>
+          <button onclick="toggleStatus()">Change status</button></div></div>
       <div class="facts" id="p-facts"></div>
 
       <div id="stat" class="hidden" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
@@ -651,6 +659,35 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         <div id="st-msg"></div>
         <button class="btn-primary" style="width:100%" id="st-btn" onclick="setStatus()">Update status</button>
       </div>
+
+      <div id="typ" class="hidden" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+        <div class="grid2">
+          <div class="fld"><label>New employment type</label>
+            <select id="ty-type" onchange="typeFormChange()">
+              <option value="full_time">Full-time employee</option>
+              <option value="part_time">Part-time employee</option>
+              <option value="fixed_term">Fixed-term employee</option>
+              <option value="temporary">Temporary hire</option>
+              <option value="intern">Intern</option>
+              <option value="nysc">NYSC (corps member)</option>
+            </select></div>
+          <div class="fld"><label>Takes effect from the 1st of</label>
+            <div class="grid2" style="margin:0">
+              <select id="ty-month" onchange="typeFormChange()"></select>
+              <input id="ty-year" type="number" onchange="typeFormChange()">
+            </div></div>
+        </div>
+        <div class="grid2">
+          <div class="fld"><label id="ty-gross-lab">New monthly gross (&#8358;)</label><input id="ty-gross" type="number">
+            <p class="hint">Leave empty to keep their current figure.</p></div>
+          <div class="fld"><label>New job title (optional)</label><input id="ty-title"></div>
+        </div>
+        <div class="fld"><label>Reason (required, recorded against your name)</label>
+          <input id="ty-note" placeholder="Retained after NYSC, offered a full-time contract"></div>
+        <div id="ty-alert"></div>
+        <div id="ty-msg"></div>
+        <button class="btn-primary" style="width:100%" id="ty-btn" onclick="setType()">Update type</button>
+      </div>
     </div>
 
     <div class="panel">
@@ -663,6 +700,12 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
       <h3>What they have given us</h3>
       <div class="ps">Whether it is there, not what it says. Their bank account is theirs and Finance's.</div>
       <div class="facts" id="p-complete"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Delete this record</h3>
+      <div class="ps">Only for a record entered by mistake. Anyone with a history here is set to Exited instead, so the payroll and tax record stays whole.</div>
+      <div id="p-del"></div>
     </div>
   </section>
 
@@ -792,6 +835,25 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     <div id="fin-certify"></div>
   </section>
 
+
+  <!-- ============ BANK AND TAX ============ -->
+  <section id="v-bank" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Admin</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Bank and tax</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Everyone's account and tax numbers in one place. Staff enter these in their own profile, and only they can change them.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>The directory</h3><div class="ps" id="bk-sum">Loading&hellip;</div></div>
+        <button onclick="exportBankTax()">Download as CSV</button>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px">
+        <input type="checkbox" id="bk-left" onchange="paintBank()" style="width:auto;margin:0">
+        Include people who have left
+      </label>
+      <div id="bk-table"></div>
+    </div>
+  </section>
 
   <!-- ============ REQUISITIONS TO APPROVE ============ -->
   <section id="v-reqs" class="hidden">
@@ -1600,7 +1662,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects","export","goals"];
+const VIEWS = ["hub","register","person","add","appoint","depts","finance","settings","policies","emails","reqs","perf","projects","export","goals","bank"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1618,6 +1680,7 @@ function go(v){
   if(v === "projects") loadProjects();
   if(v === "export")   initExport();
   if(v === "goals")    initGoals();
+  if(v === "bank")     loadBank();
 }
 
 // ============================================================
@@ -1656,6 +1719,9 @@ async function loadHub(){
     { v:"finance", ic:'<path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/>',
       t:"Finance", s:"What the firm pays, and what it costs.",
       flag:finFlag, warn:errs.length > 0 },
+    { v:"bank", ic:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
+      t:"Bank and tax", s:"Everyone's account number and TIN, in one table you can download.",
+      flag:"View", warn:false },
     { v:"reqs", ic:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10h8M8 14h5"/>',
       t:"Requisitions", s:"Money your team is asking for. Only the ones above the line reach you.",
       flag:reqFlag, warn:reqWait > 0 },
@@ -2452,10 +2518,10 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit() ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id) ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
-  $("promo").classList.add("hidden"); $("stat").classList.add("hidden");
+  $("promo").classList.add("hidden"); $("stat").classList.add("hidden"); $("typ").classList.add("hidden");
 }
 
 async function pGlance(id, Y, M){
@@ -2850,6 +2916,120 @@ async function changeSalary(){
 }
 
 // ============================================================
+// DELETE A RECORD ENTERED BY MISTAKE
+// The database decides, not this page. It refuses anyone with a history
+// (a claimed account, a finalised payroll month, timesheets, leave,
+// requisitions), because deleting them would take that history with it.
+// ============================================================
+window.deleteStaff = deleteStaff;
+async function pDeleteCheck(id){
+  const box = $("p-del"); if(!box) return;
+  box.innerHTML = '<p style="color:var(--faint);font-size:13px">Checking&hellip;</p>';
+  const { data, error } = await db.rpc("admin_delete_staff_check", { p_staff: id });
+  if(error){ box.innerHTML = '<div class="alert info" style="margin:0"><b>Not available</b>' + esc(error.message) + '</div>'; return; }
+  const reasons = (data || []).map(r => r.reason);
+  if(reasons.length){
+    box.innerHTML = '<div class="alert info" style="margin:0"><b>This record is kept</b>' +
+      reasons.map(esc).join("<br>") +
+      '<br><br>To take them off the payroll, use Change status above and choose Exited.</div>';
+    return;
+  }
+  box.innerHTML =
+    '<div class="alert warn" style="margin-top:0"><b>This record can be deleted</b>' +
+    'It removes them from the register, and from any payroll month that is still a draft. It cannot be undone.</div>' +
+    '<div class="fld"><label>Type their full name to confirm: <b>' + esc(P.full_name) + '</b></label>' +
+    '<input id="del-name" autocomplete="off"></div>' +
+    '<div id="del-msg"></div>' +
+    '<button id="del-btn" style="width:100%;color:var(--red);border-color:var(--red)" onclick="deleteStaff()">Delete this record</button>';
+}
+
+async function deleteStaff(){
+  if(!P) return;
+  const typed = val("del-name");
+  if(!typed || typed.toLowerCase() !== String(P.full_name || "").trim().toLowerCase()){
+    msg("del-msg","err","The name does not match","Type " + P.full_name + " exactly as shown."); return;
+  }
+  if(!confirm("Delete " + P.full_name + " permanently?\n\nThis cannot be undone.")) return;
+  btn("del-btn", true, "Deleting");
+  const { data, error } = await db.rpc("admin_delete_staff", { p_staff: P.id, p_confirm_name: typed });
+  if(error){ btn("del-btn", false, "Delete this record"); msg("del-msg","err","Not deleted", error.message); return; }
+  toast(data || "Deleted.");
+  P = null;
+  go("register");
+}
+
+// ============================================================
+// EMPLOYMENT TYPE
+// Changing to or from NYSC changes tax, so this is dated, starts on the
+// 1st of a month, and the database adds a salary record with the PAYE
+// exemption to match. Earlier months keep the treatment they had.
+// ============================================================
+window.toggleType = toggleType; window.typeFormChange = typeFormChange; window.setType = setType;
+function toggleType(){
+  const el = $("typ"); el.classList.toggle("hidden");
+  if(el.classList.contains("hidden")) return;
+  $("ty-msg").innerHTML = "";
+  const ms = $("ty-month");
+  if(!ms.options.length) ms.innerHTML = MONTHS.map((m,i) => '<option value="' + (i+1) + '">' + m + '</option>').join("");
+  const next = new Date(); next.setDate(1); next.setMonth(next.getMonth() + 1);   // default: the 1st of next month
+  ms.value = String(next.getMonth() + 1); set("ty-year", next.getFullYear());
+  // start on a type they are not already
+  const t = $("ty-type");
+  t.value = P.employment_type === "nysc" ? "full_time" : (P.employment_type === "full_time" ? "fixed_term" : "full_time");
+  set("ty-gross", ""); set("ty-title", ""); set("ty-note", "");
+  typeFormChange();
+}
+function typeEffective(){
+  const y = Number(val("ty-year")), m = Number($("ty-month").value);
+  if(!y || y < 2000 || !m) return null;
+  return y + "-" + String(m).padStart(2,"0") + "-01";
+}
+function typeFormChange(){
+  const to = $("ty-type").value, from = P ? P.employment_type : null;
+  const eff = typeEffective();
+  const when = eff ? "1 " + MONTHS[Number(eff.slice(5,7)) - 1] + " " + eff.slice(0,4) : "the date you choose";
+  $("ty-gross-lab").textContent = to === "nysc" ? "New monthly stipend (\u20a6)" : "New monthly gross (\u20a6)";
+  let html = "";
+  if(to === from){
+    html = '<div class="alert info"><b>No change</b>They are already ' + esc(EMP[to]) + '. Choose a different type.</div>';
+  } else if(from === "nysc"){
+    html = '<div class="alert warn"><b>Tax starts from ' + when + '</b>' +
+      'From that month PAYE, pension and the other statutory deductions apply, and their PAYE year is counted from that month. ' +
+      'Their stipend months stay tax-free. If their pay changes from the stipend, enter the new monthly gross above, ' +
+      'otherwise the stipend figure becomes their taxed salary. Annual leave opens up for them under their status, as for any employee.</div>';
+  } else if(to === "nysc"){
+    html = '<div class="alert warn"><b>No tax from ' + when + '</b>' +
+      'They will be treated as a corps member: no PAYE is computed (Employee Handbook \u00a73.13), and no annual leave, only sick leave.</div>';
+  } else {
+    html = '<div class="alert info"><b>Tax treatment does not change</b>Only the type recorded against them changes.</div>';
+  }
+  $("ty-alert").innerHTML = html;
+}
+async function setType(){
+  const to = $("ty-type").value, eff = typeEffective(), note = val("ty-note");
+  const gross = val("ty-gross") ? Number(val("ty-gross")) : null;
+  if(to === P.employment_type){ msg("ty-msg","err","No change","Choose a different type."); return; }
+  if(!eff){ msg("ty-msg","err","No date","Choose the month and year it takes effect."); return; }
+  if(!note){ msg("ty-msg","err","A reason is needed","A change that affects tax, with no recorded reason, cannot be audited."); return; }
+  if(gross !== null && !(gross > 0)){ msg("ty-msg","err","Check the figure","The new monthly figure must be more than zero."); return; }
+  if(!confirm("Change " + P.full_name + " from " + (EMP[P.employment_type] || "their current type") + " to " + EMP[to] +
+      ", from 1 " + MONTHS[Number(eff.slice(5,7)) - 1] + " " + eff.slice(0,4) + "?")) return;
+
+  btn("ty-btn", true, "Updating");
+  const { data, error } = await db.rpc("admin_change_employment_type", {
+    p_email: P.email, p_new_type: to, p_effective: eff, p_note: note,
+    p_new_gross: gross, p_new_job_title: val("ty-title")
+  });
+  btn("ty-btn", false, "Update type");
+  if(error){ msg("ty-msg","err","Not updated", error.message); return; }
+  const id = P.id, said = data || "Updated.";
+  await loadRegister();
+  await openPerson(id);
+  toast(said);
+  $("p-alert").innerHTML = '<div class="alert ok"><b>Employment type updated</b>' + esc(said) + '</div>' + $("p-alert").innerHTML;
+}
+
+// ============================================================
 // EMPLOYMENT STATUS
 // ============================================================
 function toggleStatus(){
@@ -2883,6 +3063,86 @@ async function setStatus(){
   await loadRegister();
   P = REG.find(r => r.id === P.id) || P;
   pFacts();
+}
+
+// ============================================================
+// BANK AND TAX
+// Everyone's account and tax numbers, one row each. Staff enter these
+// themselves in their own profile; nobody here can change them.
+// The view only returns rows to Finance or the CEO.
+// ============================================================
+window.loadBank = loadBank; window.paintBank = paintBank; window.exportBankTax = exportBankTax;
+const BK_EMP = { full_time:"Full-time", part_time:"Part-time", fixed_term:"Fixed-term",
+                 temporary:"Temporary", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
+const BK_GONE = ["exited","terminated","resigned"];
+let BANK = [];
+
+async function loadBank(){
+  $("bk-table").innerHTML = '<p style="color:var(--faint);font-size:13px">Loading&hellip;</p>';
+  const { data, error } = await db.from("finance_bank_tax").select("*");
+  if(error){
+    console.error("Bank and tax:", error);
+    $("bk-sum").textContent = "";
+    $("bk-table").innerHTML = '<div class="alert err" style="margin:0"><b>Could not load</b>' + esc(error.message) + '</div>';
+    return;
+  }
+  BANK = data || [];
+  paintBank();
+}
+
+function bankRows(){
+  const all = $("bk-left") && $("bk-left").checked;
+  return BANK.filter(r => all || !BK_GONE.includes(r.employment_status));
+}
+
+function paintBank(){
+  const rows = bankRows();
+  const none = '<span style="color:var(--faint)">none</span>';
+  const noBank = rows.filter(r => !r.account_number).length;
+  const needTin = rows.filter(r => !r.tin && r.employment_type !== "nysc").length;
+  $("bk-sum").textContent = rows.length + " " + (rows.length === 1 ? "person" : "people") + ". " +
+    (noBank ? noBank + " with no bank details. " : "Everyone has bank details. ") +
+    (needTin ? needTin + " taxable " + (needTin === 1 ? "person has" : "people have") + " no TIN, needed before their PAYE can be remitted."
+             : "Every taxable person has a TIN.");
+
+  if(!rows.length){ $("bk-table").innerHTML = '<p style="color:var(--faint);font-size:13px">Nobody to show.</p>'; return; }
+
+  $("bk-table").innerHTML = '<div style="overflow-x:auto"><table class="bktbl" style="min-width:860px"><thead><tr>' +
+    '<th>Staff</th><th>Bank</th><th>Account name</th><th>Account number</th><th>TIN</th>' +
+    '<th>Pension (PFA, RSA)</th><th>NHF</th></tr></thead><tbody>' +
+    rows.map(r => {
+      const corps = r.employment_type === "nysc";
+      const left = BK_GONE.includes(r.employment_status);
+      return '<tr><td><b style="font-family:var(--display-md);font-weight:500">' + esc(r.full_name) + '</b>' +
+        '<div style="font-size:11px;color:var(--faint)">' +
+          [r.staff_code, BK_EMP[r.employment_type], r.department].filter(Boolean).map(esc).join(" \u00b7 ") +
+          (left ? ' \u00b7 <span style="color:var(--red)">' + esc(r.employment_status) + '</span>' : "") + '</div></td>' +
+        '<td>' + (r.bank_name ? esc(r.bank_name) : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td>' + (r.account_name ? esc(r.account_name) : none) + '</td>' +
+        '<td style="font-variant-numeric:tabular-nums">' + (r.account_number ? esc(r.account_number) : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td style="font-variant-numeric:tabular-nums">' + (r.tin ? esc(r.tin)
+            : corps ? '<span class="tag calm">not yet, corps</span>' : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td>' + ([r.pension_pfa, r.pension_rsa_number].filter(Boolean).map(esc).join("<br>") || none) + '</td>' +
+        '<td>' + (r.nhf_number ? esc(r.nhf_number) : none) + '</td></tr>';
+    }).join("") + '</tbody></table></div>';
+}
+
+function exportBankTax(){
+  const rows = bankRows();
+  if(!rows.length){ toast("Nothing to download."); return; }
+  // a leading apostrophe stops a spreadsheet dropping the zeros off the front
+  const keep = v => v ? "'" + v : "";
+  const out = [["Staff","Staff ID","Department","Type","Status","Bank","Account name","Account number",
+                "TIN","NHF number","Pension fund administrator","RSA number"],
+    ...rows.map(r => [r.full_name, r.staff_code||"", r.department||"", BK_EMP[r.employment_type]||"",
+                      r.employment_status||"", r.bank_name||"", r.account_name||"", keep(r.account_number),
+                      keep(r.tin), keep(r.nhf_number), r.pension_pfa||"", keep(r.pension_rsa_number)])];
+  const csv = out.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "staff-bank-and-tax-" + iso(new Date()) + ".csv";
+  a.click(); URL.revokeObjectURL(url);
+  toast(rows.length + " " + (rows.length === 1 ? "row" : "rows") + " downloaded. It holds account numbers and TINs, so keep it private.");
 }
 
 // ============================================================

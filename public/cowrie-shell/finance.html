@@ -368,6 +368,25 @@ td.c,th.c{text-align:center;width:54px;padding-right:0}
     <div id="paye-form"></div>
   </section>
 
+  <!-- ============ BANK AND TAX ============ -->
+  <section id="v-bank" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Bank and tax</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">
+      Everyone's account and tax numbers in one place. Staff enter these in their own profile, and only they can change them.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>The directory</h3><div class="ps" id="bk-sum">Loading&hellip;</div></div>
+        <button onclick="exportBankTax()">Download as CSV</button>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px">
+        <input type="checkbox" id="bk-left" onchange="paintBank()" style="width:auto;margin:0">
+        Include people who have left
+      </label>
+      <div id="bk-table"></div>
+    </div>
+  </section>
+
   <!-- ============ PROJECTS ============ -->
   <section id="v-projects" class="hidden">
     <button class="back" onclick="go('hub')">&larr; Finance</button>
@@ -504,7 +523,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","payroll","reqs","cash","paye","projects"];
+const VIEWS = ["hub","payroll","reqs","cash","paye","projects","bank"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -514,6 +533,7 @@ function go(v){
   if(v === "cash")     initCash();
   if(v === "paye")     loadPaye();
   if(v === "projects") loadProjects();
+  if(v === "bank")     loadBank();
 }
 
 // ============================================================
@@ -565,6 +585,8 @@ async function loadHub(){
       ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/>' },
     { v:"projects", t:"Projects", s:"Where the money comes from, and whether it made any.",
       ic:'<path d="M3 7h18M3 12h18M3 17h10"/>' },
+    { v:"bank", t:"Bank and tax", s:"Everyone's account number and TIN, in one table you can download.",
+      ic:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>' },
   ];
   $("doors").innerHTML = doors.map(d =>
     '<button class="door" onclick="go(\'' + d.v + '\')">' +
@@ -791,6 +813,86 @@ async function exportSchedule(){
   a.click(); URL.revokeObjectURL(url);
   toast(pay.length + " line" + (pay.length>1?"s":"") + " exported" +
         (missing.length ? ", " + missing.length + " left out for want of bank details." : "."), true);
+}
+
+// ============================================================
+// BANK AND TAX
+// Everyone's account and tax numbers, one row each. Staff enter these
+// themselves in their own profile; nobody here can change them.
+// The view only returns rows to Finance or the CEO.
+// ============================================================
+window.loadBank = loadBank; window.paintBank = paintBank; window.exportBankTax = exportBankTax;
+const BK_EMP = { full_time:"Full-time", part_time:"Part-time", fixed_term:"Fixed-term",
+                 temporary:"Temporary", intern:"Intern", nysc:"NYSC corps member", consultant:"Consultant" };
+const BK_GONE = ["exited","terminated","resigned"];
+let BANK = [];
+
+async function loadBank(){
+  $("bk-table").innerHTML = '<p style="color:var(--faint);font-size:13px">Loading&hellip;</p>';
+  const { data, error } = await db.from("finance_bank_tax").select("*");
+  if(error){
+    console.error("Bank and tax:", error);
+    $("bk-sum").textContent = "";
+    $("bk-table").innerHTML = '<div class="alert err" style="margin:0"><b>Could not load</b>' + esc(error.message) + '</div>';
+    return;
+  }
+  BANK = data || [];
+  paintBank();
+}
+
+function bankRows(){
+  const all = $("bk-left") && $("bk-left").checked;
+  return BANK.filter(r => all || !BK_GONE.includes(r.employment_status));
+}
+
+function paintBank(){
+  const rows = bankRows();
+  const none = '<span style="color:var(--faint)">none</span>';
+  const noBank = rows.filter(r => !r.account_number).length;
+  const needTin = rows.filter(r => !r.tin && r.employment_type !== "nysc").length;
+  $("bk-sum").textContent = rows.length + " " + (rows.length === 1 ? "person" : "people") + ". " +
+    (noBank ? noBank + " with no bank details. " : "Everyone has bank details. ") +
+    (needTin ? needTin + " taxable " + (needTin === 1 ? "person has" : "people have") + " no TIN, needed before their PAYE can be remitted."
+             : "Every taxable person has a TIN.");
+
+  if(!rows.length){ $("bk-table").innerHTML = '<p style="color:var(--faint);font-size:13px">Nobody to show.</p>'; return; }
+
+  $("bk-table").innerHTML = '<div style="overflow-x:auto"><table class="bktbl" style="min-width:860px"><thead><tr>' +
+    '<th>Staff</th><th>Bank</th><th>Account name</th><th>Account number</th><th>TIN</th>' +
+    '<th>Pension (PFA, RSA)</th><th>NHF</th></tr></thead><tbody>' +
+    rows.map(r => {
+      const corps = r.employment_type === "nysc";
+      const left = BK_GONE.includes(r.employment_status);
+      return '<tr><td><b style="font-family:var(--display-md);font-weight:500">' + esc(r.full_name) + '</b>' +
+        '<div style="font-size:11px;color:var(--faint)">' +
+          [r.staff_code, BK_EMP[r.employment_type], r.department].filter(Boolean).map(esc).join(" \u00b7 ") +
+          (left ? ' \u00b7 <span style="color:var(--red)">' + esc(r.employment_status) + '</span>' : "") + '</div></td>' +
+        '<td>' + (r.bank_name ? esc(r.bank_name) : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td>' + (r.account_name ? esc(r.account_name) : none) + '</td>' +
+        '<td style="font-variant-numeric:tabular-nums">' + (r.account_number ? esc(r.account_number) : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td style="font-variant-numeric:tabular-nums">' + (r.tin ? esc(r.tin)
+            : corps ? '<span class="tag calm">not yet, corps</span>' : '<span class="tag bad">missing</span>') + '</td>' +
+        '<td>' + ([r.pension_pfa, r.pension_rsa_number].filter(Boolean).map(esc).join("<br>") || none) + '</td>' +
+        '<td>' + (r.nhf_number ? esc(r.nhf_number) : none) + '</td></tr>';
+    }).join("") + '</tbody></table></div>';
+}
+
+function exportBankTax(){
+  const rows = bankRows();
+  if(!rows.length){ toast("Nothing to download."); return; }
+  // a leading apostrophe stops a spreadsheet dropping the zeros off the front
+  const keep = v => v ? "'" + v : "";
+  const out = [["Staff","Staff ID","Department","Type","Status","Bank","Account name","Account number",
+                "TIN","NHF number","Pension fund administrator","RSA number"],
+    ...rows.map(r => [r.full_name, r.staff_code||"", r.department||"", BK_EMP[r.employment_type]||"",
+                      r.employment_status||"", r.bank_name||"", r.account_name||"", keep(r.account_number),
+                      keep(r.tin), keep(r.nhf_number), r.pension_pfa||"", keep(r.pension_rsa_number)])];
+  const csv = out.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "staff-bank-and-tax-" + iso(new Date()) + ".csv";
+  a.click(); URL.revokeObjectURL(url);
+  toast(rows.length + " " + (rows.length === 1 ? "row" : "rows") + " downloaded. It holds account numbers and TINs, so keep it private.");
 }
 
 // ============================================================
