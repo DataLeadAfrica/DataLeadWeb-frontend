@@ -116,8 +116,17 @@ label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
       <div class="fld"><label>Their bank</label><select id="f-pbank"></select></div>
       <div class="fld"><label>Their account number</label><input id="f-pacct" inputmode="numeric" placeholder="10 digits"></div>
     </div>
-    <div class="fld"><label>What for</label><div class="chips" id="f-cat"></div></div>
-    <div class="fld"><label>Belongs to</label><select id="f-item"></select><div class="hint">The training, study, consultancy or grant it is for. Shared costs go to Overheads.</div></div>
+    <div class="fld" id="f-cat-wrap"><label>What for</label><div class="chips" id="f-cat"></div></div>
+    <div class="fld hidden" id="f-for-wrap"><label>What for</label><input id="f-for" list="f-for-list" autocomplete="off" placeholder="Type it, for example Fuel for generator">
+      <datalist id="f-for-list"></datalist><div class="hint">Type it in your own words. Pick a suggestion when one fits, so the reports stay tidy.</div></div>
+    <div class="fld"><label>Belongs to</label><select id="f-item"></select><div class="hint">A whole income stream, or one item under it. Shared costs go to Overheads.</div></div>
+    <div class="card hidden" id="f-new" style="background:var(--paper);padding:14px">
+      <b style="font-size:14px">Add a new item</b>
+      <div class="two" style="margin-top:8px"><div class="fld"><label>Under</label><select id="f-new-stream"></select></div>
+        <div class="fld"><label>Name</label><input id="f-new-name" placeholder="Data Analytics Bootcamp, Cohort 6"></div></div>
+      <div id="f-new-msg"></div>
+      <div class="foot"><button onclick="newCancel()">Cancel</button><button class="btn-primary" id="f-new-btn" onclick="newSave()">Add item</button></div>
+    </div>
     <div class="two">
       <div class="fld"><label>Date</label><input id="f-date" type="date"></div>
       <div class="fld"><label>Bank reference</label><input id="f-ref" placeholder="From the transfer"></div>
@@ -170,7 +179,7 @@ function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null
 function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
 
 window.signIn = signIn; window.signOut = signOut; window.openForm = openForm; window.closeForm = closeForm; window.save = save;
-window.withdraw = withdraw; window.addReceipt = addReceipt;
+window.withdraw = withdraw; window.addReceipt = addReceipt; window.newSave = newSave; window.newCancel = newCancel;
 
 db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
 (async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
@@ -186,7 +195,7 @@ async function signIn(){
 async function signOut(){ await db.auth.signOut(); location.reload(); }
 
 let ME = null, STARTED = false;
-const L = { accounts:[], items:[], cats:{ in:[], out:[] }, payees:{}, rates:[], threshold:50000 };
+const L = { accounts:[], items:[], streams:[], cats:{ in:[], out:[] }, outSug:[], payees:{}, rates:[], threshold:50000 };
 async function enterApp(){
   if(STARTED) return; STARTED = true;
   const { data } = await db.from("my_full_profile").select("*").maybeSingle();
@@ -199,8 +208,11 @@ async function enterApp(){
   await loadLists(); loadMine();
 }
 async function loadLists(){
-  const [a, i, c, p, r, t] = await Promise.all([ db.from("fin_entry_accounts").select("*"), db.from("fin_entry_items").select("*"), db.from("fin_category_list").select("*"),
-    db.from("fin_payees").select("*"), db.from("fin_rates_view").select("*"), db.rpc("fin_setting", { p_key:"receipt_threshold" }) ]);
+  const [a, i, c, p, r, t, s, o] = await Promise.all([ db.from("fin_entry_accounts").select("*"), db.from("fin_entry_items").select("*"), db.from("fin_category_list").select("*"),
+    db.from("fin_payees").select("*"), db.from("fin_rates_view").select("*"), db.rpc("fin_setting", { p_key:"receipt_threshold" }),
+    db.from("fin_entry_streams").select("*"), db.from("fin_out_suggestions").select("*") ]);
+  L.streams = s.data || []; L.outSug = (o.data || []).map(x => x.name);
+  $("f-for-list").innerHTML = L.outSug.map(n => '<option value="' + esc(n) + '">').join("");
   if(a.error || i.error || c.error){ toast("The lists could not load. " + (a.error || i.error || c.error).message); return; }
   L.accounts = a.data || []; L.items = i.data || []; L.rates = r.data || [];
   L.cats = { in:(c.data || []).filter(x => x.kind === "in").map(x => x.name), out:(c.data || []).filter(x => x.kind === "out").map(x => x.name) };
@@ -232,17 +244,53 @@ function openForm(kind){
   ["f-amt","f-who","f-ref","f-desc","f-pacct","f-rate"].forEach(i => set(i, "")); set("f-pbank", ""); set("f-date", iso(new Date()));
   $("f-file").value = ""; $("f-msg").innerHTML = ""; $("f-dup").innerHTML = ""; $("f-sug").textContent = ""; $("f-rate").dataset.touched = "";
   chips("f-acc", L.accounts.map(a => [a.id, a.bank.replace(/ Bank$| MFB$/, "") + (a.currency !== "NGN" ? " " + a.currency : "") + ", " + a.name]), F.acct, v => { F.acct = v; $("f-rate").dataset.touched = ""; cur(); });
-  chips("f-cat", L.cats[kind].map(c => [c, c]), null, v => F.cat = v);
+  $("f-cat-wrap").classList.toggle("hidden", kind !== "in"); $("f-for-wrap").classList.toggle("hidden", kind !== "out"); set("f-for", "");
+  $("f-new").classList.add("hidden");
+  if(kind === "in") chips("f-cat", L.cats.in.map(c => [c, c]), null, v => F.cat = v);
   items("");
   cur();
   $("pick").classList.add("hidden"); $("form").classList.remove("hidden");
   window.scrollTo(0, 0); setTimeout(() => $("f-amt").focus(), 100);
 }
 function items(sel){
-  const list = L.items.filter(i => F.kind !== "in" || !i.cost_only), groups = {};
-  list.forEach(i => { const g = i.stream || "Other"; (groups[g] = groups[g] || []).push(i); });
-  $("f-item").innerHTML = (F.kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>') +
-    Object.keys(groups).map(g => '<optgroup label="' + esc(g) + '">' + groups[g].map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>').join("");
+  $("f-item").innerHTML = beOptions(F.kind, sel, L.streams, L.items.map(x => Object.assign({}, x, { stream_id: (L.streams.find(s => s.name === x.stream) || {}).id })));
+}
+$("f-item").addEventListener("change", e => {
+  if(e.target.value !== "__new"){ $("f-new").classList.add("hidden"); return; }
+  e.target.value = "";
+  $("f-new-stream").innerHTML = L.streams.filter(s => F.kind === "out" || !s.cost_only).map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join("");
+  set("f-new-name", ""); $("f-new-msg").innerHTML = ""; $("f-new").classList.remove("hidden"); $("f-new-name").focus();
+});
+function newCancel(){ $("f-new").classList.add("hidden"); }
+async function newSave(){
+  const name = val("f-new-name"); if(!name){ msg("f-new-msg","err","Name it","For example Data Analytics Bootcamp, Cohort 6."); return; }
+  btn("f-new-btn", true, "Adding");
+  const { data, error } = await db.rpc("fin_add_item", { p_stream_id:Number($("f-new-stream").value), p_name:name, p_code:null, p_funder:null, p_giving:true });
+  btn("f-new-btn", false, "Add item");
+  if(error){ msg("f-new-msg","err","Not added", error.message); return; }
+  await loadLists(); items(data); $("f-new").classList.add("hidden");
+  toast(name + " added. It can be chosen from now on.", true);
+}
+
+// "Belongs to": a whole income stream ("Training, in general"), or one item under it, or a new item
+function beOptions(kind, sel, streams, items){
+  const st = streams.slice().sort((a, b) => (a.sort || 0) - (b.sort || 0));
+  let h = kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>';
+  st.forEach(s => {
+    if(s.cost_only) return;   // Overheads is the first option for money out, and never takes income
+    const list = items.filter(i => String(i.stream_id || "") === String(s.id) || (!i.stream_id && i.stream === s.name))
+                      .filter(i => !/, in general$/.test(i.name));
+    h += '<optgroup label="' + esc(s.name) + '"><option value="S:' + s.id + '"' + (String(sel) === "S:" + s.id ? " selected" : "") + '>' + esc(s.name) + ', in general</option>' +
+      list.map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>';
+  });
+  const loose = items.filter(i => !i.stream_id && !i.stream && !i.is_overhead && !i.cost_only);
+  if(loose.length) h += '<optgroup label="Not yet in a stream">' + loose.map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>';
+  return h + '<option value="__new">+ Add a new item\u2026</option>';
+}
+async function beResolve(v){
+  if(!v) return null;
+  if(String(v).startsWith("S:")){ const r = await db.rpc("fin_stream_item", { p_stream_id: Number(String(v).slice(2)) }); if(r.error) throw r.error; return Number(r.data); }
+  return Number(v);
 }
 function closeForm(){ $("form").classList.add("hidden"); $("pick").classList.remove("hidden"); }
 function cur(){
@@ -262,7 +310,7 @@ $("f-date").addEventListener("change", () => { $("f-rate").dataset.touched = "";
 $("f-who").addEventListener("input", () => {
   const p = L.payees[(val("f-who") || "").toLowerCase()];
   if(p && F.kind === "out"){
-    F.cat = p.category; chips("f-cat", L.cats.out.map(c => [c, c]), p.category, v => F.cat = v);
+    set("f-for", p.category);
     set("f-pbank", p.payee_bank || ""); set("f-pacct", p.payee_account || ""); if(p.project_id) items(p.project_id);
     $("f-sug").textContent = "Paid before" + (p.payee_bank ? ": " + p.payee_bank + (p.payee_account ? ", " + p.payee_account : "") : "") + ". Filed under " + p.category + " last time.";
   } else $("f-sug").textContent = "";
@@ -278,7 +326,8 @@ async function save(again){
   const a = acc(F.acct), amt = amtOf("f-amt");
   if(!amt){ msg("f-msg","err","No amount","Enter the amount."); return; }
   if(!val("f-who")){ msg("f-msg","err", F.kind === "in" ? "Who paid us?" : "Who was paid?", "Fill in the name."); return; }
-  if(!F.cat){ msg("f-msg","err","What was it for?","Choose one."); return; }
+  const what = F.kind === "out" ? val("f-for") : F.cat;
+  if(!what){ msg("f-msg","err","What was it for?", F.kind === "out" ? "Type what it was for." : "Choose one."); return; }
   if(F.kind === "in" && !$("f-item").value){ msg("f-msg","err","What does it belong to?","Choose the training, study, consultancy or grant."); return; }
   const f = $("f-file").files[0], ngn = amt * (a.currency === "NGN" ? 1 : amtOf("f-rate"));
   if(F.kind === "out" && ngn > L.threshold && !f && !confirm("No receipt attached. Payments above " + money(L.threshold) + " need one.\n\nSave anyway and add the receipt later?")) return;
@@ -290,8 +339,10 @@ async function save(again){
     if(up.error){ btn("f-save", false, "Save"); btn("f-again", false, "Save, add another"); msg("f-msg","err","Receipt not uploaded", up.error.message + " Nothing was saved."); return; }
     path = name;
   }
-  const { error } = await db.rpc("fin_record", { p_kind:F.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:val("f-date"), p_category:F.cat,
-    p_counterparty:val("f-who"), p_project: $("f-item").value ? Number($("f-item").value) : null, p_description:val("f-desc"), p_reference:val("f-ref"),
+  let proj = null;
+  try { proj = await beResolve($("f-item").value); } catch(e){ btn("f-save", false, "Save"); btn("f-again", false, "Save, add another"); msg("f-msg","err","Not saved", e.message); return; }
+  const { error } = await db.rpc("fin_record", { p_kind:F.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:val("f-date"), p_category:what,
+    p_counterparty:val("f-who"), p_project: proj, p_description:val("f-desc"), p_reference:val("f-ref"),
     p_rate: a.currency === "NGN" ? null : amtOf("f-rate"), p_payee_bank: F.kind === "out" ? val("f-pbank") : null,
     p_payee_account: F.kind === "out" ? val("f-pacct") : null, p_evidence_path:path });
   btn("f-save", false, "Save"); btn("f-again", false, "Save, add another");

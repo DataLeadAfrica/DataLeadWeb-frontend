@@ -670,9 +670,18 @@ td.lg-pos,td.lg-neg{margin:0}
         <div class="fld"><label>Their account number</label><input id="lg-pacct" inputmode="numeric" placeholder="10 digits"></div>
       </div>
     </div>
-    <div class="fld" id="lg-cat-wrap"><label>What for</label><div class="lg-chips" id="lg-cat"></div></div>
+    <div class="fld" id="lg-cat-wrap"><label>What for</label><div class="lg-chips" id="lg-cat"></div>
+      <div id="lg-for-box" class="hidden"><input id="lg-for" list="lg-for-list" autocomplete="off" placeholder="Type it, for example Fuel for generator"><datalist id="lg-for-list"></datalist>
+      <div class="hint">Typed freely. Pick a suggestion when one fits, so the reports stay tidy.</div></div></div>
     <div class="fld" id="lg-item-wrap"><label>Belongs to</label><select id="lg-item"></select>
-      <div class="hint">The training, study, consultancy or grant it is for. Shared costs go to Overheads.</div></div>
+      <div class="hint">A whole income stream, or one item under it. Shared costs go to Overheads.</div></div>
+    <div class="panel hidden" id="lg-new" style="background:var(--paper);padding:14px;margin-bottom:12px">
+      <b style="font-size:14px">Add a new item</b>
+      <div class="grid2" style="margin-top:8px"><div class="fld"><label>Under</label><select id="lg-new-stream"></select></div>
+        <div class="fld"><label>Name</label><input id="lg-new-name" placeholder="Data Analytics Bootcamp, Cohort 6"></div></div>
+      <div id="lg-new-msg"></div>
+      <div class="lg-foot"><button onclick="lgNewCancel()">Cancel</button><button class="btn-primary" id="lg-new-btn" onclick="lgNewSave()">Add item</button></div>
+    </div>
     <div class="grid2">
       <div class="fld"><label>Date</label><input id="lg-date" type="date"></div>
       <div class="fld"><label>Bank reference</label><input id="lg-ref" placeholder="From the transfer"></div>
@@ -1496,6 +1505,7 @@ async function lgLoadRef(){
   LG.accounts = a.data || []; LG.items = i.data || []; LG.streams = s.data || []; LG.rates = r.data || [];
   LG.cats = { in: (c.data || []).filter(x => x.kind === "in").map(x => x.name), out: (c.data || []).filter(x => x.kind === "out").map(x => x.name) };
   LG.payees = {}; (p.data || []).forEach(x => { LG.payees[x.counterparty.toLowerCase()] = x; });
+  db.from("fin_out_suggestions").select("*").then(o => { if(!o.error && $("lg-for-list")) $("lg-for-list").innerHTML = (o.data || []).map(x => '<option value="' + esc(x.name) + '">').join(""); });
   if(t && !t.error && t.data) LG.threshold = Number(t.data) || 50000;
   LG.loaded = true;
   return true;
@@ -1544,12 +1554,40 @@ function lgChips(el, list, sel, onPick){
 const lgAccOpts = except => LG.accounts.filter(a => a.active && String(a.id) !== String(except))
   .map(a => [a.id, lgShort(a) + "  " + lgMoney(Math.round(Number(a.balance)), a.currency)]);
 function lgItemOptions(kind, sel){
-  const items = LG.items.filter(i => i.state === "active" && (kind !== "in" || !i.cost_only));
-  const groups = {};
-  items.forEach(i => { const g = i.stream || "Not yet in a stream"; (groups[g] = groups[g] || []).push(i); });
-  return (kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>') +
-    Object.keys(groups).map(g => '<optgroup label="' + esc(g) + '">' + groups[g].map(i =>
-      '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>').join("");
+  return beOptions(kind, sel, LG.streams, LG.items.filter(i => i.state === "active"));
+}
+
+// "Belongs to": a whole income stream ("Training, in general"), or one item under it, or a new item
+function beOptions(kind, sel, streams, items){
+  const st = streams.slice().sort((a, b) => (a.sort || 0) - (b.sort || 0));
+  let h = kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>';
+  st.forEach(s => {
+    if(s.cost_only) return;   // Overheads is the first option for money out, and never takes income
+    const list = items.filter(i => String(i.stream_id || "") === String(s.id) || (!i.stream_id && i.stream === s.name))
+                      .filter(i => !/, in general$/.test(i.name));
+    h += '<optgroup label="' + esc(s.name) + '"><option value="S:' + s.id + '"' + (String(sel) === "S:" + s.id ? " selected" : "") + '>' + esc(s.name) + ', in general</option>' +
+      list.map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>';
+  });
+  const loose = items.filter(i => !i.stream_id && !i.stream && !i.is_overhead && !i.cost_only);
+  if(loose.length) h += '<optgroup label="Not yet in a stream">' + loose.map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>';
+  return h + '<option value="__new">+ Add a new item\u2026</option>';
+}
+async function beResolve(v){
+  if(!v) return null;
+  if(String(v).startsWith("S:")){ const r = await db.rpc("fin_stream_item", { p_stream_id: Number(String(v).slice(2)) }); if(r.error) throw r.error; return Number(r.data); }
+  return Number(v);
+}
+
+window.lgNewSave = lgNewSave; window.lgNewCancel = lgNewCancel;
+function lgNewCancel(){ $("lg-new").classList.add("hidden"); }
+async function lgNewSave(){
+  const name = val("lg-new-name"); if(!name){ msg("lg-new-msg","err","Name it","For example Data Analytics Bootcamp, Cohort 6."); return; }
+  btn("lg-new-btn", true, "Adding");
+  const { data, error } = await db.rpc("fin_add_item", { p_stream_id:Number($("lg-new-stream").value), p_name:name, p_code:null, p_funder:null, p_giving:true });
+  btn("lg-new-btn", false, "Add item");
+  if(error){ msg("lg-new-msg","err","Not added", error.message); return; }
+  await lgLoadRef(); $("lg-item").innerHTML = lgItemOptions(LGF.kind, data); $("lg-new").classList.add("hidden");
+  toast(name + " added under " + $("lg-new-stream").selectedOptions[0].textContent + ".", true);
 }
 
 async function lgOpen(kind){
@@ -1578,7 +1616,9 @@ function lgKind(kind){
   $("lg-who-l").textContent = kind === "in" ? "Who paid us" : "Paid to";
   $("lg-acc-l").textContent = kind === "in" ? "Into which of our accounts" : "From which of our accounts";
   $("lg-h").textContent = kind === "in" ? "Money in" : kind === "out" ? "Money out" : "Transfer between our accounts";
-  lgChips("lg-cat", (LG.cats[kind] || []).map(c => [c, c]), null, v => LGF.cat = v);
+  lgChips("lg-cat", kind === "in" ? LG.cats.in.map(c => [c, c]) : [], null, v => LGF.cat = v);
+  $("lg-cat").classList.toggle("hidden", kind !== "in"); $("lg-for-box").classList.toggle("hidden", kind !== "out"); set("lg-for", "");
+  $("lg-new").classList.add("hidden");
   $("lg-item").innerHTML = lgItemOptions(kind, "");
   lgChips("lg-acc", lgAccOpts(), LGF.acct, v => { LGF.acct = v; if(String(LGF.to) === String(v)) LGF.to = (LG.accounts.find(a => a.active && String(a.id) !== String(v)) || {}).id; $("lg-rate").dataset.touched = ""; lgCur(); });
   lgCur(); $("lg-sug").textContent = "";
@@ -1623,7 +1663,7 @@ function lgWire(){
   $("lg-who").addEventListener("input", () => {
     const p = LG.payees[(val("lg-who") || "").toLowerCase()];
     if(p && LGF.kind === "out"){
-      LGF.cat = p.category; lgChips("lg-cat", LG.cats.out.map(c => [c, c]), p.category, v => LGF.cat = v);
+      set("lg-for", p.category);
       set("lg-pbank", p.payee_bank || ""); set("lg-pacct", p.payee_account || "");
       if(p.project_id) $("lg-item").innerHTML = lgItemOptions("out", p.project_id);
       if(p.account_id && lgAcc(p.account_id) && lgAcc(p.account_id).active){ LGF.acct = String(p.account_id); lgChips("lg-acc", lgAccOpts(), LGF.acct, v => { LGF.acct = v; lgCur(); }); lgCur(); }
@@ -1656,7 +1696,10 @@ async function lgSave(again){
     r = await db.rpc("fin_transfer", { p_from:Number(a.id), p_to:Number(t.id), p_amount:amt,
       p_to_amount: t.currency === a.currency ? null : lgAmt("lg-toamt"), p_occurred_on:on, p_description:val("lg-desc"), p_reference:val("lg-ref") });
   } else {
-    if(!LGF.cat){ msg("lg-msg","err","What was it for?","Choose a category."); lgBtns(); return; }
+    const what = LGF.kind === "out" ? val("lg-for") : LGF.cat;
+    if(!what){ msg("lg-msg","err","What was it for?", LGF.kind === "out" ? "Type what it was for." : "Choose a category."); lgBtns(); return; }
+    let proj = null;
+    try { proj = await beResolve($("lg-item").value); } catch(e){ msg("lg-msg","err","Not saved", e.message); lgBtns(); return; }
     const ngn = amt * (a.currency === "NGN" ? 1 : lgAmt("lg-rate"));
     const f = $("lg-file").files[0];
     if(LGF.kind === "out" && ngn > LG.threshold && !f &&
@@ -1668,8 +1711,8 @@ async function lgSave(again){
       if(up.error){ msg("lg-msg","err","Receipt not uploaded", up.error.message + " Nothing was saved."); lgBtns(); return; }
       path = name;
     }
-    r = await db.rpc("fin_record", { p_kind:LGF.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:on, p_category:LGF.cat,
-      p_counterparty:val("lg-who"), p_project: $("lg-item").value ? Number($("lg-item").value) : null, p_description:val("lg-desc"),
+    r = await db.rpc("fin_record", { p_kind:LGF.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:on, p_category:what,
+      p_counterparty:val("lg-who"), p_project: proj, p_description:val("lg-desc"),
       p_reference:val("lg-ref"), p_rate: a.currency === "NGN" ? null : lgAmt("lg-rate"),
       p_payee_bank: LGF.kind === "out" ? val("lg-pbank") : null, p_payee_account: LGF.kind === "out" ? val("lg-pacct") : null, p_evidence_path:path });
   }
@@ -2305,6 +2348,12 @@ async function lgRemoveClerk(id){
   toast("Access removed.", true); lgClerks();
 }
 
+$("lg-item").addEventListener("change", e => {
+  if(e.target.value !== "__new"){ $("lg-new").classList.add("hidden"); return; }
+  e.target.value = "";
+  $("lg-new-stream").innerHTML = LG.streams.filter(s => LGF.kind === "out" || !s.cost_only).map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join("");
+  set("lg-new-name", ""); $("lg-new-msg").innerHTML = ""; $("lg-new").classList.remove("hidden"); $("lg-new-name").focus();
+});
 lgWire(); lgStatementWire();
 ["lg-na-open","lg-ea-open","lg-rt-rate"].forEach(i => $(i).addEventListener("input", lgFmt));
 
