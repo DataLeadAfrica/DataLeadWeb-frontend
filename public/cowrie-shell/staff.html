@@ -4077,7 +4077,12 @@ function showOtherDoors(){
   const bits = [];
   if(isFinance())   bits.push('<a href="/cowrie-shell/finance.html"><button>Finance portal &rarr;</button></a>');
   if(isCertifier()) bits.push('<a href="/cowrie-shell/admin.html"><button>Admin console &rarr;</button></a>');
-  if(!bits.length) return;
+  // record-only access is given by Finance; the database says who has it
+  if(!isFinance()) db.rpc("fin_can_enter").then(r => { if(r && r.data){ bits.push('<a href="/cowrie-shell/record.html"><button>Record money &rarr;</button></a>'); paintDoors(el, bits); } });
+  paintDoors(el, bits);
+}
+function paintDoors(el, bits){
+  if(!bits.length){ el.innerHTML = ""; return; }
   el.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)">' +
     '<span style="font-size:12.5px;color:var(--faint);align-self:center;margin-right:4px">Your other doors, same login:</span>' +
     bits.join("") + '</div>';

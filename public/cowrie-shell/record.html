@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cowrie Shell · Record money · Data-Lead Africa</title>
+<link rel="stylesheet" href="/fonts/clash-display/Fonts/WEB/css/clash-display.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14232e; --gray:#2c2b2d; --muted:#5b5b66; --faint:#8b8792;
+  --orange:#f56e0f; --line:#ecebf0; --card:#fff; --paper:#fdfbf7;
+  --green:#1d6b4c; --green-bg:#e9f5ef; --amber:#8a5b0b; --amber-bg:#fdf4e3;
+  --red:#a32d2d; --red-bg:#fbecec; --clay:#c9541e;
+  --display:"ClashDisplay-Semibold","Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Poppins",system-ui,sans-serif;color:var(--gray);background:var(--paper);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--gray);border-radius:10px;padding:10px 16px}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select{font:inherit;width:100%;padding:10px 11px;border:1px solid #dae2e7;border-radius:10px;background:#fff;color:var(--gray)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--orange);outline-offset:-1px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.hidden{display:none!important}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px 60px}
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.plate{width:100%;max-width:390px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:15px}
+.mark{width:22px;height:22px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.me{text-align:right;font-size:13px;line-height:1.35}
+.me button{padding:3px 10px;font-size:12px;margin-top:3px}
+.fld{margin-bottom:12px}
+.hint{font-size:12px;color:var(--faint);margin-top:4px}
+.btn-primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:500}
+.alert{border-radius:8px;padding:11px 14px;margin:12px 0;font-size:13px;border-left:3px solid}
+.alert.err{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.alert.warn{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
+.alert b{display:block}
+.big2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 22px}
+.big2 button{border:0;border-radius:16px;padding:22px 12px;font-size:18px;font-weight:600;color:#fff}
+.b-in{background:var(--green)} .b-out{background:var(--clay)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.card h2{font-size:20px;margin-bottom:12px}
+.amount{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--line);padding:2px 0 6px;margin-bottom:14px}
+.amount span{font-family:var(--display);font-size:26px;color:var(--faint)}
+.amount input{border:0;padding:0;font-family:var(--display);font-size:38px;font-weight:600;background:none}
+.amount input:focus{outline:0} .amount:focus-within{border-color:var(--orange)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border-radius:99px;padding:7px 13px;font-size:13.5px}
+.chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sug{font-size:12px;color:var(--green);margin-top:4px}
+.foot{display:flex;gap:8px;margin-top:6px}
+.foot button{flex:1;padding:13px;border-radius:12px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.row:first-child{border-top:0}
+.row small{display:block;color:var(--muted);font-size:12px}
+.row .amt{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.row .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.row .acts button{padding:5px 11px;font-size:12.5px}
+.row.gone .w{text-decoration:line-through;color:var(--faint)}
+.pos{color:var(--green)} .neg{color:var(--clay)}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;margin-left:6px;background:var(--line);color:var(--muted)}
+.tag.warn{background:var(--amber-bg);color:var(--amber)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:99;opacity:0;transition:.2s;pointer-events:none;
+  background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)} .toast.good{background:var(--green)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.spin{animation:none}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <div class="plate">
+    <div class="brand" style="margin-bottom:20px">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/><path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/></svg>
+      Cowrie Shell
+    </div>
+    <h2 style="font-size:24px;margin-bottom:4px">Record money</h2>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:20px">Same login as your staff portal.</p>
+    <div class="fld"><label>Email</label><input type="email" id="li-email" autocomplete="username"></div>
+    <div class="fld"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>
+    <div id="li-msg"></div>
+    <button class="btn-primary" style="width:100%" id="li-btn" onclick="signIn()">Sign in</button>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.6" ry="9.8" stroke="#f56e0f" stroke-width="1.4"/><path d="M12 3.6v16.8" stroke="#f56e0f" stroke-width="1.4"/></svg>
+      Record money
+    </div>
+    <div class="me"><b id="who"></b><br><a href="/cowrie-shell/staff.html" style="font-size:12px;color:var(--muted)">My staff page</a> <button onclick="signOut()">Sign out</button></div>
+  </div>
+
+  <div id="pick">
+    <h1 style="font-size:26px;margin:6px 0 4px">What are you recording?</h1>
+    <p style="color:var(--muted);font-size:14px">Money that came in, or money that went out.</p>
+    <div class="big2"><button class="b-in" onclick="openForm('in')">+ Money in</button><button class="b-out" onclick="openForm('out')">&minus; Money out</button></div>
+  </div>
+
+  <div id="form" class="card hidden">
+    <h2 id="f-h">Money in</h2>
+    <div class="fld"><label id="f-acc-l">Into which of our accounts</label><div class="chips" id="f-acc"></div></div>
+    <div class="amount"><span id="f-sym">&#8358;</span><input id="f-amt" inputmode="decimal" placeholder="0" autocomplete="off"></div>
+    <div class="fld hidden" id="f-fx"><label>Rate to naira on this day</label><input id="f-rate" inputmode="decimal"><div class="hint" id="f-fxn"></div></div>
+    <div class="fld"><label id="f-who-l">Who paid us</label><input id="f-who" autocomplete="off" placeholder="Start typing"><div class="sug" id="f-sug"></div></div>
+    <div class="two hidden" id="f-bank">
+      <div class="fld"><label>Their bank</label><select id="f-pbank"></select></div>
+      <div class="fld"><label>Their account number</label><input id="f-pacct" inputmode="numeric" placeholder="10 digits"></div>
+    </div>
+    <div class="fld"><label>What for</label><div class="chips" id="f-cat"></div></div>
+    <div class="fld"><label>Belongs to</label><select id="f-item"></select><div class="hint">The training, study, consultancy or grant it is for. Shared costs go to Overheads.</div></div>
+    <div class="two">
+      <div class="fld"><label>Date</label><input id="f-date" type="date"></div>
+      <div class="fld"><label>Bank reference</label><input id="f-ref" placeholder="From the transfer"></div>
+    </div>
+    <div class="fld"><label>Description (optional)</label><input id="f-desc"></div>
+    <div class="fld hidden" id="f-rec"><label>Receipt (photo or PDF)</label><input type="file" id="f-file" accept="application/pdf,image/*">
+      <div class="hint" id="f-rec-h">Needed for any payment above &#8358;50,000.</div></div>
+    <div id="f-dup"></div>
+    <div id="f-msg"></div>
+    <div class="foot"><button onclick="closeForm()">Cancel</button><button id="f-again" onclick="save(true)">Save, add another</button><button class="btn-primary" id="f-save" onclick="save(false)">Save</button></div>
+  </div>
+
+  <div class="card">
+    <h2>What you have recorded</h2>
+    <p class="hint" style="margin:-6px 0 8px">The last 60 days. You can withdraw your own entry on the day you made it. For anything older, ask Finance.</p>
+    <div id="mine"><p class="hint">Loading&hellip;</p></div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// ============================================================
+// RECORD MONEY: the plain door. Someone given record-only access can
+// enter money in and money out, and see their own entries. Nothing
+// else: no balances, statements, reports, payroll or staff bank details.
+// The database decides who may do what; this page only asks.
+// ============================================================
+const SUPABASE_URL  = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const $ = id => document.getElementById(id);
+const val = id => { const e = $(id); const v = e ? String(e.value || "").trim() : ""; return v || null; };
+const set = (id, v) => { const e = $(id); if(e) e.value = v ?? ""; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const iso = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const SYM = { NGN:"\u20a6", USD:"$", GBP:"\u00a3", EUR:"\u20ac" };
+const money = (v, cur, dp) => SYM[cur || "NGN"] + Number(v || 0).toLocaleString("en-NG", { minimumFractionDigits: dp ? 2 : 0, maximumFractionDigits: 2 });
+const hasK = v => Math.abs(Number(v) % 1) > 0.0001;
+const amtOf = id => Number(String(val(id) || "").replace(/,/g, ""));
+const fmtDate = d => new Date(String(d).slice(0, 10) + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+const BANKS = ["Access Bank","Citibank","Ecobank","FCMB","Fidelity Bank","First Bank","GTBank","Jaiz Bank","Keystone Bank","Kuda","Moniepoint MFB",
+  "Opay","PalmPay","Polaris Bank","Providus Bank","Stanbic IBTC","Sterling Bank","Union Bank","UBA","Unity Bank","Wema Bank","Zenith Bank"];
+function msg(id, kind, title, body){ const e = $(id); if(e) e.innerHTML = '<div class="alert ' + kind + '"><b>' + title + '</b>' + esc(body) + '</div>'; }
+function btn(id, busy, label){ const b = $(id); if(!b) return; b.disabled = busy; b.innerHTML = busy ? '<span class="spin"></span>' + label + "\u2026" : label; }
+let toastT;
+function toast(text, good){ let t = $("toast"); if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.className = "toast on" + (good ? " good" : ""); t.textContent = text; clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 5000); }
+function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+
+window.signIn = signIn; window.signOut = signOut; window.openForm = openForm; window.closeForm = closeForm; window.save = save;
+window.withdraw = withdraw; window.addReceipt = addReceipt;
+
+db.auth.onAuthStateChange((_e, s) => { if(s) enterApp(); });
+(async () => { const { data:{ session } } = await db.auth.getSession(); if(session) enterApp(); })();
+
+async function signIn(){
+  const email = val("li-email"), pass = $("li-pass").value;
+  if(!email || !pass){ msg("li-msg","err","Missing details","Enter your email and password."); return; }
+  btn("li-btn", true, "Signing in");
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  btn("li-btn", false, "Sign in");
+  if(error) msg("li-msg","err","Could not sign in", error.message);
+}
+async function signOut(){ await db.auth.signOut(); location.reload(); }
+
+let ME = null, STARTED = false;
+const L = { accounts:[], items:[], cats:{ in:[], out:[] }, payees:{}, rates:[], threshold:50000 };
+async function enterApp(){
+  if(STARTED) return; STARTED = true;
+  const { data } = await db.from("my_full_profile").select("*").maybeSingle();
+  if(!data){ STARTED = false; msg("li-msg","err","Profile not found","Your login is not linked to a staff record."); await db.auth.signOut(); return; }
+  const ok = await db.rpc("fin_can_enter");
+  if(ok.error || !ok.data){ STARTED = false; msg("li-msg","err","Not for you","Recording money needs access from Finance. Your own portal is the staff one."); await db.auth.signOut(); return; }
+  ME = data; $("who").textContent = data.display_name || data.full_name;
+  $("gate").classList.add("hidden"); $("app").classList.remove("hidden");
+  $("f-pbank").innerHTML = '<option value="">Choose their bank</option>' + BANKS.map(b => '<option>' + b + '</option>').join("") + '<option>Other / foreign bank</option>';
+  await loadLists(); loadMine();
+}
+async function loadLists(){
+  const [a, i, c, p, r, t] = await Promise.all([ db.from("fin_entry_accounts").select("*"), db.from("fin_entry_items").select("*"), db.from("fin_category_list").select("*"),
+    db.from("fin_payees").select("*"), db.from("fin_rates_view").select("*"), db.rpc("fin_setting", { p_key:"receipt_threshold" }) ]);
+  if(a.error || i.error || c.error){ toast("The lists could not load. " + (a.error || i.error || c.error).message); return; }
+  L.accounts = a.data || []; L.items = i.data || []; L.rates = r.data || [];
+  L.cats = { in:(c.data || []).filter(x => x.kind === "in").map(x => x.name), out:(c.data || []).filter(x => x.kind === "out").map(x => x.name) };
+  L.payees = {}; (p.data || []).forEach(x => L.payees[x.counterparty.toLowerCase()] = x);
+  if(t && t.data) L.threshold = Number(t.data) || 50000;
+}
+function rateFor(cur, on){
+  if(cur === "NGN") return 1;
+  const r = L.rates.filter(x => x.currency === cur && x.effective_on <= on).sort((a, b) => b.effective_on.localeCompare(a.effective_on))[0] || L.rates.find(x => x.currency === cur);
+  return r ? Number(r.rate) : null;
+}
+
+// ---------- the form ----------
+const F = { kind:"in", acct:null, cat:null };
+function chips(el, list, sel, onPick){
+  $(el).innerHTML = list.map(([v, lab]) => '<button type="button" aria-pressed="' + (String(v) === String(sel)) + '" data-v="' + esc(v) + '">' + esc(lab) + '</button>').join("");
+  $(el).querySelectorAll("button").forEach(b => b.onclick = () => { onPick(b.dataset.v); chips(el, list, b.dataset.v, onPick); });
+}
+const acc = id => L.accounts.find(a => String(a.id) === String(id));
+function openForm(kind){
+  if(!L.accounts.length){ toast("No accounts are set up yet. Ask Finance."); return; }
+  F.kind = kind; F.cat = null;
+  const last = lsGet("rec-last-" + kind); F.acct = acc(last) ? last : L.accounts[0].id;
+  $("f-h").textContent = kind === "in" ? "Money in" : "Money out";
+  $("f-acc-l").textContent = kind === "in" ? "Into which of our accounts" : "From which of our accounts";
+  $("f-who-l").textContent = kind === "in" ? "Who paid us" : "Paid to";
+  $("f-bank").classList.toggle("hidden", kind !== "out"); $("f-rec").classList.toggle("hidden", kind !== "out");
+  $("f-rec-h").textContent = "Needed for any payment above " + money(L.threshold) + ".";
+  ["f-amt","f-who","f-ref","f-desc","f-pacct","f-rate"].forEach(i => set(i, "")); set("f-pbank", ""); set("f-date", iso(new Date()));
+  $("f-file").value = ""; $("f-msg").innerHTML = ""; $("f-dup").innerHTML = ""; $("f-sug").textContent = ""; $("f-rate").dataset.touched = "";
+  chips("f-acc", L.accounts.map(a => [a.id, a.bank.replace(/ Bank$| MFB$/, "") + (a.currency !== "NGN" ? " " + a.currency : "") + ", " + a.name]), F.acct, v => { F.acct = v; $("f-rate").dataset.touched = ""; cur(); });
+  chips("f-cat", L.cats[kind].map(c => [c, c]), null, v => F.cat = v);
+  items("");
+  cur();
+  $("pick").classList.add("hidden"); $("form").classList.remove("hidden");
+  window.scrollTo(0, 0); setTimeout(() => $("f-amt").focus(), 100);
+}
+function items(sel){
+  const list = L.items.filter(i => F.kind !== "in" || !i.cost_only), groups = {};
+  list.forEach(i => { const g = i.stream || "Other"; (groups[g] = groups[g] || []).push(i); });
+  $("f-item").innerHTML = (F.kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>') +
+    Object.keys(groups).map(g => '<optgroup label="' + esc(g) + '">' + groups[g].map(i => '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>').join("");
+}
+function closeForm(){ $("form").classList.add("hidden"); $("pick").classList.remove("hidden"); }
+function cur(){
+  const a = acc(F.acct); $("f-sym").textContent = SYM[a.currency];
+  const fx = a.currency !== "NGN"; $("f-fx").classList.toggle("hidden", !fx);
+  if(fx && !$("f-rate").dataset.touched){ const r = rateFor(a.currency, val("f-date") || iso(new Date())); set("f-rate", r ? r.toLocaleString("en-NG") : ""); }
+  note();
+}
+function note(){
+  const a = acc(F.acct), amt = amtOf("f-amt"), r = amtOf("f-rate");
+  $("f-fxn").textContent = a && a.currency !== "NGN" && amt && r ? money(amt, a.currency, hasK(amt)) + " is " + money(amt * r) + " at this rate." : "";
+}
+function fmt(e){ const raw = e.target.value.replace(/[^\d.]/g, ""); const [w, f] = raw.split("."); e.target.value = (w ? Number(w).toLocaleString("en-NG") : "") + (f !== undefined ? "." + f.slice(0, 2) : ""); }
+$("f-amt").addEventListener("input", e => { fmt(e); note(); dupSoon(); });
+$("f-rate").addEventListener("input", e => { e.target.dataset.touched = "1"; fmt(e); note(); });
+$("f-date").addEventListener("change", () => { $("f-rate").dataset.touched = ""; cur(); });
+$("f-who").addEventListener("input", () => {
+  const p = L.payees[(val("f-who") || "").toLowerCase()];
+  if(p && F.kind === "out"){
+    F.cat = p.category; chips("f-cat", L.cats.out.map(c => [c, c]), p.category, v => F.cat = v);
+    set("f-pbank", p.payee_bank || ""); set("f-pacct", p.payee_account || ""); if(p.project_id) items(p.project_id);
+    $("f-sug").textContent = "Paid before" + (p.payee_bank ? ": " + p.payee_bank + (p.payee_account ? ", " + p.payee_account : "") : "") + ". Filed under " + p.category + " last time.";
+  } else $("f-sug").textContent = "";
+  dupSoon();
+});
+let dupT; function dupSoon(){ clearTimeout(dupT); dupT = setTimeout(dup, 400); }
+function dup(){
+  const amt = amtOf("f-amt"), who = (val("f-who") || "").toLowerCase();
+  const h = amt && who && MINE.find(x => !x.voided_at && x.kind === F.kind && Number(x.amount) === amt && String(x.counterparty || "").toLowerCase() === who);
+  $("f-dup").innerHTML = h ? '<div class="alert warn"><b>You recorded one like this on ' + fmtDate(h.occurred_on) + '</b>Save only if it is a separate payment.</div>' : "";
+}
+async function save(again){
+  const a = acc(F.acct), amt = amtOf("f-amt");
+  if(!amt){ msg("f-msg","err","No amount","Enter the amount."); return; }
+  if(!val("f-who")){ msg("f-msg","err", F.kind === "in" ? "Who paid us?" : "Who was paid?", "Fill in the name."); return; }
+  if(!F.cat){ msg("f-msg","err","What was it for?","Choose one."); return; }
+  if(F.kind === "in" && !$("f-item").value){ msg("f-msg","err","What does it belong to?","Choose the training, study, consultancy or grant."); return; }
+  const f = $("f-file").files[0], ngn = amt * (a.currency === "NGN" ? 1 : amtOf("f-rate"));
+  if(F.kind === "out" && ngn > L.threshold && !f && !confirm("No receipt attached. Payments above " + money(L.threshold) + " need one.\n\nSave anyway and add the receipt later?")) return;
+  btn("f-save", true, "Saving"); btn("f-again", true, "Saving");
+  let path = null;
+  if(f){
+    const name = "cashbook/" + Date.now() + "-" + f.name.replace(/[^A-Za-z0-9._-]/g, "_");
+    const up = await db.storage.from("receipts").upload(name, f);
+    if(up.error){ btn("f-save", false, "Save"); btn("f-again", false, "Save, add another"); msg("f-msg","err","Receipt not uploaded", up.error.message + " Nothing was saved."); return; }
+    path = name;
+  }
+  const { error } = await db.rpc("fin_record", { p_kind:F.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:val("f-date"), p_category:F.cat,
+    p_counterparty:val("f-who"), p_project: $("f-item").value ? Number($("f-item").value) : null, p_description:val("f-desc"), p_reference:val("f-ref"),
+    p_rate: a.currency === "NGN" ? null : amtOf("f-rate"), p_payee_bank: F.kind === "out" ? val("f-pbank") : null,
+    p_payee_account: F.kind === "out" ? val("f-pacct") : null, p_evidence_path:path });
+  btn("f-save", false, "Save"); btn("f-again", false, "Save, add another");
+  if(error){ msg("f-msg","err","Not saved", error.message); return; }
+  lsSet("rec-last-" + F.kind, String(F.acct));
+  toast((F.kind === "in" ? "Money in" : "Money out") + " recorded: " + money(amt, a.currency, hasK(amt)) + ".", true);
+  await loadLists(); await loadMine();
+  if(again) openForm(F.kind); else closeForm();
+}
+
+// ---------- what I have recorded ----------
+let MINE = [];
+async function loadMine(){
+  const { data, error } = await db.from("fin_my_entries").select("*");
+  if(error){ $("mine").innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
+  MINE = data || [];
+  $("mine").innerHTML = MINE.length ? MINE.map(x => '<div class="row' + (x.voided_at ? " gone" : "") + '"><div><span class="w">' + esc(x.counterparty) + '</span>' +
+      (x.voided_at ? '<span class="tag">withdrawn</span>' : (x.kind === "out" && !x.has_receipt ? '<span class="tag warn">no receipt</span>' : '')) +
+      '<small>' + fmtDate(x.occurred_on) + ", " + esc(x.category) + (x.item_name ? ", " + esc(x.item_name) : "") + ", " + esc(x.account) + '</small>' +
+      (x.voided_at ? '<small>' + esc(x.void_reason || "") + '</small>' : '') + '</div>' +
+      '<div class="amt ' + (x.kind === "in" ? "pos" : "neg") + '"><span class="w">' + (x.kind === "in" ? "+" : "\u2212") + money(x.amount, x.currency, hasK(x.amount)) + '</span></div>' +
+      (x.voided_at ? '' : '<div class="acts">' +
+        (x.kind === "out" && !x.has_receipt ? '<label style="margin:0"><input type="file" accept="application/pdf,image/*" style="display:none" onchange="addReceipt(' + x.id + ', this)"><span style="display:inline-block;border:1px solid var(--line);border-radius:10px;padding:5px 11px;font-size:12.5px;cursor:pointer">Add receipt</span></label>' : '') +
+        (x.made_today ? '<button onclick="withdraw(' + x.id + ')">Withdraw</button>' : '') + '</div>') + '</div>').join("")
+    : '<p class="hint">Nothing yet. What you record shows here.</p>';
+}
+async function withdraw(id){
+  const why = prompt("Why are you withdrawing it? For example: typed the wrong amount.");
+  if(!why || !why.trim()) return;
+  const { error } = await db.rpc("fin_void", { p_id:id, p_reason:why.trim() });
+  if(error){ toast("Not withdrawn. " + error.message); return; }
+  toast("Withdrawn. Record it again correctly if you need to.", true); loadMine();
+}
+async function addReceipt(id, input){
+  const f = input.files[0]; if(!f) return;
+  const name = "cashbook/" + Date.now() + "-" + f.name.replace(/[^A-Za-z0-9._-]/g, "_");
+  const up = await db.storage.from("receipts").upload(name, f);
+  if(up.error){ toast("Not uploaded. " + up.error.message); return; }
+  const { error } = await db.rpc("fin_attach_receipt", { p_id:id, p_path:name });
+  if(error){ toast("Not attached. " + error.message); return; }
+  toast("Receipt added.", true); loadMine();
+}
+</script>
+</body>
+</html>

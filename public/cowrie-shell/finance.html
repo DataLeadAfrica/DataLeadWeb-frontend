@@ -579,6 +579,14 @@ td.lg-pos,td.lg-neg{margin:0}
         <div id="lg-ns-msg"></div>
       </div>
     </div>
+    <div class="panel">
+      <h3>Record-only access</h3>
+      <div class="ps">People who can only enter money in and money out, on the plain page at /cowrie-shell/record.html. They see their own entries and nothing else: no balances, statement, reports, payroll or staff bank details. Do not also give them the Finance role.</div>
+      <div id="lg-clerks"></div>
+      <div class="grid2" style="margin-top:10px"><div class="fld"><label>Give access to</label><select id="lg-clerk-add"></select></div>
+        <div class="fld"><label>&nbsp;</label><button onclick="lgAddClerk()">Give record-only access</button></div></div>
+      <div id="lg-clerk-msg"></div>
+    </div>
     <div class="panel"><h3>Categories</h3><div class="ps">What money is for. Ask for a new one if something does not fit.</div><div id="lg-catlist" style="font-size:13px;line-height:1.7"></div></div>
   </section>
 
@@ -1919,6 +1927,7 @@ async function lgSetup(){
       unsorted.map(i => lgItemRow(i, sOpts)).join("") : "") +
     groups.map(([n, list, cost]) => '<div class="lg-sg"><h4>' + esc(n) + (cost ? ' <span class="tag calm">shared costs, never income</span>' : '') + '</h4>' +
       (list.length ? list.map(i => lgItemRow(i, sOpts)).join("") : '<p style="color:var(--faint);font-size:12.5px;margin:4px 0 8px">Nothing under ' + esc(n) + ' yet.</p>') + '</div>').join("");
+  lgClerks();
   $("lg-catlist").innerHTML = '<b>Money in:</b> ' + LG.cats.in.map(esc).join(", ") + '<br><b>Money out:</b> ' + LG.cats.out.map(esc).join(", ");
 }
 function lgItemRow(i, sOpts){
@@ -2268,6 +2277,33 @@ async function ieDownload(){
 document.querySelectorAll("#ie-per button").forEach(b => b.onclick = () => ieShow(b.dataset.p));
 $("ie-from").onchange = $("ie-to").onchange = () => ieShow();
 ["lg-pay-amt","lg-pay-chg","gv-pay-amt"].forEach(i => $(i).addEventListener("input", lgFmt));
+
+
+// ---------- record-only access ----------
+window.lgAddClerk = lgAddClerk; window.lgRemoveClerk = lgRemoveClerk;
+async function lgClerks(){
+  const [c, s] = await Promise.all([ db.from("fin_clerk_list").select("*"), db.from("admin_staff_list").select("full_name,email,employment_status").order("full_name") ]);
+  if(c.error){ $("lg-clerks").innerHTML = '<div class="alert err" style="margin:0"><b>Could not load</b>' + esc(c.error.message) + '</div>'; return; }
+  const have = new Set((c.data || []).map(x => String(x.email).toLowerCase()));
+  $("lg-clerks").innerHTML = (c.data || []).length ? c.data.map(x => '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(x.full_name) + '</b><span>Since ' +
+      fmtDate(x.added_at) + (x.added_by ? ', given by ' + esc(x.added_by) : '') + '</span></span><button class="rowbtn" onclick="lgRemoveClerk(\'' + x.staff_id + '\')">Remove</button></div>').join("")
+    : '<p style="color:var(--faint);font-size:13px">Nobody has record-only access yet.</p>';
+  $("lg-clerk-add").innerHTML = '<option value="">Choose someone\u2026</option>' + (s.data || [])
+    .filter(x => !["exited","terminated","resigned"].includes(x.employment_status) && !have.has(String(x.email).toLowerCase()))
+    .map(x => '<option value="' + esc(x.email) + '">' + esc(x.full_name) + '</option>').join("");
+}
+async function lgAddClerk(){
+  const email = $("lg-clerk-add").value; if(!email){ msg("lg-clerk-msg","err","Choose someone","Pick who should get it."); return; }
+  const { error } = await db.rpc("fin_add_clerk", { p_email:email });
+  if(error){ msg("lg-clerk-msg","err","Not given", error.message); return; }
+  $("lg-clerk-msg").innerHTML = ""; toast("Record-only access given. They sign in at /cowrie-shell/record.html.", true); lgClerks();
+}
+async function lgRemoveClerk(id){
+  if(!confirm("Remove their record-only access? What they already recorded stays.")) return;
+  const { error } = await db.rpc("fin_remove_clerk", { p_staff:id });
+  if(error){ toast("Not removed. " + error.message); return; }
+  toast("Access removed.", true); lgClerks();
+}
 
 lgWire(); lgStatementWire();
 ["lg-na-open","lg-ea-open","lg-rt-rate"].forEach(i => $(i).addEventListener("input", lgFmt));
