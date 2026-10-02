@@ -378,6 +378,17 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .dc-tag.calm{background:var(--line);color:var(--muted)}
 .dc-tgt{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
 .dc-act{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+
+/* ---------- the money, at a glance ---------- */
+.ad-m4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.ad-m4 div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.ad-m4 span{display:block;font-size:11.5px;color:var(--muted)} .ad-m4 b{font-family:var(--display);font-size:22px;font-weight:600}
+.ad-m4 b.in{color:var(--green)} .ad-m4 b.out{color:var(--clay)}
+.ad-m2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.ad-m4{grid-template-columns:1fr 1fr}.ad-m2{grid-template-columns:1fr}}
+.ad-bar{display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:center;padding:5px 0;font-size:13px}
+.ad-bar div{height:9px;background:var(--line);border-radius:99px;overflow:hidden} .ad-bar i{display:block;height:100%}
+.ad-key{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 </style>
 </head>
 <body>
@@ -535,6 +546,8 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         </svg>
       </div>
     </div>
+
+    <div id="ad-money"></div>
 
     <div class="section-label">Where to</div>
     <div class="doors" id="doors"></div>
@@ -1737,6 +1750,7 @@ function go(v){
 // THE HUB  ·  the firm, and what needs attention. No money on it.
 // ============================================================
 async function loadHub(){
+  adMoney();   // the money, from the Finance ledger
   const { data, error } = await db.from("firm_at_a_glance").select("*").maybeSingle();
   if(oops("The firm", error)) return;
   const f = data || {};
@@ -3243,6 +3257,87 @@ async function dcTargets(){
   if(!P){ dcFillTargets([]); return; }
   const { data } = await db.from("targets_overview").select("id,title,period,period_end,rating").eq("staff_email", P.email);
   dcFillTargets(data);
+}
+
+// ---- the giving commitment, worked out the same way wherever it is shown ----
+const GV_BASES = {
+  item_profit:  ["Each item\u2019s profit", "Its income less its own costs, before overheads"],
+  item_income:  ["Each item\u2019s income", "Everything it brings in, before any costs"],
+  month_profit: ["Overall profit, month by month", "All income less all costs, overheads included"],
+};
+function gvCompute(items, months, st){
+  const pct = Number(st.pct || 10) / 100, thisMonth = new Date().toISOString().slice(0, 7);
+  const it = (items || []).map(i => {
+    const inc = Number(i.income || 0), cost = Number(i.costs || 0), paid = Number(i.giving_paid || 0);
+    const included = i.giving_included && !i.cost_only && !i.is_overhead;
+    const onProfit = included ? Math.max(0, inc - cost) * pct : 0, onIncome = included ? inc * pct : 0;
+    const committed = st.basis === "item_income" ? onIncome : st.basis === "item_profit" ? onProfit : 0;
+    return Object.assign({}, i, { inc, cost, profit: inc - cost, paid, included, onProfit, onIncome, committed, due: Math.max(0, committed - paid) });
+  });
+  const ms = (months || []).map(m => {
+    const inc = Number(m.income || 0), cost = Number(m.costs || 0), paid = Number(m.giving_paid || 0);
+    const committed = Math.max(0, inc - cost) * pct;
+    return Object.assign({}, m, { inc, cost, profit: inc - cost, paid, committed, due: Math.max(0, committed - paid), running: m.month >= thisMonth });
+  });
+  const paidAll = ms.reduce((s, m) => s + m.paid, 0);
+  const on = { item_profit: it.reduce((s, i) => s + i.onProfit, 0), item_income: it.reduce((s, i) => s + i.onIncome, 0),
+               month_profit: ms.reduce((s, m) => s + m.committed, 0) };
+  const units = st.basis === "month_profit" ? ms.filter(m => !m.running && m.due >= 1).map(m => ({ name: gvMonthName(m.month), due: m.due }))
+    : it.filter(i => i.due >= 1).map(i => ({ name: i.name, due: i.due }));
+  return { items: it, months: ms, paid: paidAll, on, still: Math.max(0, on[st.basis] - paidAll), units };
+}
+function gvMonthName(m){ return new Date(m + "-01T00:00:00").toLocaleDateString("en-GB", { month:"long", year:"numeric" }); }
+
+// ============================================================
+// THE MONEY, AT A GLANCE (Admin home). Read-only: Finance records,
+// Admin watches. Everything comes from the same ledger Finance uses.
+// ============================================================
+const adK = v => { const n = Math.abs(Number(v || 0)), s = n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 1 : 2) + "m" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(Math.round(n));
+  return (Number(v) < 0 ? "-" : "") + "\u20a6" + s; };
+async function adMoney(){
+  const box = $("ad-money"); if(!box) return;
+  const t = iso(new Date()), first = t.slice(0, 8) + "01", d90 = iso(new Date(Date.now() - 90 * 864e5));
+  const [pos, sm, mf, it, gs, pr, rq, pd, nr] = await Promise.all([
+    db.rpc("fin_position", { p_on:t }), db.rpc("fin_summary", { p_from:first, p_to:t }), db.from("fin_month_figures").select("*"),
+    db.from("fin_item_figures").select("*"), db.from("fin_giving_settings").select("*").maybeSingle(),
+    db.from("fin_payroll_to_pay").select("*"), db.from("fin_reqs_to_pay").select("*"), db.from("paye_due").select("*"),
+    db.from("fin_ledger").select("occurred_on,description,counterparty,amount_ngn").eq("kind","out").in("source", ["manual","import"]).is("voided_at", null).is("evidence_path", null)
+      .gt("amount_ngn", 50000).gte("occurred_on", d90).order("occurred_on").limit(12) ]);
+  if(pos.error){ console.warn("money:", pos.error.message); box.innerHTML = ""; return; }
+  const accts = pos.data || [];
+  if(!accts.length){ box.innerHTML = '<div class="section-label">The money</div><div class="panel"><p style="color:var(--muted);font-size:13.5px">Finance has not set up the bank accounts yet. Once they have, the cash position, this month and the trend show here.</p></div>'; return; }
+  const cash = accts.reduce((s, a) => s + Number(a.balance_ngn || 0), 0), m = (Array.isArray(sm.data) ? sm.data[0] : sm.data) || {};
+  const g = gs.data ? gvCompute(it.data, mf.data, gs.data) : { still:0, units:[] };
+  const months = (mf.data || []).slice(-6);
+  const top = Math.max(1, ...months.flatMap(x => [Number(x.income), Number(x.costs)]));
+  const W = 540, H = 170, pad = 6, gap = (W - pad * 2) / Math.max(months.length, 1), bw = Math.min(28, gap / 2.6);
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + (H + 24) + '" role="img" aria-label="Money in and out by month" style="width:100%;height:auto">';
+  months.forEach((x, n) => { const cx = pad + n * gap + gap / 2, hi = Number(x.income) / top * (H - 8), ho = Number(x.costs) / top * (H - 8);
+    svg += '<rect x="' + (cx - bw - 1) + '" y="' + (H - hi) + '" width="' + bw + '" height="' + hi + '" rx="3" fill="var(--green)"><title>In ' + adK(x.income) + '</title></rect>' +
+      '<rect x="' + (cx + 1) + '" y="' + (H - ho) + '" width="' + bw + '" height="' + ho + '" rx="3" fill="var(--clay)"><title>Out ' + adK(x.costs) + '</title></rect>' +
+      '<text x="' + cx + '" y="' + (H + 17) + '" font-size="11" text-anchor="middle" fill="var(--muted)">' + new Date(x.month + "-01T00:00:00").toLocaleDateString("en-GB", { month:"short" }) + '</text>'; });
+  svg += '</svg>';
+  const bs = {}; (it.data || []).forEach(i => { const s = i.stream || "Not yet in a stream"; bs[s] = (bs[s] || 0) + Number(i.income) - Number(i.costs); });
+  const bmax = Math.max(1, ...Object.values(bs).map(Math.abs));
+  const due = []; (pd.data || []).filter(x => x.state !== "paid").forEach(x => due.push(["PAYE, " + x.period, x.amount_due, x.state === "LATE" ? "LATE, was due " + fmtDate(x.due_by) : "Due by " + fmtDate(x.due_by)]));
+  (pr.data || []).forEach(x => due.push(["Salaries, " + x.period, x.total, x.people + " people, certified"]));
+  (rq.data || []).forEach(x => due.push([x.staff + ": " + (x.purpose || "Requisition"), x.remaining, "Approved, waiting for Finance"]));
+  const late = (pd.data || []).filter(x => x.state === "LATE");
+  box.innerHTML = '<div class="section-label">The money</div>' +
+    '<div class="ad-m4">' + [["Cash, all accounts", cash], ["In, this month", m.money_in, "in"], ["Out, this month", m.money_out, "out"], [(gs.data ? gs.data.name : "Giving commitment") + " to pay", g.still]]
+      .map(([k, v, c]) => '<div><span>' + esc(k) + '</span><b class="' + (c || "") + '">' + adK(v) + '</b></div>').join("") + '</div>' +
+    '<div class="ad-m2"><div class="panel"><h3>Month by month</h3><div class="ps">Money in against money out. Records start with the accounts\u2019 opening balances.</div>' + (months.length ? svg : '<p class="hint">No months recorded yet.</p>') +
+      '<div style="display:flex;gap:14px;font-size:12px;color:var(--muted)"><span><i class="ad-key" style="background:var(--green)"></i>Money in</span><span><i class="ad-key" style="background:var(--clay)"></i>Money out</span></div></div>' +
+    '<div class="panel"><h3>By income stream</h3><div class="ps">Income less its own costs, all time. Overheads shows what the streams carry.</div>' +
+      Object.keys(bs).map(s => '<div class="ad-bar"><span>' + esc(s) + '</span><div><i style="width:' + (Math.abs(bs[s]) / bmax * 100) + '%;background:' + (bs[s] >= 0 ? "var(--green)" : "var(--clay)") + '"></i></div><b>' + adK(bs[s]) + '</b></div>').join("") + '</div></div>' +
+    '<div class="ad-m2"><div class="panel"><h3>Coming due</h3><div class="ps">Money that will leave soon.</div>' +
+      (due.length ? due.map(([w, a, s]) => '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(w) + '</b><span>' + esc(s) + '</span></span><span class="amt">' + N(a) + '</span></div>').join("") : '<p class="hint">Nothing waiting.</p>') + '</div>' +
+    '<div class="panel"><h3>Needs attention</h3><div class="ps">What an auditor would ask about.</div>' +
+      (late.length ? '<div class="alert err" style="margin-top:0"><b>PAYE is late</b>' + late.map(x => esc(x.period) + " " + N2(x.amount_due)).join(", ") + '. It was deducted from staff and has not reached FCT-IRS.</div>' : '') +
+      ((nr.data || []).length ? '<div class="alert warn"><b>' + nr.data.length + ' payment' + (nr.data.length === 1 ? "" : "s") + ' above \u20a650,000 with no receipt</b>' +
+        nr.data.map(x => esc(x.description || x.counterparty) + " (" + N(x.amount_ngn) + ")").join(", ") + '</div>' : '') +
+      (g.still >= 1 ? '<div class="alert info"><b>' + esc(gs.data.name) + ': ' + N(g.still) + ' to pay</b>' + g.units.map(u => esc(u.name)).join(", ") + '</div>' : '') +
+      (!late.length && !(nr.data || []).length && g.still < 1 ? '<p class="hint">Nothing needs attention.</p>' : '') + '</div></div>';
 }
 
 // ============================================================

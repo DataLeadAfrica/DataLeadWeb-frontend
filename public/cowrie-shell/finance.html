@@ -169,6 +169,90 @@ td.c,th.c{text-align:center;width:54px;padding-right:0}
 .toast.good{background:var(--green-bg);color:var(--green);border-color:var(--green)}
 @media (max-width:700px){ .inout{grid-template-columns:1fr} .grid2,.grid3{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- the ledger ---------- */
+.lg-pos{margin:0 0 14px}
+.lg-pk{font-size:13px;color:var(--muted)}
+.lg-big{font-family:var(--display);font-size:clamp(34px,7vw,52px);line-height:1.05;letter-spacing:-.02em;margin:2px 0 12px;font-variant-numeric:tabular-nums}
+.lg-accts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.lg-accts div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.lg-accts span{font-size:12px;color:var(--muted)}
+.lg-accts b{font-family:var(--display);font-size:18px;font-weight:500;font-variant-numeric:tabular-nums}
+.lg-accts em{font-style:normal;font-size:11.5px;color:var(--faint)}
+.lg-act{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0 0 24px}
+.lg-act button{border:0;border-radius:14px;padding:15px 12px;font-size:15px;font-weight:600}
+.lg-in{background:var(--green);color:#fff} .lg-out{background:var(--clay);color:#fff}
+.lg-xf{background:var(--card);border:1px solid var(--line)!important;color:var(--gray);font-weight:500!important;font-size:13.5px!important}
+@media (max-width:640px){ .lg-act{grid-template-columns:1fr 1fr} .lg-xf{grid-column:1/-1} }
+.lg-scrim{position:fixed;inset:0;background:rgba(10,16,20,.45);z-index:40;display:none}
+.lg-scrim.open{display:block}
+.lg-sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);visibility:hidden;width:min(580px,100%);max-height:92vh;overflow:auto;
+  background:var(--card);border-radius:20px 20px 0 0;z-index:50;padding:18px 20px calc(22px + env(safe-area-inset-bottom,0px));transition:transform .2s ease}
+.lg-sheet.open{transform:translate(-50%,0);visibility:visible}
+@media (prefers-reduced-motion:reduce){.lg-sheet{transition:none}}
+.lg-sheet h3{font-family:var(--display);font-size:20px;margin:0 0 12px}
+.lg-grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 12px}
+.lg-dir{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;background:var(--paper);border-radius:12px;padding:4px;margin-bottom:14px}
+.lg-dir button{border:0;background:none;border-radius:9px;padding:9px 6px;font-weight:500;color:var(--muted);font-size:13.5px}
+.lg-dir button[aria-pressed="true"][data-k="in"]{background:var(--green);color:#fff}
+.lg-dir button[aria-pressed="true"][data-k="out"]{background:var(--clay);color:#fff}
+.lg-dir button[aria-pressed="true"][data-k="transfer"]{background:var(--ink);color:#fff}
+.lg-amount{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--line);padding:2px 0 6px;margin-bottom:14px}
+.lg-amount span{font-family:var(--display);font-size:26px;color:var(--faint)}
+.lg-amount input{border:0;outline:0;padding:0;font-family:var(--display);font-size:38px;font-weight:600;font-variant-numeric:tabular-nums;background:none}
+.lg-amount input:focus{outline:0}
+.lg-amount:focus-within{border-color:var(--orange)}
+.lg-chips{display:flex;flex-wrap:wrap;gap:6px}
+.lg-chips button{border-radius:99px;padding:6px 12px;font-size:13px}
+.lg-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.lg-fx{background:var(--paper);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.lg-sug{font-size:12px;color:var(--green);margin-top:4px}
+.lg-foot{display:flex;gap:8px;margin-top:12px}
+.lg-foot button{flex:1;padding:12px;border-radius:12px}
+dl.lg-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0 0 14px}
+dl.lg-kv dt{color:var(--muted)} dl.lg-kv dd{margin:0}
+.lg-seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px;flex-wrap:wrap}
+.lg-seg button{border:0;background:none;padding:6px 11px;border-radius:9px;font-size:13px;color:var(--muted)}
+.lg-seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.lg-ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.lg-ctrl select,.lg-ctrl input{width:auto;padding:7px 10px;font-size:13px}
+.lg-ctrl .grow{flex:1;min-width:180px}
+.lg-tot{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.lg-tot > div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.lg-tot .k{font-size:11.5px;color:var(--muted)}
+.lg-tot .v{font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums}
+.lg-tot .v.in{color:var(--green)} .lg-tot .v.out{color:var(--clay)} .lg-tot .v.neg{color:var(--red)}
+@media (max-width:640px){ .lg-tot{grid-template-columns:1fr 1fr} .lg-hs{display:none} }
+table.lg-table{width:100%;border-collapse:collapse;font-size:13px}
+table.lg-table th{text-align:left;font-weight:500;font-size:11.5px;color:var(--faint);padding:0 8px 8px;border-bottom:1px solid var(--line)}
+table.lg-table td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.lg-table .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.lg-table td small{display:block;color:var(--muted);font-size:11.5px}
+tr.lg-grp td{background:var(--paper);font-weight:600;font-size:12.5px}
+tr.lg-e{cursor:pointer} tr.lg-e:hover td{background:#fff7f0}
+tr.lg-void .lg-ds{text-decoration:line-through;color:var(--faint)}
+.lg-pos{color:var(--green)} .lg-neg{color:var(--clay)}
+td.lg-pos,td.lg-neg{margin:0}
+.lg-chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--line);color:var(--muted);margin-left:6px;vertical-align:1px}
+.lg-chip.auto{background:#fde9da;color:var(--clay)} .lg-chip.warn{background:var(--amber-bg);color:var(--amber)}
+.lg-sg h4{font-family:var(--display-md);font-weight:500;font-size:14px;margin:14px 0 2px}
+
+/* ---------- activities and giving ---------- */
+.gv-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:640px){.gv-row{grid-template-columns:1fr}}
+.gv-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.gv-b.on{border-color:var(--green);background:var(--green-bg)}
+.gv-b .bt{font-size:12.5px;color:var(--muted)} .gv-b b{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
+.gv-b .bd{font-size:11.5px;color:var(--faint);line-height:1.35} .gv-b .bu{margin-top:6px;font-size:12px;font-weight:600;color:var(--clay)}
+.gv-b.on .bu{color:var(--green)}
+.gv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:8px}
+.gv-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gv-h b{font-weight:500;font-size:14.5px}
+.gv-tog{border:0;cursor:pointer} .gv-tog:hover{background:var(--ink);color:#fff}
+.gv-fig{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.gv-fig span{display:block;font-size:11.5px;color:var(--muted)} .gv-fig b{font-family:var(--display);font-size:16px;font-variant-numeric:tabular-nums}
+.gv-fig em{display:block;font-style:normal;font-size:11px;color:var(--faint)}
+@media (max-width:640px){.gv-fig{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -218,9 +302,12 @@ td.c,th.c{text-align:center;width:54px;padding-right:0}
       <p id="hub-say">What needs doing, and what the money is doing.</p>
     </div>
 
+    <div id="lg-hub"></div>
+    <div id="lg-topay"></div>
+
     <div class="todo" id="todo"></div>
 
-    <div class="section-label">This year so far</div>
+    <div class="section-label">This month so far</div>
     <div class="inout" id="inout"></div>
 
     <div class="section-label">Where to</div>
@@ -248,7 +335,8 @@ td.c,th.c{text-align:center;width:54px;padding-right:0}
     <div class="panel">
       <div class="panel-head">
         <div><h3>The roster</h3><div class="ps">Every line. This is the only screen in Finance that names figures against people.</div></div>
-        <button onclick="exportSchedule()">Export bank schedule</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="exportSchedule()">Export bank schedule</button>
+        <button class="btn-primary" onclick="lgPayPayrollView()">Record salaries paid</button></div>
       </div>
       <div id="roster"><p style="color:var(--faint);font-size:13px">Run the month to see it.</p></div>
     </div>
@@ -401,6 +489,207 @@ td.c,th.c{text-align:center;width:54px;padding-right:0}
     </div>
   </section>
 
+  <!-- ============ STATEMENT (the ledger) ============ -->
+  <section id="v-money" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Statement</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px" id="lg-st-note"></p>
+    <div class="lg-act" style="margin-bottom:16px">
+      <button class="lg-in" onclick="lgOpen('in')">+ Money in</button>
+      <button class="lg-out" onclick="lgOpen('out')">&minus; Money out</button>
+      <button class="lg-xf" onclick="lgOpen('transfer')">Transfer between our accounts</button>
+    </div>
+    <div class="lg-ctrl">
+      <div class="lg-seg" id="lg-per">
+        <button data-p="today">Today</button><button data-p="week">This week</button><button data-p="month">This month</button>
+        <button data-p="last">Last month</button><button data-p="year">This year</button><button data-p="custom">Custom</button>
+      </div>
+      <span id="lg-custom" class="hidden"><input type="date" id="lg-dfrom"> to <input type="date" id="lg-dto"></span>
+    </div>
+    <div class="lg-ctrl">
+      <span style="font-size:12.5px;color:var(--muted)">Group by</span>
+      <div class="lg-seg" id="lg-grp"><button data-g="none">None</button><button data-g="day">Day</button><button data-g="week">Week</button><button data-g="month">Month</button></div>
+      <select id="lg-acf"></select><select id="lg-itf"></select>
+    </div>
+    <div class="lg-ctrl">
+      <input type="search" id="lg-q" class="grow" placeholder="Search who, what, item or reference">
+      <button class="btn-primary" id="lg-dl" onclick="lgDownload()">Download Excel</button>
+    </div>
+    <div class="lg-tot" id="lg-tot"></div>
+    <div class="panel" style="padding:8px 10px;overflow-x:auto"><table class="lg-table" id="lg-st"></table></div>
+  </section>
+
+  <!-- ============ ACCOUNTS AND SETUP ============ -->
+  <section id="v-setup" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Accounts and setup</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">Set up once. Everything that records money picks these up.</p>
+    <div class="panel">
+      <h3>Our accounts</h3><div class="ps">Every bank account and wallet we hold, each in its own currency. The opening balance is what the bank statement showed at the end of the day before records start.</div>
+      <div id="lg-acclist"></div>
+    </div>
+    <div class="panel">
+      <h3>Add an account</h3><div class="ps">A new bank, or a new currency at a bank we already use.</div>
+      <div class="grid2">
+        <div class="fld"><label>Bank</label><select id="lg-na-bank"></select></div>
+        <div class="fld"><label>Currency</label><select id="lg-na-cur"><option value="NGN">Naira (NGN)</option><option value="USD">US dollar (USD)</option><option value="GBP">Pound (GBP)</option><option value="EUR">Euro (EUR)</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>What we call it</label><input id="lg-na-name" placeholder="Operations, Project funds, Domiciliary"></div>
+        <div class="fld"><label>Last 4 digits of the account number</label><input id="lg-na-last" inputmode="numeric" maxlength="4" placeholder="1234"></div>
+      </div>
+      <div class="grid2">
+        <div class="fld"><label>Opening balance, in that currency</label><input id="lg-na-open" inputmode="decimal" placeholder="0"></div>
+        <div class="fld"><label>Balance as at the end of</label><input id="lg-na-on" type="date"><div class="hint">Money is recorded on this account from the next day.</div></div>
+      </div>
+      <div id="lg-na-msg"></div>
+      <button class="btn-primary" onclick="lgAddAccount()">Add account</button>
+    </div>
+    <div class="panel">
+      <h3>Exchange rates</h3><div class="ps">Used to value dollar, pound and euro balances in naira, and suggested when foreign money is recorded. Each entry keeps the rate on its own day.</div>
+      <div id="lg-ratelist" style="margin-bottom:12px"></div>
+      <div class="grid3">
+        <div class="fld"><label>Currency</label><select id="lg-rt-cur"><option>USD</option><option>GBP</option><option>EUR</option></select></div>
+        <div class="fld"><label>Naira for 1</label><input id="lg-rt-rate" inputmode="decimal"></div>
+        <div class="fld"><label>From</label><input id="lg-rt-on" type="date"></div>
+      </div>
+      <div id="lg-rt-msg"></div>
+      <button class="btn-primary" onclick="lgSetRate()">Save rate</button>
+    </div>
+    <div class="panel">
+      <h3>Income streams and their items</h3>
+      <div class="ps">Each training, study, consultancy or grant is an item under its stream. Money in and out, and requisitions, are charged to items. Overheads hold the shared costs.</div>
+      <div id="lg-items"></div>
+      <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px">
+        <h3>Add an item</h3>
+        <div class="grid2">
+          <div class="fld"><label>Income stream</label><select id="lg-ni-stream"></select></div>
+          <div class="fld"><label>Name</label><input id="lg-ni-name" placeholder="Data Analytics Bootcamp, Cohort 6"></div>
+        </div>
+        <div class="grid2">
+          <div class="fld"><label>Short code (optional)</label><input id="lg-ni-code" placeholder="Made from the name if left empty"></div>
+          <div class="fld"><label>Client or funder (optional)</label><input id="lg-ni-funder"></div>
+        </div>
+        <div id="lg-ni-msg"></div>
+        <button class="btn-primary" onclick="lgAddItem()">Add item</button>
+      </div>
+      <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px">
+        <h3>Add an income stream</h3>
+        <div class="grid2"><div class="fld"><input id="lg-ns-name" placeholder="Publications"></div><div><button onclick="lgAddStream()">Add income stream</button></div></div>
+        <div id="lg-ns-msg"></div>
+      </div>
+    </div>
+    <div class="panel"><h3>Categories</h3><div class="ps">What money is for. Ask for a new one if something does not fit.</div><div id="lg-catlist" style="font-size:13px;line-height:1.7"></div></div>
+  </section>
+
+  <!-- ============ ACTIVITIES AND GIVING ============ -->
+  <section id="v-activities" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Activities and giving</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:18px">Every item under its income stream, with what it brought in, what it cost, and the giving commitment on it.</p>
+    <div class="panel">
+      <h3 id="gv-title">Giving commitment</h3>
+      <div class="ps">A running figure on all three bases, side by side. Tap one to use it. Every payment saves the calculation it was based on.</div>
+      <div class="gv-row" id="gv-cmp"></div>
+      <p id="gv-sum" style="margin:12px 0 0;font-size:13.5px"></p>
+      <div id="gv-months"></div>
+      <details style="margin-top:14px"><summary style="cursor:pointer;font-size:13px;color:var(--muted)">Name and percentage</summary>
+        <div class="grid3" style="margin-top:10px">
+          <div class="fld"><label>Name on screens and reports</label><input id="gv-name"></div>
+          <div class="fld"><label>Percentage</label><input id="gv-pct" type="number" min="1" max="100"></div>
+          <div class="fld"><label>Worked out on</label><select id="gv-basis"><option value="item_profit">Each item's profit</option><option value="item_income">Each item's income</option><option value="month_profit">Overall profit, month by month</option></select></div>
+        </div><div id="gv-msg"></div><button onclick="gvSaveSettings()">Save</button></details>
+    </div>
+    <div id="gv-items"></div>
+  </section>
+
+  <!-- ============ INCOME AND EXPENDITURE ============ -->
+  <section id="v-report" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Income and expenditure</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px" id="ie-note"></p>
+    <div class="lg-ctrl">
+      <div class="lg-seg" id="ie-per"><button data-p="month" aria-pressed="true">This month</button><button data-p="last">Last month</button><button data-p="quarter">This quarter</button>
+        <button data-p="year">This year</button><button data-p="custom">Custom</button></div>
+      <span id="ie-custom" class="hidden"><input type="date" id="ie-from"> to <input type="date" id="ie-to"></span>
+      <span class="grow"></span><button class="btn-primary" id="ie-dl" onclick="ieDownload()">Download Excel</button>
+    </div>
+    <div class="panel" style="overflow-x:auto"><table class="lg-table" id="ie-table"></table></div>
+    <div class="panel" style="overflow-x:auto"><h3>By income stream</h3><div class="ps">What each stream brought in and spent in this period.</div><table class="lg-table" id="ie-streams"></table></div>
+  </section>
+
+  <div class="lg-sheet" id="lg-pay" role="dialog" aria-modal="true" aria-labelledby="lg-pay-h">
+    <div class="lg-grab"></div><h3 id="lg-pay-h">Pay</h3><dl class="lg-kv" id="lg-pay-kv"></dl>
+    <div class="lg-amount"><span>&#8358;</span><input id="lg-pay-amt" inputmode="decimal" autocomplete="off"></div>
+    <div class="hint" id="lg-pay-part" style="margin:-8px 0 12px"></div>
+    <div class="fld"><label>From which of our accounts</label><div class="lg-chips" id="lg-pay-acc"></div></div>
+    <div class="grid2"><div class="fld"><label>Date sent</label><input id="lg-pay-date" type="date"></div><div class="fld"><label>Bank reference</label><input id="lg-pay-ref" placeholder="From the transfer"></div></div>
+    <div class="fld" id="lg-pay-chg-wrap"><label>Bank charge (optional)</label><input id="lg-pay-chg" inputmode="decimal" placeholder="e.g. 53.75"><div class="hint">Recorded as its own line under Bank charges.</div></div>
+    <div id="lg-pay-msg"></div>
+    <div class="lg-foot"><button onclick="lgClose()">Not yet</button><button class="btn-primary" id="lg-pay-go" onclick="lgPaySave()">Record payment</button></div>
+  </div>
+
+  <div class="lg-sheet" id="gv-pay" role="dialog" aria-modal="true" aria-labelledby="gv-pay-h">
+    <div class="lg-grab"></div><h3 id="gv-pay-h">Pay giving commitment</h3><dl class="lg-kv" id="gv-pay-kv"></dl>
+    <div class="lg-amount"><span>&#8358;</span><input id="gv-pay-amt" inputmode="decimal" autocomplete="off"></div>
+    <div class="fld"><label>Paid to</label><input id="gv-pay-to"></div>
+    <div class="grid2"><div class="fld"><label>Their bank</label><input id="gv-pay-bank"></div><div class="fld"><label>Their account number</label><input id="gv-pay-acct" inputmode="numeric"></div></div>
+    <div class="fld"><label>From which of our accounts</label><div class="lg-chips" id="gv-pay-acc"></div></div>
+    <div class="grid2"><div class="fld"><label>Date</label><input id="gv-pay-date" type="date"></div><div class="fld"><label>Bank reference</label><input id="gv-pay-ref"></div></div>
+    <div class="hint" style="margin-bottom:6px">The figures above are saved with the payment, so anyone can see later how it was worked out.</div>
+    <div id="gv-pay-msg"></div>
+    <div class="lg-foot"><button onclick="lgClose()">Not yet</button><button class="btn-primary" id="gv-pay-go" onclick="gvPaySave()">Record payment</button></div>
+  </div>
+
+  <div class="lg-scrim" id="lg-scrim" onclick="lgClose()"></div>
+
+  <div class="lg-sheet" id="lg-sheet" role="dialog" aria-modal="true" aria-labelledby="lg-h">
+    <div class="lg-grab"></div>
+    <h3 id="lg-h">Record money</h3>
+    <div class="lg-dir" id="lg-dir"><button data-k="in">Money in</button><button data-k="out">Money out</button><button data-k="transfer">Transfer</button></div>
+    <div class="fld"><label id="lg-acc-l">From which of our accounts</label><div class="lg-chips" id="lg-acc"></div></div>
+    <div class="lg-amount"><span id="lg-sym">&#8358;</span><input id="lg-amt" inputmode="decimal" placeholder="0" autocomplete="off"></div>
+    <div class="lg-fx hidden" id="lg-fx"><div class="fld" style="margin:0"><label>Rate to naira on this day</label><input id="lg-rate" inputmode="decimal"></div><div class="hint" id="lg-fxn"></div></div>
+    <div id="lg-to-wrap" class="hidden">
+      <div class="fld"><label>To which of our accounts</label><div class="lg-chips" id="lg-to"></div></div>
+      <div id="lg-toamt-wrap" class="lg-amount"><span id="lg-tosym">&#8358;</span><input id="lg-toamt" inputmode="decimal" placeholder="What arrived" autocomplete="off"></div>
+      <div class="hint" id="lg-xn" style="margin:-6px 0 12px"></div>
+    </div>
+    <div id="lg-who-wrap">
+      <div class="fld"><label id="lg-who-l">Paid to</label><input id="lg-who" placeholder="Start typing" autocomplete="off"><div class="lg-sug" id="lg-sug"></div></div>
+      <div class="grid2" id="lg-bankrow">
+        <div class="fld"><label>Their bank</label><select id="lg-pbank"></select></div>
+        <div class="fld"><label>Their account number</label><input id="lg-pacct" inputmode="numeric" placeholder="10 digits"></div>
+      </div>
+    </div>
+    <div class="fld" id="lg-cat-wrap"><label>What for</label><div class="lg-chips" id="lg-cat"></div></div>
+    <div class="fld" id="lg-item-wrap"><label>Belongs to</label><select id="lg-item"></select>
+      <div class="hint">The training, study, consultancy or grant it is for. Shared costs go to Overheads.</div></div>
+    <div class="grid2">
+      <div class="fld"><label>Date</label><input id="lg-date" type="date"></div>
+      <div class="fld"><label>Bank reference</label><input id="lg-ref" placeholder="From the transfer"></div>
+    </div>
+    <div class="fld"><label>Description</label><input id="lg-desc" placeholder="October rent"></div>
+    <div class="fld" id="lg-file-wrap"><label>Receipt (photo or PDF)</label><input type="file" id="lg-file" accept="application/pdf,image/*">
+      <div class="hint">Needed for any payment above &#8358;50,000.</div></div>
+    <div id="lg-dup"></div>
+    <div id="lg-msg"></div>
+    <div class="lg-foot"><button id="lg-again" onclick="lgSave(true)">Save and add another</button><button class="btn-primary" id="lg-save" onclick="lgSave(false)">Save</button></div>
+  </div>
+
+  <div class="lg-sheet" id="lg-line" role="dialog" aria-modal="true" aria-labelledby="lg-line-h">
+    <div class="lg-grab"></div><h3 id="lg-line-h">Entry</h3><dl class="lg-kv" id="lg-line-kv"></dl><div id="lg-line-act"></div>
+  </div>
+
+  <div class="lg-sheet" id="lg-ea" role="dialog" aria-modal="true" aria-labelledby="lg-ea-h">
+    <div class="lg-grab"></div><h3 id="lg-ea-h">Account</h3>
+    <div class="grid2"><div class="fld"><label>What we call it</label><input id="lg-ea-name"></div><div class="fld"><label>Last 4 digits</label><input id="lg-ea-last" maxlength="4" inputmode="numeric"></div></div>
+    <div class="grid2"><div class="fld"><label>Opening balance</label><input id="lg-ea-open" inputmode="decimal"></div><div class="fld"><label>Balance as at the end of</label><input id="lg-ea-on" type="date"></div></div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-bottom:12px"><input type="checkbox" id="lg-ea-active" style="width:auto;margin:0"> In use (untick when the account is closed)</label>
+    <div id="lg-ea-msg"></div>
+    <div class="lg-foot"><button onclick="lgClose()">Cancel</button><button class="btn-primary" onclick="lgSaveAccount()">Save</button></div>
+  </div>
+
   <!-- ============ PROJECTS ============ -->
   <section id="v-projects" class="hidden">
     <button class="back" onclick="go('hub')">&larr; Finance</button>
@@ -537,7 +826,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","payroll","reqs","cash","paye","projects","bank"];
+const VIEWS = ["hub","payroll","reqs","cash","paye","projects","bank","money","setup","activities","report"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -548,6 +837,10 @@ function go(v){
   if(v === "paye")   { loadPaye(); initPayeSchedule(); }
   if(v === "projects") loadProjects();
   if(v === "bank")     loadBank();
+  if(v === "money")    lgStatementInit();
+  if(v === "setup")    lgSetup();
+  if(v === "activities") gvShow();
+  if(v === "report")   ieShow();
 }
 
 // ============================================================
@@ -559,14 +852,14 @@ async function loadHub(){
   const g = data || {};
 
   const jobs = [];
-  if(g.paye_late > 0) jobs.push({ n:g.paye_late, cls:"urgent", v:"paye",
+  if(false && g.paye_late > 0) jobs.push({ n:g.paye_late, cls:"urgent", v:"paye",
     t:"PAYE is late", s:K(g.paye_late_total) + " was deducted from staff and has not reached FCT-IRS. It was due by the 10th." });
   if(g.months_to_run > 0) jobs.push({ n:g.months_to_run, cls:"soon", v:"payroll",
     t:(g.months_to_run === 1 ? "A month" : "Months") + " to run",
     s:g.people_to_pay + " approved timesheet" + (g.people_to_pay===1?"":"s") + " with no pay computed yet." });
-  if(g.reqs_to_pay > 0) jobs.push({ n:g.reqs_to_pay, cls:"", v:"reqs",
+  if(false && g.reqs_to_pay > 0) jobs.push({ n:g.reqs_to_pay, cls:"", v:"reqs",
     t:"Requisitions to pay", s:K(g.reqs_to_pay_total) + " cleared and waiting for the money to move." });
-  if(g.paye_due > 0) jobs.push({ n:g.paye_due, cls:"soon", v:"paye",
+  if(false && g.paye_due > 0) jobs.push({ n:g.paye_due, cls:"soon", v:"paye",
     t:"PAYE to remit", s:K(g.paye_due_total) + " due to FCT-IRS." });
   if(g.paye_untold > 0) jobs.push({ n:g.paye_untold, cls:"", v:"paye",
     t:"Staff not told about their PAYE", s:"Remitted, but nobody has been told it was paid on their behalf." });
@@ -579,21 +872,17 @@ async function loadHub(){
     ? jobs.map(j => '<button class="job ' + j.cls + '" onclick="go(\'' + j.v + '\')">' +
         '<span class="n">' + j.n + '</span><span class="t"><b>' + j.t + '</b><span>' + j.s + '</span></span>' +
         '<span class="arr">\u2192</span></button>').join("")
-    : '<div class="clear"><b>Nothing is waiting</b>Payroll is run, requisitions are paid, PAYE is remitted, and every receipt is in. Rare, and worth noticing.</div>';
+    : '';   // money waiting to be paid is in the To pay list above
 
-  const inn = Number(g.money_in_ytd||0), out = Number(g.money_out_ytd||0), net = Number(g.net_ytd||0);
-  $("inout").innerHTML =
-    '<div><div class="k">Money in</div><div class="v in">' + K(inn) + '</div><div class="s">this year</div></div>' +
-    '<div><div class="k">Money out</div><div class="v out">' + K(out) + '</div><div class="s">payroll, PAYE, requisitions and the rest</div></div>' +
-    '<div><div class="k">Net</div><div class="v ' + (net < 0 ? "neg" : "in") + '">' + K(net) + '</div>' +
-      '<div class="s">' + (net < 0 ? "More has gone out than came in" : "More came in than went out") + '</div></div>';
+  lgHub();   // where the money is, and this month, from the ledger
+  lgToPay(); // requisitions, salaries, PAYE and giving waiting to be paid
 
   const doors = [
     { v:"payroll", t:"Payroll", s:"Run the month, adjust it, export the bank schedule.",
       ic:'<path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L21 6"/>' },
     { v:"reqs", t:"Requisitions", s:"Pay what has been cleared. Chase the receipts.",
       ic:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10h8M8 14h5"/>' },
-    { v:"cash", t:"Cashbook", s:"What came in, what went out, and what is left.",
+    { v:"money", t:"Statement", s:"Every naira in and out, by day, week or month. Download it to Excel.",
       ic:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>' },
     { v:"paye", t:"PAYE", s:"What is owed to FCT-IRS, and telling staff it was paid.",
       ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/>' },
@@ -601,6 +890,12 @@ async function loadHub(){
       ic:'<path d="M3 7h18M3 12h18M3 17h10"/>' },
     { v:"bank", t:"Bank and tax", s:"Everyone's account number and TIN, in one table you can download.",
       ic:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>' },
+    { v:"activities", t:"Activities and giving", s:"Each training, study, consultancy and grant: what it made, and the giving commitment.",
+      ic:'<path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/>' },
+    { v:"report", t:"Income and expenditure", s:"Any period against the one before, by category and income stream. Download it.",
+      ic:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>' },
+    { v:"setup", t:"Accounts and setup", s:"Our bank accounts, exchange rates, income streams and their items.",
+      ic:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>' },
   ];
   $("doors").innerHTML = doors.map(d =>
     '<button class="door" onclick="go(\'' + d.v + '\')">' +
@@ -639,13 +934,13 @@ function payCells(x){
       (paid ? "Paid " + fmtDate(m.paid_on) : noBank ? "No bank details on file"
             : !cert ? "Certify the month first" : "Mark as paid") + '">' +
       '<input type="checkbox"' + (paid ? " checked" : "") +
-      ((noBank || !cert) && !paid ? " disabled" : "") +
+      " disabled" +   // recorded with Pay salaries
       ' onchange="tickPaid(' + m.line_id + ', this)"></label></td>' +
     '<td class="c"><label class="paytick" title="' +
       (rem ? "Remitted " + fmtDate(m.paye_remitted_on)
            : Number(m.paye || 0) === 0 ? "No PAYE on this line" : "Mark PAYE as remitted") + '">' +
       '<input type="checkbox"' + (rem ? " checked" : "") +
-      (Number(m.paye || 0) === 0 && !rem ? " disabled" : "") +
+      " disabled" +   // recorded with Remit
       ' onchange="tickPaye(' + m.line_id + ', this)"></label></td>';
 }
 
@@ -1145,13 +1440,846 @@ function exportBankTax(){
 }
 
 // ============================================================
+// THE LEDGER (Finance slice 1)
+// Every naira in or out is one line: which of our accounts, how much
+// in that account's currency, the rate to naira on the day, who, what
+// for, and which item (training, study, consultancy, grant, overheads)
+// it belongs to. Balances, the statement and the downloads all read
+// from it, so they cannot disagree. Lines are voided, never deleted.
+// The database checks who may do what; this page only asks.
+// ============================================================
+window.lgOpen = lgOpen; window.lgSave = lgSave; window.lgClose = lgClose; window.lgPaint = lgPaint;
+window.lgLine = lgLine; window.lgVoid = lgVoid; window.lgDownload = lgDownload; window.lgSetup = lgSetup;
+window.lgAddAccount = lgAddAccount; window.lgEditAccount = lgEditAccount; window.lgSaveAccount = lgSaveAccount;
+window.lgSetRate = lgSetRate; window.lgAddItem = lgAddItem; window.lgSetItem = lgSetItem; window.lgAddStream = lgAddStream;
+window.lgReceipt = lgReceipt; window.lgAttach = lgAttach;
+
+const LG_SYM = { NGN:"\u20a6", USD:"$", GBP:"\u00a3", EUR:"\u20ac" };
+const LG_BANKS = ["Access Bank","Citibank","Ecobank","FCMB","Fidelity Bank","First Bank","GTBank","Jaiz Bank","Keystone Bank","Kuda",
+  "Moniepoint MFB","Opay","PalmPay","Polaris Bank","Providus Bank","Stanbic IBTC","Sterling Bank","Union Bank","UBA","Unity Bank","Wema Bank","Zenith Bank"];
+let LG = { accounts:[], items:[], streams:[], cats:{ in:[], out:[] }, payees:{}, rates:[], threshold:50000, loaded:false };
+let LGF = { kind:"out", acct:null, to:null, cat:null };
+let LGS = { per:"month", grp:"day", acct:"all", item:"all", rows:[] };
+
+const lgMoney = (v, cur, dp) => (LG_SYM[cur || "NGN"]) + Number(v || 0).toLocaleString("en-NG",
+  { minimumFractionDigits: dp ? 2 : 0, maximumFractionDigits: 2 });
+const lgK = v => Math.abs(Number(v) % 1) > 0.0001;
+const lgAmt = id => Number(String(val(id) || "").replace(/,/g, ""));
+const lgAcc = id => LG.accounts.find(a => String(a.id) === String(id));
+const lgShort = a => a ? a.bank.replace(/ Bank$| MFB$/,"") + (a.currency !== "NGN" ? " " + a.currency : "") + (a.name ? ", " + a.name : "") : "";
+const lgDay = d => new Date(String(d).slice(0,10) + "T00:00:00");
+const lgDF = d => lgDay(d).toLocaleDateString("en-GB", { day:"numeric", month:"short" });
+const lgDL = d => lgDay(d).toLocaleDateString("en-GB", { weekday:"short", day:"numeric", month:"short", year:"numeric" });
+const lgAddDays = (s, n) => { const d = lgDay(s); d.setDate(d.getDate() + n); return iso(d); };
+function lgRateFor(cur, on){
+  if(cur === "NGN") return 1;
+  const r = LG.rates.filter(x => x.currency === cur && x.effective_on <= on).sort((a, b) => b.effective_on.localeCompare(a.effective_on))[0]
+         || LG.rates.filter(x => x.currency === cur).sort((a, b) => a.effective_on.localeCompare(b.effective_on))[0];
+  return r ? Number(r.rate) : null;
+}
+
+async function lgLoadRef(){
+  const [a, i, s, c, p, r, t] = await Promise.all([
+    db.from("fin_accounts_view").select("*"), db.from("fin_items").select("*"), db.from("fin_streams").select("*"),
+    db.from("fin_category_list").select("*"), db.from("fin_payees").select("*"), db.from("fin_rates_view").select("*"),
+    db.rpc("fin_setting", { p_key:"receipt_threshold" }) ]);
+  if(oops("The accounts", a.error) || oops("The items", i.error) || oops("The income streams", s.error) ||
+     oops("The categories", c.error) || oops("The payees", p.error) || oops("The rates", r.error)) return false;
+  LG.accounts = a.data || []; LG.items = i.data || []; LG.streams = s.data || []; LG.rates = r.data || [];
+  LG.cats = { in: (c.data || []).filter(x => x.kind === "in").map(x => x.name), out: (c.data || []).filter(x => x.kind === "out").map(x => x.name) };
+  LG.payees = {}; (p.data || []).forEach(x => { LG.payees[x.counterparty.toLowerCase()] = x; });
+  if(t && !t.error && t.data) LG.threshold = Number(t.data) || 50000;
+  LG.loaded = true;
+  return true;
+}
+
+// ---------- on the Finance home: where the money is, and this month ----------
+async function lgHub(){
+  if(!(await lgLoadRef())) return;
+  const box = $("lg-hub"); if(!box) return;
+  const live = LG.accounts.filter(a => a.active);
+  if(!live.length){
+    box.innerHTML = '<div class="alert info" style="margin:0 0 20px"><b>Set up our bank accounts first</b>' +
+      'Add each account with its balance on the day records start. Then money in and out can be recorded against it. ' +
+      '<button class="btn-primary" style="margin-top:10px" onclick="go(\'setup\')">Set up accounts</button></div>';
+    $("inout").innerHTML = ""; return;
+  }
+  const tot = live.reduce((s, a) => s + Number(a.balance_ngn || 0), 0);
+  const today = iso(new Date()), first = today.slice(0, 8) + "01";
+  const { data: sm } = await db.rpc("fin_summary", { p_from:first, p_to:today });
+  const m = (Array.isArray(sm) ? sm[0] : sm) || {};
+  box.innerHTML = '<div class="lg-pos"><div class="lg-pk">We have, across all accounts' +
+      (live.some(a => a.currency !== "NGN") ? ', in naira terms' : '') + '</div>' +
+    '<div class="lg-big">' + N(tot) + '</div>' +
+    '<div class="lg-accts">' + live.map(a => '<div><span>' + esc(a.bank) + ', ' + esc(a.name) + '</span><b>' +
+      lgMoney(Math.round(Number(a.balance) * 100) / 100, a.currency) + '</b>' +
+      (a.currency !== "NGN" ? '<em>\u2248 ' + K(a.balance_ngn) + '</em>' : '') + '</div>').join("") + '</div></div>' +
+    '<div class="lg-act"><button class="lg-in" onclick="lgOpen(\'in\')">+ Money in</button>' +
+    '<button class="lg-out" onclick="lgOpen(\'out\')">\u2212 Money out</button>' +
+    '<button class="lg-xf" onclick="lgOpen(\'transfer\')">Transfer between our accounts</button></div>';
+  const inn = Number(m.money_in || 0), out = Number(m.money_out || 0), net = inn - out;
+  $("inout").innerHTML =
+    '<div><div class="k">Money in</div><div class="v in">' + K(inn) + '</div><div class="s">this month so far</div></div>' +
+    '<div><div class="k">Money out</div><div class="v out">' + K(out) + '</div><div class="s">' +
+      (Number(m.no_receipt || 0) ? m.no_receipt + " above " + K(LG.threshold) + " with no receipt" : "every large payment has a receipt") + '</div></div>' +
+    '<div><div class="k">Net</div><div class="v ' + (net < 0 ? "neg" : "in") + '">' + K(net) + '</div>' +
+      '<div class="s">' + (net < 0 ? "More has gone out than came in" : "More came in than went out") + '</div></div>';
+}
+
+// ============================================================
+// THE FORM: money in, money out, transfer
+// ============================================================
+function lgChips(el, list, sel, onPick){
+  $(el).innerHTML = list.map(([v, lab]) => '<button type="button" aria-pressed="' + (String(v) === String(sel)) + '" data-v="' + esc(v) + '">' + esc(lab) + '</button>').join("");
+  $(el).querySelectorAll("button").forEach(b => b.onclick = () => { onPick(b.dataset.v); lgChips(el, list, b.dataset.v, onPick); });
+}
+const lgAccOpts = except => LG.accounts.filter(a => a.active && String(a.id) !== String(except))
+  .map(a => [a.id, lgShort(a) + "  " + lgMoney(Math.round(Number(a.balance)), a.currency)]);
+function lgItemOptions(kind, sel){
+  const items = LG.items.filter(i => i.state === "active" && (kind !== "in" || !i.cost_only));
+  const groups = {};
+  items.forEach(i => { const g = i.stream || "Not yet in a stream"; (groups[g] = groups[g] || []).push(i); });
+  return (kind === "out" ? '<option value="">Overheads (shared costs)</option>' : '<option value="">Choose what it belongs to\u2026</option>') +
+    Object.keys(groups).map(g => '<optgroup label="' + esc(g) + '">' + groups[g].map(i =>
+      '<option value="' + i.id + '"' + (String(i.id) === String(sel) ? " selected" : "") + '>' + esc(i.name) + '</option>').join("") + '</optgroup>').join("");
+}
+
+async function lgOpen(kind){
+  if(!LG.loaded && !(await lgLoadRef())) return;
+  if(!LG.accounts.some(a => a.active)){ toast("Add our bank accounts first, under Accounts and setup."); go("setup"); return; }
+  ["lg-amt","lg-who","lg-desc","lg-ref","lg-pacct","lg-toamt","lg-rate"].forEach(i => set(i, ""));
+  $("lg-rate").dataset.touched = ""; set("lg-pbank", ""); set("lg-date", iso(new Date()));
+  $("lg-file").value = ""; $("lg-msg").innerHTML = ""; $("lg-dup").innerHTML = "";
+  const remember = localStorageGet("lg-last-" + kind);
+  LGF.acct = lgAcc(remember) && lgAcc(remember).active ? remember : LG.accounts.find(a => a.active).id;
+  LGF.to = (LG.accounts.find(a => a.active && String(a.id) !== String(LGF.acct)) || {}).id || null;
+  lgKind(kind);
+  $("lg-scrim").classList.add("open"); $("lg-sheet").classList.add("open");
+  setTimeout(() => $("lg-amt").focus(), 200);
+}
+function lgClose(){ $("lg-scrim").classList.remove("open"); document.querySelectorAll(".lg-sheet").forEach(s => s.classList.remove("open")); }
+document.addEventListener("keydown", e => { if(e.key === "Escape") lgClose(); });
+
+function lgKind(kind){
+  LGF.kind = kind; LGF.cat = null;
+  document.querySelectorAll("#lg-dir button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
+  const x = kind === "transfer";
+  ["lg-who-wrap","lg-cat-wrap","lg-item-wrap","lg-file-wrap"].forEach(i => $(i).classList.toggle("hidden", x));
+  $("lg-to-wrap").classList.toggle("hidden", !x);
+  $("lg-bankrow").classList.toggle("hidden", kind !== "out");
+  $("lg-who-l").textContent = kind === "in" ? "Who paid us" : "Paid to";
+  $("lg-acc-l").textContent = kind === "in" ? "Into which of our accounts" : "From which of our accounts";
+  $("lg-h").textContent = kind === "in" ? "Money in" : kind === "out" ? "Money out" : "Transfer between our accounts";
+  lgChips("lg-cat", (LG.cats[kind] || []).map(c => [c, c]), null, v => LGF.cat = v);
+  $("lg-item").innerHTML = lgItemOptions(kind, "");
+  lgChips("lg-acc", lgAccOpts(), LGF.acct, v => { LGF.acct = v; if(String(LGF.to) === String(v)) LGF.to = (LG.accounts.find(a => a.active && String(a.id) !== String(v)) || {}).id; $("lg-rate").dataset.touched = ""; lgCur(); });
+  lgCur(); $("lg-sug").textContent = "";
+}
+function lgCur(){
+  const a = lgAcc(LGF.acct); if(!a) return;
+  $("lg-sym").textContent = LG_SYM[a.currency];
+  const fx = a.currency !== "NGN" && LGF.kind !== "transfer";
+  $("lg-fx").classList.toggle("hidden", !fx);
+  if(fx && !$("lg-rate").dataset.touched){ const r = lgRateFor(a.currency, val("lg-date") || iso(new Date())); set("lg-rate", r ? r.toLocaleString("en-NG") : ""); }
+  if(LGF.kind === "transfer"){
+    lgChips("lg-to", lgAccOpts(LGF.acct), LGF.to, v => { LGF.to = v; lgCur(); });
+    const t = lgAcc(LGF.to);
+    $("lg-tosym").textContent = t ? LG_SYM[t.currency] : "";
+    $("lg-toamt-wrap").classList.toggle("hidden", !t || t.currency === a.currency);
+  }
+  lgNotes();
+}
+function lgNotes(){
+  const a = lgAcc(LGF.acct), amt = lgAmt("lg-amt");
+  if(a && a.currency !== "NGN" && LGF.kind !== "transfer"){
+    const r = lgAmt("lg-rate");
+    $("lg-fxn").textContent = amt && r ? lgMoney(amt, a.currency, lgK(amt)) + " is " + N(amt * r) + " at this rate. The naira figure is what the reports use." : "";
+  }
+  if(LGF.kind === "transfer"){
+    const t = lgAcc(LGF.to), got = lgAmt("lg-toamt");
+    $("lg-xn").textContent = !t ? "" : t.currency === a.currency ? "Moving money between our own accounts is not income or spending. It only moves the balance."
+      : amt && got ? "That is " + (a.currency === "NGN" ? N2(amt / got) + " per " + LG_SYM[t.currency] + "1" : N2(got / amt) + " per " + LG_SYM[a.currency] + "1") + "."
+      : "Enter what left one account and what arrived in the other. The rate is worked out from the two.";
+  }
+}
+function lgFmt(e){ const raw = e.target.value.replace(/[^\d.]/g, ""); const [w, f] = raw.split(".");
+  e.target.value = (w ? Number(w).toLocaleString("en-NG") : "") + (f !== undefined ? "." + f.slice(0, 2) : ""); }
+function localStorageGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function localStorageSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+
+function lgWire(){
+  ["lg-amt","lg-toamt","lg-rate"].forEach(i => $(i).addEventListener("input", e => { if(i === "lg-rate") e.target.dataset.touched = "1"; lgFmt(e); lgNotes(); if(i === "lg-amt") lgDupSoon(); }));
+  $("lg-date").addEventListener("change", () => { $("lg-rate").dataset.touched = ""; lgCur(); lgDupSoon(); });
+  document.querySelectorAll("#lg-dir button").forEach(b => b.onclick = () => lgKind(b.dataset.k));
+  $("lg-pbank").innerHTML = '<option value="">Choose their bank</option>' + LG_BANKS.map(b => '<option>' + b + '</option>').join("") + '<option>Other / foreign bank</option>';
+  $("lg-who").addEventListener("input", () => {
+    const p = LG.payees[(val("lg-who") || "").toLowerCase()];
+    if(p && LGF.kind === "out"){
+      LGF.cat = p.category; lgChips("lg-cat", LG.cats.out.map(c => [c, c]), p.category, v => LGF.cat = v);
+      set("lg-pbank", p.payee_bank || ""); set("lg-pacct", p.payee_account || "");
+      if(p.project_id) $("lg-item").innerHTML = lgItemOptions("out", p.project_id);
+      if(p.account_id && lgAcc(p.account_id) && lgAcc(p.account_id).active){ LGF.acct = String(p.account_id); lgChips("lg-acc", lgAccOpts(), LGF.acct, v => { LGF.acct = v; lgCur(); }); lgCur(); }
+      $("lg-sug").textContent = "Paid before" + (p.payee_bank ? ": " + p.payee_bank + (p.payee_account ? ", " + p.payee_account : "") : "") + ". Filed under " + p.category + " last time.";
+    } else $("lg-sug").textContent = "";
+    lgDupSoon();
+  });
+}
+let lgDupT;
+function lgDupSoon(){ clearTimeout(lgDupT); lgDupT = setTimeout(lgDup, 400); }
+async function lgDup(){
+  const amt = lgAmt("lg-amt"), who = val("lg-who"), on = val("lg-date") || iso(new Date());
+  if(LGF.kind === "transfer" || !amt || !who){ $("lg-dup").innerHTML = ""; return; }
+  const { data } = await db.from("fin_ledger").select("occurred_on,amount,counterparty,currency").eq("kind", LGF.kind).eq("amount", amt)
+    .ilike("counterparty", who).is("voided_at", null).gte("occurred_on", lgAddDays(on, -35)).lte("occurred_on", lgAddDays(on, 35)).limit(1);
+  const h = data && data[0];
+  $("lg-dup").innerHTML = h ? '<div class="alert warn" style="margin:0 0 12px"><b>This looks like one already recorded</b>' +
+    lgMoney(h.amount, h.currency) + (LGF.kind === "in" ? " from " : " to ") + esc(h.counterparty) + " on " + lgDF(h.occurred_on) + ". Save only if it is a separate payment.</div>" : "";
+}
+
+async function lgSave(again){
+  const a = lgAcc(LGF.acct), amt = lgAmt("lg-amt"), on = val("lg-date");
+  if(!amt){ msg("lg-msg","err","No amount","Enter the amount."); return; }
+  if(!on){ msg("lg-msg","err","No date","Give the date the money moved."); return; }
+  btn("lg-save", true, "Saving"); btn("lg-again", true, "Saving");
+  let r;
+  if(LGF.kind === "transfer"){
+    const t = lgAcc(LGF.to);
+    if(!t){ msg("lg-msg","err","Where to?","Choose the account it went to."); lgBtns(); return; }
+    r = await db.rpc("fin_transfer", { p_from:Number(a.id), p_to:Number(t.id), p_amount:amt,
+      p_to_amount: t.currency === a.currency ? null : lgAmt("lg-toamt"), p_occurred_on:on, p_description:val("lg-desc"), p_reference:val("lg-ref") });
+  } else {
+    if(!LGF.cat){ msg("lg-msg","err","What was it for?","Choose a category."); lgBtns(); return; }
+    const ngn = amt * (a.currency === "NGN" ? 1 : lgAmt("lg-rate"));
+    const f = $("lg-file").files[0];
+    if(LGF.kind === "out" && ngn > LG.threshold && !f &&
+       !confirm("No receipt attached. Payments above " + K(LG.threshold) + " need one.\n\nSave anyway and add the receipt later?")){ lgBtns(); return; }
+    let path = null;
+    if(f){
+      const name = "cashbook/" + Date.now() + "-" + f.name.replace(/[^A-Za-z0-9._-]/g, "_");
+      const up = await db.storage.from("receipts").upload(name, f);
+      if(up.error){ msg("lg-msg","err","Receipt not uploaded", up.error.message + " Nothing was saved."); lgBtns(); return; }
+      path = name;
+    }
+    r = await db.rpc("fin_record", { p_kind:LGF.kind, p_account:Number(a.id), p_amount:amt, p_occurred_on:on, p_category:LGF.cat,
+      p_counterparty:val("lg-who"), p_project: $("lg-item").value ? Number($("lg-item").value) : null, p_description:val("lg-desc"),
+      p_reference:val("lg-ref"), p_rate: a.currency === "NGN" ? null : lgAmt("lg-rate"),
+      p_payee_bank: LGF.kind === "out" ? val("lg-pbank") : null, p_payee_account: LGF.kind === "out" ? val("lg-pacct") : null, p_evidence_path:path });
+  }
+  lgBtns();
+  if(r.error){ msg("lg-msg","err","Not saved", r.error.message); return; }
+  localStorageSet("lg-last-" + LGF.kind, String(LGF.acct));
+  await lgLoadRef();
+  const na = lgAcc(LGF.acct);
+  toast((LGF.kind === "in" ? "Money in recorded. " : LGF.kind === "out" ? "Money out recorded. " : "Transfer recorded. ") +
+    lgShort(na) + " is now " + lgMoney(Math.round(Number(na.balance)), na.currency) + ".", true);
+  if(again) lgOpen(LGF.kind); else lgClose();
+  if(!$("v-hub").classList.contains("hidden")) lgHub();
+  if(!$("v-money").classList.contains("hidden")) lgPaint();
+}
+function lgBtns(){ btn("lg-save", false, "Save"); btn("lg-again", false, "Save and add another"); }
+
+// ============================================================
+// THE STATEMENT
+// ============================================================
+function lgRange(){
+  const t = iso(new Date()), d = new Date();
+  if(LGS.per === "today") return [t, t];
+  if(LGS.per === "week"){ const x = new Date(d); x.setDate(d.getDate() - (d.getDay() + 6) % 7); return [iso(x), t]; }
+  if(LGS.per === "month") return [t.slice(0, 8) + "01", t];
+  if(LGS.per === "last"){ const a = new Date(d.getFullYear(), d.getMonth() - 1, 1), b = new Date(d.getFullYear(), d.getMonth(), 0); return [iso(a), iso(b)]; }
+  if(LGS.per === "year") return [t.slice(0, 4) + "-01-01", t];
+  return [val("lg-dfrom") || t.slice(0, 8) + "01", val("lg-dto") || t];
+}
+function lgGroupKey(s){
+  if(LGS.grp === "day") return [s, lgDL(s)];
+  if(LGS.grp === "week"){ const x = lgDay(s); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return [iso(x), "Week of " + lgDF(iso(x))]; }
+  if(LGS.grp === "month"){ const k = s.slice(0, 7); return [k, lgDay(k + "-01").toLocaleDateString("en-GB", { month:"long", year:"numeric" })]; }
+  return ["all", ""];
+}
+async function lgStatementInit(){
+  if(!(await lgLoadRef())) return;
+  $("lg-acf").innerHTML = '<option value="all">All accounts, in naira</option>' + LG.accounts.map(a => '<option value="' + a.id + '">' +
+    esc(a.bank + ", " + a.name + (a.currency !== "NGN" ? " (" + a.currency + ")" : "")) + '</option>').join("");
+  const streams = [...new Set(LG.items.map(i => i.stream).filter(Boolean))];
+  $("lg-itf").innerHTML = '<option value="all">All items</option>' + streams.map(s => '<optgroup label="' + esc(s) + '"><option value="S:' + esc(s) + '">All of ' + esc(s) + '</option>' +
+    LG.items.filter(i => i.stream === s).map(i => '<option value="' + i.id + '">' + esc(i.name) + '</option>').join("") + '</optgroup>').join("");
+  $("lg-acf").value = LGS.acct; $("lg-itf").value = LGS.item;
+  document.querySelectorAll("#lg-per button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === LGS.per));
+  document.querySelectorAll("#lg-grp button").forEach(b => b.setAttribute("aria-pressed", b.dataset.g === LGS.grp));
+  $("lg-custom").classList.toggle("hidden", LGS.per !== "custom");
+  await lgPaint();
+}
+function lgStatementWire(){
+  document.querySelectorAll("#lg-per button").forEach(b => b.onclick = () => { LGS.per = b.dataset.p;
+    document.querySelectorAll("#lg-per button").forEach(x => x.setAttribute("aria-pressed", x === b)); $("lg-custom").classList.toggle("hidden", LGS.per !== "custom"); lgPaint(); });
+  document.querySelectorAll("#lg-grp button").forEach(b => b.onclick = () => { LGS.grp = b.dataset.g;
+    document.querySelectorAll("#lg-grp button").forEach(x => x.setAttribute("aria-pressed", x === b)); lgRender(); });
+  $("lg-acf").onchange = e => { LGS.acct = e.target.value; lgPaint(); };
+  $("lg-itf").onchange = e => { LGS.item = e.target.value; lgRender(); };
+  $("lg-q").oninput = () => lgRender();
+  $("lg-dfrom").onchange = $("lg-dto").onchange = () => lgPaint();
+}
+async function lgPaint(){
+  const [f, t] = lgRange();
+  $("lg-st").innerHTML = '<tbody><tr><td style="color:var(--faint)">Loading&hellip;</td></tr></tbody>';
+  let q = db.from("fin_ledger").select("*").gte("occurred_on", f).lte("occurred_on", t).order("occurred_on").order("id");
+  if(LGS.acct !== "all") q = q.or("account_id.eq." + LGS.acct + ",to_account_id.eq." + LGS.acct);
+  const [rows, open, close] = await Promise.all([ q, db.rpc("fin_position", { p_on: lgAddDays(f, -1) }), db.rpc("fin_position", { p_on: t }) ]);
+  if(oops("The statement", rows.error) || oops("The balances", open.error)) return;
+  LGS.rows = rows.data || []; LGS.f = f; LGS.t = t; LGS.open = open.data || []; LGS.close = close.data || [];
+  lgRender();
+}
+// what one line does to the statement: one account in its own currency, or all accounts in naira
+function lgVal(x){
+  const one = LGS.acct !== "all";
+  if(one){
+    if(x.kind === "transfer") return String(x.account_id) === LGS.acct ? -Number(x.amount) : Number(x.to_amount);
+    return (x.kind === "in" ? 1 : -1) * Number(x.amount);
+  }
+  return x.kind === "transfer" ? 0 : (x.kind === "in" ? 1 : -1) * Number(x.amount_ngn);
+}
+function lgFiltered(){
+  const q = (val("lg-q") || "").toLowerCase(), it = LGS.item;
+  return LGS.rows.filter(x => (it === "all" || (it.startsWith("S:") ? x.stream === it.slice(2) : String(x.project_id) === it)) &&
+    (!q || [x.counterparty, x.description, x.category, x.reference, x.item_name, x.payee_account].join(" ").toLowerCase().includes(q)));
+}
+function lgRender(){
+  const one = LGS.acct !== "all" ? lgAcc(LGS.acct) : null, cur = one ? one.currency : "NGN";
+  const rows = lgFiltered(), filtered = LGS.item !== "all" || !!val("lg-q");
+  const opening = one ? Number((LGS.open.find(p => String(p.account_id) === LGS.acct) || {}).balance || 0) : 0;
+  const posNGN = arr => arr.reduce((s, p) => s + Number(p.balance_ngn || 0), 0);
+  const live = rows.filter(x => !x.voided_at);
+  const tIn = live.reduce((s, x) => s + Math.max(0, lgVal(x)), 0), tOut = live.reduce((s, x) => s + Math.max(0, -lgVal(x)), 0);
+  const cards = one && !filtered
+    ? [["Opening balance", opening], ["Money in", tIn, "in"], ["Money out", tOut, "out"], ["Closing balance", opening + tIn - tOut]]
+    : [["Money in", tIn, "in"], ["Money out", tOut, "out"], ["Net", tIn - tOut, tIn - tOut < 0 ? "neg" : ""]]
+        .concat(one || filtered ? [] : [["All accounts on " + lgDF(LGS.t), posNGN(LGS.close)]]);
+  $("lg-tot").innerHTML = cards.map(([k, v, c]) => '<div><div class="k">' + k + '</div><div class="v ' + (c || "") + '">' +
+    lgMoney(Math.round(v * 100) / 100, cur) + '</div></div>').join("");
+  $("lg-st-note").textContent = one ? "In " + one.currency + ", as the bank will show it." :
+    "All accounts, converted to naira at each day\u2019s rate. Transfers between our own accounts are not counted as money in or out.";
+
+  const bal0 = one && !filtered;
+  let bal = opening;
+  const groups = {};
+  live.forEach(x => { const [k] = lgGroupKey(x.occurred_on); const v = lgVal(x); groups[k] = groups[k] || { i:0, o:0 }; if(v > 0) groups[k].i += v; else groups[k].o -= v; });
+  let html = '<thead><tr><th>Date</th><th>Details</th><th class="lg-hs">Account</th><th class="n">In</th><th class="n">Out</th>' +
+    (bal0 ? '<th class="n lg-hs">Balance</th>' : '') + '</tr></thead><tbody>';
+  if(!rows.length) html += '<tr><td colspan="6" style="color:var(--faint);padding:18px 8px">Nothing here for these dates and filters. Change the dates, or record money in or out.</td></tr>';
+  let cg = null;
+  rows.forEach(x => {
+    const [k, label] = lgGroupKey(x.occurred_on);
+    if(LGS.grp !== "none" && k !== cg){ cg = k; const g = groups[k] || { i:0, o:0 };
+      html += '<tr class="lg-grp"><td colspan="3">' + label + '</td><td class="n lg-pos">' + (g.i ? lgMoney(Math.round(g.i), cur) : "") +
+        '</td><td class="n lg-neg">' + (g.o ? lgMoney(Math.round(g.o), cur) : "") + '</td>' + (bal0 ? '<td class="lg-hs"></td>' : '') + '</tr>'; }
+    const v = x.voided_at ? 0 : lgVal(x); bal += v;
+    const shown = Math.abs(one ? (x.kind === "transfer" ? (String(x.account_id) === LGS.acct ? x.amount : x.to_amount) : x.amount) : (x.kind === "transfer" ? 0 : x.amount_ngn));
+    const isIn = one ? (x.kind === "in" || (x.kind === "transfer" && String(x.to_account_id) === LGS.acct)) : x.kind === "in";
+    const acc = x.kind === "transfer" ? (x.account_bank + " \u2192 " + x.to_bank) : x.account_bank + (x.currency !== "NGN" ? " " + x.currency : "");
+    html += '<tr class="lg-e' + (x.voided_at ? " lg-void" : "") + '" onclick="lgLine(' + x.id + ')"><td style="white-space:nowrap">' + lgDF(x.occurred_on) + '</td>' +
+      '<td><span class="lg-ds">' + esc(x.description || x.counterparty) + '</span>' + lgChipsFor(x) +
+      '<small>' + esc(x.counterparty || "") + (x.item_name ? ", " + esc(x.item_name) : "") + (x.kind !== "transfer" ? ", " + esc(x.category || "") : "") +
+      (!one && x.currency !== "NGN" && x.kind !== "transfer" ? ", " + lgMoney(x.amount, x.currency, lgK(x.amount)) + " at " + N2(x.rate_to_ngn) : "") + '</small></td>' +
+      '<td class="lg-hs">' + esc(acc) + '</td>' +
+      '<td class="n lg-pos">' + (shown && isIn ? lgMoney(shown, cur, lgK(shown)) : "") + '</td>' +
+      '<td class="n lg-neg">' + (shown && !isIn ? lgMoney(shown, cur, lgK(shown)) : (!shown && x.kind === "transfer" ? '<span style="color:var(--faint)">own transfer</span>' : "")) + '</td>' +
+      (bal0 ? '<td class="n lg-hs">' + lgMoney(Math.round(bal * 100) / 100, cur) + '</td>' : '') + '</tr>';
+  });
+  $("lg-st").innerHTML = html + '</tbody>';
+}
+function lgChipsFor(x){
+  const src = { requisition:"from a requisition", payroll:"from payroll", paye:"from PAYE", import:"imported", giving:"giving" }[x.source];
+  return (src ? '<span class="lg-chip auto">' + src + '</span>' : '') + (x.kind === "transfer" ? '<span class="lg-chip">transfer</span>' : '') +
+    (x.voided_at ? '<span class="lg-chip">voided</span>' : '') +
+    (!x.voided_at && x.kind === "out" && ["manual","import"].includes(x.source) && !x.has_receipt && Number(x.amount_ngn) > LG.threshold ? '<span class="lg-chip warn">no receipt</span>' : '');
+}
+
+// ---------- one line ----------
+function lgLine(id){
+  const x = LGS.rows.find(r => r.id === id) || LG_LAST.find(r => r.id === id); if(!x) return;
+  const kv = x.kind === "transfer"
+    ? [["Date", lgDL(x.occurred_on)], ["From", x.account_bank + ", " + x.account_name], ["Sent", lgMoney(x.amount, x.currency, lgK(x.amount))],
+       ["To", x.to_bank + ", " + x.to_name], ["Arrived", lgMoney(x.to_amount, x.to_currency, lgK(x.to_amount))]]
+    : [["Date", lgDL(x.occurred_on)], [x.kind === "in" ? "From" : "To", x.counterparty]]
+      .concat(x.payee_bank ? [["Their bank", x.payee_bank + (x.payee_account ? ", " + x.payee_account : "")]] : [])
+      .concat([["For", x.category], ["Belongs to", x.item_name ? (x.stream ? x.stream + ": " : "") + x.item_name : "Not tied to an item"],
+               ["Our account", x.account_bank + ", " + x.account_name + (x.currency !== "NGN" ? " (" + x.currency + ")" : "")]])
+      .concat(x.currency !== "NGN" ? [["In naira", N(x.amount_ngn) + " at " + N2(x.rate_to_ngn) + " per " + LG_SYM[x.currency] + "1"]] : []);
+  const rest = [["Description", x.description || "None"], ["Reference", x.reference || "None given"]]
+    .concat(x.kind === "out" ? [["Receipt", x.has_receipt ? '<a href="#" onclick="lgReceipt(' + x.id + ');return false">Open it</a>' : "Missing"]] : [])
+    .concat([["Recorded by", (x.created_by_name || "") + ", " + fmtDate(x.created_at)]]);
+  $("lg-line-h").textContent = x.kind === "transfer" ? "Transfer between our accounts" : (x.kind === "in" ? "Money in: " : "Money out: ") + lgMoney(x.amount, x.currency, lgK(x.amount));
+  $("lg-line-kv").innerHTML = kv.concat(rest).map(([k, v]) => '<dt>' + k + '</dt><dd>' + (String(v).startsWith("<a ") ? v : esc(v)) + '</dd>').join("");
+  $("lg-line-act").innerHTML = x.voided_at
+    ? '<div class="alert warn" style="margin:0"><b>Voided by ' + esc(x.voided_by_name || "") + ', ' + fmtDate(x.voided_at) + '</b>' + esc(x.void_reason || "") +
+      '. It stays on the statement, struck through, and counts for nothing.</div>'
+    : ["requisition","payroll","paye"].includes(x.source)
+      ? '<div class="alert info" style="margin:0"><b>Posted automatically</b>To correct it, correct the payment it came from, so the two cannot disagree.</div>'
+      : (x.kind === "out" && !x.has_receipt ? '<div class="fld"><label>Add the receipt</label><input type="file" id="lg-att" accept="application/pdf,image/*">' +
+           '<button style="margin-top:8px" onclick="lgAttach(' + x.id + ')">Attach receipt</button></div>' : '') +
+        '<div class="fld"><label>Void it (it is never deleted)</label><input id="lg-why" placeholder="Why: duplicate, wrong amount, wrong account"></div>' +
+        '<div id="lg-line-msg"></div><button id="lg-void-btn" style="width:100%;color:var(--red);border-color:var(--red)" onclick="lgVoid(' + x.id + ')">Void this entry</button>';
+  $("lg-scrim").classList.add("open"); $("lg-line").classList.add("open");
+}
+let LG_LAST = [];
+async function lgReceipt(id){
+  const x = LGS.rows.find(r => r.id === id) || LG_LAST.find(r => r.id === id); if(!x || !x.evidence_path) return;
+  const { data, error } = await db.storage.from("receipts").createSignedUrl(x.evidence_path, 300);
+  if(error){ toast("Could not open the receipt. " + error.message); return; }
+  window.open(data.signedUrl, "_blank");
+}
+async function lgAttach(id){
+  const f = $("lg-att").files[0]; if(!f){ msg("lg-line-msg","err","No file","Choose the receipt first."); return; }
+  const name = "cashbook/" + Date.now() + "-" + f.name.replace(/[^A-Za-z0-9._-]/g, "_");
+  const up = await db.storage.from("receipts").upload(name, f);
+  if(up.error){ msg("lg-line-msg","err","Not uploaded", up.error.message); return; }
+  const { error } = await db.rpc("fin_attach_receipt", { p_id:id, p_path:name });
+  if(error){ msg("lg-line-msg","err","Not attached", error.message); return; }
+  toast("Receipt attached.", true); lgClose(); lgPaint();
+}
+async function lgVoid(id){
+  const why = val("lg-why"); if(!why){ msg("lg-line-msg","err","Reason needed","Say why it is being voided."); return; }
+  if(!confirm("Void this entry? It stays on the statement, struck through, and stops counting.")) return;
+  btn("lg-void-btn", true, "Voiding");
+  const { error } = await db.rpc("fin_void", { p_id:id, p_reason:why });
+  if(error){ btn("lg-void-btn", false, "Void this entry"); msg("lg-line-msg","err","Not voided", error.message); return; }
+  toast("Voided. It stays on the statement, struck through.", true); lgClose(); await lgLoadRef(); lgPaint();
+}
+
+// ---------- download: exactly what is on screen ----------
+async function lgDownload(){
+  const rows = lgFiltered(); if(!rows.length){ toast("Nothing to download for these dates and filters."); return; }
+  btn("lg-dl", true, "Preparing");
+  try {
+    const XLSX = await import("https://esm.sh/xlsx@0.18.5");
+    const one = LGS.acct !== "all" ? lgAcc(LGS.acct) : null, cur = one ? one.currency : "NGN", filtered = LGS.item !== "all" || !!val("lg-q");
+    const title = "Statement, " + (one ? one.bank + ", " + one.name + " (" + one.currency + ")" : "all accounts, in naira") +
+      ", " + fmtDate(LGS.f) + " to " + fmtDate(LGS.t);
+    const aoa = [[title], ["Data-Lead Africa (Datalead Pace Africa Ltd). Downloaded " + fmtDate(iso(new Date())) + "."], []];
+    const opening = one ? Number((LGS.open.find(p => String(p.account_id) === LGS.acct) || {}).balance || 0) : 0;
+    if(one && !filtered) aoa.push(["Opening balance", "", "", "", "", "", "", "", opening]);
+    aoa.push(["Date","Description","Who","Category","Item","Income stream","Account","In (" + cur + ")","Out (" + cur + ")"]
+      .concat(one && !filtered ? ["Balance (" + cur + ")"] : []).concat(["Original amount","Currency","Rate to naira","Reference","Receipt","Status"]));
+    let bal = opening, cg = null; const live = rows.filter(x => !x.voided_at); const groups = {};
+    live.forEach(x => { const [k] = lgGroupKey(x.occurred_on); const v = lgVal(x); groups[k] = groups[k] || { i:0, o:0 }; if(v > 0) groups[k].i += v; else groups[k].o -= v; });
+    rows.forEach(x => {
+      const [k, label] = lgGroupKey(x.occurred_on);
+      if(LGS.grp !== "none" && LGS.grp !== "day" && k !== cg){ cg = k; const g = groups[k] || { i:0, o:0 }; aoa.push([label, "", "", "", "", "", "Subtotal", g.i, g.o]); }
+      const v = x.voided_at ? 0 : lgVal(x); bal += v;
+      aoa.push([x.occurred_on, x.description || x.counterparty || "", x.counterparty || "", x.kind === "transfer" ? "Transfer" : (x.category || ""), x.item_name || "", x.stream || "",
+        x.kind === "transfer" ? x.account_bank + " to " + x.to_bank : x.account_bank + ", " + x.account_name,
+        v > 0 ? v : (x.voided_at ? "" : ""), v < 0 ? -v : ""]
+        .concat(one && !filtered ? [Math.round(bal * 100) / 100] : [])
+        .concat([Number(x.amount), x.currency, Number(x.rate_to_ngn), x.reference || "", x.kind === "out" ? (x.has_receipt ? "Yes" : "No") : "",
+                 x.voided_at ? "Voided: " + (x.void_reason || "") : ""]));
+    });
+    const tIn = live.reduce((s, x) => s + Math.max(0, lgVal(x)), 0), tOut = live.reduce((s, x) => s + Math.max(0, -lgVal(x)), 0);
+    aoa.push([]); aoa.push(["Total", "", "", "", "", "", "", Math.round(tIn * 100) / 100, Math.round(tOut * 100) / 100]);
+    if(one && !filtered) aoa.push(["Closing balance", "", "", "", "", "", "", "", "", Math.round((opening + tIn - tOut) * 100) / 100]);
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = [{wch:11},{wch:36},{wch:26},{wch:18},{wch:30},{wch:16},{wch:24},{wch:15},{wch:15},{wch:15},{wch:14},{wch:9},{wch:12},{wch:18},{wch:9},{wch:24}];
+    Object.keys(ws).forEach(c => { if(c[0] !== "!" && typeof ws[c].v === "number") ws[c].z = "#,##0.00"; });
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Statement");
+    const out = XLSX.write(wb, { bookType:"xlsx", type:"array" });
+    const url = URL.createObjectURL(new Blob([out], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    const a = document.createElement("a"); a.href = url;
+    a.download = "Statement " + (one ? one.bank + " " + one.currency : "all accounts") + " " + LGS.f + " to " + LGS.t + ".xlsx";
+    a.click(); URL.revokeObjectURL(url);
+    toast("Downloaded: exactly what is on screen.", true);
+  } catch(e){ console.error(e); toast("The file could not be built. " + (e.message || "")); }
+  btn("lg-dl", false, "Download Excel");
+}
+
+// ============================================================
+// ACCOUNTS AND SETUP
+// ============================================================
+async function lgSetup(){
+  if(!(await lgLoadRef())) return;
+  $("lg-acclist").innerHTML = LG.accounts.length ? LG.accounts.map(a => '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(a.bank) + ', ' + esc(a.name) +
+      (a.active ? "" : ' <span class="tag calm">closed</span>') + '</b><span>' + a.currency + (a.last4 ? ' account ending ' + esc(a.last4) : ' account') +
+      '. Opening balance ' + lgMoney(a.opening_balance, a.currency, lgK(a.opening_balance)) + ' on ' + fmtDate(a.opening_on) + '. ' + a.entries + ' entr' + (Number(a.entries) === 1 ? "y" : "ies") + '.</span></span>' +
+      '<span class="amt">' + lgMoney(Math.round(Number(a.balance) * 100) / 100, a.currency) + '</span>' +
+      '<button class="rowbtn" onclick="lgEditAccount(' + a.id + ')">Change</button></div>').join("")
+    : '<p style="color:var(--faint);font-size:13px">No accounts yet. Add the first one below.</p>';
+  $("lg-na-bank").innerHTML = LG_BANKS.map(b => '<option>' + b + '</option>').join("") + '<option>Other</option>';
+  const latest = c => LG.rates.filter(r => r.currency === c).sort((a, b) => b.effective_on.localeCompare(a.effective_on))[0];
+  $("lg-ratelist").innerHTML = ["USD","GBP","EUR"].map(c => { const r = latest(c);
+    return '<div class="qrow"><span class="t" style="flex:1"><b>' + LG_SYM[c] + '1 ' + c + '</b><span>' + (r ? "from " + fmtDate(r.effective_on) : "not set yet") + '</span></span>' +
+      '<span class="amt">' + (r ? N2(r.rate) : "not set") + '</span></div>'; }).join("");
+  if(!val("lg-rt-on")) set("lg-rt-on", iso(new Date()));
+  if(!val("lg-na-on")) set("lg-na-on", iso(new Date()));
+  const sOpts = sel => LG.streams.map(s => '<option value="' + s.id + '"' + (String(s.id) === String(sel) ? " selected" : "") + '>' + esc(s.name) + '</option>').join("");
+  $("lg-ni-stream").innerHTML = LG.streams.filter(s => !s.cost_only).map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join("") +
+    LG.streams.filter(s => s.cost_only).map(s => '<option value="' + s.id + '">' + esc(s.name) + ' (shared costs)</option>').join("");
+  const groups = LG.streams.map(s => [s.name, LG.items.filter(i => String(i.stream_id) === String(s.id)), s.cost_only]);
+  const unsorted = LG.items.filter(i => !i.stream_id);
+  $("lg-items").innerHTML =
+    (unsorted.length ? '<div class="alert warn" style="margin-top:0"><b>' + unsorted.length + ' item' + (unsorted.length === 1 ? "" : "s") + ' not yet in an income stream</b>' +
+      'Put each under Training, Research, Consultancy or Grants, so its money is counted in the right place.</div>' +
+      unsorted.map(i => lgItemRow(i, sOpts)).join("") : "") +
+    groups.map(([n, list, cost]) => '<div class="lg-sg"><h4>' + esc(n) + (cost ? ' <span class="tag calm">shared costs, never income</span>' : '') + '</h4>' +
+      (list.length ? list.map(i => lgItemRow(i, sOpts)).join("") : '<p style="color:var(--faint);font-size:12.5px;margin:4px 0 8px">Nothing under ' + esc(n) + ' yet.</p>') + '</div>').join("");
+  $("lg-catlist").innerHTML = '<b>Money in:</b> ' + LG.cats.in.map(esc).join(", ") + '<br><b>Money out:</b> ' + LG.cats.out.map(esc).join(", ");
+}
+function lgItemRow(i, sOpts){
+  return '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(i.name) + '</b><span>' + esc(i.code) + (i.funder ? ", " + esc(i.funder) : "") +
+    (i.state !== "active" ? ", " + esc(i.state).replace("_", " ") : "") + '</span></span>' +
+    (i.is_overhead ? '' : '<select style="width:auto;padding:5px 8px;font-size:12.5px" onchange="lgSetItem(' + i.id + ',{stream:this.value})">' +
+      (i.stream_id ? '' : '<option value="">Choose a stream\u2026</option>') + sOpts(i.stream_id) + '</select>') +
+    (i.cost_only || i.is_overhead ? '' : '<label style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin:0;white-space:nowrap">' +
+      '<input type="checkbox" style="width:auto;margin:0"' + (i.giving_included ? " checked" : "") + ' onchange="lgSetItem(' + i.id + ',{giving:this.checked})">in giving</label>') +
+    '<select style="width:auto;padding:5px 8px;font-size:12.5px" onchange="lgSetItem(' + i.id + ',{state:this.value})">' +
+      ["active","on_hold","closed"].map(s => '<option value="' + s + '"' + (i.state === s ? " selected" : "") + '>' + s.replace("_", " ") + '</option>').join("") + '</select></div>';
+}
+async function lgSetItem(id, ch){
+  const { error } = await db.rpc("fin_set_item", { p_id:id, p_stream_id: ch.stream ? Number(ch.stream) : null,
+    p_giving: ch.giving === undefined ? null : ch.giving, p_state: ch.state || null });
+  if(error){ toast("Not changed. " + error.message); } else toast("Saved.", true);
+  lgSetup();
+}
+async function lgAddItem(){
+  const { error } = await db.rpc("fin_add_item", { p_stream_id:Number($("lg-ni-stream").value), p_name:val("lg-ni-name"),
+    p_code:val("lg-ni-code"), p_funder:val("lg-ni-funder"), p_giving: true });
+  if(error){ msg("lg-ni-msg","err","Not added", error.message); return; }
+  ["lg-ni-name","lg-ni-code","lg-ni-funder"].forEach(i => set(i, "")); $("lg-ni-msg").innerHTML = "";
+  toast("Item added. Money and requisitions can now be charged to it.", true); lgSetup();
+}
+async function lgAddStream(){
+  const { error } = await db.rpc("fin_add_stream", { p_name:val("lg-ns-name") });
+  if(error){ msg("lg-ns-msg","err","Not added", error.message); return; }
+  set("lg-ns-name", ""); $("lg-ns-msg").innerHTML = ""; toast("Income stream added.", true); lgSetup();
+}
+async function lgAddAccount(){
+  const { error } = await db.rpc("fin_add_account", { p_bank:$("lg-na-bank").value, p_name:val("lg-na-name"), p_currency:$("lg-na-cur").value,
+    p_last4:val("lg-na-last"), p_opening_balance:lgAmt("lg-na-open") || 0, p_opening_on:val("lg-na-on") });
+  if(error){ msg("lg-na-msg","err","Not added", error.message); return; }
+  ["lg-na-name","lg-na-last","lg-na-open"].forEach(i => set(i, "")); $("lg-na-msg").innerHTML = "";
+  toast("Account added. It now appears everywhere money is recorded.", true); lgSetup();
+}
+function lgEditAccount(id){
+  const a = lgAcc(id); if(!a) return;
+  $("lg-ea").dataset.id = id; $("lg-ea-h").textContent = a.bank + ", " + a.name + " (" + a.currency + ")";
+  set("lg-ea-name", a.name); set("lg-ea-last", a.last4 || ""); set("lg-ea-open", Number(a.opening_balance).toLocaleString("en-NG"));
+  set("lg-ea-on", a.opening_on); $("lg-ea-active").checked = !!a.active; $("lg-ea-msg").innerHTML = "";
+  $("lg-scrim").classList.add("open"); $("lg-ea").classList.add("open");
+}
+async function lgSaveAccount(){
+  const id = Number($("lg-ea").dataset.id);
+  const { error } = await db.rpc("fin_edit_account", { p_id:id, p_bank:null, p_name:val("lg-ea-name"), p_last4:val("lg-ea-last"),
+    p_opening_balance:lgAmt("lg-ea-open"), p_opening_on:val("lg-ea-on"), p_active:$("lg-ea-active").checked });
+  if(error){ msg("lg-ea-msg","err","Not saved", error.message); return; }
+  toast("Account updated.", true); lgClose(); lgSetup();
+}
+async function lgSetRate(){
+  const { error } = await db.rpc("fin_set_rate", { p_currency:$("lg-rt-cur").value, p_rate:lgAmt("lg-rt-rate"), p_effective_on:val("lg-rt-on") });
+  if(error){ msg("lg-rt-msg","err","Not saved", error.message); return; }
+  set("lg-rt-rate", ""); $("lg-rt-msg").innerHTML = ""; toast("Rate saved.", true); lgSetup();
+}
+// ---- the giving commitment, worked out the same way wherever it is shown ----
+const GV_BASES = {
+  item_profit:  ["Each item\u2019s profit", "Its income less its own costs, before overheads"],
+  item_income:  ["Each item\u2019s income", "Everything it brings in, before any costs"],
+  month_profit: ["Overall profit, month by month", "All income less all costs, overheads included"],
+};
+function gvCompute(items, months, st){
+  const pct = Number(st.pct || 10) / 100, thisMonth = new Date().toISOString().slice(0, 7);
+  const it = (items || []).map(i => {
+    const inc = Number(i.income || 0), cost = Number(i.costs || 0), paid = Number(i.giving_paid || 0);
+    const included = i.giving_included && !i.cost_only && !i.is_overhead;
+    const onProfit = included ? Math.max(0, inc - cost) * pct : 0, onIncome = included ? inc * pct : 0;
+    const committed = st.basis === "item_income" ? onIncome : st.basis === "item_profit" ? onProfit : 0;
+    return Object.assign({}, i, { inc, cost, profit: inc - cost, paid, included, onProfit, onIncome, committed, due: Math.max(0, committed - paid) });
+  });
+  const ms = (months || []).map(m => {
+    const inc = Number(m.income || 0), cost = Number(m.costs || 0), paid = Number(m.giving_paid || 0);
+    const committed = Math.max(0, inc - cost) * pct;
+    return Object.assign({}, m, { inc, cost, profit: inc - cost, paid, committed, due: Math.max(0, committed - paid), running: m.month >= thisMonth });
+  });
+  const paidAll = ms.reduce((s, m) => s + m.paid, 0);
+  const on = { item_profit: it.reduce((s, i) => s + i.onProfit, 0), item_income: it.reduce((s, i) => s + i.onIncome, 0),
+               month_profit: ms.reduce((s, m) => s + m.committed, 0) };
+  const units = st.basis === "month_profit" ? ms.filter(m => !m.running && m.due >= 1).map(m => ({ name: gvMonthName(m.month), due: m.due }))
+    : it.filter(i => i.due >= 1).map(i => ({ name: i.name, due: i.due }));
+  return { items: it, months: ms, paid: paidAll, on, still: Math.max(0, on[st.basis] - paidAll), units };
+}
+function gvMonthName(m){ return new Date(m + "-01T00:00:00").toLocaleDateString("en-GB", { month:"long", year:"numeric" }); }
+
+// ============================================================
+// PAYMENTS FLOW INTO THE LEDGER (slice 2)
+// Requisitions, salaries and PAYE are paid from here. Each records the
+// account the money left, the date and the reference, and posts one
+// line to the ledger. Voiding that line on the Statement undoes it.
+// ============================================================
+window.lgPayOpen = lgPayOpen; window.lgPaySave = lgPaySave; window.lgPayPayrollView = lgPayPayrollView;
+window.gvShow = gvShow; window.gvSetBasis = gvSetBasis; window.gvToggle = gvToggle; window.gvPayOpen = gvPayOpen; window.gvPaySave = gvPaySave;
+window.gvSaveSettings = gvSaveSettings; window.ieShow = ieShow; window.ieDownload = ieDownload;
+let LGP = null;
+
+// the "to pay" list on the Finance home
+async function lgToPay(){
+  const box = $("lg-topay"); if(!box) return;
+  const [r, p, t, gi, gm, gs] = await Promise.all([ db.from("fin_reqs_to_pay").select("*"), db.from("fin_payroll_to_pay").select("*"),
+    db.from("paye_due").select("*"), db.from("fin_item_figures").select("*"), db.from("fin_month_figures").select("*"), db.from("fin_giving_settings").select("*").maybeSingle() ]);
+  if(r.error || p.error){ box.innerHTML = ""; console.warn("to pay:", (r.error || p.error).message); return; }
+  LGP_CACHE = { reqs: r.data || [], payroll: p.data || [], paye: (t.data || []).filter(x => x.state !== "paid") };
+  const rows = [];
+  (t.data || []).filter(x => x.state !== "paid").forEach(x => rows.push('<div class="qrow"><span class="t" style="flex:1"><b>PAYE, ' + esc(x.period) + '</b><span' +
+    (x.state === "LATE" ? ' style="color:var(--red)"' : '') + '>' + (x.state === "LATE" ? "LATE. Was due by " : "Due by ") + fmtDate(x.due_by) + ' to FCT-IRS</span></span>' +
+    '<span class="amt">' + N2(x.amount_due) + '</span><button class="btn-primary rowbtn" onclick="lgPayOpen(\'paye\',\'' + x.year + '-' + x.month + '\')">Remit</button></div>'));
+  (p.data || []).forEach(x => rows.push('<div class="qrow"><span class="t" style="flex:1"><b>Salaries, ' + esc(x.period) + '</b><span>' + x.people +
+    ' people, certified</span></span><span class="amt">' + N2(x.total) + '</span><button class="btn-primary rowbtn" onclick="lgPayOpen(\'payroll\',\'' + x.year + '-' + x.month + '\')">Pay salaries</button></div>'));
+  (r.data || []).forEach(x => rows.push('<div class="qrow"><span class="t" style="flex:1"><b>' + esc(x.staff) + ': ' + esc(x.purpose || "Requisition") + '</b><span>' +
+    (Number(x.paid) > 0 ? "Part paid " + N(x.paid) + ". " : "") + (x.project ? esc(x.project) + ". " : "") + (x.account_number ? "" : '<b style="color:var(--red)">No bank details on file.</b>') +
+    '</span></span><span class="amt">' + N2(x.remaining) + '</span><button class="btn-primary rowbtn"' + (x.account_number ? "" : " disabled") +
+    ' onclick="lgPayOpen(\'req\',' + x.id + ')">Pay</button></div>'));
+  if(!gi.error && !gm.error && gs.data){
+    const g = gvCompute(gi.data, gm.data, gs.data);
+    if(g.still >= 1) rows.push('<div class="qrow"><span class="t" style="flex:1"><b>' + esc(gs.data.name) + ' to pay</b><span>On ' +
+      esc(GV_BASES[gs.data.basis][0].toLowerCase()) + (g.units.length ? ": " + g.units.map(u => esc(u.name)).join(", ") : "") + '</span></span>' +
+      '<span class="amt">' + N(g.still) + '</span><button class="rowbtn" onclick="go(\'activities\')">Review</button></div>');
+  }
+  box.innerHTML = rows.length ? '<div class="section-label">To pay</div><div class="panel" style="padding:6px 20px">' + rows.join("") + '</div>' : "";
+}
+let LGP_CACHE = { reqs:[], payroll:[], paye:[] };
+
+async function lgPayOpen(kind, key){
+  if(!LG.loaded && !(await lgLoadRef())) return;
+  if(!LG.accounts.some(a => a.active && a.currency === "NGN")){ toast("Add our naira bank accounts first, under Accounts and setup."); go("setup"); return; }
+  if(!LGP_CACHE.reqs.length && !LGP_CACHE.payroll.length && !LGP_CACHE.paye.length) await lgToPay();
+  let x, kv, amt, fixed = true, title;
+  if(kind === "req"){
+    x = LGP_CACHE.reqs.find(r => r.id === Number(key));
+    if(!x){ const r = await db.from("fin_reqs_to_pay").select("*").eq("id", Number(key)).maybeSingle(); x = r.data; }
+    if(!x){ toast("That requisition is no longer waiting for payment."); return; }
+    title = "Pay requisition"; amt = Number(x.remaining); fixed = false;
+    kv = [["To", x.staff], ["Their bank", (x.bank_name || "None on file") + (x.account_number ? ", " + x.account_number : "")], ["For", x.purpose || "Requisition"],
+          ["Belongs to", x.project || "Overheads"], ["Approved", N2(x.approved_total) + (Number(x.adjusted_items) ? " (adjusted from " + N2(x.total) + ")" : "")]]
+         .concat(Number(x.paid) ? [["Already paid", N2(x.paid)], ["Left to pay", N2(x.remaining)]] : []);
+  } else if(kind === "payroll"){
+    const [y, m] = String(key).split("-").map(Number);
+    x = LGP_CACHE.payroll.find(p => p.year === y && p.month === m);
+    if(!x){ toast("Nothing certified and unpaid for that month."); return; }
+    title = "Pay salaries, " + x.period; amt = Number(x.total);
+    kv = [["Month", x.period], ["People", x.people + ", from the bank schedule"], ["Total transfers", N2(x.total)], ["Belongs to", "Overheads"]];
+  } else {
+    const [y, m] = String(key).split("-").map(Number);
+    x = LGP_CACHE.paye.find(p => p.year === y && p.month === m);
+    if(!x){ toast("Nothing due for that month."); return; }
+    title = "Remit PAYE, " + x.period; amt = Number(x.amount_due);
+    kv = [["Month", x.period], ["To", "FCT Internal Revenue Service"], ["Deducted from staff", N2(x.amount_due) + ", " + x.staff_count + " people"], ["Due by", fmtDate(x.due_by)]];
+  }
+  LGP = { kind, key, x, acct: (LG.accounts.find(a => a.active && a.currency === "NGN" && String(a.id) === String(localStorageGet("lg-last-out"))) ||
+                               LG.accounts.find(a => a.active && a.currency === "NGN")).id };
+  $("lg-pay-h").textContent = title;
+  $("lg-pay-kv").innerHTML = kv.map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join("");
+  set("lg-pay-amt", amt.toLocaleString("en-NG", { maximumFractionDigits:2 })); $("lg-pay-amt").readOnly = fixed;
+  $("lg-pay-part").textContent = fixed ? (kind === "paye" ? "Must match what was deducted from staff." : "The total of the certified bank schedule.") :
+    "Paying less is fine: the rest stays on the list as still owed.";
+  $("lg-pay-chg-wrap").classList.toggle("hidden", kind !== "req");
+  set("lg-pay-date", iso(new Date())); set("lg-pay-ref", ""); set("lg-pay-chg", ""); $("lg-pay-msg").innerHTML = "";
+  lgChips("lg-pay-acc", lgAccOpts().filter(o => lgAcc(o[0]).currency === "NGN"), LGP.acct, v => LGP.acct = v);
+  $("lg-pay-go").textContent = kind === "paye" ? "Record remittance" : kind === "payroll" ? "Record salaries paid" : "Record payment";
+  $("lg-scrim").classList.add("open"); $("lg-pay").classList.add("open");
+}
+async function lgPaySave(){
+  const amt = lgAmt("lg-pay-amt"), on = val("lg-pay-date"), ref = val("lg-pay-ref");
+  if(!amt){ msg("lg-pay-msg","err","No amount","Enter the amount sent."); return; }
+  btn("lg-pay-go", true, "Saving");
+  let r;
+  if(LGP.kind === "req") r = await db.rpc("fin_pay_requisition", { p_req_id:LGP.x.id, p_account:Number(LGP.acct), p_amount:amt, p_occurred_on:on, p_reference:ref, p_charge: lgAmt("lg-pay-chg") || null });
+  else if(LGP.kind === "payroll") r = await db.rpc("fin_pay_payroll", { p_year:LGP.x.year, p_month:LGP.x.month, p_account:Number(LGP.acct), p_occurred_on:on, p_reference:ref });
+  else r = await db.rpc("fin_remit_paye", { p_year:LGP.x.year, p_month:LGP.x.month, p_account:Number(LGP.acct), p_amount:amt, p_occurred_on:on, p_reference:ref });
+  btn("lg-pay-go", false, LGP.kind === "paye" ? "Record remittance" : LGP.kind === "payroll" ? "Record salaries paid" : "Record payment");
+  if(r.error){ msg("lg-pay-msg","err","Not recorded", r.error.message); return; }
+  localStorageSet("lg-last-out", String(LGP.acct));
+  if(LGP.kind === "req"){
+    const d = r.data || {};
+    if(d.fully_paid){ await notify("requisition_disbursed", LGP.x.staff_email, LGP.x.staff, { amount: N(d.paid) });
+      toast("Paid. " + String(LGP.x.staff).split(" ")[0] + " has been told, and asked for receipts.", true); }
+    else toast("Part payment recorded. " + N2(d.remaining) + " is still owed.", true);
+  } else if(LGP.kind === "paye"){
+    toast("Remittance recorded. Now telling staff\u2026", true);
+    await tellStaff(LGP.x.year, LGP.x.month, true);
+  } else toast("Salaries recorded as paid. Each person can see it now.", true);
+  lgClose(); await lgLoadRef();
+  LGP_CACHE = { reqs:[], payroll:[], paye:[] };
+  if(!$("v-hub").classList.contains("hidden")) loadHub();
+  if(!$("v-reqs").classList.contains("hidden")) loadReqs();
+  if(!$("v-paye").classList.contains("hidden")) loadPaye();
+  if(!$("v-payroll").classList.contains("hidden")) paintPayroll();
+}
+async function lgPayPayrollView(){
+  const y = Number(val("pr-year")), m = Number($("pr-month").value);
+  await lgToPay(); lgPayOpen("payroll", y + "-" + m);
+}
+
+// ============================================================
+// ACTIVITIES AND THE GIVING COMMITMENT (slice 3)
+// ============================================================
+let GV = null;
+async function gvShow(){
+  const [gi, gm, gs] = await Promise.all([ db.from("fin_item_figures").select("*"), db.from("fin_month_figures").select("*"), db.from("fin_giving_settings").select("*").maybeSingle() ]);
+  if(oops("The items", gi.error) || oops("The months", gm.error) || oops("The giving settings", gs.error)) return;
+  if(!LG.loaded) await lgLoadRef();
+  const st = gs.data || { name:"Giving commitment", pct:10, basis:"item_profit" };
+  const g = gvCompute(gi.data, gm.data, st); GV = { st, g };
+  $("gv-title").textContent = st.name;
+  set("gv-name", st.name); set("gv-pct", st.pct); $("gv-basis").value = st.basis;
+  $("gv-cmp").innerHTML = Object.keys(GV_BASES).map(b => '<button class="gv-b' + (b === st.basis ? " on" : "") + '" onclick="gvSetBasis(\'' + b + '\')" aria-pressed="' + (b === st.basis) + '">' +
+    '<span class="bt">' + GV_BASES[b][0] + '</span><b>' + N(g.on[b]) + '</b><span class="bd">' + GV_BASES[b][1] + '</span>' +
+    '<span class="bu">' + (b === st.basis ? "In use" : "Use this") + '</span></button>').join("");
+  $("gv-sum").innerHTML = 'Paid so far: <b>' + N(g.paid) + '</b>. Still to pay on ' + esc(GV_BASES[st.basis][0].toLowerCase()) + ': <b style="color:var(--clay)">' + N(g.still) + '</b>.';
+  $("gv-months").innerHTML = st.basis !== "month_profit" ? "" : !g.months.length ? '<p class="hint">No months recorded yet.</p>' :
+    '<div style="overflow-x:auto"><table class="lg-table" style="margin-top:10px"><thead><tr><th>Month</th><th class="n">In</th><th class="n">All costs</th><th class="n">Profit</th><th class="n">' +
+    st.pct + '%</th><th class="n">Paid</th><th></th></tr></thead><tbody>' + g.months.map(m => '<tr><td>' + gvMonthName(m.month) +
+      (m.running ? '<small>so far, still running</small>' : '') + '</td><td class="n lg-pos">' + K(m.inc) + '</td><td class="n lg-neg">' + K(m.cost) + '</td><td class="n">' + K(m.profit) +
+      '</td><td class="n">' + N(m.committed) + '</td><td class="n">' + (m.paid ? N(m.paid) : "") + '</td><td class="n">' +
+      (m.running ? '<span class="hint">after month end</span>' : m.due >= 1 ? '<button class="btn-primary rowbtn" onclick="gvPayOpen(null,\'' + m.month + '\')">Pay ' + N(m.due) + '</button>' : "") +
+      '</td></tr>').join("") + '</tbody></table></div>';
+  const streams = [...new Set(g.items.slice().sort((a, b) => (a.stream_sort || 999) - (b.stream_sort || 999)).map(i => i.stream || "Not yet in a stream"))];
+  $("gv-items").innerHTML = streams.map(s => { const list = g.items.filter(i => (i.stream || "Not yet in a stream") === s && (i.state === "active" || i.inc || i.cost));
+    if(!list.length) return "";
+    const cost = list.every(i => i.cost_only || i.is_overhead);
+    return '<div class="lg-sg"><h4>' + esc(s) + '</h4>' + (cost ? '<p class="hint" style="margin:0 0 6px">Shared costs. Never income, never part of the ' + esc(st.name.toLowerCase()) + ' by item, but counted in overall monthly profit.</p>' : '') +
+      list.map(i => '<div class="gv-card"><div class="gv-h"><b>' + esc(i.name) + '</b>' +
+        (i.cost_only || i.is_overhead ? '' : '<button class="lg-chip gv-tog" onclick="gvToggle(' + i.id + ',' + (!i.included) + ')">' + (i.included ? "in the " : "left out of the ") + esc(st.name.toLowerCase()) + '</button>') + '</div>' +
+        '<div class="gv-fig"><div><span>In</span><b class="lg-pos">' + K(i.inc) + '</b></div><div><span>Its costs</span><b class="lg-neg">' + K(i.cost) + '</b></div>' +
+        '<div><span>' + (i.profit >= 0 ? "Profit" : "Loss") + '</span><b>' + K(i.profit) + '</b></div>' +
+        (i.included ? '<div><span>' + st.pct + '% on profit / income</span><b' + (st.basis === "item_profit" ? "" : ' style="color:var(--faint)"') + '>' + K(i.onProfit) + '</b> <b style="font-size:13px;' +
+          (st.basis === "item_income" ? "" : "color:var(--faint)") + '">/ ' + K(i.onIncome) + '</b><em>' + (i.paid ? K(i.paid) + " paid" : "none paid") + '</em></div>' : '') + '</div>' +
+        (st.basis !== "month_profit" && i.due >= 1 ? '<button class="btn-primary rowbtn" onclick="gvPayOpen(' + i.id + ',null)">Pay ' + N(i.due) + '</button>' : '') + '</div>').join("") + '</div>'; }).join("");
+}
+async function gvSetBasis(b){
+  const { error } = await db.rpc("fin_set_giving", { p_name:GV.st.name, p_pct:Number(GV.st.pct), p_basis:b });
+  if(error){ toast("Not changed. " + error.message); return; }
+  toast(GV.st.name + " now worked out on " + GV_BASES[b][0].toLowerCase() + ". Everything already paid still counts.", true); gvShow();
+}
+async function gvSaveSettings(){
+  const { error } = await db.rpc("fin_set_giving", { p_name:val("gv-name"), p_pct:Number(val("gv-pct")), p_basis:$("gv-basis").value });
+  if(error){ msg("gv-msg","err","Not saved", error.message); return; }
+  $("gv-msg").innerHTML = ""; toast("Saved.", true); gvShow();
+}
+async function gvToggle(id, on){
+  const { error } = await db.rpc("fin_set_item", { p_id:id, p_stream_id:null, p_giving:on, p_state:null });
+  if(error){ toast("Not changed. " + error.message); return; } toast("Saved.", true); await lgLoadRef(); gvShow();
+}
+let GVP = null;
+function gvPayOpen(id, month){
+  const st = GV.st, g = GV.g;
+  if(month){ const m = g.months.find(x => x.month === month); GVP = { month, due: m.due };
+    $("gv-pay-kv").innerHTML = [["Month", gvMonthName(month)], ["Basis", st.pct + "% of overall profit, overheads included"], ["All income", N2(m.inc)], ["All costs", N2(m.cost)],
+      ["Profit", N2(m.profit)], ["Committed", N2(m.committed)], ["Already paid", N2(m.paid)], ["Due now", N2(m.due)]].map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join("");
+  } else { const i = g.items.find(x => x.id === id); GVP = { id, due: i.due }; const onP = st.basis === "item_profit";
+    $("gv-pay-kv").innerHTML = [["Item", (i.stream ? i.stream + ": " : "") + i.name], ["Basis", st.pct + "% of its " + (onP ? "profit, before overheads" : "income")], ["Money in", N2(i.inc)],
+      ["Its costs", onP ? N2(i.cost) : "Not used"], [onP ? "Profit" : "Base", N2(onP ? i.profit : i.inc)], ["Committed", N2(i.committed)], ["Already paid", N2(i.paid)], ["Due now", N2(i.due)]]
+      .map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join(""); }
+  $("gv-pay-h").textContent = "Pay " + st.name.toLowerCase();
+  set("gv-pay-amt", Math.round(GVP.due).toLocaleString("en-NG")); set("gv-pay-date", iso(new Date())); set("gv-pay-ref", ""); $("gv-pay-msg").innerHTML = "";
+  const last = Object.values(LG.payees).filter(p => p.category === "Giving")[0];
+  set("gv-pay-to", last ? last.counterparty : ""); set("gv-pay-bank", last ? (last.payee_bank || "") : ""); set("gv-pay-acct", last ? (last.payee_account || "") : "");
+  GVP.acct = (LG.accounts.find(a => a.active && a.currency === "NGN") || {}).id;
+  lgChips("gv-pay-acc", lgAccOpts().filter(o => lgAcc(o[0]).currency === "NGN"), GVP.acct, v => GVP.acct = v);
+  $("lg-scrim").classList.add("open"); $("gv-pay").classList.add("open");
+}
+async function gvPaySave(){
+  const amt = lgAmt("gv-pay-amt");
+  if(amt > GVP.due + 1 && !confirm("That is more than is due (" + N(GVP.due) + "). Record it anyway?")) return;
+  btn("gv-pay-go", true, "Saving");
+  const { error } = await db.rpc("fin_pay_giving", { p_account:Number(GVP.acct), p_amount:amt, p_occurred_on:val("gv-pay-date"), p_counterparty:val("gv-pay-to"),
+    p_project: GVP.id || null, p_month: GVP.month || null, p_reference:val("gv-pay-ref"), p_payee_bank:val("gv-pay-bank"), p_payee_account:val("gv-pay-acct") });
+  btn("gv-pay-go", false, "Record payment");
+  if(error){ msg("gv-pay-msg","err","Not recorded", error.message); return; }
+  toast(GV.st.name + " recorded, with the calculation it was based on.", true); lgClose(); await lgLoadRef(); gvShow();
+}
+
+// ============================================================
+// INCOME AND EXPENDITURE (slice 3)
+// ============================================================
+let IE = { per:"month", data:null };
+function ieRange(per){
+  const d = new Date(), t = iso(d), y = d.getFullYear(), m = d.getMonth();
+  const r = (a, b) => [iso(a), iso(b)];
+  if(per === "month") return { cur: r(new Date(y, m, 1), d), prev: r(new Date(y, m - 1, 1), new Date(y, m - 1, Math.min(d.getDate(), new Date(y, m, 0).getDate()))), label:"This month so far", plabel:"Same days last month" };
+  if(per === "last") return { cur: r(new Date(y, m - 1, 1), new Date(y, m, 0)), prev: r(new Date(y, m - 2, 1), new Date(y, m - 1, 0)), label:new Date(y, m - 1, 1).toLocaleDateString("en-GB",{month:"long",year:"numeric"}), plabel:"The month before" };
+  if(per === "quarter"){ const q = Math.floor(m / 3) * 3; return { cur: r(new Date(y, q, 1), d), prev: r(new Date(y, q - 3, 1), new Date(y, q, 0)), label:"This quarter so far", plabel:"Last quarter" }; }
+  if(per === "year") return { cur: r(new Date(y, 0, 1), d), prev: r(new Date(y - 1, 0, 1), new Date(y - 1, m, d.getDate())), label:"This year so far", plabel:"Same period last year" };
+  const f = val("ie-from") || t.slice(0, 8) + "01", to = val("ie-to") || t;
+  const days = Math.round((new Date(to) - new Date(f)) / 864e5) + 1, pt = new Date(new Date(f).getTime() - 864e5), pf = new Date(pt.getTime() - (days - 1) * 864e5);
+  return { cur:[f, to], prev:[iso(pf), iso(pt)], label:fmtDate(f) + " to " + fmtDate(to), plabel:"The same number of days before" };
+}
+async function ieShow(per){
+  if(per){ IE.per = per; document.querySelectorAll("#ie-per button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === per)); $("ie-custom").classList.toggle("hidden", per !== "custom"); }
+  const R = ieRange(IE.per);
+  const [c, p, gs] = await Promise.all([ db.from("fin_ledger").select("kind,category,amount_ngn,stream,item_name,voided_at,occurred_on").gte("occurred_on", R.cur[0]).lte("occurred_on", R.cur[1]).is("voided_at", null),
+    db.from("fin_ledger").select("kind,category,amount_ngn,stream,voided_at").gte("occurred_on", R.prev[0]).lte("occurred_on", R.prev[1]).is("voided_at", null),
+    db.from("fin_giving_settings").select("*").maybeSingle() ]);
+  if(oops("The report", c.error) || oops("The comparison", p.error)) return;
+  const gname = (gs.data && gs.data.name) || "Giving commitment";
+  const agg = (rows, kind) => { const o = {}; rows.filter(x => x.kind === kind && x.category !== "Giving").forEach(x => o[x.category] = (o[x.category] || 0) + Number(x.amount_ngn)); return o; };
+  const sum = o => Object.values(o).reduce((s, v) => s + v, 0);
+  const cur = c.data || [], prv = p.data || [];
+  const inc = agg(cur, "in"), exp = agg(cur, "out"), pinc = agg(prv, "in"), pexp = agg(prv, "out");
+  const give = cur.filter(x => x.category === "Giving").reduce((s, x) => s + Number(x.amount_ngn), 0);
+  const pgive = prv.filter(x => x.category === "Giving").reduce((s, x) => s + Number(x.amount_ngn), 0);
+  const ti = sum(inc), to = sum(exp), pi = sum(pinc), po = sum(pexp);
+  IE.data = { R, inc, exp, pinc, pexp, ti, to, pi, po, give, pgive, gname, cur };
+  const ch = (a, b) => !b ? '<span class="hint">' + (a ? "new" : "") + '</span>' : '<span style="color:' + (a >= b ? "var(--green)" : "var(--clay)") + '">' + (a >= b ? "+" : "") + Math.round((a - b) / Math.abs(b) * 100) + '%</span>';
+  const rows = (o, po_) => Object.keys(Object.assign({}, po_, o)).sort((a, b) => (o[b] || 0) - (o[a] || 0)).map(k =>
+    '<tr><td>' + esc(k) + '</td><td class="n">' + N(o[k] || 0) + '</td><td class="n">' + N(po_[k] || 0) + '</td><td class="n">' + ch(o[k] || 0, po_[k] || 0) + '</td></tr>').join("");
+  $("ie-note").textContent = R.label + ", against " + R.plabel.toLowerCase() + ". In naira, foreign money at the rate on the day. Records start when the accounts' opening balances do.";
+  $("ie-table").innerHTML = '<thead><tr><th></th><th class="n">' + esc(R.label) + '</th><th class="n">' + esc(R.plabel) + '</th><th class="n">Change</th></tr></thead><tbody>' +
+    '<tr class="lg-grp"><td colspan="4">Income</td></tr>' + (rows(inc, pinc) || '<tr><td colspan="4" class="hint">Nothing came in.</td></tr>') +
+    '<tr><td><b>Total income</b></td><td class="n"><b>' + N(ti) + '</b></td><td class="n">' + N(pi) + '</td><td class="n">' + ch(ti, pi) + '</td></tr>' +
+    '<tr class="lg-grp"><td colspan="4">Expenditure</td></tr>' + (rows(exp, pexp) || '<tr><td colspan="4" class="hint">Nothing went out.</td></tr>') +
+    '<tr><td><b>Total expenditure</b></td><td class="n"><b>' + N(to) + '</b></td><td class="n">' + N(po) + '</td><td class="n">' + ch(to, po) + '</td></tr>' +
+    '<tr><td><b>' + (ti - to >= 0 ? "Surplus" : "Deficit") + ' before ' + esc(gname.toLowerCase()) + '</b></td><td class="n"><b class="' + (ti - to >= 0 ? "lg-pos" : "lg-neg") + '">' + N(ti - to) + '</b></td><td class="n">' + N(pi - po) + '</td><td></td></tr>' +
+    '<tr><td>' + esc(gname) + ' paid</td><td class="n">' + N(give) + '</td><td class="n">' + N(pgive) + '</td><td></td></tr>' +
+    '<tr><td><b>' + (ti - to - give >= 0 ? "Surplus" : "Deficit") + ' after</b></td><td class="n"><b>' + N(ti - to - give) + '</b></td><td class="n">' + N(pi - po - pgive) + '</td><td></td></tr></tbody>';
+  const bs = {}; cur.forEach(x => { if(x.category === "Giving") return; const s = x.stream || "Not yet in a stream"; bs[s] = bs[s] || { i:0, o:0 }; bs[s][x.kind === "in" ? "i" : "o"] += Number(x.amount_ngn); });
+  $("ie-streams").innerHTML = '<thead><tr><th>Income stream</th><th class="n">In</th><th class="n">Out</th><th class="n">Net</th></tr></thead><tbody>' +
+    (Object.keys(bs).map(s => '<tr><td>' + esc(s) + '</td><td class="n lg-pos">' + N(bs[s].i) + '</td><td class="n lg-neg">' + N(bs[s].o) + '</td><td class="n">' + N(bs[s].i - bs[s].o) + '</td></tr>').join("") ||
+     '<tr><td colspan="4" class="hint">Nothing recorded for this period.</td></tr>') + '</tbody>';
+  IE.data.bs = bs;
+}
+async function ieDownload(){
+  const D = IE.data; if(!D){ toast("Nothing to download yet."); return; }
+  btn("ie-dl", true, "Preparing");
+  try {
+    const XLSX = await import("https://esm.sh/xlsx@0.18.5");
+    const aoa = [["Income and expenditure, " + D.R.label + " (" + fmtDate(D.R.cur[0]) + " to " + fmtDate(D.R.cur[1]) + ")"],
+      ["Data-Lead Africa (Datalead Pace Africa Ltd). In naira. Compared with " + D.R.plabel.toLowerCase() + " (" + fmtDate(D.R.prev[0]) + " to " + fmtDate(D.R.prev[1]) + ")."], [],
+      ["", "This period", "Comparison"], ["Income"]];
+    Object.keys(Object.assign({}, D.pinc, D.inc)).forEach(k => aoa.push([k, Math.round((D.inc[k] || 0) * 100) / 100, Math.round((D.pinc[k] || 0) * 100) / 100]));
+    aoa.push(["Total income", D.ti, D.pi], [], ["Expenditure"]);
+    Object.keys(Object.assign({}, D.pexp, D.exp)).forEach(k => aoa.push([k, Math.round((D.exp[k] || 0) * 100) / 100, Math.round((D.pexp[k] || 0) * 100) / 100]));
+    aoa.push(["Total expenditure", D.to, D.po], [], ["Surplus before " + D.gname.toLowerCase(), D.ti - D.to, D.pi - D.po],
+      [D.gname + " paid", D.give, D.pgive], ["Surplus after", D.ti - D.to - D.give, D.pi - D.po - D.pgive], [], ["By income stream", "In", "Out", "Net"]);
+    Object.keys(D.bs).forEach(s => aoa.push([s, D.bs[s].i, D.bs[s].o, D.bs[s].i - D.bs[s].o]));
+    const ws = XLSX.utils.aoa_to_sheet(aoa); ws["!cols"] = [{wch:34},{wch:18},{wch:18},{wch:18}];
+    Object.keys(ws).forEach(c => { if(c[0] !== "!" && typeof ws[c].v === "number") ws[c].z = "#,##0.00"; });
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Income and expenditure");
+    const out = XLSX.write(wb, { bookType:"xlsx", type:"array" });
+    const url = URL.createObjectURL(new Blob([out], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    const a = document.createElement("a"); a.href = url; a.download = "Income and expenditure " + D.R.cur[0] + " to " + D.R.cur[1] + ".xlsx"; a.click(); URL.revokeObjectURL(url);
+    toast("Downloaded.", true);
+  } catch(e){ console.error(e); toast("The file could not be built. " + (e.message || "")); }
+  btn("ie-dl", false, "Download Excel");
+}
+document.querySelectorAll("#ie-per button").forEach(b => b.onclick = () => ieShow(b.dataset.p));
+$("ie-from").onchange = $("ie-to").onchange = () => ieShow();
+["lg-pay-amt","lg-pay-chg","gv-pay-amt"].forEach(i => $(i).addEventListener("input", lgFmt));
+
+lgWire(); lgStatementWire();
+["lg-na-open","lg-ea-open","lg-rt-rate"].forEach(i => $(i).addEventListener("input", lgFmt));
+
+// ============================================================
 // REQUISITIONS
 // ============================================================
 window.loadReqs = loadReqs; window.disburse = disburse; window.closeReq = closeReq;
 window.setProjState = setProjState;
 
 async function loadReqs(){
-  const { data, error } = await db.from("requisitions_to_disburse").select("*");
+  const { data, error } = await db.from("fin_reqs_to_pay").select("*");
   if(oops("The requisitions", error)) return;
   $("req-pay").innerHTML = !data || !data.length
     ? '<p style="color:var(--faint);font-size:13px">Nothing waiting to be paid.</p>'
@@ -1161,8 +2289,7 @@ async function loadReqs(){
       // line, and if this row keeps showing the requested total then the
       // whole adjustment is decorative and the wrong money goes out.
       const asked = Number(r.total || 0);
-      const pay   = (r.approved_total === null || r.approved_total === undefined)
-                      ? asked : Number(r.approved_total);
+      const pay   = Number(r.remaining ?? r.approved_total ?? asked);
       const trimmed = pay !== asked;
       return '<div class="qrow"><span class="t"><b>' + esc(r.staff) + ' \u00b7 ' + N(pay) +
         (trimmed ? ' <s style="color:var(--faint);font-weight:400">' + N(asked) + '</s>' : "") + '</b>' +
@@ -1175,7 +2302,7 @@ async function loadReqs(){
         (noBank ? '<span style="color:var(--red)">No bank details on file. They cannot be paid.</span>'
                 : '<span>' + esc(r.bank_name) + " \u00b7 " + esc(r.account_number) + '</span>') + '</span>' +
         '<button class="btn-primary rowbtn" onclick="disburse(' + r.id + ',\'' + esc(r.staff_email) +
-        '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + pay + ')"' + (noBank ? " disabled" : "") + '>Mark paid</button></div>';
+        '\',\'' + esc(r.staff).replace(/'/g,"\\'") + '\',' + pay + ')"' + (noBank ? " disabled" : "") + '>' + (Number(r.paid) > 0 ? "Pay the rest" : "Pay") + '</button></div>';
     }).join("");
 
   // disbursed, every receipt in, but never closed. Nothing moved them on.
@@ -1202,14 +2329,7 @@ async function loadReqs(){
       '<p class="hint" style="margin-top:10px">They upload these from their own portal. Anything past 30 days is worth a word.</p>';
 }
 
-async function disburse(id, email, name, total){
-  if(!confirm("Mark " + N(total) + " as paid to " + name + "?\n\nDo this once the transfer has actually gone.")) return;
-  const { error } = await db.rpc("disburse_requisition", { p_req_id: id });
-  if(error){ toast("Could not. " + error.message); return; }
-  await notify("requisition_disbursed", email, name, { amount: N(total) });
-  toast("Marked paid. " + name.split(" ")[0] + " has been told, and asked for receipts.", true);
-  await loadReqs(); 
-}
+async function disburse(id){ lgPayOpen("req", id); }   // paid through the payment sheet, into the ledger
 
 async function closeReq(id){
   const { error } = await db.rpc("close_requisition", { p_req_id: id });
@@ -1445,23 +2565,7 @@ async function loadPaye(){
   }).join("");
 }
 
-function openRemit(y, m, due, period){
-  $("paye-form").innerHTML =
-    '<div class="panel"><h3>Record the remittance for ' + esc(period) + '</h3>' +
-    '<div class="ps">What you deducted from staff must match what reached FCT-IRS. If it does not, the system will say so.</div>' +
-    '<div class="grid3">' +
-      '<div class="fld"><label>Amount</label><input id="rm-amt" type="number" step="0.01" value="' + due + '"></div>' +
-      '<div class="fld"><label>Paid on</label><input id="rm-on" type="date" value="' + iso(new Date()) + '"></div>' +
-      '<div class="fld"><label>Reference</label><input id="rm-ref" placeholder="FCTIRS receipt no."></div>' +
-    '</div>' +
-    '<div class="fld"><label>Note (optional)</label><input id="rm-note"></div>' +
-    '<div class="alert info" style="margin-top:0"><b>Staff will be told</b>' +
-      'Each person gets a note saying their own PAYE was paid on their behalf, with their own figure. Not a company total.</div>' +
-    '<div id="rm-msg"></div>' +
-    '<button class="btn-primary" style="width:100%" id="rm-btn" onclick="recordRemit(' + y + ',' + m + ')">Record it and tell staff</button>' +
-    '</div>';
-  $("paye-form").scrollIntoView({ behavior:"smooth", block:"center" });
-}
+function openRemit(y, m){ lgPayOpen("paye", y + "-" + m); }   // remitted through the payment sheet, into the ledger
 
 async function recordRemit(y, m){
   const amt = Number(val("rm-amt")||0);
