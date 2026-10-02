@@ -380,6 +380,27 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 
 @media (max-width:560px){.facts{grid-template-columns:1fr}.fact:nth-child(odd){padding-right:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.spin{animation:none}}
+
+/* ---------- queries and warnings ---------- */
+.dc-banner{display:block;width:100%;text-align:left;background:var(--red);color:#fff;border:0;border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.dc-banner:hover{border:0;filter:brightness(1.07)}
+.dc-banner.overdue{background:#6b1212}
+.dc-banner.done{background:var(--red-bg);color:var(--red);border:1px solid var(--red)}
+.dc-k{display:block;font-size:11px;letter-spacing:.08em;font-weight:600;opacity:.92}
+.dc-banner b{display:block;font-family:var(--display);font-size:17px;margin:2px 0}
+.dc-l{display:block;font-size:13px}
+.dc-go{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;text-decoration:underline}
+.dc-case{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;background:var(--card)}
+.dc-case.open{border-color:var(--red);border-width:1.5px}
+.dc-case h4{font-family:var(--display-md);font-weight:500;font-size:16px;margin:4px 0 2px}
+.dc-sec{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:12px 0 3px}
+.dc-txt{white-space:pre-wrap;font-size:14px}
+.dc-meta{font-size:12px;color:var(--faint)}
+.dc-tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--red-bg);color:var(--red);margin-right:6px}
+.dc-tag.calm{background:var(--line);color:var(--muted)}
+.dc-tgt{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.dc-act{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
 </style>
 </head>
 <body>
@@ -452,6 +473,8 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     </div>
   </div>
 
+  <div id="dc-banner"></div>
+
   <section id="v-home">
     <div id="nudge"></div>
 
@@ -511,6 +534,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       <button onclick="go('timesheet')">Sign off the month</button>
       <button onclick="go('req')">Requisition</button>
       <button onclick="go('policies')">Policies and targets</button>
+      <button id="dc-more" class="hidden" onclick="go('dc')">Queries and warnings</button>
     </div>
 
     <div id="other-doors"></div>
@@ -718,6 +742,36 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <h1 style="font-size:26px;margin-bottom:4px">Targets</h1>
     <p style="color:var(--muted);margin-bottom:18px">Set what someone must achieve, and the KPI it is measured against. Rate it at the end of the period.</p>
 
+    <div class="card" id="dct-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h3 style="margin:0">Queries and warnings</h3>
+        <button class="rowbtn" onclick="dcToggleIssue()" style="padding:5px 11px;font-size:12px">Issue a query or warning</button>
+      </div>
+      <p class="cardsub" style="margin-top:6px">Shown in red at the top of their page until you close it. You can close a query once they reply, or once the reply date has passed.</p>
+      <div id="dci" class="hidden" style="margin:14px 0 6px;padding:14px;border:1px solid var(--line);border-radius:12px">
+        <div class="fld"><label>For whom</label><select id="dci-staff" onchange="dcTargets()"><option value="">Choose&hellip;</option></select></div>
+        <div class="grid2">
+          <div class="fld"><label>Type</label>
+            <select id="dci-kind">
+              <option value="query">Query (they must reply)</option>
+              <option value="verbal_warning">Verbal warning (on record)</option>
+              <option value="written_warning">Written warning</option>
+              <option value="final_warning">Final warning</option>
+            </select></div>
+          <div class="fld"><label>Reply or acknowledge by</label><input id="dci-due" type="date">
+            <p class="hint">Leave empty for 2 working days.</p></div>
+        </div>
+        <div class="fld"><label>Subject</label><input id="dci-subject" placeholder="September target not achieved"></div>
+        <div class="fld"><label>What happened</label><textarea id="dci-details" placeholder="The facts: what was expected, by when, and what happened."></textarea></div>
+        <div class="fld"><label>What is expected (optional)</label><textarea id="dci-expected" placeholder="Explain in writing why, and how it will be recovered."></textarea></div>
+        <div class="fld"><label>Linked target (optional)</label><select id="dci-target"><option value="">None</option></select>
+          <p class="hint">A copy of what the target said is kept with the record.</p></div>
+        <div id="dci-msg"></div>
+        <button class="btn-primary" id="dci-btn" onclick="dcIssue()">Issue</button>
+      </div>
+      <div id="dct-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
     <div class="card hidden" id="acc-card">
       <h3>What your team needs from you</h3>
       <p class="cardsub">They chose to tell you. You are seeing what they need, never why they need it, that is theirs and the Handbook keeps it that way (§1.2, §14).</p>
@@ -770,6 +824,19 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     </div>
   </section>
 
+
+  <!-- ---------- queries and warnings ---------- -->
+  <section id="v-dc" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Your record</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Queries and warnings</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Anything open stays at the top of your page until your team lead closes it. Only you, your team lead, the COO and the CEO can see this.</p>
+    <div id="dc-open"></div>
+    <div class="card">
+      <h3>History</h3>
+      <div id="dc-hist"><p style="color:var(--faint);font-size:13px">Nothing on file.</p></div>
+    </div>
+  </section>
 
   <!-- ---------- my finance ---------- -->
   <section id="v-finance" class="hidden">
@@ -1286,7 +1353,7 @@ window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openRe
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","req"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","req","dc"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1298,6 +1365,7 @@ function go(v){
   if(v === "leave") loadLeave();
   if(v === "req") loadReq();
   if(v === "finance") loadMyFinance();
+  if(v === "dc") loadMyDiscipline();
 }
 
 const EMP = { full_time:"Full-time employee", part_time:"Part-time employee", fixed_term:"Fixed-term employee",
@@ -1406,6 +1474,7 @@ async function enterApp(){
   loadTitles(); loadTargets(); loadPolicies();
   loadTimesheet();          // the strip is the home screen now
   loadMinis(); loadWaiting(); checkPayday(); loadGoals();
+  loadMyDiscipline();       // the red banner, if anything is open
 
   // Load the approvals queue for everybody. The three views behind it
   // already decide who may see what, through can_approve_for, so asking
@@ -2390,6 +2459,7 @@ async function loadTeam(){
   tgDates();
   await loadAccommodations();
   await loadTeamTargets();
+  await loadTeamDiscipline();
 }
 
 function tgKind(){
@@ -3765,6 +3835,238 @@ async function dropRow(kind, id){
   const { error } = await db.rpc("remove_my_row", { p_table: kind, p_id: id });
   if(error){ toast("Could not remove. " + error.message); return; }
   await loadExtras();
+}
+
+// ============================================================
+// QUERIES AND WARNINGS
+// A query or warning shows in red at the top of every screen until the
+// team lead closes it, which they can do once it has been answered (or
+// acknowledged), or once its date has passed. The database decides who
+// may see and do what; this page only asks.
+// ============================================================
+window.loadMyDiscipline = loadMyDiscipline; window.dcReply = dcReply; window.dcAck = dcAck;
+window.loadTeamDiscipline = loadTeamDiscipline; window.dcToggleIssue = dcToggleIssue; window.dcIssue = dcIssue;
+window.dcAct = dcAct; window.dcActHint = dcActHint; window.dcTargets = dcTargets;
+
+const DC_KIND = { query:"Query", verbal_warning:"Verbal warning", written_warning:"Written warning", final_warning:"Final warning" };
+const DC_OUTCOME = { no_action:"Closed: no further action", verbal_warning:"Closed: verbal warning issued",
+  written_warning:"Closed: written warning issued", final_warning:"Closed: final warning issued", filed:"Acknowledged and filed" };
+function dcDate(d){
+  if(!d) return "";
+  const x = new Date(String(d).length > 10 ? d : d + "T00:00:00");
+  return x.toLocaleDateString("en-GB", { weekday:"short", day:"numeric", month:"short", year:"numeric" });
+}
+function dcState(c){
+  if(c.state === "withdrawn") return '<span class="dc-tag calm">Withdrawn</span>';
+  if(c.state === "closed") return '<span class="dc-tag calm">' + esc(DC_OUTCOME[c.outcome] || "Closed") + '</span>';
+  if(c.overdue) return '<span class="dc-tag">Overdue</span>';
+  return '<span class="dc-tag">' + ({ awaiting_reply:"Awaiting reply", replied:"Replied", awaiting_ack:"Awaiting acknowledgement",
+    acknowledged:"Acknowledged" }[c.state] || c.state) + '</span>';
+}
+// mode "mine": the staff member's own; "lead": whoever acts on it
+function dcCaseHtml(c, mode){
+  const q = c.kind === "query", open = c.state !== "closed" && c.state !== "withdrawn";
+  const t = c.target_snapshot;
+  let h = '<div class="dc-case' + (open ? " open" : "") + '">' +
+    '<div><span class="dc-tag">' + esc(DC_KIND[c.kind] || c.kind) + '</span>' + dcState(c) + '</div>' +
+    '<h4>' + esc(c.subject) + '</h4>' +
+    '<div class="dc-meta">' + (mode === "lead" ? "To " + esc(c.staff_name) + " \u00b7 " : "") +
+      "From " + esc(c.issued_by_name || "") + " \u00b7 " + dcDate(c.issued_at) +
+      (open ? " \u00b7 " + (q ? "Reply by " : "Acknowledge by ") + dcDate(c.reply_due) : "") + '</div>' +
+    '<div class="dc-sec">' + (q ? "What happened" : "The warning") + '</div><div class="dc-txt">' + esc(c.details) + '</div>' +
+    (c.expected ? '<div class="dc-sec">What is expected</div><div class="dc-txt">' + esc(c.expected) + '</div>' : "") +
+    (t ? '<div class="dc-sec">Linked target</div><div class="dc-tgt"><b>' + esc(t.title) + '</b>' +
+         (t.kpi ? '<br>KPI: ' + esc(t.kpi) : "") +
+         '<br>' + esc(t.period || "") + (t.from ? ", " + dcDate(t.from) + " to " + dcDate(t.to) : "") +
+         (t.rating ? " \u00b7 rated " + esc(String(t.rating).replace(/_/g," ")) : "") + '</div>' : "") +
+    (c.replied_at ? '<div class="dc-sec">Reply \u00b7 ' + dcDate(c.replied_at) + '</div><div class="dc-txt">' + esc(c.reply) + '</div>' : "") +
+    (c.acknowledged_at ? '<div class="dc-sec">Acknowledged \u00b7 ' + dcDate(c.acknowledged_at) + '</div>' +
+       (c.ack_comment ? '<div class="dc-txt">' + esc(c.ack_comment) + '</div>' : "") : "") +
+    (c.escalated_at ? '<div class="dc-sec">Referred to the CEO by ' + esc(c.escalated_by_name || "") + ' \u00b7 ' + dcDate(c.escalated_at) +
+       '</div><div class="dc-txt">' + esc(c.escalation_note || "") + '</div>' : "") +
+    (c.closed_at ? '<div class="dc-sec">Closed by ' + esc(c.closed_by_name || "") + ' \u00b7 ' + dcDate(c.closed_at) + '</div>' +
+       (c.outcome_note && c.outcome === "no_action" ? '<div class="dc-txt">' + esc(c.outcome_note) + '</div>' : "") : "") +
+    (c.withdrawn_at ? '<div class="dc-sec">Withdrawn by ' + esc(c.withdrawn_by_name || "") + ' \u00b7 ' + dcDate(c.withdrawn_at) +
+       '</div><div class="dc-txt">' + esc(c.withdrawn_reason || "") + '</div>' : "");
+
+  if(mode === "mine" && open){
+    const waiting = q ? !c.replied_at : !c.acknowledged_at;
+    if(waiting) h += '<div class="dc-act">' +
+      '<div class="fld"><label>' + (q ? "Your reply" : "Comment (optional)") + '</label><textarea id="dcr-' + c.id + '"></textarea>' +
+      '<p class="hint">' + (q ? "Once sent, your reply cannot be changed." : "Acknowledging means you have read it, not that you agree.") + '</p></div>' +
+      '<div id="dcm-' + c.id + '"></div>' +
+      '<button class="btn-primary" id="dcb-' + c.id + '" onclick="' + (q ? "dcReply" : "dcAck") + '(' + c.id + ')">' +
+      (q ? "Send my reply" : "I acknowledge") + '</button></div>';
+    else h += '<div class="dc-act dc-meta">Waiting for your team lead to close it. It stays at the top of your page until then.</div>';
+  }
+  if(mode === "lead" && open && c.can_act){
+    const ready = q ? (!!c.replied_at || c.overdue) : (!!c.acknowledged_at || c.overdue);
+    let opts = [];
+    if(ready) opts = q
+      ? [["no_action","Close: no further action"],["verbal_warning","Close and issue a verbal warning"],
+         ["written_warning","Close and issue a written warning"],["final_warning","Close and issue a final warning"]]
+      : [["filed","Close: acknowledged, file it"]];
+    if(!c.escalated_at) opts.push(["refer","Refer to the CEO"]);
+    opts.push(["withdraw","Withdraw (issued in error)"]);
+    h += '<div class="dc-act">' +
+      (ready ? "" : '<p class="dc-meta" style="margin-bottom:8px">You can close it once they ' + (q ? "reply" : "acknowledge it") +
+        ', or after ' + dcDate(c.reply_due) + '.</p>') +
+      '<div class="fld"><label>Action</label><select id="dca-' + c.id + '" onchange="dcActHint(' + c.id + ')"><option value="">Choose\u2026</option>' +
+        opts.map(o => '<option value="' + o[0] + '">' + o[1] + '</option>').join("") + '</select></div>' +
+      '<div class="fld"><label id="dcl-' + c.id + '">Note</label><textarea id="dcn-' + c.id + '"></textarea></div>' +
+      '<div id="dcm-' + c.id + '"></div>' +
+      '<button class="btn-primary" id="dcb-' + c.id + '" onclick="dcAct(' + c.id + ')">Confirm</button></div>';
+  } else if(mode === "lead" && open && c.escalated_at){
+    h += '<div class="dc-act dc-meta">Referred to the CEO. Only the CEO can close it now.</div>';
+  }
+  return h + '</div>';
+}
+
+function dcActHint(id){
+  const a = $("dca-" + id).value;
+  $("dcl-" + id).textContent = a.endsWith("_warning") ? "The warning (they will read and acknowledge this)"
+    : a === "refer" ? "Why you are referring it to the CEO"
+    : a === "withdraw" ? "Why it is being withdrawn"
+    : "Note (optional)";
+}
+
+async function dcAct(id){
+  const a = $("dca-" + id).value, note = val("dcn-" + id);
+  if(!a){ msg("dcm-" + id, "err", "Choose an action", "Pick what to do with it."); return; }
+  let r;
+  if(a === "withdraw"){
+    if(!note){ msg("dcm-" + id, "err", "Reason needed", "Say why it is being withdrawn."); return; }
+    if(!confirm("Withdraw it? It disappears from their page, but stays on file with your reason.")) return;
+    btn("dcb-" + id, true, "Withdrawing");
+    r = await db.rpc("discipline_withdraw", { p_id:id, p_reason:note });
+  } else if(a === "refer"){
+    if(!note){ msg("dcm-" + id, "err", "Reason needed", "Say why you are referring it."); return; }
+    btn("dcb-" + id, true, "Referring");
+    r = await db.rpc("discipline_escalate", { p_id:id, p_note:note });
+  } else {
+    if(a.endsWith("_warning") && !note){ msg("dcm-" + id, "err", "Write the warning", "It is what they will read and acknowledge."); return; }
+    const what = a === "no_action" ? "Close it with no further action?" : a === "filed" ? "Close and file this warning?"
+      : "Close the query and issue a " + DC_KIND[a].toLowerCase() + "? It will show at the top of their page until they acknowledge it.";
+    if(!confirm(what)) return;
+    btn("dcb-" + id, true, "Saving");
+    r = await db.rpc("discipline_close", { p_id:id, p_outcome:a, p_note:note });
+  }
+  if(r.error){ btn("dcb-" + id, false, "Confirm"); msg("dcm-" + id, "err", "Not done", r.error.message); return; }
+  toast(a === "withdraw" ? "Withdrawn." : a === "refer" ? "Referred to the CEO." : "Done.", true);
+  await DC_RELOAD();
+}
+
+function dcFillTargets(rows){
+  $("dci-target").innerHTML = '<option value="">None</option>' + (rows || []).map(t =>
+    '<option value="' + t.id + '">' + esc(t.title) + " \u00b7 " + esc(t.period || "") +
+    (t.period_end ? " to " + dcDate(t.period_end) : "") + (t.rating ? " \u00b7 " + esc(String(t.rating).replace(/_/g," ")) : "") +
+    '</option>').join("");
+}
+
+function dcToggleIssue(){
+  const f = $("dci"); f.classList.toggle("hidden");
+  if(f.classList.contains("hidden")) return;
+  ["dci-subject","dci-details","dci-expected","dci-due"].forEach(i => set(i, ""));
+  $("dci-kind").value = "query"; $("dci-msg").innerHTML = "";
+  dcTargets();
+}
+
+async function dcIssue(){
+  const email = DC_ISSUE_TO();
+  if(!email){ msg("dci-msg","err","Choose someone","Pick who this is for."); return; }
+  if(!val("dci-subject")){ msg("dci-msg","err","No subject","Give it a short subject."); return; }
+  if(!val("dci-details")){ msg("dci-msg","err","Say what happened","A query with no facts cannot be answered fairly."); return; }
+  const kind = $("dci-kind").value;
+  if(!confirm("Issue this " + DC_KIND[kind].toLowerCase() + "? It shows in red at the top of their page straight away.")) return;
+  btn("dci-btn", true, "Issuing");
+  const { error } = await db.rpc("discipline_issue", {
+    p_email: email, p_kind: kind, p_subject: val("dci-subject"), p_details: val("dci-details"),
+    p_expected: val("dci-expected"), p_target_id: $("dci-target").value ? Number($("dci-target").value) : null,
+    p_reply_due: val("dci-due") });
+  btn("dci-btn", false, "Issue");
+  if(error){ msg("dci-msg","err","Not issued", error.message); return; }
+  $("dci").classList.add("hidden");
+  toast(DC_KIND[kind] + " issued.", true);
+  await DC_RELOAD();
+}
+
+let MY_DC = [];
+const DC_RELOAD = async () => { await loadTeamDiscipline(); await loadMyDiscipline(); };
+const DC_ISSUE_TO = () => $("dci-staff").value;
+
+async function loadMyDiscipline(){
+  const { data, error } = await db.rpc("my_discipline");
+  if(error){ console.warn("Queries and warnings:", error.message); return; }
+  MY_DC = data || [];
+  paintDcBanner(); paintMyDc();
+}
+
+function paintDcBanner(){
+  const el = $("dc-banner"); if(!el) return;
+  const open = MY_DC.filter(c => c.state !== "closed");
+  el.innerHTML = open.map(c => {
+    const q = c.kind === "query", waiting = q ? !c.replied_at : !c.acknowledged_at;
+    const line = waiting
+      ? (q ? "Reply by " : "Acknowledge by ") + dcDate(c.reply_due) + (c.overdue ? " \u00b7 OVERDUE" : "")
+      : (q ? "Your reply is in. It stays here until your team lead closes it."
+           : "Acknowledged. It stays here until your team lead closes it.");
+    return '<button class="dc-banner' + (waiting && c.overdue ? " overdue" : "") + (waiting ? "" : " done") + '" onclick="go(\'dc\')">' +
+      '<span class="dc-k">' + esc((DC_KIND[c.kind] || "Query").toUpperCase()) + " FROM " + esc((c.issued_by_name || "your team lead").toUpperCase()) + '</span>' +
+      '<b>' + esc(c.subject) + '</b><span class="dc-l">' + line + '</span>' +
+      '<span class="dc-go">' + (waiting ? (q ? "Read and reply" : "Read and acknowledge") : "View") + ' &rarr;</span></button>';
+  }).join("");
+}
+
+function paintMyDc(){
+  const open = MY_DC.filter(c => c.state !== "closed"), hist = MY_DC.filter(c => c.state === "closed");
+  if($("dc-more")) $("dc-more").classList.toggle("hidden", !MY_DC.length);
+  if($("dc-open")) $("dc-open").innerHTML = open.length ? open.map(c => dcCaseHtml(c, "mine")).join("")
+    : '<p style="color:var(--faint);font-size:13px;margin-bottom:16px">Nothing open.</p>';
+  if($("dc-hist")) $("dc-hist").innerHTML = hist.length ? hist.map(c => dcCaseHtml(c, "mine")).join("")
+    : '<p style="color:var(--faint);font-size:13px">Nothing on file.</p>';
+}
+
+async function dcReply(id){
+  const text = val("dcr-" + id);
+  if(!text){ msg("dcm-" + id, "err", "Write your reply", "Say what happened, in your own words."); return; }
+  if(!confirm("Send your reply? It cannot be changed after it is sent.")) return;
+  btn("dcb-" + id, true, "Sending");
+  const { error } = await db.rpc("discipline_reply", { p_id:id, p_reply:text });
+  if(error){ btn("dcb-" + id, false, "Send my reply"); msg("dcm-" + id, "err", "Not sent", error.message); return; }
+  toast("Reply sent.", true);
+  await loadMyDiscipline();
+}
+
+async function dcAck(id){
+  if(!confirm("Acknowledge this warning? This records that you have read it.")) return;
+  btn("dcb-" + id, true, "Saving");
+  const { error } = await db.rpc("discipline_acknowledge", { p_id:id, p_comment: val("dcr-" + id) });
+  if(error){ btn("dcb-" + id, false, "I acknowledge"); msg("dcm-" + id, "err", "Not saved", error.message); return; }
+  toast("Acknowledged.", true);
+  await loadMyDiscipline();
+}
+
+// ---- for team leads ----
+async function loadTeamDiscipline(){
+  const list = $("dct-list"); if(!list) return;
+  const [team, cases] = await Promise.all([ db.from("my_team").select("email,display_name,department"), db.rpc("discipline_open_for_me") ]);
+  if(!team.error){
+    const keep = $("dci-staff").value;
+    $("dci-staff").innerHTML = '<option value="">Choose\u2026</option>' + (team.data || []).map(t =>
+      '<option value="' + esc(t.email) + '">' + esc(t.display_name) + (t.department ? " \u00b7 " + esc(t.department) : "") + '</option>').join("");
+    $("dci-staff").value = keep;
+  }
+  if(cases.error){ list.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(cases.error.message) + '</div>'; return; }
+  const rows = cases.data || [];
+  list.innerHTML = rows.length ? rows.map(c => dcCaseHtml(c, "lead")).join("")
+    : '<p style="color:var(--faint);font-size:13px">Nothing open for your team.</p>';
+}
+
+async function dcTargets(){
+  const email = $("dci-staff").value;
+  if(!email){ dcFillTargets([]); return; }
+  const { data } = await db.from("targets_i_manage").select("id,title,period,period_end,rating").eq("staff_email", email);
+  dcFillTargets(data);
 }
 
 // ============================================================
