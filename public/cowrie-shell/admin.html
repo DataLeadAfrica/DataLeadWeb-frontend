@@ -548,6 +548,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     </div>
 
     <div id="ad-money"></div>
+    <div id="ad-loans"></div>
 
     <div class="section-label">Where to</div>
     <div class="doors" id="doors"></div>
@@ -3323,6 +3324,7 @@ async function adMoney(){
   (pr.data || []).forEach(x => due.push(["Salaries, " + x.period, x.total, x.people + " people, certified"]));
   (rq.data || []).forEach(x => due.push([x.staff + ": " + (x.purpose || "Requisition"), x.remaining, "Approved, waiting for Finance"]));
   const late = (pd.data || []).filter(x => x.state === "LATE");
+  adLoans();
   box.innerHTML = '<div class="section-label">The money</div>' +
     '<div class="ad-m4">' + [["Cash, all accounts", cash], ["In, this month", m.money_in, "in"], ["Out, this month", m.money_out, "out"], [(gs.data ? gs.data.name : "Giving commitment") + " to pay", g.still]]
       .map(([k, v, c]) => '<div><span>' + esc(k) + '</span><b class="' + (c || "") + '">' + adK(v) + '</b></div>').join("") + '</div>' +
@@ -3338,6 +3340,30 @@ async function adMoney(){
         nr.data.map(x => esc(x.description || x.counterparty) + " (" + N(x.amount_ngn) + ")").join(", ") + '</div>' : '') +
       (g.still >= 1 ? '<div class="alert info"><b>' + esc(gs.data.name) + ': ' + N(g.still) + ' to pay</b>' + g.units.map(u => esc(u.name)).join(", ") + '</div>' : '') +
       (!late.length && !(nr.data || []).length && g.still < 1 ? '<p class="hint">Nothing needs attention.</p>' : '') + '</div></div>';
+}
+
+
+// staff loans waiting for the CEO or COO, on the Admin home
+window.adLoanDecide = adLoanDecide;
+async function adLoans(){
+  const box = $("ad-loans"); if(!box) return;
+  const { data, error } = await db.from("fin_loans_view").select("*");
+  if(error){ box.innerHTML = ""; return; }
+  const wait = (data || []).filter(l => l.kind === "staff" && l.status === "awaiting_approval");
+  const live = (data || []).filter(l => l.status === "active"), s = k => live.filter(l => k.includes(l.kind)).reduce((x, l) => x + Number(l.outstanding || 0), 0);
+  box.innerHTML = '<div class="panel"><h3>Loans</h3><div class="ps">We owe ' + N2(s(["bank","ceo"])) + ' (' + N2(s(["ceo"])) + ' of it to the CEO). Staff owe us ' + N2(s(["staff"])) + '.</div>' +
+    (wait.length ? wait.map(l => '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(l.party) + ' asks for a loan of ' + N2(l.principal) + '</b><span>' +
+      (l.purpose ? esc(l.purpose) + '. ' : '') + (l.repay_method === "payroll" ? N2(l.monthly_deduction) + ' a month from salary' : 'Repaid by transfer') +
+      (l.requested_by ? '. Set up by ' + esc(l.requested_by) : '') + '.</span></span>' +
+      '<button class="rowbtn" onclick="adLoanDecide(' + l.id + ',true)">Approve</button><button class="rowbtn" onclick="adLoanDecide(' + l.id + ',false)">Decline</button></div>').join("")
+      : '<p style="color:var(--faint);font-size:13px">No staff loans waiting for approval.</p>') + '</div>';
+}
+async function adLoanDecide(id, ok){
+  const note = ok ? (prompt("Note (optional), for example the repayment plan you agreed:") || "") : prompt("Why is it declined?");
+  if(!ok && !note) return;
+  const { error } = await db.rpc("fin_staff_loan_decide", { p_id:id, p_approve:ok, p_note:note });
+  if(error){ toast("Not saved. " + error.message); return; }
+  toast(ok ? "Approved. Finance can now pay it out." : "Declined."); adLoans();
 }
 
 // ============================================================

@@ -853,6 +853,12 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <div id="ps-body"></div>
     <div id="ind-body"></div>
 
+    <div class="card hidden" id="my-loans-card">
+      <h3>Your loans</h3>
+      <p class="cardsub">Loans from the company, what you have repaid, and what is left.</p>
+      <div id="my-loans"></div>
+    </div>
+
     <div class="card">
       <h3>Your pay history</h3>
       <p class="cardsub">Every change to your pay, when it took effect, and who recorded it.</p>
@@ -2716,7 +2722,20 @@ function monthOptions(sel, def){
 
 // ---------- my payslip ----------
 let PAYSLIPS = [];
+const N2L = v => "₦" + Number(v || 0).toLocaleString("en-NG", { minimumFractionDigits:2, maximumFractionDigits:2 });
+async function loadMyLoans(){
+  const { data, error } = await db.from("fin_my_loans").select("*");
+  if(error || !data || !data.length){ $("my-loans-card").classList.add("hidden"); return; }
+  $("my-loans-card").classList.remove("hidden");
+  const st = { awaiting_approval:"Waiting for approval", approved:"Approved, not yet paid to you", declined:"Declined", active:"Being repaid", repaid:"Repaid in full" };
+  $("my-loans").innerHTML = data.map(l => '<div style="padding:10px 0;border-top:1px solid var(--line)"><b>' + N2L(l.principal) + '</b> ' +
+    '<span style="color:var(--muted);font-size:13px">' + esc(st[l.status] || l.status) + (l.purpose ? ". " + esc(l.purpose) : "") + '</span>' +
+    (l.status === "active" || l.status === "repaid" ? '<div style="font-size:13px;margin-top:3px">Repaid ' + N2L(l.repaid) + '. Left to repay <b>' + N2L(l.outstanding) + '</b>.' +
+      (l.repay_method === "payroll" && l.status === "active" ? ' ' + N2L(l.monthly_deduction) + ' comes off your salary each month.' : '') + '</div>' : '') +
+    (l.status === "declined" && l.decision_note ? '<div style="font-size:13px;color:var(--muted)">' + esc(l.decision_note) + '</div>' : '') + '</div>').join("");
+}
 async function loadMyFinance(){
+  loadMyLoans();
   const { data, error } = await db.from("my_payslip").select("*");
   if(error){ $("ps-body").innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return; }
   PAYSLIPS = data || [];

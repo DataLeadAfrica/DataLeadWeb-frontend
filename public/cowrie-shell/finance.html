@@ -623,6 +623,7 @@ td.lg-pos,td.lg-neg{margin:0}
       <span class="grow"></span><button class="btn-primary" id="ie-dl" onclick="ieDownload()">Download Excel</button>
     </div>
     <div class="panel" style="overflow-x:auto"><table class="lg-table" id="ie-table"></table></div>
+    <div class="panel" style="overflow-x:auto"><h3>Loans and capital</h3><div class="ps">Money borrowed, repaid or put in by the CEO, and staff loans. Kept out of the figures above.</div><table class="lg-table" id="ie-fin"></table></div>
     <div class="panel" style="overflow-x:auto"><h3>By income stream</h3><div class="ps">What each stream brought in and spent in this period.</div><table class="lg-table" id="ie-streams"></table></div>
   </section>
 
@@ -647,6 +648,46 @@ td.lg-pos,td.lg-neg{margin:0}
     <div class="hint" style="margin-bottom:6px">The figures above are saved with the payment, so anyone can see later how it was worked out.</div>
     <div id="gv-pay-msg"></div>
     <div class="lg-foot"><button onclick="lgClose()">Not yet</button><button class="btn-primary" id="gv-pay-go" onclick="gvPaySave()">Record payment</button></div>
+  </div>
+
+  <!-- ============ LOANS AND CAPITAL ============ -->
+  <section id="v-loans" class="hidden">
+    <button class="back" onclick="go('hub')">&larr; Finance</button>
+    <h1 style="font-size:27px;margin-bottom:4px">Loans and capital</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">None of this is income or cost, so it stays out of the reports and the giving commitment. Interest paid on a loan is a cost.</p>
+    <div class="lg-tot" id="ln-sum" style="grid-template-columns:repeat(3,1fr)"></div>
+    <div class="lg-ctrl" style="margin-bottom:16px">
+      <button onclick="lnOpen('bank')">Loan received from a bank</button>
+      <button onclick="lnOpen('ceo')">Money from the CEO</button>
+      <button onclick="lnOpen('personal')">A bill the CEO paid personally</button>
+      <button onclick="lnOpen('staff')">Lend to a staff member</button>
+    </div>
+    <div id="ln-body"><p class="hint">Loading&hellip;</p></div>
+  </section>
+
+  <div class="lg-sheet" id="ln-sheet" role="dialog" aria-modal="true" aria-labelledby="ln-h">
+    <div class="lg-grab"></div><h3 id="ln-h">Loan</h3><dl class="lg-kv" id="ln-kv"></dl>
+    <div class="fld" id="ln-ceo-type-w"><label>What is it?</label><select id="ln-ceo-type"><option value="loan">A loan, to be repaid (interest-free)</option><option value="capital">Capital, put in for good, not repaid</option></select></div>
+    <div class="fld" id="ln-party-w"><label>Which bank lent it</label><input id="ln-party" placeholder="Providus Bank"></div>
+    <div class="fld" id="ln-staff-w"><label>Staff member</label><select id="ln-staff"></select></div>
+    <div class="grid2">
+      <div class="fld" id="ln-amt-w"><label id="ln-amt-l">Amount</label><input id="ln-amt" inputmode="decimal"></div>
+      <div class="fld" id="ln-int-w"><label>Interest paid with it</label><input id="ln-int" inputmode="decimal" placeholder="0"></div>
+      <div class="fld" id="ln-rate-w"><label>Interest rate, % a year</label><input id="ln-rate" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div class="grid2" id="ln-method-w"><div class="fld"><label>Repaid by</label><select id="ln-method"><option value="payroll">Monthly deduction from salary</option><option value="transfer">Transfer back</option></select></div>
+      <div class="fld" id="ln-monthly-w"><label>Monthly deduction</label><input id="ln-monthly" inputmode="decimal"></div></div>
+    <div class="fld" id="ln-what-w"><label>What the bill was for</label><input id="ln-what" list="lg-for-list" placeholder="Internet and data"></div>
+    <div class="fld" id="ln-to-w"><label>Who the CEO paid</label><input id="ln-to" placeholder="MTN Business"></div>
+    <div class="fld" id="ln-item-w"><label>Belongs to</label><select id="ln-item"></select></div>
+    <div class="fld" id="ln-acc-w"><label>Our account</label><div class="lg-chips" id="ln-acc"></div></div>
+    <div class="grid2">
+      <div class="fld" id="ln-date-w"><label>Date</label><input id="ln-date" type="date"></div>
+      <div class="fld" id="ln-ref-w"><label>Bank reference</label><input id="ln-ref"></div>
+    </div>
+    <div class="fld" id="ln-purpose-w"><label>What it is for (optional)</label><input id="ln-purpose" placeholder="To stabilise cash in October"></div>
+    <div id="ln-msg"></div>
+    <div class="lg-foot"><button onclick="lgClose()">Cancel</button><button class="btn-primary" id="ln-scrim-btn" onclick="lnSave()">Record</button></div>
   </div>
 
   <div class="lg-scrim" id="lg-scrim" onclick="lgClose()"></div>
@@ -843,7 +884,7 @@ async function enterApp(){
   loadHub();
 }
 
-const VIEWS = ["hub","payroll","reqs","cash","paye","projects","bank","money","setup","activities","report"];
+const VIEWS = ["hub","payroll","reqs","cash","paye","projects","bank","money","setup","activities","report","loans"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -858,6 +899,7 @@ function go(v){
   if(v === "setup")    lgSetup();
   if(v === "activities") gvShow();
   if(v === "report")   ieShow();
+  if(v === "loans")    lnShow();
 }
 
 // ============================================================
@@ -911,6 +953,8 @@ async function loadHub(){
       ic:'<path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/>' },
     { v:"report", t:"Income and expenditure", s:"Any period against the one before, by category and income stream. Download it.",
       ic:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>' },
+    { v:"loans", t:"Loans and capital", s:"What we owe a bank or the CEO, money the CEO put in, and loans to staff.",
+      ic:'<path d="M3 10h18M5 10V20M19 10V20M9 10v10M15 10v10M2 20h20M12 3l9 5H3z"/>' },
     { v:"setup", t:"Accounts and setup", s:"Our bank accounts, exchange rates, income streams and their items.",
       ic:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>' },
   ];
@@ -1479,7 +1523,7 @@ let LGF = { kind:"out", acct:null, to:null, cat:null };
 let LGS = { per:"month", grp:"day", acct:"all", item:"all", rows:[] };
 
 const lgMoney = (v, cur, dp) => (LG_SYM[cur || "NGN"]) + Number(v || 0).toLocaleString("en-NG",
-  { minimumFractionDigits: dp ? 2 : 0, maximumFractionDigits: 2 });
+  { minimumFractionDigits: 2, maximumFractionDigits: 2 });   // always to the kobo
 const lgK = v => Math.abs(Number(v) % 1) > 0.0001;
 const lgAmt = id => Number(String(val(id) || "").replace(/,/g, ""));
 const lgAcc = id => LG.accounts.find(a => String(a.id) === String(id));
@@ -1512,10 +1556,21 @@ async function lgLoadRef(){
 }
 
 // ---------- on the Finance home: where the money is, and this month ----------
+let LG_DEBT = null;
+function lgDebtLine(){
+  if(!LG_DEBT) return "";
+  const parts = [];
+  if(LG_DEBT.owe >= 0.005) parts.push('We owe ' + lgMoney(LG_DEBT.owe) + (LG_DEBT.ceo >= 0.005 ? ' (' + lgMoney(LG_DEBT.ceo) + ' to the CEO)' : ''));
+  if(LG_DEBT.staff >= 0.005) parts.push('Staff owe us ' + lgMoney(LG_DEBT.staff));
+  return parts.length ? '<div class="lg-pk" style="margin:-6px 0 12px"><a href="#" onclick="go(\'loans\');return false">' + parts.join(". ") + '.</a></div>' : "";
+}
 async function lgHub(){
+  { const r = await db.from("fin_loans_view").select("kind,status,outstanding");
+    if(!r.error){ const live = (r.data || []).filter(l => l.status === "active"), s = k => live.filter(l => k.includes(l.kind)).reduce((a, l) => a + Number(l.outstanding || 0), 0);
+      LG_DEBT = { owe: s(["bank","ceo"]), ceo: s(["ceo"]), staff: s(["staff"]) }; } }
   if(!(await lgLoadRef())) return;
   const box = $("lg-hub"); if(!box) return;
-  const live = LG.accounts.filter(a => a.active);
+  const live = LG.accounts.filter(a => a.active && !a.off_bank);
   if(!live.length){
     box.innerHTML = '<div class="alert info" style="margin:0 0 20px"><b>Set up our bank accounts first</b>' +
       'Add each account with its balance on the day records start. Then money in and out can be recorded against it. ' +
@@ -1528,7 +1583,7 @@ async function lgHub(){
   const m = (Array.isArray(sm) ? sm[0] : sm) || {};
   box.innerHTML = '<div class="lg-pos"><div class="lg-pk">We have, across all accounts' +
       (live.some(a => a.currency !== "NGN") ? ', in naira terms' : '') + '</div>' +
-    '<div class="lg-big">' + N(tot) + '</div>' +
+    '<div class="lg-big">' + lgMoney(tot) + '</div>' + lgDebtLine() +
     '<div class="lg-accts">' + live.map(a => '<div><span>' + esc(a.bank) + ', ' + esc(a.name) + '</span><b>' +
       lgMoney(Math.round(Number(a.balance) * 100) / 100, a.currency) + '</b>' +
       (a.currency !== "NGN" ? '<em>\u2248 ' + K(a.balance_ngn) + '</em>' : '') + '</div>').join("") + '</div></div>' +
@@ -1551,7 +1606,7 @@ function lgChips(el, list, sel, onPick){
   $(el).innerHTML = list.map(([v, lab]) => '<button type="button" aria-pressed="' + (String(v) === String(sel)) + '" data-v="' + esc(v) + '">' + esc(lab) + '</button>').join("");
   $(el).querySelectorAll("button").forEach(b => b.onclick = () => { onPick(b.dataset.v); lgChips(el, list, b.dataset.v, onPick); });
 }
-const lgAccOpts = except => LG.accounts.filter(a => a.active && String(a.id) !== String(except))
+const lgAccOpts = except => LG.accounts.filter(a => a.active && !a.off_bank && String(a.id) !== String(except))
   .map(a => [a.id, lgShort(a) + "  " + lgMoney(Math.round(Number(a.balance)), a.currency)]);
 function lgItemOptions(kind, sel){
   return beOptions(kind, sel, LG.streams, LG.items.filter(i => i.state === "active"));
@@ -1592,13 +1647,13 @@ async function lgNewSave(){
 
 async function lgOpen(kind){
   if(!LG.loaded && !(await lgLoadRef())) return;
-  if(!LG.accounts.some(a => a.active)){ toast("Add our bank accounts first, under Accounts and setup."); go("setup"); return; }
+  if(!LG.accounts.some(a => a.active && !a.off_bank)){ toast("Add our bank accounts first, under Accounts and setup."); go("setup"); return; }
   ["lg-amt","lg-who","lg-desc","lg-ref","lg-pacct","lg-toamt","lg-rate"].forEach(i => set(i, ""));
   $("lg-rate").dataset.touched = ""; set("lg-pbank", ""); set("lg-date", iso(new Date()));
   $("lg-file").value = ""; $("lg-msg").innerHTML = ""; $("lg-dup").innerHTML = "";
   const remember = localStorageGet("lg-last-" + kind);
-  LGF.acct = lgAcc(remember) && lgAcc(remember).active ? remember : LG.accounts.find(a => a.active).id;
-  LGF.to = (LG.accounts.find(a => a.active && String(a.id) !== String(LGF.acct)) || {}).id || null;
+  LGF.acct = lgAcc(remember) && lgAcc(remember).active && !lgAcc(remember).off_bank ? remember : LG.accounts.find(a => a.active && !a.off_bank).id;
+  LGF.to = (LG.accounts.find(a => a.active && !a.off_bank && String(a.id) !== String(LGF.acct)) || {}).id || null;
   lgKind(kind);
   $("lg-scrim").classList.add("open"); $("lg-sheet").classList.add("open");
   setTimeout(() => $("lg-amt").focus(), 200);
@@ -1842,7 +1897,8 @@ function lgChipsFor(x){
   const src = { requisition:"from a requisition", payroll:"from payroll", paye:"from PAYE", import:"imported", giving:"giving" }[x.source];
   return (src ? '<span class="lg-chip auto">' + src + '</span>' : '') + (x.kind === "transfer" ? '<span class="lg-chip">transfer</span>' : '') +
     (x.voided_at ? '<span class="lg-chip">voided</span>' : '') +
-    (!x.voided_at && x.kind === "out" && ["manual","import"].includes(x.source) && !x.has_receipt && Number(x.amount_ngn) > LG.threshold ? '<span class="lg-chip warn">no receipt</span>' : '');
+    (x.financing ? '<span class="lg-chip">loan or capital</span>' : '') + (x.off_bank ? '<span class="lg-chip auto">paid personally by the CEO</span>' : '') +
+    (!x.voided_at && x.kind === "out" && !x.financing && !x.off_bank && ["manual","import"].includes(x.source) && !x.has_receipt && Number(x.amount_ngn) > LG.threshold ? '<span class="lg-chip warn">no receipt</span>' : '');
 }
 
 // ---------- one line ----------
@@ -2090,6 +2146,10 @@ async function lgToPay(){
       esc(GV_BASES[gs.data.basis][0].toLowerCase()) + (g.units.length ? ": " + g.units.map(u => esc(u.name)).join(", ") : "") + '</span></span>' +
       '<span class="amt">' + N(g.still) + '</span><button class="rowbtn" onclick="go(\'activities\')">Review</button></div>');
   }
+  { const sl = await db.from("fin_loans_view").select("*").eq("kind", "staff").eq("status", "approved");
+    (sl.data || []).forEach(x => rows.push('<div class="qrow"><span class="t" style="flex:1"><b>Staff loan: ' + esc(x.party) + '</b><span>Approved' +
+      (x.approved_by ? ' by ' + esc(x.approved_by) : '') + '. ' + (x.repay_method === "payroll" ? lgMoney(x.monthly_deduction) + ' a month from salary' : 'Repaid by transfer') +
+      '</span></span><span class="amt">' + lgMoney(x.principal) + '</span><button class="btn-primary rowbtn" onclick="go(\'loans\')">Pay out</button></div>')); }
   box.innerHTML = rows.length ? '<div class="section-label">To pay</div><div class="panel" style="padding:6px 20px">' + rows.join("") + '</div>' : "";
 }
 let LGP_CACHE = { reqs:[], payroll:[], paye:[] };
@@ -2262,14 +2322,15 @@ function ieRange(per){
 async function ieShow(per){
   if(per){ IE.per = per; document.querySelectorAll("#ie-per button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === per)); $("ie-custom").classList.toggle("hidden", per !== "custom"); }
   const R = ieRange(IE.per);
-  const [c, p, gs] = await Promise.all([ db.from("fin_ledger").select("kind,category,amount_ngn,stream,item_name,voided_at,occurred_on").gte("occurred_on", R.cur[0]).lte("occurred_on", R.cur[1]).is("voided_at", null),
-    db.from("fin_ledger").select("kind,category,amount_ngn,stream,voided_at").gte("occurred_on", R.prev[0]).lte("occurred_on", R.prev[1]).is("voided_at", null),
+  const [c, p, gs] = await Promise.all([ db.from("fin_ledger").select("kind,category,amount_ngn,stream,item_name,voided_at,occurred_on,financing").gte("occurred_on", R.cur[0]).lte("occurred_on", R.cur[1]).is("voided_at", null),
+    db.from("fin_ledger").select("kind,category,amount_ngn,stream,voided_at,financing").gte("occurred_on", R.prev[0]).lte("occurred_on", R.prev[1]).is("voided_at", null),
     db.from("fin_giving_settings").select("*").maybeSingle() ]);
   if(oops("The report", c.error) || oops("The comparison", p.error)) return;
   const gname = (gs.data && gs.data.name) || "Giving commitment";
   const agg = (rows, kind) => { const o = {}; rows.filter(x => x.kind === kind && x.category !== "Giving").forEach(x => o[x.category] = (o[x.category] || 0) + Number(x.amount_ngn)); return o; };
   const sum = o => Object.values(o).reduce((s, v) => s + v, 0);
-  const cur = c.data || [], prv = p.data || [];
+  const curAll = c.data || [], cur = curAll.filter(x => !x.financing), prv = (p.data || []).filter(x => !x.financing);
+  const fin = {}; curAll.filter(x => x.financing).forEach(x => fin[x.category] = (fin[x.category] || 0) + Number(x.amount_ngn));
   const inc = agg(cur, "in"), exp = agg(cur, "out"), pinc = agg(prv, "in"), pexp = agg(prv, "out");
   const give = cur.filter(x => x.category === "Giving").reduce((s, x) => s + Number(x.amount_ngn), 0);
   const pgive = prv.filter(x => x.category === "Giving").reduce((s, x) => s + Number(x.amount_ngn), 0);
@@ -2291,7 +2352,10 @@ async function ieShow(per){
   $("ie-streams").innerHTML = '<thead><tr><th>Income stream</th><th class="n">In</th><th class="n">Out</th><th class="n">Net</th></tr></thead><tbody>' +
     (Object.keys(bs).map(s => '<tr><td>' + esc(s) + '</td><td class="n lg-pos">' + N(bs[s].i) + '</td><td class="n lg-neg">' + N(bs[s].o) + '</td><td class="n">' + N(bs[s].i - bs[s].o) + '</td></tr>').join("") ||
      '<tr><td colspan="4" class="hint">Nothing recorded for this period.</td></tr>') + '</tbody>';
-  IE.data.bs = bs;
+  IE.data.bs = bs; IE.data.fin = fin;
+  $("ie-fin").innerHTML = Object.keys(fin).length ? '<thead><tr><th>Loans and capital, not income or cost</th><th class="n">' + esc(R.label) + '</th></tr></thead><tbody>' +
+    Object.keys(fin).map(k => '<tr><td>' + esc(k) + '</td><td class="n">' + N2(fin[k]) + '</td></tr>').join("") + '</tbody>'
+    : '<tbody><tr><td class="hint">No loans or capital moved in this period.</td></tr></tbody>';
 }
 async function ieDownload(){
   const D = IE.data; if(!D){ toast("Nothing to download yet."); return; }
@@ -2354,6 +2418,121 @@ $("lg-item").addEventListener("change", e => {
   $("lg-new-stream").innerHTML = LG.streams.filter(s => LGF.kind === "out" || !s.cost_only).map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join("");
   set("lg-new-name", ""); $("lg-new-msg").innerHTML = ""; $("lg-new").classList.remove("hidden"); $("lg-new-name").focus();
 });
+// ============================================================
+// LOANS AND CAPITAL
+// Money borrowed (a bank, the CEO), capital from the CEO, bills the CEO
+// paid from his own pocket, and loans to staff. None of it is income or
+// cost, so the reports and the giving commitment leave it out. Interest
+// paid on a loan is a cost. Staff loans need the CEO or COO to approve.
+// ============================================================
+window.lnShow = lnShow; window.lnOpen = lnOpen; window.lnSave = lnSave; window.lnDecide = lnDecide;
+let LN = { loans:[], mode:null, loan:null, acct:null };
+const LN_IS_CEO = () => !!(ME && (ME.roles || []).includes("super_admin"));
+async function lnLoad(){
+  const { data, error } = await db.from("fin_loans_view").select("*");
+  if(error){ console.warn("loans:", error.message); LN.loans = []; return false; }
+  LN.loans = data || []; return true;
+}
+function lnTotals(){
+  const live = LN.loans.filter(l => l.status === "active");
+  const sum = f => live.filter(f).reduce((s, l) => s + Number(l.outstanding || 0), 0);
+  return { bank: sum(l => l.kind === "bank"), ceo: sum(l => l.kind === "ceo"), staff: sum(l => l.kind === "staff") };
+}
+async function lnShow(){
+  if(!LG.loaded) await lgLoadRef();
+  if(!(await lnLoad())){ $("ln-body").innerHTML = '<div class="alert err"><b>Could not load</b>Loans are not set up yet.</div>'; return; }
+  const t = lnTotals();
+  $("ln-sum").innerHTML = [["We owe banks", t.bank, "out"], ["We owe the CEO", t.ceo, "out"], ["Staff owe us", t.staff, "in"]]
+    .map(([k, v, c]) => '<div><div class="k">' + k + '</div><div class="v ' + c + '">' + lgMoney(v) + '</div></div>').join("");
+  const row = l => {
+    const st = { awaiting_approval:'<span class="tag wait">waiting for the CEO or COO</span>', approved:'<span class="tag wait">approved, not yet paid out</span>',
+                 declined:'<span class="tag calm">declined</span>', active:'', repaid:'<span class="tag ok">repaid</span>' }[l.status] || "";
+    const what = l.kind === "staff"
+      ? (l.repay_method === "payroll" ? lgMoney(l.monthly_deduction) + " a month from salary" : "Repaid by transfer")
+      : (Number(l.interest_rate) ? l.interest_rate + "% interest" : "Interest-free");
+    let acts = "";
+    if(l.kind === "staff" && l.status === "awaiting_approval" && LN_IS_CEO())
+      acts = '<button class="rowbtn" onclick="lnDecide(' + l.id + ',true)">Approve</button><button class="rowbtn" onclick="lnDecide(' + l.id + ',false)">Decline</button>';
+    if(l.kind === "staff" && l.status === "approved") acts = '<button class="btn-primary rowbtn" onclick="lnOpen(\'staffpay\',' + l.id + ')">Pay out</button>';
+    if(l.kind === "staff" && l.status === "active") acts = '<button class="rowbtn" onclick="lnOpen(\'staffback\',' + l.id + ')">Record repayment</button>';
+    if(l.kind !== "staff" && l.status === "active") acts = '<button class="rowbtn" onclick="lnOpen(\'repay\',' + l.id + ')">Repay</button>';
+    return '<div class="qrow"><span class="t" style="flex:1"><b>' + esc(l.party) + st + '</b><span>' +
+      (l.purpose ? esc(l.purpose) + ". " : "") + esc(what) + ". " +
+      (l.kind === "staff" && l.status !== "active" && l.status !== "repaid" ? "Asked for " + lgMoney(l.principal) + (l.requested_by ? " by " + esc(l.requested_by) : "") + "."
+        : "Borrowed " + lgMoney(l.advanced) + ", repaid " + lgMoney(l.repaid) + (Number(l.interest_paid) ? ", interest paid " + lgMoney(l.interest_paid) : "") + ".") +
+      (l.decision_note ? " " + esc(l.decision_note) : "") + '</span></span>' +
+      (l.status === "active" ? '<span class="amt">' + lgMoney(l.outstanding) + '</span>' : '') + acts + '</div>';
+  };
+  const owe = LN.loans.filter(l => l.kind !== "staff"), staff = LN.loans.filter(l => l.kind === "staff");
+  $("ln-body").innerHTML =
+    '<div class="panel"><h3>What we owe</h3><div class="ps">Money a bank or the CEO has lent us, including bills the CEO paid personally.</div>' +
+      (owe.length ? owe.map(row).join("") : '<p class="hint">Nothing borrowed.</p>') + '</div>' +
+    '<div class="panel"><h3>Loans to staff</h3><div class="ps">The CEO or COO approves each one before it is paid out.' + (LN_IS_CEO() ? '' : ' The COO approves from the Admin home.') + '</div>' +
+      (staff.length ? staff.map(row).join("") : '<p class="hint">No staff loans.</p>') + '</div>';
+}
+async function lnDecide(id, ok){
+  const note = ok ? (prompt("Note (optional), for example the repayment plan you agreed:") || "") : prompt("Why is it declined?");
+  if(!ok && !note) return;
+  const { error } = await db.rpc("fin_staff_loan_decide", { p_id:id, p_approve:ok, p_note:note });
+  if(error){ toast("Not saved. " + error.message); return; }
+  toast(ok ? "Approved. Finance can now pay it out." : "Declined.", true); lnShow();
+}
+function lnOpen(mode, id){
+  LN.mode = mode; LN.loan = id ? LN.loans.find(l => l.id === id) : null;
+  const naira = LG.accounts.filter(a => a.active && !a.off_bank && a.currency === "NGN");
+  const any = LG.accounts.filter(a => a.active && !a.off_bank);
+  const T = { bank:"Loan received from a bank", ceo:"Money from the CEO", personal:"A bill the CEO paid personally", staff:"Lend to a staff member",
+              staffpay:"Pay out a staff loan", staffback:"Staff loan repayment", repay:"Repay a loan" };
+  $("ln-h").textContent = T[mode];
+  const show = (id, on) => $(id).classList.toggle("hidden", !on);
+  show("ln-ceo-type-w", mode === "ceo"); show("ln-party-w", mode === "bank"); show("ln-rate-w", mode === "bank");
+  show("ln-staff-w", mode === "staff"); show("ln-method-w", mode === "staff"); show("ln-monthly-w", mode === "staff" && val("ln-method") !== "transfer");
+  show("ln-what-w", mode === "personal"); show("ln-to-w", mode === "personal"); show("ln-item-w", mode === "personal");
+  show("ln-int-w", mode === "repay" && LN.loan && LN.loan.kind === "bank");
+  show("ln-acc-w", mode !== "staff" && mode !== "personal"); show("ln-amt-w", mode !== "staffpay"); show("ln-date-w", mode !== "staff");
+  show("ln-purpose-w", ["bank","ceo","staff"].includes(mode)); show("ln-ref-w", mode !== "staff" && mode !== "personal");
+  ["ln-amt","ln-party","ln-rate","ln-monthly","ln-what","ln-to","ln-purpose","ln-ref","ln-int"].forEach(i => set(i, ""));
+  set("ln-date", iso(new Date())); $("ln-msg").innerHTML = "";
+  $("ln-amt-l").textContent = mode === "repay" ? (LN.loan && LN.loan.kind === "bank" ? "Principal repaid" : "Amount repaid") : "Amount";
+  $("ln-kv").innerHTML = LN.loan ? [["Who", LN.loan.party], ["Owed now", lgMoney(LN.loan.outstanding)]]
+      .concat(mode === "staffpay" ? [["Amount", lgMoney(LN.loan.principal)], ["Repaid by", LN.loan.repay_method === "payroll" ? lgMoney(LN.loan.monthly_deduction) + " a month from salary" : "Transfer"]] : [])
+      .map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join("") : "";
+  if(mode === "staff") db.from("admin_staff_list").select("full_name,email,employment_status").order("full_name").then(r => {
+    $("ln-staff").innerHTML = '<option value="">Choose\u2026</option>' + (r.data || []).filter(x => !["exited","terminated","resigned"].includes(x.employment_status))
+      .map(x => '<option value="' + esc(x.email) + '">' + esc(x.full_name) + '</option>').join(""); });
+  if(mode === "personal") $("ln-item").innerHTML = lgItemOptions("out", "").replace('<option value="__new">+ Add a new item\u2026</option>', "");
+  const list = (mode === "bank" || mode === "ceo") ? any : naira;
+  LN.acct = (list[0] || {}).id;
+  lgChips("ln-acc", list.map(a => [a.id, lgShort(a)]), LN.acct, v => LN.acct = v);
+  $("ln-scrim-btn").textContent = mode === "staff" ? "Send for approval" : "Record";
+  $("lg-scrim").classList.add("open"); $("ln-sheet").classList.add("open");
+}
+async function lnSave(){
+  const m = LN.mode, amt = lgAmt("ln-amt"), on = val("ln-date"), ref = val("ln-ref"), acct = Number(LN.acct);
+  let r;
+  btn("ln-scrim-btn", true, "Saving");
+  if(m === "bank") r = await db.rpc("fin_loan_receive", { p_kind:"bank", p_party:val("ln-party"), p_account:acct, p_amount:amt, p_occurred_on:on, p_reference:ref, p_interest_rate:Number(val("ln-rate") || 0), p_purpose:val("ln-purpose"), p_loan_id:null });
+  else if(m === "ceo"){
+    r = $("ln-ceo-type").value === "capital"
+      ? await db.rpc("fin_ceo_capital", { p_account:acct, p_amount:amt, p_occurred_on:on, p_reference:ref, p_note:val("ln-purpose") })
+      : await db.rpc("fin_loan_receive", { p_kind:"ceo", p_party:"CEO", p_account:acct, p_amount:amt, p_occurred_on:on, p_reference:ref, p_interest_rate:0, p_purpose:val("ln-purpose"), p_loan_id:null });
+  }
+  else if(m === "personal"){
+    let proj = null; try { proj = await beResolve($("ln-item").value); } catch(e){ r = { error:e }; }
+    if(!r) r = await db.rpc("fin_ceo_paid_personally", { p_amount:amt, p_occurred_on:on, p_what_for:val("ln-what"), p_paid_to:val("ln-to"), p_project:proj, p_description:null, p_evidence_path:null });
+  }
+  else if(m === "staff") r = await db.rpc("fin_staff_loan_request", { p_staff_email:$("ln-staff").value, p_amount:amt, p_method:$("ln-method").value, p_monthly: lgAmt("ln-monthly") || null, p_purpose:val("ln-purpose") });
+  else if(m === "staffpay") r = await db.rpc("fin_staff_loan_pay", { p_id:LN.loan.id, p_account:acct, p_occurred_on:on, p_reference:ref });
+  else if(m === "staffback") r = await db.rpc("fin_staff_loan_repaid", { p_id:LN.loan.id, p_account:acct, p_amount:amt, p_occurred_on:on, p_reference:ref });
+  else if(m === "repay") r = await db.rpc("fin_loan_repay", { p_loan_id:LN.loan.id, p_account:acct, p_principal:amt || 0, p_interest:lgAmt("ln-int") || 0, p_occurred_on:on, p_reference:ref });
+  btn("ln-scrim-btn", false, m === "staff" ? "Send for approval" : "Record");
+  if(r.error){ msg("ln-msg","err","Not recorded", r.error.message); return; }
+  toast(m === "staff" ? "Sent to the CEO and COO for approval." : "Recorded.", true);
+  lgClose(); await lgLoadRef(); lnShow();
+}
+document.addEventListener("change", e => { if(e.target && e.target.id === "ln-method") $("ln-monthly-w").classList.toggle("hidden", e.target.value === "transfer"); });
+["ln-amt","ln-monthly","ln-int"].forEach(i => { const el = document.getElementById(i); if(el) el.addEventListener("input", lgFmt); });
+
 lgWire(); lgStatementWire();
 ["lg-na-open","lg-ea-open","lg-rt-rate"].forEach(i => $(i).addEventListener("input", lgFmt));
 
