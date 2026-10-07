@@ -15,52 +15,34 @@ Nothing in this folder contains a key, a token, a password or a project URL.
 
 | # | File | What it does | Status |
 | --- | --- | --- | --- |
-| 01 | `01_core.sql` | Who people are. Creates the `lms_role` type, the `lms_profiles` table that hangs off Supabase Auth, the `lms_admin_actions` audit table, the three role helper functions and the `lms_touch` trigger function. | Run |
-| 02 | `02_catalogue.sql` | What there is to learn. Courses, modules, lessons, learning paths, and the one row `lms_settings` table that holds the landing page words and the welcome video. | Run |
+| 01 | `01_core.sql` | Who people are. The `lms_role` type, the `lms_profiles` table that hangs off Supabase Auth, the `lms_admin_actions` audit table, the three role helpers and the `lms_touch` trigger function. | Run |
+| 02 | `02_catalogue.sql` | What there is to learn. Courses, modules, lessons, learning paths, and the one row `lms_settings` table holding the landing page words and the welcome video. | Run |
 | 03 | `03_access.sql` | Who may open what. The `lms_entitlements` table that decides all access, plus the Paystack order and webhook event tables. | Run |
-| 04 | `04_learning.sql` | Progress and questions. Lesson progress, the watch buckets behind the non skippable rule, quizzes, questions, options and attempts. | Run |
-| 05 | `05_functions.sql` | The rules. Everything a learner could cheat by editing their browser lives here as a `SECURITY DEFINER` function: access checks, watch recording, unlocking, marking, publishing. | Run |
+| 04 | `04_learning.sql` | Progress and questions. Lesson progress, the watch slices behind the non skippable rule, quizzes, questions, options and attempts. | Run |
+| 05 | `05_functions.sql` | The rules. Everything a learner could cheat by editing their browser, as `SECURITY DEFINER` functions. | Run |
 | 06 | `06_policies.sql` | The locks. Row level security on every table, and the sign up trigger on `auth.users`. | Run |
-| 07 | `07_quizzes.sql` | Two kinds of questions. A lesson check that reports counts only, and a module quiz with a pass mark. Replaces the marking function from 05. | Run |
-| 10 | `not-yet-run/10_roles_and_access.sql` | Renames the staff role to facilitator and makes access follow two email lists. | **NOT YET RUN** |
+| 07 | `07_quizzes.sql` | Two kinds of questions. A lesson check reporting counts only, and a module quiz with a pass mark. | Run |
+| 10 | `10_roles_and_access.sql` | Renames the staff role to facilitator, makes access follow two email lists, adds the nightly access sweep, adds seven guards so only the administrator publishes, makes question imports retire instead of delete, tightens table permissions. | **Run 6 October 2026. `10_verify.sql` answered yes on all 20 rows** |
+| 11 | `not-yet-run/11_housekeeping.sql` | Quiz safety and storage housekeeping. | **NOT YET RUN** |
 
-There is no 08 or 09 in this folder. Both were written and lost before being delivered: 08 was
-storage housekeeping, 09 was an archive to Google Sheets that was deliberately deferred. See
-`docs/lms/STATUS.md`.
+There is no 08 or 09. Both were written and lost before being delivered: 08 was storage
+housekeeping, which file 11 now does; 09 was an archive to Google Sheets, deliberately
+deferred and no longer needed. See `docs/lms/STATUS.md`.
 
-## The not-yet-run folder
+## The verify and undo files
 
-Three files sit in `not-yet-run/` because they have not been applied to the live database. They
-are tested but unrun. Do not merge them into the numbered list above until they have actually
-been run.
+Each numbered file ships with two companions. `10_verify.sql` and `11_verify.sql` answer yes
+or no on every change the file was supposed to make, including checks on the data itself, not
+just on the code. `10_undo.sql` and `11_undo.sql` put the database back.
 
-| File | What it does |
-| --- | --- |
-| `10_roles_and_access.sql` | Renames the `uploader` role to `facilitator`, repairs the function bodies that renaming breaks, creates the `lms_facilitators` email list, and adds `lms_sync_my_access()` which is called once after each sign in. |
-| `10_verify.sql` | Run straight after. Returns ten rows that should all answer yes. |
-| `10_undo.sql` | Puts the database back if something goes wrong. Afterwards re-run 05, 06 and 07. |
+Read the top of `11_undo.sql` before using it. There is one thing it deliberately does not
+reverse, and the reason is that reversing it would lock learners out of lessons they have
+already passed.
 
-File 10 has been tested against all seven files above on a real PostgreSQL 16 database:
-43 tests as real signed in and signed out roles, all passing, and holding through an
-apply, undo, apply round trip.
+## The tests folder
 
-**One known fault in file 10, left in place on purpose.** Its Step 1 comment says the rename
-breaks `lms_lesson_is_open`, "which decides whether anyone can open a lesson at all". That is
-wrong: the real `lms_lesson_is_open` does not mention the role. The function the rename actually
-breaks is `lms_is_staff`, which the catalogue read policies call. The comment changes no
-behaviour and the repair step handles the real case correctly, but the sentence should be
-corrected before anybody relies on it.
-
-## schema-snapshot.md
-
-A readable record of what the live database actually contained on 6 October 2026: every table
-with its columns, types, defaults and nullability, every enum, index, policy, privilege and
-trigger, the one view, and the Academy function bodies. Taken by a read only query, not written
-by hand.
-
-Files 01 to 07 were checked against that snapshot object by object. Every table, enum, index,
-policy, privilege, trigger, function and the view match. The files in this folder are the live
-database.
+`tests/` holds the test suites and the storage measurement, for a local copy of PostgreSQL
+only. Nothing in it belongs on Supabase. See its own README.
 
 ## How to run one of these files
 
@@ -70,16 +52,16 @@ database.
 4. Press Run.
 5. Read the notices. A red error means nothing was changed; send it on rather than trying the
    next file.
+6. Run the matching verify file and read every row.
 
-Run them in number order on a fresh database. On a database that already has them, they are
-safe to run again: every table uses `create table if not exists`, every function uses
-`create or replace`, and every policy is dropped before being created.
+They are safe to run again: every table uses `create table if not exists`, every function uses
+`create or replace`, and every policy and trigger is dropped before being created.
 
-## One thing to know about privileges
+## Standing rule for anything new
 
-In the live database, both the `anon` and the `authenticated` roles hold every table privilege
-on every `lms_` table, including UPDATE, DELETE and TRUNCATE. That is Supabase's default for
-new tables in the public schema and not something these files ask for. What actually stops a
-learner writing to those tables is row level security, which is on for every table and has been
-tested. The one privilege row level security never filters is TRUNCATE, so that one is worth
-removing. See `docs/lms/STATUS.md`.
+**Every SQL file that creates an `lms_` table must end by calling
+`lms_tidy_table_privileges()`.** Supabase grants every privilege on anything new in the public
+schema to both `anon` and `authenticated`, including TRUNCATE, which row level security never
+filters. The schema wide defaults are deliberately left alone because the certification system
+shares the schema, so each new table has to be tidied as it is made. The other standing rules
+are in `docs/lms/STATUS.md`.
