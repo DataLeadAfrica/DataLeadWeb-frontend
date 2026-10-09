@@ -73,20 +73,12 @@
       "destination": "/register/data-analytics/index.html"
     },
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "source": "/register/excel-basics",
+      "destination": "/register/excel-basics/index.html"
     },
     {
-      "source": "/lms",
-      "destination": "/api/academy-meta?path=/lms"
-    },
-    {
-      "source": "/lms/courses",
-      "destination": "/api/academy-meta?path=/lms/courses"
-    },
-    {
-      "source": "/lms/courses/:slug",
-      "destination": "/api/academy-meta?path=/lms/courses/:slug"
+      "source": "/register/excel-basics/",
+      "destination": "/register/excel-basics/index.html"
     },
     {
       "source": "/((?!api/).*)",
