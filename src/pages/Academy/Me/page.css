@@ -1,0 +1,327 @@
+/* My learning. The bento grid from the design concept, with only the two
+   tiles Phase 2 has anything true to put in them.
+   The Continue, This week, Your courses and Certificates tiles are
+   Phase 4, and the column spans here are the ones they will slot into. */
+
+.acad-me__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.acad-me__greet {
+  margin: 12px 0 6px;
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+.acad-me__sub {
+  font-size: 15px;
+}
+
+/* .acad-me__grid was the Phase 2 two column layout. It is gone: the
+   page is the bento now, at the bottom of this file. */
+
+/* Holds the pass card's place while the access sync answers, so the page
+   does not jump when it does. */
+.acad-me__waiting {
+  min-height: 210px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+
+/* =========================================================== the bento
+
+   The one thing to do next is the biggest tile. Everything else is a
+   glance.
+
+   It is a grid with named areas rather than a row of equal cards,
+   because the tiles are deliberately different sizes and an auto grid
+   would make them all the same. Below the split it becomes one column
+   in the order the areas are listed, which is already the right order:
+   carry on, then who you are, then the week, then the lists. */
+
+.acad-bento {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  grid-template-areas:
+    "continue pass"
+    "continue week"
+    "courses  certs";
+}
+@media (max-width: 920px) {
+  .acad-bento {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "continue"
+      "pass"
+      "week"
+      "courses"
+      "certs";
+  }
+}
+
+/* A learner with nothing yet: one wide welcome card and the pass, and
+   none of the empty lists. */
+.acad-bento--new {
+  grid-template-areas:
+    "continue pass";
+}
+@media (max-width: 920px) {
+  .acad-bento--new {
+    grid-template-areas:
+      "continue"
+      "pass";
+  }
+}
+
+.acad-tile {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 22px;
+  min-width: 0;
+}
+
+.acad-tile--continue {
+  grid-area: continue;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.acad-tile--welcome {
+  display: block;
+}
+.acad-bento .acad-pass {
+  grid-area: pass;
+}
+.acad-tile--week {
+  grid-area: week;
+}
+.acad-tile--courses {
+  grid-area: courses;
+}
+.acad-tile--certs {
+  grid-area: certs;
+}
+
+.acad-tile__body {
+  min-width: 0;
+  flex: 1 1 260px;
+}
+
+.acad-tile__label {
+  margin: 0 0 8px;
+  font: 600 10.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-tile__body h2,
+.acad-tile--welcome h2 {
+  margin: 0;
+}
+
+.acad-tile__sub {
+  margin: 6px 0 0;
+  color: var(--acad-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.acad-tile__go {
+  margin-top: 16px;
+}
+
+/* ------------------------------------------------------------ the week */
+
+.acad-week__total {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.acad-week__total b {
+  font: 600 26px/1 var(--acad-f-display);
+}
+.acad-week__total small {
+  color: var(--acad-muted);
+  font-size: 12.5px;
+}
+
+.acad-week__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  height: 96px;
+}
+.acad-week__bars > div {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  height: 100%;
+}
+.acad-week__bars i {
+  width: 100%;
+  border-radius: 4px 4px 2px 2px;
+  background: var(--acad-signal);
+}
+/* A day with nothing watched is a visible stub rather than a missing
+   bar, so the week keeps its shape and a gap reads as a gap. */
+.acad-week__bars i.is-zero {
+  background: var(--acad-cell-off);
+}
+.acad-week__bars span {
+  font: 500 10.5px/1 var(--acad-f-mono);
+  color: var(--acad-faint);
+}
+
+/* --------------------------------------------------------- the courses */
+
+.acad-courses,
+.acad-certs {
+  display: grid;
+  gap: 8px;
+}
+
+.acad-course,
+.acad-cert {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--acad-line);
+  background: var(--acad-surface-2);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.acad-course:hover,
+.acad-cert:hover {
+  border-color: var(--acad-line-strong);
+}
+.acad-course:focus-visible,
+.acad-cert:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 1px;
+}
+
+.acad-course__glyph {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font: 600 13px/1 var(--acad-f-mono);
+}
+
+.acad-course__mid,
+.acad-cert__mid {
+  min-width: 0;
+}
+.acad-course__mid b,
+.acad-cert__mid b {
+  display: block;
+  font-weight: 500;
+  font-size: 14.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acad-course__mid small,
+.acad-cert__mid small {
+  display: block;
+  margin-top: 2px;
+  font: 500 11.5px/1.3 var(--acad-f-mono);
+  color: var(--acad-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acad-course__bar {
+  display: block;
+  height: 5px;
+  margin-top: 8px;
+  border-radius: 5px;
+  background: var(--acad-surface-3);
+  overflow: hidden;
+}
+.acad-course__bar i {
+  display: block;
+  height: 100%;
+  background: var(--acad-signal);
+}
+.acad-course__bar i.is-done {
+  background: var(--acad-ok);
+}
+
+.acad-course__state {
+  font: 500 10.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+  white-space: nowrap;
+}
+.acad-course__state--live {
+  color: var(--acad-signal-deep);
+}
+.acad-course__state--won {
+  color: var(--acad-ok);
+}
+
+@media (max-width: 420px) {
+  /* The state word has nowhere to go at this width, so the row becomes
+     two columns and it drops under the title. */
+  .acad-course {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+  .acad-course__state {
+    grid-column: 2;
+  }
+}
+
+/* ---------------------------------------------------- the certificates */
+
+.acad-cert {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+.acad-cert__seal {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--acad-ok-soft);
+}
+.acad-cert__seal svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--acad-ok);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-course,
+  .acad-cert {
+    transition: none;
+  }
+}

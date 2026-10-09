@@ -75,4 +75,34 @@ export const routes = {
   learnerModule: "/my-learning/:slug",
   staffPortal: "/staff/portal",
   certifications: "/certifications",
+
+  // Data-Lead Academy.
+  //
+  // The first three are PUBLIC and are meant to be found in search:
+  // /lms, /lms/courses and a course page. The account pages below them
+  // carry noindex, because a sign in form has no business in a search
+  // result.
+  academy: "/lms",
+  academyCourses: "/lms/courses",
+  academyCourse: "/lms/courses/:slug",
+  academySignUp: "/lms/sign-up",
+  academySignIn: "/lms/sign-in",
+  academyReset: "/lms/reset",
+  academyMe: "/lms/me",
+
+  // Phase 4, the learning pages. Every one of them is behind a sign in
+  // and carries noindex: they show one learner's own progress, and a
+  // search engine has no business in any of it.
+  //
+  // THE ORDER OF THE LAST THREE MATTERS. React Router ranks a static
+  // segment above a dynamic one, so /lms/learn/:slug/complete and
+  // /lms/learn/:slug/quiz/:quizId both win against
+  // /lms/learn/:slug/:lessonId rather than being swallowed by it. There
+  // is a test for it, because getting this wrong would send somebody
+  // finishing a course to a lesson player looking for a lesson called
+  // "complete".
+  academyLearn: "/lms/learn/:slug",
+  academyLesson: "/lms/learn/:slug/:lessonId",
+  academyQuiz: "/lms/learn/:slug/quiz/:quizId",
+  academyComplete: "/lms/learn/:slug/complete",
 };

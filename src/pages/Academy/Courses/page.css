@@ -1,0 +1,114 @@
+/* /lms/courses. The catalogue. */
+
+/* The breadcrumb's styles are not here. They moved to
+   ui/Breadcrumb.css with the component, because the course page is
+   loaded on its own and never loads this file. */
+
+.acad-courses__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.acad-courses__h1 {
+  margin: 0 0 12px;
+}
+
+.acad-courses__count {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  white-space: nowrap;
+}
+.acad-courses__count b {
+  font: 600 26px/1 var(--acad-f-mono);
+}
+.acad-courses__count span {
+  color: var(--acad-muted);
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------- toolbar */
+
+.acad-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 26px 0 22px;
+  padding: 12px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+
+.acad-toolbar__search {
+  flex: 1 1 240px;
+}
+.acad-toolbar__search input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface-2);
+  outline: none;
+}
+.acad-toolbar__search input:focus {
+  border-color: var(--acad-signal);
+  box-shadow: 0 0 0 4px var(--acad-glow);
+}
+
+.acad-toolbar__areas {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.acad-toolbar__area {
+  padding: 9px 15px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-size: 13px;
+  color: var(--acad-muted);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.acad-toolbar__area.is-on {
+  border-color: var(--acad-signal);
+  color: var(--acad-signal-text);
+  background: var(--acad-signal-wash);
+  font-weight: 500;
+}
+
+.acad-toolbar__sort select {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+/* Read out, not drawn: the box and the list say what they are on
+   screen, and a label above each would be noise. */
+.acad-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.acad-courses__empty {
+  margin-top: 26px;
+}
+.acad-courses__emptygo {
+  margin: 18px 0 0;
+  text-align: center;
+}

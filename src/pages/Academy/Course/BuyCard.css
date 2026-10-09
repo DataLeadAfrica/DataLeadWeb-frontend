@@ -1,0 +1,121 @@
+.acad-buy {
+  position: relative;
+  padding: 24px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+  box-shadow: var(--acad-shadow);
+}
+
+.acad-buy__label {
+  margin: 0 0 8px;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-signal-deep);
+}
+
+.acad-buy__price {
+  margin: 0;
+  font: 600 34px/1 var(--acad-f-mono);
+}
+
+.acad-buy__soon {
+  margin: 6px 0 0;
+  color: var(--acad-muted);
+  font-size: 12.5px;
+}
+
+.acad-buy__note {
+  margin: 10px 0 20px;
+  color: var(--acad-muted);
+  font-size: 13px;
+}
+
+.acad-buy__go {
+  width: 100%;
+}
+
+.acad-buy__second {
+  width: 100%;
+  margin-top: 10px;
+  height: 48px;
+}
+
+.acad-buy__list {
+  margin: 20px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--acad-line);
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.acad-buy__list li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--acad-muted);
+}
+.acad-buy__list svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  stroke: var(--acad-ok);
+  fill: none;
+  stroke-width: 2;
+}
+
+/* ---------------------------------------------------------- on a phone
+   Below the split, the card stops being a column beside the text and
+   becomes a bar stuck to the bottom of the screen, so the price and the
+   button are always in reach however far down somebody has read. */
+@media (max-width: 980px) {
+  .acad-buy {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-top: 1px solid var(--acad-line-strong);
+    border-radius: 0;
+    box-shadow: 0 -10px 30px -18px rgba(30, 36, 52, 0.5);
+  }
+  .acad-buy__label,
+  .acad-buy__note,
+  .acad-buy__list,
+  .acad-buy__second {
+    display: none;
+  }
+  /* The price and the payment line together, as one block inside the
+     bar. The line used to be positioned above the bar, where it floated
+     over whatever the page was showing. */
+  .acad-buy__money {
+    /* Never more than its share of the bar. The payment line wraps to
+       two short lines rather than squeezing the button into two. */
+    flex: 0 1 44%;
+    min-width: 0;
+  }
+  .acad-buy__price {
+    font-size: 22px;
+    white-space: nowrap;
+  }
+  .acad-buy__soon {
+    margin: 2px 0 0;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+  .acad-buy__go {
+    width: auto;
+    flex: 1 1 auto;
+    height: 48px;
+    padding-inline: 14px;
+    /* One line. A button that reads "Create an / account" looks broken. */
+    white-space: nowrap;
+  }
+}

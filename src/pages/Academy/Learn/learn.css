@@ -1,0 +1,225 @@
+/* Styles shared by the four learning pages.
+   =========================================================================
+
+   WHY THIS FILE EXISTS, and why every learning page imports it.
+
+   Each Academy page is loaded on its own, so a page that uses a class
+   defined in another page's stylesheet works only if you happened to
+   visit that other page first. Somebody arriving at a lesson from a
+   bookmark would get it unstyled. That exact fault was found and fixed
+   in Phase 3 on the course page, so the shared things live here from
+   the start and every learning page imports this file as well as its
+   own.
+
+   Everything here sits under a class beginning acad-, inside .acad, so
+   it cannot reach a page outside /lms. */
+
+/* ------------------------------------------------------------ the shell */
+
+.acad-learn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1020px) {
+  .acad-learn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.acad-learn__side {
+  display: grid;
+  gap: 16px;
+  /* The outline follows you down a long lesson page rather than
+     scrolling away. Only where there is room: below the split it sits
+     under the player like everything else. */
+  position: sticky;
+  top: 90px;
+}
+@media (max-width: 1020px) {
+  .acad-learn__side {
+    position: static;
+  }
+}
+
+/* ------------------------------------------------------- lesson states
+
+   Done, now and locked are three different SHAPES, not three colours.
+   About one man in twelve cannot reliably tell the orange from the
+   green, and a course outline that only works in colour is a course
+   outline that does not work. */
+
+.acad-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+}
+.acad-dot svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: var(--acad-muted);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* done: a filled green disc with a tick */
+.acad-row--done .acad-dot {
+  background: var(--acad-ok);
+  border-color: var(--acad-ok);
+}
+.acad-row--done .acad-dot svg {
+  stroke: #fff;
+}
+
+/* now: a ring with a solid centre, the only one that is orange */
+.acad-row--now .acad-dot {
+  border-color: var(--acad-signal);
+  box-shadow: inset 0 0 0 3px var(--acad-surface);
+  background: var(--acad-signal);
+}
+
+/* locked: a padlock, outlined, and the row is dimmed */
+.acad-row--locked .acad-dot {
+  background: var(--acad-surface-2);
+}
+.acad-row--locked {
+  color: var(--acad-faint);
+}
+
+/* ------------------------------------------------------------ the rows */
+
+.acad-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.acad-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  border: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+}
+a.acad-row:hover {
+  background: var(--acad-surface-2);
+}
+a.acad-row:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 1px;
+}
+
+.acad-row--now {
+  background: color-mix(in srgb, var(--acad-signal) 7%, var(--acad-surface));
+  border-color: color-mix(in srgb, var(--acad-signal) 30%, transparent);
+}
+
+.acad-row__name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.acad-row small {
+  font: 500 11.5px/1 var(--acad-f-mono);
+  color: var(--acad-muted);
+  white-space: nowrap;
+}
+
+.acad-badge {
+  font: 600 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: var(--acad-surface-3);
+  color: var(--acad-muted);
+  white-space: nowrap;
+}
+.acad-badge--ok {
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+}
+
+/* ------------------------------------------------------- notices
+
+   One shape for everything the learning pages have to tell somebody
+   mid-task: offline, coverage stuck, access ended, a video that will
+   not play. They are all the same kind of message and they should all
+   look the same. */
+
+.acad-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--acad-r-s);
+  border: 1px solid var(--acad-line);
+  background: var(--acad-surface-2);
+  color: var(--acad-muted);
+  font-size: 13.5px;
+}
+.acad-note svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acad-note--warn {
+  border-color: color-mix(in srgb, var(--acad-signal) 35%, transparent);
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+}
+.acad-note--bad {
+  border-color: color-mix(in srgb, var(--acad-bad) 35%, transparent);
+  background: color-mix(in srgb, var(--acad-bad) 8%, var(--acad-surface));
+  color: var(--acad-bad);
+}
+.acad-note--ok {
+  border-color: var(--acad-ok-line);
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+}
+
+/* ------------------------------------------------------- the actions row */
+
+.acad-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.acad-actions .acad-btn {
+  width: auto;
+  padding: 0 22px;
+  height: 48px;
+}
+@media (max-width: 480px) {
+  /* On a phone two buttons side by side are each too narrow to read, so
+     they stack and go full width. */
+  .acad-actions {
+    flex-direction: column;
+  }
+  .acad-actions .acad-btn {
+    width: 100%;
+  }
+}

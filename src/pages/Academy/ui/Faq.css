@@ -1,0 +1,60 @@
+.acad-faq {
+  display: grid;
+  gap: 10px;
+  max-width: 760px;
+}
+
+.acad-faq__item {
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.acad-faq__q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  list-style: none;
+}
+.acad-faq__q::-webkit-details-marker {
+  display: none;
+}
+
+/* The plus and the cross are one element rotated, so opening animates
+   transform and nothing else. */
+.acad-faq__q i {
+  position: relative;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+.acad-faq__q i::before,
+.acad-faq__q i::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--acad-signal-text);
+}
+.acad-faq__q i::after {
+  transform: rotate(90deg);
+}
+.acad-faq__item[open] .acad-faq__q i {
+  transform: rotate(45deg);
+}
+
+.acad-faq__a {
+  margin: 0;
+  padding: 0 18px 18px;
+  max-width: 68ch;
+  color: var(--acad-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}

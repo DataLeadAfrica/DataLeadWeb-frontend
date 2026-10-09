@@ -73,6 +73,14 @@
       "destination": "/register/data-analytics/index.html"
     },
     {
+      "source": "/register/excel-basics",
+      "destination": "/register/excel-basics/index.html"
+    },
+    {
+      "source": "/register/excel-basics/",
+      "destination": "/register/excel-basics/index.html"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

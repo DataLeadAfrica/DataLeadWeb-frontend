@@ -1,0 +1,92 @@
+/* The stage: grid, glow and the page width.
+
+   Both decorations are drawn on pseudo elements behind the content with a
+   negative z-index, inside an isolation:isolate so that negative index
+   cannot escape this element and slide under the site Header. */
+
+.acad-stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 56px 16px 72px;
+  background: var(--acad-bg);
+}
+
+/* The grid. Two repeating gradients, masked so it fades out at the edges
+   instead of stopping at a hard line. */
+.acad-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(var(--acad-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--acad-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 30%,
+    #000 30%,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 30%,
+    #000 30%,
+    transparent 80%
+  );
+}
+
+/* The glow. One circle, moved with transform only. */
+.acad-stage::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -220px;
+  top: -380px;
+  width: 760px;
+  height: 760px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--acad-glow), transparent 62%);
+  animation: acad-drift 18s ease-in-out infinite alternate;
+}
+@keyframes acad-drift {
+  to {
+    transform: translate(380px, 120px) scale(1.15);
+  }
+}
+
+/* Set by AcadStage when the browser tab is hidden. Nothing should be
+   moving in a tab nobody is looking at. */
+.acad-stage[data-still="yes"] *,
+.acad-stage[data-still="yes"]::before,
+.acad-stage[data-still="yes"]::after,
+.acad-stage[data-still="yes"] *::before,
+.acad-stage[data-still="yes"] *::after {
+  animation-play-state: paused !important;
+}
+
+.acad-stage__wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* The account pages: pitch on the left, card on the right. Below 920px the
+   two stack and the pitch keeps only its headline, which is handled by the
+   page that owns the pitch. */
+.acad-stage__wrap--split {
+  display: grid;
+  grid-template-columns: 1.05fr minmax(0, 460px);
+  gap: 56px;
+  align-items: center;
+}
+@media (max-width: 920px) {
+  .acad-stage__wrap--split {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .acad-stage {
+    padding: 36px 16px 56px;
+  }
+}

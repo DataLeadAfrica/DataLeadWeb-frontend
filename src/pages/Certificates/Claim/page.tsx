@@ -10,6 +10,7 @@ import {
   certificateTitle,
   prettyDate,
   addToLinkedInUrl,
+  CODE_SENT_MESSAGE,
   type Certificate,
 } from "../../../lib/certificates";
 import {
@@ -33,6 +34,10 @@ export default function ClaimCertificate() {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // The sentence shown after asking for a code. It is the SAME whoever asks,
+  // because on this page a reply that differed would reveal who has graduated.
+  // The wording comes from the database, so there is one place to change it.
+  const [note, setNote] = useState("");
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [active, setActive] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -59,10 +64,14 @@ export default function ClaimCertificate() {
     setBusy(true);
     const res = await requestCode(clean);
     setBusy(false);
+    // res.ok is false only for an address that is not an address. Every other
+    // outcome, including never having been a participant and asking too often,
+    // comes back ok with the one shared sentence.
     if (!res.ok) {
       setError(res.message);
       return;
     }
+    setNote(res.message || CODE_SENT_MESSAGE);
     setStep("code");
     window.setTimeout(() => boxRefs.current[0]?.focus(), 50);
   }
@@ -186,8 +195,8 @@ export default function ClaimCertificate() {
           <>
             <h1 className="claim__h1">Enter your code</h1>
             <p className="claim__sub">
-              If <b>{email}</b> is on our records, a 6-digit code is on its way.
-              It expires in 10 minutes.
+              {note || CODE_SENT_MESSAGE} The code expires 10 minutes after it
+              is sent.
             </p>
             <div className="claim__card">
               <label className="claim__label">6-digit code</label>
@@ -221,6 +230,7 @@ export default function ClaimCertificate() {
                   onClick={() => {
                     setStep("email");
                     setError("");
+                    setNote("");
                     setDigits(["", "", "", "", "", ""]);
                   }}
                 >

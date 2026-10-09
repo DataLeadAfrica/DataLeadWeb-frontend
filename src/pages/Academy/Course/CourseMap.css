@@ -1,0 +1,48 @@
+.acad-map {
+  margin-top: 26px;
+}
+
+.acad-map__bar {
+  display: flex;
+  gap: 4px;
+  height: 14px;
+}
+
+.acad-map__seg {
+  position: relative;
+  min-width: 10px;
+  border-radius: 4px;
+  background: var(--acad-signal);
+}
+/* Each module a little lighter than the last, so the joins read even
+   when two sit side by side. */
+.acad-map__seg:nth-child(even) {
+  background: var(--acad-signal-soft);
+}
+
+/* The quiz at the end of a module. A dark mark, not a colour, so it is
+   still visible to somebody who cannot tell the two oranges apart. */
+.acad-map__quiz {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  right: -2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--acad-text);
+}
+
+.acad-map__labels {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.acad-map__label {
+  min-width: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 500 11px/1 var(--acad-f-mono);
+  color: var(--acad-muted);
+}

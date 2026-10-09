@@ -1,0 +1,65 @@
+/* A share of a whole, as a ring. See ProgressRing.tsx for why this is
+   not the same component as MeterRing. */
+
+.acad-ring {
+  position: relative;
+  flex: none;
+}
+
+.acad-ring svg {
+  width: 100%;
+  height: 100%;
+  /* Start at the top rather than at three o'clock, which is where SVG
+     starts a circle and nowhere a person expects a dial to start. */
+  transform: rotate(-90deg);
+}
+
+.acad-ring circle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.acad-ring__bg {
+  stroke: var(--acad-surface-3);
+}
+
+.acad-ring__fg {
+  stroke: var(--acad-signal);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.acad-ring--bad .acad-ring__fg {
+  stroke: var(--acad-bad);
+}
+
+.acad-ring__mid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.acad-ring__mid b {
+  font: 600 clamp(18px, 22cqw, 26px) / 1 var(--acad-f-display);
+}
+
+.acad-ring__mid small {
+  font: 500 9px/1 var(--acad-f-mono);
+  letter-spacing: 0.1em;
+  color: var(--acad-muted);
+}
+
+/* cqw above needs a container to measure against, so the ring is one. */
+.acad-ring {
+  container-type: size;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-ring__fg {
+    transition: none;
+  }
+}

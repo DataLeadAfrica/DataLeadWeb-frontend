@@ -1,0 +1,40 @@
+.acad-rail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 26px;
+  text-align: left;
+}
+
+.acad-rail__step {
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+.acad-rail__step::before {
+  content: "";
+  display: block;
+  height: 3px;
+  margin-bottom: 9px;
+  border-radius: 3px;
+  background: var(--acad-surface-3);
+}
+
+.acad-rail__step.is-done {
+  color: var(--acad-muted);
+}
+.acad-rail__step.is-done::before {
+  background: var(--acad-signal-soft);
+}
+
+.acad-rail__step.is-cur {
+  color: var(--acad-text);
+}
+.acad-rail__step.is-cur::before {
+  background: linear-gradient(
+    90deg,
+    var(--acad-signal),
+    var(--acad-signal-soft)
+  );
+}

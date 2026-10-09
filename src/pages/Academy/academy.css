@@ -1,0 +1,573 @@
+/* ===========================================================================
+   The Academy design system: tokens, type and the small shared primitives.
+   Everything the Academy draws is built from this file plus the component
+   files in ./ui.
+
+   TWO RULES THAT MUST NOT BE BROKEN
+   ---------------------------------
+   1. Every token is declared on .acad, never on :root, html or body.
+      portal.css rewrites :root and sets a body background, and Vite bundles
+      every stylesheet together, so the moment any portal page loads those
+      values apply site wide. The Academy must not become a second source of
+      that. If you ever need a value outside .acad, you have found a bug in
+      the markup, not a reason to move the token.
+   2. Light values only. The Academy sits under the normal white site Header
+      and has to look like part of dataleadafrica.com, so there is no dark
+      mode and no theme switch.
+   =========================================================================== */
+
+/* --------------------------------------------------------------- fonts ---
+   JetBrains Mono is self hosted in public/fonts/jetbrains-mono (SIL Open
+   Font License, see OFL.txt beside the files). Three weights, latin only,
+   65 KB in total. It is declared here rather than in global.css so the site
+   outside /lms never downloads it.
+
+   The display face reuses the Clash Display woff2 files the site already
+   ships. Two weights are gathered under one family name so the Academy can
+   say font-weight: 500 or 600 instead of naming a different family for
+   each weight, which is how the rest of the site has to do it. */
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-latin-400-normal.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-latin-500-normal.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-latin-600-normal.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "AcadDisplay";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Medium.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "AcadDisplay";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/clash-display/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2")
+    format("woff2");
+}
+
+/* -------------------------------------------------------------- tokens --- */
+
+.acad {
+  /* Surfaces, lightest to heaviest. */
+  --acad-bg: #eceff3;
+  --acad-surface: #ffffff;
+  --acad-surface-2: #f5f7fa;
+  --acad-surface-3: #e7ebf0;
+
+  --acad-line: rgba(22, 24, 32, 0.09);
+  --acad-line-strong: rgba(22, 24, 32, 0.18);
+
+  /* Text. Every one of these passes WCAG AA on the white card and on the
+     stage behind it. --acad-faint is the single exception: it is only
+     light enough for small text on white, so it is used inside cards. */
+  --acad-text: #16151b;
+  --acad-muted: #5b6170;
+  --acad-faint: #6e7380;
+
+  /* Orange. --acad-signal is the site orange and is for fills, bars and
+     buttons. --acad-signal-text is the darker one, and is the only orange
+     allowed to carry text, because the bright one fails AA on white. */
+  --acad-signal: #f56e0f;
+  /* Two oranges for text, and which one to use depends on what is behind
+     it. --acad-signal-text is 4.7:1 on white, which is AA, but only on
+     white: on the faintest orange wash it drops to 4.0 and small text
+     fails. --acad-signal-deep is 5.6:1 on the wash and is what the mono
+     labels and badges use. Neither is the bright --acad-signal, which
+     carries no text at all. */
+  --acad-signal-text: #c2500a;
+  --acad-signal-deep: #a8440a;
+  --acad-signal-soft: #f9a971;
+  --acad-signal-wash: rgba(245, 110, 15, 0.16);
+  --acad-glow: rgba(245, 110, 15, 0.28);
+
+  --acad-ok: #0d7a4e;
+  --acad-ok-soft: rgba(13, 122, 78, 0.1);
+  --acad-ok-line: rgba(13, 122, 78, 0.4);
+  --acad-bad: #c93434;
+
+  --acad-cell-off: #dde2e9;
+  --acad-grid: rgba(22, 24, 32, 0.05);
+  --acad-shadow: 0 30px 70px -34px rgba(30, 36, 52, 0.35);
+
+  --acad-f-display: "AcadDisplay", "ClashDisplay-Semibold", "Poppins",
+    system-ui, sans-serif;
+  --acad-f-body: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --acad-f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo,
+    monospace;
+
+  --acad-r-s: 10px;
+  --acad-r-m: 16px;
+  --acad-r-l: 24px;
+
+  color: var(--acad-text);
+  font: 400 15px/1.6 var(--acad-f-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.acad *,
+.acad *::before,
+.acad *::after {
+  box-sizing: border-box;
+}
+
+/* :where() so this reset carries no specificity of its own beyond .acad.
+   Written as ".acad button" it would score higher than .acad-btn and
+   .acad-link, and quietly win: the orange button would have had dark text
+   and the inline links would have looked like ordinary writing. */
+.acad :where(button, input) {
+  font: inherit;
+  color: inherit;
+}
+
+.acad :focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- type --- */
+
+.acad-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 500 11.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+}
+
+/* The dot and its pulse. The pulse is a scaled, faded ring on a child
+   element rather than an animated box-shadow, so only transform and
+   opacity are ever animated. */
+.acad-eyebrow i {
+  position: relative;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acad-signal);
+}
+.acad-eyebrow i::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--acad-glow);
+  animation: acad-beat 2.4s ease-in-out infinite;
+}
+@keyframes acad-beat {
+  50% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.acad-h1 {
+  margin: 18px 0 16px;
+  font: 600 clamp(32px, 5.2vw, 58px) / 1 var(--acad-f-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.acad-h1 em {
+  font-style: normal;
+  color: var(--acad-signal-text);
+}
+
+.acad-h2 {
+  margin: 0;
+  font: 600 clamp(23px, 2.6vw, 29px) / 1.1 var(--acad-f-display);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.acad-h3 {
+  margin: 0;
+  font: 500 18px/1.2 var(--acad-f-display);
+}
+
+.acad-lead {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--acad-muted);
+  font-size: 16px;
+}
+
+.acad-sub {
+  margin: 8px 0 22px;
+  color: var(--acad-muted);
+  font-size: 14px;
+}
+
+/* A small outlined label: a tool, a level, an area. Used by the course
+   cards, the course page and the learning pages, so it lives here in the
+   design system rather than in whichever page happened to need it first. */
+.acad-chip {
+  padding: 5px 9px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  font: 500 10.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+  white-space: nowrap;
+}
+
+.acad-mono {
+  font-family: var(--acad-f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The dashed pill that marks anything on screen as an example rather than
+   a real course or a real certificate. */
+.acad-example {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px dashed var(--acad-line-strong);
+  border-radius: 999px;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+}
+
+/* The stack of inputs inside a card. */
+.acad-fields {
+  display: grid;
+  gap: 14px;
+}
+
+/* ------------------------------------------------------------- button --- */
+
+.acad-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 54px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--acad-r-s);
+  background: linear-gradient(180deg, #ff7d22, var(--acad-signal));
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    0 12px 30px -12px var(--acad-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease;
+}
+.acad-btn:hover {
+  transform: translateY(-1px);
+}
+/* The sheen. A pseudo element slid across with transform, so the hover is
+   one composited move and nothing else. */
+.acad-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+}
+.acad-btn:hover::after {
+  transform: translateX(120%);
+  transition: transform 0.8s ease;
+}
+.acad-btn svg {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.acad-btn:disabled {
+  background: var(--acad-surface-3);
+  color: var(--acad-faint);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+.acad-btn:disabled::after {
+  display: none;
+}
+.acad-btn--auto {
+  width: auto;
+  height: 46px;
+  padding: 0 22px;
+}
+.acad-btn--ghost {
+  background: var(--acad-surface-2);
+  color: var(--acad-text);
+  border: 1px solid var(--acad-line-strong);
+  box-shadow: none;
+}
+
+.acad-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--acad-signal-text);
+  font-weight: 500;
+  font-size: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.acad-link:hover {
+  text-decoration: underline;
+}
+.acad-link:disabled {
+  color: var(--acad-faint);
+  cursor: default;
+  text-decoration: none;
+}
+
+.acad-foot {
+  margin: 20px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--acad-line);
+  color: var(--acad-muted);
+  font-size: 13.5px;
+  text-align: center;
+}
+.acad-foot a {
+  color: var(--acad-signal-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+.acad-foot a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------ messages ---
+   One class for everything the page says back. The shape differs as well as
+   the colour: good news carries a tick, bad news carries a warning mark, so
+   the two are not told apart by colour alone. */
+
+.acad-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.acad-msg svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.acad-msg--bad {
+  color: var(--acad-bad);
+}
+.acad-msg--ok {
+  color: var(--acad-ok);
+}
+.acad-msg--note {
+  color: var(--acad-muted);
+}
+
+/* The green access notice at the top of My learning. */
+.acad-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding: 12px 14px;
+  border: 1px solid var(--acad-ok-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-ok-soft);
+  color: var(--acad-text);
+  font-size: 14px;
+}
+.acad-notice svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  stroke: var(--acad-ok);
+  fill: none;
+  stroke-width: 2;
+}
+.acad-notice button {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--acad-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* --------------------------------------------- sections and grids ---
+   A band is one section of a long public page: an eyebrow, a heading
+   and something underneath.
+
+   THESE LIVE HERE, NOT IN A PAGE'S OWN STYLESHEET, because all three
+   public pages use them. They were briefly defined in the landing
+   page's file, and because each page is now loaded on its own with
+   React.lazy, a visitor arriving straight at a course page from a
+   search result downloaded that page's code and not the landing
+   page's: every eyebrow and every grid on the course page was
+   unstyled. It only looked right if you happened to visit the landing
+   page first. */
+
+.acad-band {
+  margin-top: 72px;
+}
+@media (max-width: 560px) {
+  .acad-band {
+    margin-top: 52px;
+  }
+}
+
+.acad-band__eyebrow {
+  margin: 0 0 10px;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acad-signal-deep);
+}
+
+.acad-band__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.acad-band__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.acad-band__more svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.acad-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+@media (max-width: 860px) {
+  .acad-grid3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The grey block that holds a card's place. Exactly the height of a
+   card, so nothing moves when the real one replaces it. */
+.acad-skeleton {
+  min-height: 268px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+  opacity: 0.55;
+}
+
+.acad-empty-line {
+  margin: 22px 0 0;
+  color: var(--acad-muted);
+}
+
+
+/* ------------------------------------------- the site's WhatsApp button ---
+   The floating "Chat with us" button is fixed to the bottom right corner on
+   every page of the site. On a phone that corner is exactly where the main
+   button of a form ends up, so it sits on top of Create my account and on
+   top of Confirm my email.
+   It is hidden on the pages whose whole job is one task, and left alone
+   everywhere else, including the public Academy pages in Phase 3.
+   WHY THIS RULE RATHER THAN A CHANGE TO Footer: the button belongs to the
+   Footer component, which every page on the site renders, and reaching into
+   it from here would mean a page outside /lms could start hiding it by
+   accident. This way the whole arrangement is one rule, in the Academy's own
+   stylesheet, next to the thing it is about.
+   :has() is what makes it possible, because the button is a sibling of the
+   stage rather than inside it. A browser too old to understand :has() drops
+   the whole rule and shows the button as it does today, which is the
+   failure worth having. */
+body:has(.acad-stage--focus) .wa-float {
+  display: none;
+}
+
+/* A course page is public, so the button belongs there. But below the
+   split the buy card becomes a bar stuck to the bottom of the screen,
+   and the button lands on top of it. So it is lifted clear rather than
+   hidden.
+   The offset is the bar's own height: 12px of padding, a 48px button,
+   12px more padding, and then the phone's own safe area on top of
+   that. If the bar's padding ever changes, this changes with it, which
+   is why both are written in the same two files and nowhere else. */
+@media (max-width: 980px) {
+  body:has(.acad-stage--buybar) .wa-float {
+    bottom: calc(1.25rem + 72px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ------------------------------------------------------ reduced motion ---
+   Everything above still reads correctly frozen: no information is carried
+   by movement alone. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* .acad itself as well as its descendants. The stage draws its drifting
+     glow on its own ::after, and ".acad *" does not match ".acad::after",
+     so written the obvious way this rule left the one animation that
+     never stops still running. */
+  .acad,
+  .acad::before,
+  .acad::after,
+  .acad *,
+  .acad *::before,
+  .acad *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
