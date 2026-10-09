@@ -1,0 +1,102 @@
+/* The code screen. The card itself comes from AcadCard; this is the
+   beacon, the spacing and the panel that replaces the meters once the
+   code has been accepted. */
+
+.acad-verify {
+  text-align: center;
+}
+
+/* The beacon: an envelope with two rings leaving it, one behind the
+   other. Both rings are pseudo elements growing and fading, so transform
+   and opacity are the only things animated. */
+.acad-beacon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  /* 54px, not 30. The two rings leaving the beacon grow to 1.7 times its
+     size, which reaches about 26px above the box, and at 30px they were
+     touching the step rail above. This leaves roughly 24px of clear space
+     between the rail and the furthest the rings reach. */
+  margin: 54px auto 6px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 22px;
+  background: var(--acad-surface-2);
+}
+.acad-beacon svg {
+  width: 32px;
+  height: 32px;
+  stroke: var(--acad-signal-text);
+  fill: none;
+  stroke-width: 1.6;
+}
+.acad-beacon::before,
+.acad-beacon::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--acad-signal);
+  border-radius: 24px;
+  opacity: 0;
+  animation: acad-ping 2.6s ease-out infinite;
+}
+.acad-beacon::after {
+  animation-delay: 1.3s;
+}
+@keyframes acad-ping {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+.acad-verify__title {
+  margin-top: 20px;
+}
+
+.acad-verify__to {
+  margin: 10px auto 0;
+}
+.acad-verify__to b {
+  color: var(--acad-text);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* Holds the error or the note. It keeps its height whether or not there
+   is anything in it, so the boxes and the meters do not jump apart the
+   first time a message appears. */
+.acad-verify__say {
+  min-height: 24px;
+  margin-top: 10px;
+}
+.acad-verify__say .acad-msg {
+  justify-content: center;
+  margin: 0;
+  text-align: left;
+}
+
+.acad-verify__go {
+  margin-top: 18px;
+}
+
+.acad-verify__done {
+  margin-top: 24px;
+}
+.acad-verify__done .acad-msg {
+  justify-content: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* The one line of advice that saves the most resend presses. */
+.acad-verify__spam {
+  margin: 14px 0 0;
+  color: var(--acad-muted);
+  font-size: 12.5px;
+}

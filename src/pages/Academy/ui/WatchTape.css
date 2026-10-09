@@ -1,0 +1,106 @@
+.acad-tape {
+  padding: 18px 18px 16px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+.acad-tape--compact {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.acad-tape__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.acad-tape__top b {
+  font-weight: 500;
+}
+.acad-tape__top span {
+  color: var(--acad-muted);
+}
+
+/* minmax(0, 1fr), not 1fr. A plain 1fr refuses to shrink a cell below
+   its own content box, so a long lesson's cells push each other out of
+   the grid and the tape draws as an empty strip. The gap shrinks with
+   the screen for the same reason: at 120 cells on a phone, a 3px gap is
+   wider than the cells it separates. */
+.acad-tape__cells {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--acad-tape-cells, 48), minmax(0, 1fr));
+  gap: clamp(1px, 0.25vw, 3px);
+  height: 34px;
+  margin: 26px 0 10px;
+}
+
+/* A lesson whose length has not been set yet. */
+.acad-tape__blank {
+  height: 34px;
+  margin: 26px 0 10px;
+  border-radius: 3px;
+  background: var(--acad-cell-off);
+  opacity: 0.6;
+}
+.acad-tape--compact .acad-tape__cells {
+  height: 22px;
+  margin: 18px 0 0;
+}
+
+.acad-tape__cell {
+  border-radius: 3px;
+  background: var(--acad-cell-off);
+  transition: background 0.25s ease;
+}
+.acad-tape__cell.is-on {
+  background: var(--acad-signal);
+}
+/* The cell being watched right now. It pulses on opacity alone. */
+.acad-tape__cell.is-now {
+  background: var(--acad-signal-soft);
+  animation: acad-blink 1s steps(2) infinite;
+}
+@keyframes acad-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* The unlock line. The percentage above it is drawn from a data attribute
+   so the number is set once, in the markup, and cannot drift from the
+   line's position. */
+.acad-tape__mark {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--acad-text);
+}
+.acad-tape__mark::after {
+  content: attr(data-mark);
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 600 10px/1 var(--acad-f-mono);
+  color: var(--acad-text);
+}
+
+.acad-tape__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font: 500 12px/1.4 var(--acad-f-mono);
+  color: var(--acad-muted);
+}
+.acad-tape__foot b {
+  color: var(--acad-signal-text);
+  font-weight: 600;
+}

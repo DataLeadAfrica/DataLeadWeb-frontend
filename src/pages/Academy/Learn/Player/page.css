@@ -1,0 +1,226 @@
+/* /lms/learn/:slug/:lessonId. The lesson player. */
+
+.acad-player {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------- the video
+
+   The aspect ratio is held by the wrapper, not by the iframe, so the
+   space is reserved before YouTube's script has loaded anything. Without
+   that the page is one height, then jumps to another the moment the
+   player appears, usually just as somebody is reaching for a control. */
+
+.acad-player__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--acad-r-l);
+  overflow: hidden;
+  background: #16151b;
+}
+.acad-player__frame > div,
+.acad-player__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.acad-player__waiting {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface-3);
+}
+
+/* A video that will not play. Never a black rectangle: a black
+   rectangle tells somebody the site is broken, and they leave instead
+   of telling anybody. */
+.acad-player__broken {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  aspect-ratio: 16 / 9;
+  padding: 28px;
+  border-radius: var(--acad-r-l);
+  border: 1px solid color-mix(in srgb, var(--acad-bad) 30%, transparent);
+  background: color-mix(in srgb, var(--acad-bad) 6%, var(--acad-surface));
+  align-content: center;
+  flex-wrap: wrap;
+}
+.acad-player__broken svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--acad-bad);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acad-player__broken b {
+  display: block;
+  font: 500 17px/1.3 var(--acad-f-display);
+  color: var(--acad-bad);
+}
+.acad-player__broken p {
+  margin: 8px 0 0;
+  color: var(--acad-muted);
+  font-size: 14px;
+  max-width: 52ch;
+}
+@media (max-width: 560px) {
+  .acad-player__broken {
+    /* A fixed 16:9 box is far too short for this much text on a phone. */
+    aspect-ratio: auto;
+    padding: 20px;
+  }
+}
+
+.acad-player__tape {
+  margin-top: 14px;
+}
+
+/* -------------------------------------------------------------- the gate */
+
+.acad-gate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.acad-gate__say {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--acad-muted);
+  font-size: 14px;
+  max-width: 48ch;
+}
+.acad-gate__say b {
+  color: var(--acad-text);
+}
+.acad-gate__say svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--acad-ok);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-gate .acad-btn {
+  width: auto;
+  padding: 0 22px;
+}
+
+@media (max-width: 640px) {
+  .acad-gate {
+    /* The button goes full width and last, which is where a thumb is. */
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .acad-gate .acad-btn {
+    width: 100%;
+  }
+}
+
+/* -------------------------------------------------------- the speed row */
+
+.acad-speed {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--acad-muted);
+}
+.acad-speed label {
+  font-weight: 500;
+  color: var(--acad-text);
+}
+.acad-speed select {
+  /* 40px tall, because this is tapped on a phone. */
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+  color: var(--acad-text);
+  font: 500 13.5px/1 var(--acad-f-mono);
+  padding: 0 10px;
+}
+.acad-speed select:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 1px;
+}
+.acad-speed span {
+  max-width: 44ch;
+}
+.acad-speed__time {
+  margin-left: auto;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .acad-speed__time {
+    /* On its own line rather than squeezed against the note. */
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------- the outline */
+
+.acad-outline {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 20px;
+  /* A long course must scroll inside the card rather than making the
+     whole page taller than the video it is beside. */
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+}
+@media (max-width: 1020px) {
+  .acad-outline {
+    max-height: none;
+  }
+}
+
+.acad-outline h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.acad-outline__count {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--acad-muted);
+}
+
+.acad-outline__mod {
+  margin: 16px 0 8px;
+  font: 500 10.5px/1.3 var(--acad-f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+  border-bottom: 1px solid var(--acad-line);
+  padding-bottom: 6px;
+}
+
+.acad-outline .acad-row {
+  padding: 9px 10px;
+  font-size: 13.5px;
+}
+
+.acad-outline__back {
+  margin: 16px 0 0;
+  font-size: 13px;
+}

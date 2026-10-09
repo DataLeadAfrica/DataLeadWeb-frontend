@@ -1,0 +1,68 @@
+.acad-field {
+  position: relative;
+  text-align: left;
+}
+
+.acad-field__input {
+  width: 100%;
+  height: 58px;
+  padding: 22px 16px 8px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface-2);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.acad-field__input:focus {
+  border-color: var(--acad-signal);
+  box-shadow: 0 0 0 4px var(--acad-glow);
+}
+.acad-field__input[aria-invalid="true"] {
+  border-color: var(--acad-bad);
+}
+.acad-field__input:disabled {
+  color: var(--acad-muted);
+  cursor: not-allowed;
+}
+
+.acad-field__label {
+  position: absolute;
+  left: 17px;
+  top: 19px;
+  color: var(--acad-muted);
+  font-size: 15px;
+  pointer-events: none;
+  transition:
+    top 0.18s ease,
+    font-size 0.18s ease,
+    color 0.18s ease;
+}
+
+/* The float. :placeholder-shown is true only while the box is empty,
+   because every input here carries placeholder=" ". */
+.acad-field__input:focus + .acad-field__label,
+.acad-field__input:not(:placeholder-shown) + .acad-field__label {
+  top: 9px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--acad-signal-text);
+}
+
+.acad-field__peek {
+  position: absolute;
+  right: 8px;
+  top: 9px;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--acad-surface-3);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.acad-field--peek .acad-field__input {
+  padding-right: 74px;
+}

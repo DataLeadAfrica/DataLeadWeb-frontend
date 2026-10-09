@@ -1,0 +1,204 @@
+/* /lms/learn/:slug/complete. The certificate moment. */
+
+/* The confetti is positioned against the stage, so the stage has to be
+   the thing it is positioned against. */
+.acad-stage:has(.acad-done) {
+  position: relative;
+}
+
+.acad-done__waiting {
+  height: 420px;
+}
+
+.acad-done {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+  /* Above the confetti, so no piece can land on the share buttons. */
+  position: relative;
+  z-index: 2;
+}
+
+.acad-done__h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  margin: 14px 0 10px;
+}
+
+.acad-done__lead {
+  margin: 0 auto;
+  max-width: 52ch;
+}
+
+/* ------------------------------------------------------ the certificate */
+
+.acad-bigcert {
+  position: relative;
+  margin: 28px auto 0;
+  max-width: 640px;
+  /* A4 landscape, which is what the printed one is. */
+  aspect-ratio: 1.414 / 1;
+  border-radius: 20px;
+  background: #fffdf9;
+  border: 1px solid var(--acad-line-strong);
+  box-shadow: var(--acad-shadow);
+  overflow: hidden;
+  display: grid;
+  align-content: space-between;
+  padding: 7% 8%;
+  text-align: left;
+}
+/* The inner rule, and one soft corner glow. Both drawn rather than
+   loaded, so the card costs no requests. */
+.acad-bigcert::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(194, 80, 10, 0.25);
+  border-radius: 12px;
+  pointer-events: none;
+}
+.acad-bigcert::after {
+  content: "";
+  position: absolute;
+  right: -90px;
+  top: -90px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 110, 15, 0.25), transparent 65%);
+}
+.acad-bigcert > * {
+  position: relative;
+  z-index: 1;
+}
+
+.acad-bigcert__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.acad-bigcert small {
+  font: 600 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.18em;
+  color: #c2500a;
+}
+
+.acad-bigcert__seal {
+  width: clamp(44px, 8vw, 64px);
+  height: clamp(44px, 8vw, 64px);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#f56e0f, #f9a971, #f56e0f);
+  box-shadow: 0 0 0 6px rgba(245, 110, 15, 0.12);
+  flex: none;
+}
+.acad-bigcert__seal svg {
+  width: 45%;
+  height: 45%;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-bigcert__who {
+  font: 600 clamp(22px, 4vw, 36px) / 1.05 var(--acad-f-display);
+  color: #16151b;
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+}
+.acad-bigcert__what {
+  font-size: clamp(12px, 1.8vw, 15px);
+  color: #5b6170;
+}
+.acad-bigcert__what b {
+  color: #16151b;
+}
+
+.acad-bigcert__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  font: 500 clamp(9px, 1.4vw, 12px) / 1.4 var(--acad-f-mono);
+  color: #5b6170;
+}
+.acad-bigcert__no {
+  text-align: right;
+}
+.acad-bigcert__no b {
+  color: #16151b;
+  font-weight: 600;
+  /* A certificate number must never be broken across a line. */
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .acad-bigcert {
+    /* At this width the fixed ratio squashes the three blocks into
+       each other. Letting it grow is better than a card nobody can
+       read. */
+    aspect-ratio: auto;
+    padding: 24px 20px;
+    gap: 18px;
+  }
+}
+
+/* ----------------------------------------------------------- sharing */
+
+.acad-done__share {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.acad-done__share .acad-btn {
+  width: auto;
+  height: 48px;
+  padding: 0 20px;
+}
+@media (max-width: 520px) {
+  /* Three buttons side by side on a phone are each too narrow to read. */
+  .acad-done__share {
+    flex-direction: column;
+  }
+  .acad-done__share .acad-btn {
+    width: 100%;
+  }
+}
+
+.acad-done__proof {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 18px 0 0;
+  font-size: 13.5px;
+  color: var(--acad-muted);
+}
+.acad-done__proof svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--acad-ok);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-done__next {
+  margin-top: 48px;
+}
+
+/* No name on the account yet. The card says what to do rather than
+   printing a guess: the certificate in the register carries whatever
+   lms_profiles holds, so a placeholder that looked like a real name
+   would be the one thing on this page that is not true. */
+.acad-bigcert__who--none {
+  color: #a0a4ae;
+  font-style: italic;
+}

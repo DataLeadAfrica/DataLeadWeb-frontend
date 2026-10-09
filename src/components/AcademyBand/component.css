@@ -1,0 +1,78 @@
+/* The Academy band on the bootcamps page.
+   Written in its own values rather than the Academy's tokens, because
+   it sits on a page outside .acad and must not depend on them. */
+
+.acadband {
+  padding: 0 1rem;
+  margin: 3rem 0;
+}
+
+.acadband__in {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid #e6e8ec;
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      60% 140% at 100% 0%,
+      rgba(245, 110, 15, 0.12),
+      rgba(255, 255, 255, 0) 70%
+    ),
+    #ffffff;
+}
+
+.acadband__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a8440a;
+  font-weight: 600;
+}
+
+.acadband__title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: "ClashDisplay-Semibold", "ClashDisplay-Regular", sans-serif;
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  line-height: 1.15;
+  color: #16151b;
+}
+
+.acadband__lead {
+  margin: 0.75rem 0 0;
+  max-width: 54ch;
+  color: #5b6170;
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
+
+.acadband__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 10px;
+  background: #f56e0f;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.acadband__go:hover {
+  background: #e06209;
+}
+.acadband__go svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}

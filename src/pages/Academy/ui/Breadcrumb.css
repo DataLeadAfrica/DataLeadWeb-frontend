@@ -1,0 +1,55 @@
+/* The breadcrumb trail. The concept's small mono label style.
+
+   Loaded by the component itself rather than by whichever page happens
+   to need it, so it cannot arrive unstyled on a page somebody reaches
+   directly from a search result. */
+
+.acad-crumbs {
+  /* Clear space under the trail, so the chips or the heading below it
+     read as a new thing rather than as part of the trail. */
+  margin: 0 0 26px;
+  font: 500 12px/1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  color: var(--acad-muted);
+}
+
+.acad-crumbs ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.acad-crumbs li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* A long course title is the last crumb, and on a phone it has to be
+     allowed to wrap rather than widen the page. */
+  min-width: 0;
+}
+
+.acad-crumbs a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.acad-crumbs a:hover {
+  border-bottom-color: currentColor;
+}
+.acad-crumbs a:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-crumbs b {
+  color: var(--acad-text);
+  font-weight: 500;
+}
+
+.acad-crumbs span {
+  color: var(--acad-faint);
+}

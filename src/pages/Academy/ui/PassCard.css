@@ -1,0 +1,104 @@
+.acad-pass {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  padding: 22px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+
+/* The bootcamp version: a warm corner, and one slow sheen turning behind
+   the text. The sheen is a rotating pseudo element, so only transform is
+   animated, and it sits under a solid background colour rather than
+   relying on a filter. */
+.acad-pass--bootcamp {
+  border-color: var(--acad-line-strong);
+  background:
+    radial-gradient(
+      120% 90% at 100% 0%,
+      var(--acad-signal-wash),
+      transparent 55%
+    ),
+    var(--acad-surface-2);
+}
+/* A conic gradient converges to a hard point at its own centre. The
+   design concept hid that point behind a blur filter, but a blur on a
+   permanently rotating element is the most expensive thing on the page,
+   and on a cheap Android phone it is the one thing that would stutter.
+   A mask does the same job for nothing: the sheen is only painted in the
+   warm top right corner, and the point in the middle is never drawn. */
+.acad-pass--bootcamp::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  opacity: 0.3;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 62%,
+    var(--acad-signal-soft) 80%,
+    transparent 95%
+  );
+  -webkit-mask-image: radial-gradient(
+    42% 42% at 78% 22%,
+    #000,
+    transparent 75%
+  );
+  mask-image: radial-gradient(42% 42% at 78% 22%, #000, transparent 75%);
+  animation: acad-spin 9s linear infinite;
+}
+@keyframes acad-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+.acad-pass > * {
+  position: relative;
+}
+
+.acad-pass__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.acad-pass__kind {
+  font: 600 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acad-signal-deep);
+}
+.acad-pass__role {
+  padding: 6px 9px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acad-text);
+  white-space: nowrap;
+}
+
+.acad-pass__name {
+  margin: 28px 0 6px;
+  font: 600 26px/1.05 var(--acad-f-display);
+  overflow-wrap: anywhere;
+}
+
+.acad-pass__line {
+  margin: 0;
+  color: var(--acad-muted);
+  font-size: 13px;
+}
+
+.acad-pass__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--acad-line-strong);
+  font: 500 12px/1.4 var(--acad-f-mono);
+  color: var(--acad-muted);
+  overflow-wrap: anywhere;
+}

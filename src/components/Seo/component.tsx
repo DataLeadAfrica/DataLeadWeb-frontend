@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import { siteUrl } from "../../lib/site";
+
 // Lightweight per-page SEO: sets the document <title>, meta description,
 // canonical URL, optional JSON-LD structured data, and an optional
 // robots "noindex" tag for pages that should stay out of search results.
@@ -11,6 +13,19 @@ type SeoProps = {
   description?: string;
   jsonLd?: object | object[];
   noindex?: boolean;
+  /**
+   * The path this page's canonical should point at, when it is not
+   * simply the address in the bar. Optional, and every page that does
+   * not pass it behaves exactly as it always did.
+   *
+   * It exists because the Academy's public pages are also written by an
+   * edge function before the browser gets them, and the two have to
+   * agree. If the edge says the canonical is /lms/courses and this said
+   * /lms/courses?tool=stata, the tag would change under a crawler that
+   * does run JavaScript, which is the one thing worse than not having
+   * one at all.
+   */
+  canonicalPath?: string;
 };
 
 function upsertMeta(name: string, content: string) {
@@ -37,7 +52,13 @@ function upsertCanonical(href: string) {
   link.setAttribute("href", href);
 }
 
-export default function Seo({ title, description, jsonLd, noindex }: SeoProps) {
+export default function Seo({
+  title,
+  description,
+  jsonLd,
+  noindex,
+  canonicalPath,
+}: SeoProps) {
   useEffect(() => {
     if (title) document.title = title;
     if (description) {
@@ -53,7 +74,11 @@ export default function Seo({ title, description, jsonLd, noindex }: SeoProps) {
       }
       og.setAttribute("content", description);
     }
-    upsertCanonical(window.location.origin + window.location.pathname);
+    // SITE_ORIGIN rather than window.location.origin. A page opened on a
+    // Vercel preview address, or on whichever of the two spellings of
+    // the domain the visitor typed, must still name the one real
+    // address as its canonical.
+    upsertCanonical(siteUrl(canonicalPath ?? window.location.pathname));
 
     // Keep this page out of search results when asked. Added on mount and
     // removed on unmount, so it never leaks onto other pages in the SPA.
@@ -64,6 +89,23 @@ export default function Seo({ title, description, jsonLd, noindex }: SeoProps) {
       robots.setAttribute("content", "noindex, nofollow");
       document.head.appendChild(robots);
     }
+
+    // Take out whatever the edge function wrote before adding ours.
+    //
+    // api/academy-meta.js writes the Course and BreadcrumbList blocks
+    // into the HTML before the browser gets it, which is the whole
+    // point: a crawler that does not run JavaScript needs them there.
+    // But once React boots and adds its own, a page that HAS run the
+    // JavaScript ends up with two of each, and a reader has no way to
+    // know which to believe.
+    //
+    // The edge marks its own with data-edge="1", so they can be told
+    // apart from any other structured data on the page and removed
+    // without touching anything else.
+    const fromEdge = document.head.querySelectorAll<HTMLScriptElement>(
+      'script[type="application/ld+json"][data-edge="1"]',
+    );
+    fromEdge.forEach((el) => el.remove());
 
     let script: HTMLScriptElement | null = null;
     if (jsonLd) {
@@ -76,7 +118,7 @@ export default function Seo({ title, description, jsonLd, noindex }: SeoProps) {
       if (script && script.parentNode) script.parentNode.removeChild(script);
       if (robots && robots.parentNode) robots.parentNode.removeChild(robots);
     };
-  }, [title, description, JSON.stringify(jsonLd), noindex]);
+  }, [title, description, JSON.stringify(jsonLd), noindex, canonicalPath]);
 
   return null;
 }

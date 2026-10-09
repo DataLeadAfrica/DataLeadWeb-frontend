@@ -1,0 +1,42 @@
+.acad-empty {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 32px 22px;
+  border: 1px dashed var(--acad-line-strong);
+  border-radius: var(--acad-r-l);
+  background: transparent;
+  text-align: center;
+}
+
+.acad-empty__label {
+  margin: 0;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+}
+
+/* A few cells of a watch tape, the first three lit: a hint of the thing
+   that is going to fill this space. */
+.acad-empty__ghost {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 3px;
+  width: min(320px, 100%);
+  height: 18px;
+  margin: 6px 0;
+}
+.acad-empty__ghost i {
+  border-radius: 2px;
+  background: var(--acad-cell-off);
+}
+.acad-empty__ghost i:nth-child(-n + 3) {
+  background: var(--acad-signal);
+}
+
+.acad-empty__text {
+  margin: 0;
+  max-width: 42ch;
+  color: var(--acad-muted);
+}

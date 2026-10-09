@@ -46,8 +46,28 @@ function clearSession() {
 
 // ---------------------------------------------------------------- sign in
 
-// Ask for a one time code. The reply is deliberately vague either way, so
-// the form cannot be used to discover whether an address is enrolled.
+// The one sentence everybody sees after asking for a code, used as a
+// fallback if the database is unreachable so the page never contradicts
+// itself. The database returns this same text in the message field.
+export const CODE_SENT_MESSAGE =
+  "If you are enrolled, your code arrives within 5 minutes. " +
+  "Nothing yet? Check spam or contact us.";
+
+// Ask for a one time code.
+//
+// The reply is the SAME for everybody, on purpose. Enrolled, withdrawn,
+// never heard of, already graduated, or asking too often: one sentence
+// covers all of them. If the page said one thing to an enrolled address
+// and another to an unenrolled one, anybody could type addresses into it
+// and find out who is on a cohort, one guess at a time.
+//
+// The only reply that differs is for an address that is not an address,
+// because that is about what was typed, not about who they are.
+//
+// request_sign_in_code returns { ok, status, message }. Whatever the real
+// outcome was, the status reads "accepted" and the message is identical:
+// the browser receives this whole object and anybody can open it, so a
+// status that differed would leak exactly what the wording hides.
 export async function requestCode(
   email: string,
 ): Promise<{ ok: boolean; message: string }> {
@@ -55,19 +75,22 @@ export async function requestCode(
     return { ok: false, message: "The portal is not configured yet." };
   }
   const clean = email.trim().toLowerCase();
-  if (!clean || !clean.includes("@")) {
+  if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
     return { ok: false, message: "Please enter a valid email address." };
   }
-  const { error } = await certDb.rpc("request_certificate_code", {
+  const { data, error } = await certDb.rpc("request_sign_in_code", {
     p_email: clean,
   });
   if (error) {
     return { ok: false, message: "Something went wrong. Please try again." };
   }
-  return {
-    ok: true,
-    message: "If that address is enrolled, a code is on its way.",
-  };
+  const row = (data ?? {}) as { ok?: boolean; message?: string };
+  // ok is false only for a badly typed address, which the check above
+  // already catches, so this is belt and braces.
+  if (row.ok === false) {
+    return { ok: false, message: row.message || "Please check the address and try again." };
+  }
+  return { ok: true, message: row.message || CODE_SENT_MESSAGE };
 }
 
 export async function signIn(

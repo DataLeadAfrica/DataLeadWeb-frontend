@@ -47,21 +47,44 @@ export type VerifyResult = {
   template_key?: string | null;
 };
 
-// Step one of signing in. Always reports success, even for an address that is
-// not on the list, so this form cannot be used to discover who your graduates
-// are. Rate limiting lives in the database function.
+// The one sentence everybody sees after asking for a code, used as a fallback
+// if the database is unreachable so the page never contradicts itself. The
+// database returns this same text in the message field.
+export const CODE_SENT_MESSAGE =
+  "If you are enrolled, your code arrives within 5 minutes. " +
+  "Nothing yet? Check spam or contact us.";
+
+// Step one of signing in. The reply is the SAME for everybody, and on this
+// page that matters even more than on the learning portal: here, a reply that
+// differed would reveal who has GRADUATED. Enrolled, withdrawn, never heard
+// of, already certified, or asking too often all read the same.
+//
+// request_sign_in_code returns { ok, status, message }. Whatever the real
+// outcome was, the status reads "accepted" and the message is identical: the
+// browser receives this whole object and anybody can open it, so a status
+// that differed would leak exactly what the wording hides. Rate limiting, the
+// cap per caller and the site wide ceiling all live in the database function.
 export async function requestCode(
   email: string,
 ): Promise<{ ok: boolean; message: string }> {
   if (!certDb) return { ok: false, message: "Not configured yet." };
-  const { error } = await certDb.rpc("request_certificate_code", {
+  const { data, error } = await certDb.rpc("request_sign_in_code", {
     p_email: email.trim(),
   });
   if (error) {
     console.error("requestCode failed:", error.message);
     return { ok: false, message: "Could not send the code. Please try again." };
   }
-  return { ok: true, message: "If that address is on our records, a code is on its way." };
+  const row = (data ?? {}) as { ok?: boolean; message?: string };
+  // ok is false only for an address that is not an address, which is about
+  // what was typed rather than about who they are, so it is safe to say.
+  if (row.ok === false) {
+    return {
+      ok: false,
+      message: row.message || "Please check the address and try again.",
+    };
+  }
+  return { ok: true, message: row.message || CODE_SENT_MESSAGE };
 }
 
 // Step two. A wrong or expired code simply returns nothing.

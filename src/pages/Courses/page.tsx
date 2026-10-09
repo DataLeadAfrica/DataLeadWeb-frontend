@@ -7,6 +7,7 @@ import "./page.css";
 
 import { CourseInfo } from "./router";
 import { routes } from "../routes";
+import AcademyBand from "../../components/AcademyBand/component";
 import LeadForm from "../../components/LeadForm/component";
 import EnrolForm from "../../components/EnrolForm/component";
 import Seo from "../../components/Seo/component";
@@ -429,6 +430,20 @@ export default function Courses({
           </div>
         </section>
       )}
+
+      {/* THE ACADEMY.
+          Here rather than at the foot of the page. It used to sit after
+          the closing call to action and the country ticker, which is
+          where a reader has already been told the page is over, so it
+          read as an afterthought. This is the first thing after the
+          programmes, which is the moment somebody who has just decided a
+          bootcamp is not for them is still reading.
+
+          After the kids section rather than between the two grids, so
+          the two bootcamp programmes stay together. When there are no
+          kids courses the kids section is absent and this follows the
+          main grid directly. */}
+      <AcademyBand />
 
       {/* WHY US */}
       <section className="lc-why">

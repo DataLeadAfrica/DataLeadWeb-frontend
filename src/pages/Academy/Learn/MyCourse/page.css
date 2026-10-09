@@ -1,0 +1,257 @@
+/* /lms/learn/:slug. The course somebody is working through. */
+
+/* --------------------------------------------------------------- the top */
+
+.acad-ctop {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+@media (max-width: 900px) {
+  .acad-ctop {
+    /* The ring and the title side by side, the button underneath and
+       full width, so it is the easiest thing on the page to hit. */
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+  }
+  .acad-ctop__go {
+    grid-column: 1 / -1;
+  }
+}
+
+.acad-ctop__h1 {
+  margin: 6px 0;
+  font-size: clamp(24px, 3vw, 36px);
+}
+
+.acad-ctop__count {
+  margin: 0;
+  color: var(--acad-muted);
+  font-size: 14px;
+}
+
+.acad-ctop__go {
+  display: grid;
+  gap: 8px;
+  justify-items: stretch;
+  min-width: min(100%, 240px);
+}
+.acad-ctop__next {
+  font: 500 11.5px/1.3 var(--acad-f-mono);
+  color: var(--acad-muted);
+  text-align: center;
+  /* A long lesson title must wrap rather than widen the button above it. */
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------ a module */
+
+.acad-modcard {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+}
+.acad-modcard + .acad-modcard {
+  margin-top: 14px;
+}
+
+.acad-modcard__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.acad-modcard__head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.acad-modbar {
+  height: 6px;
+  border-radius: 6px;
+  background: var(--acad-surface-3);
+  overflow: hidden;
+}
+.acad-modbar i {
+  display: block;
+  height: 100%;
+  background: var(--acad-signal);
+  transition: width 0.4s ease;
+}
+
+/* ------------------------------------------------------- the quiz row */
+
+.acad-quizrow {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 12px;
+  border-radius: 12px;
+  /* Dashed, so a quiz reads as a different kind of thing from a lesson
+     even before you read the words. */
+  border: 1px dashed var(--acad-line-strong);
+}
+.acad-quizrow--done {
+  border-style: solid;
+  border-color: var(--acad-ok-line);
+  background: var(--acad-ok-soft);
+}
+
+.acad-quizrow__mid {
+  min-width: 0;
+}
+.acad-quizrow__mid b {
+  font-weight: 500;
+  font-size: 14px;
+}
+.acad-quizrow__mid small {
+  display: block;
+  font: 500 11.5px/1.4 var(--acad-f-mono);
+  color: var(--acad-muted);
+  overflow-wrap: anywhere;
+}
+
+.acad-quizrow__go {
+  width: auto;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 13.5px;
+}
+
+@media (max-width: 480px) {
+  /* Below this the three columns leave the button about 50px wide. The
+     row becomes two lines instead. */
+  .acad-quizrow {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+  .acad-quizrow__go,
+  .acad-quizrow .acad-badge {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 4px;
+  }
+}
+
+/* --------------------------------------------------- the certificate card */
+
+.acad-certcard {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 20px;
+}
+.acad-certcard h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+.acad-certcard__lead {
+  margin: 0 0 14px;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+}
+.acad-certcard__go {
+  width: 100%;
+}
+
+.acad-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 13.5px;
+}
+.acad-checklist li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.acad-checklist li .acad-dot {
+  width: 20px;
+  height: 20px;
+}
+.acad-checklist li .acad-dot svg {
+  width: 11px;
+  height: 11px;
+}
+.acad-checklist--done {
+  color: var(--acad-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--acad-line-strong);
+}
+.acad-checklist--done .acad-dot {
+  background: var(--acad-ok);
+  border-color: var(--acad-ok);
+}
+.acad-checklist--done .acad-dot svg {
+  stroke: #fff;
+}
+.acad-checklist__n {
+  margin-left: auto;
+  font-weight: 500;
+  /* The count must not be struck through with the rest of the line. */
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------- this week */
+
+.acad-weektape {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 20px;
+}
+.acad-weektape__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.acad-weektape__top b {
+  font: 500 15px/1.2 var(--acad-f-display);
+}
+.acad-weektape__top span {
+  font-size: 13px;
+  color: var(--acad-muted);
+}
+
+.acad-weektape__cells {
+  display: flex;
+  gap: 3px;
+  margin-top: 14px;
+  height: 18px;
+}
+.acad-weektape__cells i {
+  flex: 1 1 0;
+  /* minmax is not available on a flex basis, so min-width: 0 does the
+     same job: without it a cell refuses to shrink and the row overflows
+     the card on a narrow screen. */
+  min-width: 0;
+  border-radius: 2px;
+  background: var(--acad-cell-off);
+}
+.acad-weektape__cells i.is-on {
+  background: var(--acad-signal);
+}
+
+.acad-weektape__foot {
+  margin: 10px 0 0;
+  font: 500 11px/1.3 var(--acad-f-mono);
+  color: var(--acad-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-modbar i {
+    transition: none;
+  }
+}

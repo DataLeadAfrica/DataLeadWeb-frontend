@@ -1,0 +1,136 @@
+.acad-coursecard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* A fixed minimum so a grid of cards does not reflow as they arrive.
+     This is most of what keeps the layout shift under 0.1. */
+  min-height: 268px;
+  padding: 20px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.acad-coursecard:hover {
+  transform: translateY(-2px);
+  border-color: var(--acad-line-strong);
+}
+
+.acad-coursecard__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acad-coursecard__glyph {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font: 600 13px/1 var(--acad-f-mono);
+}
+
+/* .acad-chip is not here. It moved to academy.css, because the Phase 4
+   learning pages use it too and each Academy page is loaded on its own:
+   a class defined in one page's stylesheet is simply absent on another.
+   Anything used by more than one page belongs in the design system. */
+
+.acad-tag {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+  font: 500 10.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.acad-coursecard__title {
+  margin: 4px 0 0;
+  font: 500 18px/1.25 var(--acad-f-display);
+}
+.acad-coursecard__title a {
+  color: inherit;
+  text-decoration: none;
+}
+/* The whole card is the target, not just the words. The link keeps its
+   own outline, so a keyboard still shows where it is. */
+.acad-coursecard__title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.acad-coursecard {
+  position: relative;
+}
+.acad-coursecard__title a:hover {
+  text-decoration: underline;
+}
+
+.acad-coursecard__summary {
+  margin: 0;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.acad-coursecard__facts {
+  display: flex;
+  gap: 16px;
+  margin: auto 0 0;
+  padding-top: 10px;
+  color: var(--acad-muted);
+  font: 500 12px/1 var(--acad-f-mono);
+}
+.acad-coursecard__facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.acad-coursecard__facts svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+}
+
+.acad-coursecard__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px dashed var(--acad-line-strong);
+}
+
+.acad-coursecard__price {
+  font: 600 17px/1 var(--acad-f-mono);
+}
+.acad-coursecard__price.is-free {
+  color: var(--acad-ok);
+}
+
+.acad-coursecard__go {
+  position: relative;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--acad-signal-text);
+  font-weight: 500;
+  font-size: 13.5px;
+  text-decoration: none;
+}
+.acad-coursecard__go svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}

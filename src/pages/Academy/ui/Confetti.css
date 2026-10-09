@@ -1,0 +1,42 @@
+/* One short burst. See Confetti.tsx for the rules it keeps. */
+
+.acad-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Above the page's own background but below anything with a control
+     in it, so a piece can never sit over a button. */
+  z-index: 1;
+}
+
+.acad-confetti i {
+  position: absolute;
+  top: -16px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  /* Only transform and opacity, so this never asks the browser to lay
+     the page out again. */
+  animation: acad-fall 2.6s cubic-bezier(0.3, 0.1, 0.5, 1) forwards;
+}
+
+@keyframes acad-fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 0), 70vh, 0) rotate(var(--spin, 360deg));
+  }
+}
+
+/* Belt and braces. The component already renders nothing under reduced
+   motion; this makes it true even if that check is ever removed. */
+@media (prefers-reduced-motion: reduce) {
+  .acad-confetti {
+    display: none;
+  }
+}

@@ -3,13 +3,23 @@ import { Link, useNavigate } from "react-router";
 
 import Seo from "../../../components/Seo/component";
 import { routes } from "../../routes";
-import { getToken, requestCode, signIn } from "../../../lib/learning";
+import {
+  getToken,
+  requestCode,
+  signIn,
+  CODE_SENT_MESSAGE,
+} from "../../../lib/learning";
 import LiveBackground from "../LiveBackground";
 import "../portal.css";
 
 // Sign in to the learning portal. Email address, then a one time code.
 // There is no password. Deliberately noindex: this page is for enrolled
 // participants and has no business in search results.
+//
+// The sentence shown after asking for a code is the SAME for everybody,
+// whatever the database actually did, so this page cannot be used to find
+// out who is enrolled. The wording comes from the database, so there is one
+// place to change it and the page can never drift out of step with it.
 
 export default function LearnerLogin() {
   const navigate = useNavigate();
@@ -30,11 +40,14 @@ export default function LearnerLogin() {
     setBusy(true);
     const r = await requestCode(email);
     setBusy(false);
+    // r.ok is false only for an address that is not an address. Every other
+    // outcome, including not being enrolled and asking too often, comes back
+    // ok with the one shared sentence, so the next step always looks the same.
     if (!r.ok) {
       setError(r.message);
       return;
     }
-    setNote(r.message);
+    setNote(r.message || CODE_SENT_MESSAGE);
     setStep("code");
   }
 
@@ -107,9 +120,7 @@ export default function LearnerLogin() {
             ) : (
               <>
                 <h1 className="lgn__h1">Check your email</h1>
-                <p className="lgn__txt">
-                  {note} Check your spam folder if it does not arrive.
-                </p>
+                <p className="lgn__txt">{note}</p>
                 <label className="lbl" htmlFor="lgn-code">
                   Your code
                 </label>

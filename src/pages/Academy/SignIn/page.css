@@ -1,0 +1,9 @@
+/* The forgotten password link sits tight under the password box, right
+   aligned, so it reads as belonging to that box rather than as a third
+   thing to fill in. */
+
+.acad-signin__forgot {
+  margin: -4px 0 0;
+  text-align: right;
+  font-size: 13.5px;
+}

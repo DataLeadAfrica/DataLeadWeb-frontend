@@ -1,0 +1,101 @@
+.acad-code {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 64px));
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 0 8px;
+  padding: 0;
+  border: 0;
+}
+
+/* The legend is read out but not drawn: the six boxes are obviously a code
+   on screen, and a heading above them would say it twice. */
+.acad-code__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.acad-code__box {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  text-align: center;
+  font: 600 30px/1 var(--acad-f-mono);
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 14px;
+  background: var(--acad-surface-2);
+  outline: none;
+  caret-color: var(--acad-signal);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+.acad-code__box:focus {
+  border-color: var(--acad-signal);
+  box-shadow: 0 0 0 4px var(--acad-glow);
+}
+.acad-code__box.is-filled {
+  border-color: var(--acad-signal-soft);
+  background: linear-gradient(
+    180deg,
+    var(--acad-surface-2),
+    var(--acad-surface)
+  );
+}
+
+/* Accepted: the boxes lift and turn green in a wave, left to right. The
+   wave is a transition delay, not an animation, so it runs once and then
+   the boxes simply stay green. */
+.acad-code.is-accepted .acad-code__box {
+  border-color: var(--acad-ok);
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+  transform: translateY(-3px);
+}
+.acad-code.is-accepted .acad-code__box:nth-child(3) {
+  transition-delay: 0.05s;
+}
+.acad-code.is-accepted .acad-code__box:nth-child(4) {
+  transition-delay: 0.1s;
+}
+.acad-code.is-accepted .acad-code__box:nth-child(5) {
+  transition-delay: 0.15s;
+}
+.acad-code.is-accepted .acad-code__box:nth-child(6) {
+  transition-delay: 0.2s;
+}
+.acad-code.is-accepted .acad-code__box:nth-child(7) {
+  transition-delay: 0.25s;
+}
+
+/* Refused: one shake. The error is also written out underneath, so nobody
+   has to have seen the movement to know what happened. */
+.acad-code.is-refused {
+  animation: acad-shake 0.4s;
+}
+@keyframes acad-shake {
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+@media (max-width: 480px) {
+  .acad-code {
+    gap: 7px;
+  }
+  .acad-code__box {
+    font-size: 24px;
+    border-radius: 11px;
+  }
+}

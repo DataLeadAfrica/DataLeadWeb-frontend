@@ -1,0 +1,342 @@
+/* /lms/learn/:slug/quiz/:quizId. The module quiz. */
+
+.acad-quiz__waiting {
+  height: 320px;
+}
+
+/* ------------------------------------------------------------- the intro */
+
+.acad-qintro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .acad-qintro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.acad-qintro__h1 {
+  font-size: clamp(30px, 4.4vw, 48px);
+  margin: 6px 0 12px;
+}
+
+.acad-rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.acad-rule {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  padding: 14px;
+}
+.acad-rule b {
+  display: block;
+  font: 600 22px/1 var(--acad-f-display);
+}
+.acad-rule small {
+  font: 500 11px/1.3 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+}
+
+/* --------------------------------------------------------- the tries card */
+
+.acad-tries {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-l);
+  padding: 20px;
+  box-shadow: var(--acad-shadow);
+}
+
+.acad-tries__pips {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+.acad-tries__pips i {
+  width: 28px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--acad-surface-3);
+}
+/* Used, current and still to come are three different fills. A learner
+   should be able to count their remaining tries without reading. */
+.acad-tries__pips i.is-used {
+  background: var(--acad-bad);
+}
+.acad-tries__pips i.is-now {
+  background: var(--acad-signal);
+}
+
+.acad-tries__say {
+  margin: 12px 0 0;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+}
+
+.acad-tries__go {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* ------------------------------------------------------------- the run */
+
+.acad-quizbox {
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 24px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+@media (max-width: 560px) {
+  .acad-quizbox {
+    padding: 18px;
+  }
+}
+
+.acad-quizbox__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.acad-quizbox__saved {
+  font-size: 11.5px;
+  color: var(--acad-ok);
+}
+
+.acad-quizbox__h2 {
+  margin: 10px 0 14px;
+}
+
+/* The numbered squares.
+   36px, not the 30px in the concept: below about 36 a square is smaller
+   than a fingertip, and this is the control somebody uses most on a
+   phone. They wrap, so a twenty question quiz becomes two rows rather
+   than a horizontal scroll nobody notices is there. */
+.acad-qprog {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 14px 0 16px;
+}
+.acad-qprog button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface-2);
+  font: 600 12px/1 var(--acad-f-mono);
+  cursor: pointer;
+  color: var(--acad-muted);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.acad-qprog button.is-answered {
+  background: color-mix(in srgb, var(--acad-signal) 12%, var(--acad-surface));
+  border-color: color-mix(in srgb, var(--acad-signal) 40%, transparent);
+  color: var(--acad-signal-deep);
+}
+.acad-qprog button.is-at {
+  border-color: var(--acad-text);
+  color: var(--acad-text);
+  /* The current one also gets a second ring, so it is distinguishable
+     from an answered one without relying on colour. */
+  box-shadow: 0 0 0 2px var(--acad-surface), 0 0 0 3px var(--acad-text);
+}
+.acad-qprog button:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------- the review */
+
+.acad-review {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.acad-review button {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--acad-line);
+  background: var(--acad-surface-2);
+  cursor: pointer;
+  color: inherit;
+}
+.acad-review button:hover {
+  border-color: var(--acad-line-strong);
+}
+.acad-review button:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 1px;
+}
+.acad-review--blank button {
+  border-color: color-mix(in srgb, var(--acad-signal) 40%, transparent);
+  background: var(--acad-signal-wash);
+}
+
+.acad-review__n {
+  font-size: 12px;
+  color: var(--acad-muted);
+}
+.acad-review__mid {
+  min-width: 0;
+}
+.acad-review__mid b {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  /* One line, so twenty questions is a list rather than an essay. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acad-review__mid small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--acad-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acad-review--blank .acad-review__mid small {
+  color: var(--acad-signal-deep);
+  font-weight: 500;
+}
+.acad-review__go {
+  font-size: 11px;
+  color: var(--acad-signal-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+@media (max-width: 480px) {
+  .acad-review__go {
+    display: none;
+  }
+  .acad-review button {
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+}
+
+/* ----------------------------------------------------------- the result */
+
+.acad-result {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--acad-surface);
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  padding: 32px 24px;
+}
+.acad-result .acad-ring {
+  margin: 0 auto 10px;
+}
+
+.acad-result__verdict {
+  margin: 8px 0 0;
+  font: 600 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-ok);
+}
+.acad-result--no .acad-result__verdict {
+  color: var(--acad-bad);
+}
+
+.acad-result h2 {
+  margin: 8px 0;
+}
+
+.acad-result__say {
+  color: var(--acad-muted);
+  margin: 0 auto;
+  max-width: 48ch;
+  font-size: 14.5px;
+}
+
+.acad-result__pips {
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.acad-result__actions {
+  justify-content: center;
+}
+
+.acad-result__review {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--acad-line);
+  text-align: left;
+  display: grid;
+  gap: 16px;
+}
+.acad-result__review h3 {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-qprog button {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------- the quiz is shut for now
+
+   The four rule tiles describe how the quiz works. While it is waiting
+   they are history, not instructions, so they are dimmed: "3 tries,
+   then a day's wait" sitting at full strength beside a card saying the
+   tries are gone reads as a contradiction before anybody has read
+   either properly.
+
+   Dimmed rather than removed, because they are still the answer to
+   "what am I coming back to". */
+
+.acad-qintro--waiting .acad-rules {
+  opacity: 0.45;
+  /* The tiles are not interactive, so nothing here needs to stay
+     reachable. aria-hidden on the element keeps them out of a screen
+     reader's way too, since the waiting card says the same thing in
+     words. */
+  filter: grayscale(1);
+}
+
+.acad-qintro--waiting .acad-tries {
+  border-color: color-mix(in srgb, var(--acad-signal) 35%, transparent);
+}
+
+@media (max-width: 900px) {
+  /* ON A PHONE THE WAITING CARD GOES FIRST. Below the split the two
+     columns become one, and the rules would otherwise fill the screen
+     above the only thing that matters, which is when they can come
+     back. Only while waiting: when the quiz is open the rules belong
+     first, because they have to be read before a try is spent. */
+  .acad-qintro--waiting {
+    display: flex;
+    flex-direction: column;
+  }
+  .acad-qintro--waiting > .acad-tries {
+    order: -1;
+  }
+}

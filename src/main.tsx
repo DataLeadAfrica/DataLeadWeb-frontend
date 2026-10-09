@@ -21,6 +21,7 @@ import consultancyRouter from "./pages/Consultancy/router";
 import successRouter from "./pages/Success/router";
 import certificatesRouter from "./pages/Certificates/router";
 import learningRouter from "./pages/Learning/router";
+import academyRouter from "./pages/Academy/router";
 import Certifications from "./pages/Certifications/page";
 
 createRoot(document.getElementById("root")!).render(
@@ -44,6 +45,7 @@ createRoot(document.getElementById("root")!).render(
         {certificatesRouter()}
         <Route path={routes.certifications} element={<Certifications />} />
         {learningRouter()}
+        {academyRouter()}
       </Routes>
       <Footer />
     </BrowserRouter>
