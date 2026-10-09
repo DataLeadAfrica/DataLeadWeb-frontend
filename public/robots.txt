@@ -1,0 +1,35 @@
+# What search engines and AI crawlers may read.
+#
+# The default is yes. Only three folders are closed, and each is closed
+# because its pages belong to one signed in person and would be useless
+# to anybody else.
+
+User-agent: *
+Allow: /
+
+# The course player and a learner's own pages. Behind a sign in anyway,
+# so a crawler only ever sees a redirect, and asking it not to try saves
+# everybody the round trip.
+Disallow: /lms/learn/
+
+# The place courses are written. Staff only.
+Disallow: /lms/studio/
+
+# The staff portal and the staff certificate console.
+Disallow: /staff/
+
+# TWO THINGS THAT ARE DELIBERATELY NOT BLOCKED, so that nobody adds them
+# later thinking it is an oversight:
+#
+#   /api/ stays open. The pictures that appear when a certificate or a
+#   course is shared come from /api/og, and several link preview robots
+#   read robots.txt before fetching a picture. Blocking /api/ would mean
+#   a grey box in WhatsApp instead of a card.
+#
+#   /lms/sign-up, /lms/sign-in and /lms/me stay open. They each carry a
+#   noindex tag, and a crawler has to be allowed to fetch a page in order
+#   to read the tag telling it not to index that page. Blocking them here
+#   would mean the noindex is never seen, and the addresses can still end
+#   up listed from links elsewhere.
+
+Sitemap: https://dataleadafrica.com/sitemap.xml

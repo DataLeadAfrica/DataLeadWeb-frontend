@@ -840,12 +840,139 @@ function card({ eyebrow, name, programme, dateText, number, plateUrl }) {
   );
 }
 
+
+// ---------------------------------------------------------------------
+// THE ACADEMY COURSE CARD, added in Phase 3.
+//
+// Most links to a course will be shared in a WhatsApp group, and a link
+// with no picture is a grey box that nobody taps. This draws the same
+// 1200 by 630 card the certificates use, with the course title and the
+// three facts a person wants before they tap: how many lessons, how long
+// and what it costs.
+//
+// It uses the Poppins already embedded in this file, so it adds no
+// fonts and no dependency. The price is written "NGN 10,000" rather than
+// with the naira sign, because the embedded font is a subset built for
+// certificates and a character it does not carry would draw as a blank
+// box in the one place everybody looks.
+// ---------------------------------------------------------------------
+
+async function lookupCourse(slug) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/lms_public_course`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ p_slug: slug }),
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return (Array.isArray(rows) ? rows[0] : null) || null;
+  } catch {
+    return null;
+  }
+}
+
+function courseLength(seconds) {
+  const n = Math.max(0, Math.round(Number(seconds) || 0));
+  const h = Math.floor(n / 3600);
+  const m = Math.round((n % 3600) / 60);
+  if (h > 0 && m > 0) return `${h}h ${m}m`;
+  if (h > 0) return `${h}h`;
+  return `${m}m`;
+}
+
+function coursePrice(kobo) {
+  const n = Number(kobo) || 0;
+  if (n <= 0) return "Free";
+  return `NGN ${Math.round(n / 100).toLocaleString("en-NG")}`;
+}
+
+function courseCard({ title, facts }) {
+  return {
+    type: "div",
+    props: {
+      style: {
+        width: "1200px",
+        height: "630px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "72px 80px",
+        backgroundColor: "#eceff3",
+        backgroundImage:
+          "radial-gradient(900px 520px at 85% -10%, rgba(245,110,15,0.30), rgba(236,239,243,0))",
+        fontFamily: "Poppins",
+      },
+      children: [
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              fontSize: 24,
+              letterSpacing: "0.18em",
+              color: "#a8440a",
+              fontFamily: "Poppins Bold",
+            },
+            children: "DATA-LEAD ACADEMY",
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              marginTop: "28px",
+              fontSize: title.length > 38 ? 64 : 80,
+              lineHeight: 1.05,
+              color: "#16151b",
+              fontFamily: "Poppins Bold",
+            },
+            children: title,
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", marginTop: "48px", gap: "16px" },
+            children: facts.map((f) => ({
+              type: "div",
+              props: {
+                style: {
+                  display: "flex",
+                  padding: "14px 26px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(22,24,32,0.18)",
+                  backgroundColor: "#ffffff",
+                  fontSize: 28,
+                  color: "#16151b",
+                },
+                children: f,
+              },
+            })),
+          },
+        },
+      ],
+    },
+  };
+}
+
 export default async function handler(request) {
   const url = new URL(request.url);
   const number = (url.searchParams.get("number") || "").trim();
+  const courseSlug = (url.searchParams.get("course") || "").trim();
 
-  // request.url does not reliably carry the address the visitor actually
-  // used, so build it from the headers Vercel sets instead.
+  // The host this function is RUNNING on, used only to fetch this
+  // deployment's own artwork. It is deliberately NOT the one site
+  // address: a preview deployment has to read its own files, not
+  // production's. Nothing this function outputs is an address, so
+  // there is nothing here for SITE_ORIGIN to fix. The addresses that
+  // point AT this function are built from SITE_ORIGIN, in
+  // api/academy-meta.js.
   const proto = request.headers.get("x-forwarded-proto") || "https";
   const host =
     request.headers.get("x-forwarded-host") ||
@@ -857,6 +984,36 @@ export default async function handler(request) {
     { name: "Poppins", data: fontBytes(POPPINS_REGULAR_B64), weight: 400, style: "normal" },
     { name: "Poppins Bold", data: fontBytes(POPPINS_BOLD_B64), weight: 700, style: "normal" },
   ];
+
+  // The Academy course card. Asked for by slug, and if anything at all
+  // goes wrong it falls through to the ordinary card rather than
+  // answering with a broken picture.
+  if (courseSlug) {
+    const course = await lookupCourse(courseSlug);
+    if (course) {
+      const lessons = Number(course.lesson_count) || 0;
+      try {
+        return new ImageResponse(
+          courseCard({
+            title: course.title || "Data-Lead Academy",
+            facts: [
+              `${lessons} lesson${lessons === 1 ? "" : "s"}`,
+              courseLength(course.total_seconds),
+              coursePrice(course.price_kobo),
+            ],
+          }),
+          {
+            width: 1200,
+            height: 630,
+            fonts,
+            headers: { "Cache-Control": "public, max-age=3600, s-maxage=86400" },
+          },
+        );
+      } catch {
+        // fall through to the plain card below
+      }
+    }
+  }
 
   let row = null;
   try {

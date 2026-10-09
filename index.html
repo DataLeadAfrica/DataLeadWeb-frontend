@@ -16,7 +16,25 @@
       content="Data-Lead Africa is a research and training consultancy offering practitioner-led bootcamps in data analytics, AI, business analytics, bioinformatics and research methods — online or onsite in Abuja, across Africa."
     />
     <meta name="theme-color" content="#f56e0f" />
-    <link rel="canonical" href="https://dataleadafrica.com/" />
+
+    <!--
+      THERE IS DELIBERATELY NO canonical OR og:url HERE.
+
+      Both used to be hard coded to the homepage. index.html is served
+      for every address on the site, so the very first HTML a search
+      engine received for /courses, for every blog post and for every
+      research page said "this is a copy of the homepage". A crawler
+      that does not run JavaScript never saw anything else, and one that
+      does still read it first.
+
+      They are now set per page: by the Seo component once React has
+      booted, and, for the pages that need to be right before that, by
+      the edge functions in api/, which write the correct tags into this
+      file before it is sent.
+
+      If you ever add one back here, every page on the site goes back to
+      claiming to be the homepage.
+    -->
 
     <!-- Social / link previews (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
@@ -26,7 +44,6 @@
       property="og:description"
       content="Practitioner-led bootcamps in data analytics, AI, business analytics, bioinformatics and research methods — online or onsite in Abuja, across Africa."
     />
-    <meta property="og:url" content="https://dataleadafrica.com/" />
     <meta property="og:image" content="https://dataleadafrica.com/assets/index/hero.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Data-Lead Africa — Turning Data to Decision" />
