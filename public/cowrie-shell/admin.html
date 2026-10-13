@@ -389,6 +389,44 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
 .ad-bar{display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:center;padding:5px 0;font-size:13px}
 .ad-bar div{height:9px;background:var(--line);border-radius:99px;overflow:hidden} .ad-bar i{display:block;height:100%}
 .ad-key{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* ---------- show someone their own pay ---------- */
+.sv{position:fixed;inset:0;z-index:300;background:var(--paper);overflow:auto}
+.sv-bar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(18px,calc(50% - 330px));background:var(--ink);color:#fff}
+.sv-bar b{font-family:var(--display);font-size:19px;display:block}
+.sv-eye{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.sv-bar button{background:#fff;color:var(--ink);border-color:#fff;font-weight:600}
+.sv-wrap{max-width:660px;margin:0 auto;padding:18px 18px 60px}
+.sv-pickrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.sv-pickrow select{width:auto;flex:1;min-width:160px}
+.sv-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.sv-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:14px}
+.sv-h{font-family:var(--display);font-size:16px}
+.sv-sub{font-size:12.5px;color:var(--muted)}
+.sv-st{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--amber-bg);color:var(--amber)}
+.sv-st.ok{background:var(--green-bg);color:var(--green)}
+table.sv-t{width:100%;border-collapse:collapse;font-size:14px}
+table.sv-t td{padding:7px 0;border-bottom:1px solid var(--line)}
+table.sv-t td.n{text-align:right;font-variant-numeric:tabular-nums}
+table.sv-t tr.total td{border-top:1px solid var(--ink)}
+table.sv-t tr.rule td{padding-top:14px}
+.sv-loan{padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.sv-loan span{color:var(--muted);font-size:13px}
+body.sv-open{overflow:hidden}
+@media print{
+  body.sv-open > *:not(#sv){display:none!important}
+  body.sv-open #sv{position:static;overflow:visible}
+  body.sv-open .sv-bar button, body.sv-open .sv-pickrow{display:none!important}
+  body.sv-open .sv-bar{background:none;color:#000;position:static}
+}
+
+.ap-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ap-tools{display:flex;gap:8px;margin:12px 0 8px}
+.ap-tools button{padding:5px 12px;font-size:12.5px}
+.ap-days{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:6px}
+.ap-day{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:13px;cursor:pointer;margin:0}
+.ap-day input{width:auto;margin:0}
+.ap-day:has(input:checked){border-color:var(--orange);background:#fff4ec}
+.ap-sum{font-size:13px;margin:12px 0}
 </style>
 </head>
 <body>
@@ -603,6 +641,7 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
         <span style="color:var(--amber)">&#9873; Flagged</span>
       </div>
       <div class="daylist" id="p-days"></div>
+      <div id="p-approve"></div>
     </div>
 
     <div class="panel">
@@ -615,7 +654,8 @@ label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px}
     <div class="panel">
       <div class="panel-head">
         <div><h3>Pay</h3><div class="ps">A change writes a new record. The old one is never overwritten.</div></div>
-        <button class="btn-primary" onclick="togglePromo()">Promote or change pay</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="svOpenPerson()">Show them their pay</button>
+        <button class="btn-primary" onclick="togglePromo()">Promote or change pay</button></div>
       </div>
       <div class="money" id="p-money">&mdash;</div>
       <div class="hist" id="p-hist"></div>
@@ -2441,7 +2481,7 @@ async function tickPaid(iso, el){
   el.disabled = false;
   if(error){ el.checked = !on; toast("Could not. " + error.message); return; }
   toast(on ? "Counted. Payroll will pay for it." : "Taken off. It no longer counts.");
-  await pMonth(P.id, P_Y, P_M);
+  await Promise.all([ pMonth(P.id, P_Y, P_M), pApprove(P.id, P_Y, P_M) ]);
 }
 window.askDay = askDay; window.saveDayNote = saveDayNote;
 // The month currently on screen for this person. Starts at today's month and
@@ -2583,7 +2623,7 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id) ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pApprove(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id) ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
   $("promo").classList.add("hidden"); $("stat").classList.add("hidden"); $("typ").classList.add("hidden");
@@ -2677,7 +2717,7 @@ async function pShiftMonth(n){
   if(y > curY || (y === curY && m > curM)) return;
   P_Y = y; P_M = m;
   $("p-days").innerHTML = '<p style="color:var(--faint);font-size:13px;padding:14px 0">Loading&hellip;</p>';
-  await Promise.all([ pGlance(P.id, P_Y, P_M), pMonth(P.id, P_Y, P_M) ]);
+  await Promise.all([ pGlance(P.id, P_Y, P_M), pMonth(P.id, P_Y, P_M), pApprove(P.id, P_Y, P_M) ]);
 }
 
 async function pMonth(id, Y, M){
@@ -3367,6 +3407,160 @@ async function adLoanDecide(id, ok){
 }
 
 // ============================================================
+// SHOW SOMEONE THEIR OWN PAY
+// For when a staff member comes to Finance or Admin with a question.
+// The screen covers everything else, and the database sends back only
+// this one person's payslips and loans, so turning the screen towards
+// them cannot show anyone else's money. Opening it is logged.
+// ============================================================
+window.svOpen = svOpen; window.svClose = svClose; window.svSlip = svSlip;
+let SV = null;
+const svN = v => "₦" + Number(v || 0).toLocaleString("en-NG", { minimumFractionDigits:2, maximumFractionDigits:2 });
+async function svOpen(staffId){
+  const { data, error } = await db.rpc("staff_pay_view", { p_staff: staffId });
+  if(error){ toast("Could not open their pay. " + error.message); return; }
+  SV = data || { name:"", payslips:[], loans:[] };
+  $("sv-name").textContent = SV.name;
+  const ps = SV.payslips || [];
+  $("sv-pick").classList.toggle("hidden", !ps.length);
+  $("sv-month").innerHTML = ps.map((p, i) => '<option value="' + i + '">' + MONTHS[p.month - 1] + " " + p.year + '</option>').join("");
+  svSlip();
+  const st = { awaiting_approval:"Waiting for approval", approved:"Approved, not yet paid out", declined:"Declined", active:"Being repaid", repaid:"Repaid in full" };
+  const ln = SV.loans || [];
+  $("sv-loans").innerHTML = ln.length ? '<div class="sv-card"><b class="sv-h">Loans</b>' + ln.map(l =>
+      '<div class="sv-loan"><b>' + svN(l.principal) + '</b> <span>' + esc(st[l.status] || l.status) + (l.purpose ? ". " + esc(l.purpose) : "") + '</span>' +
+      (l.status === "active" || l.status === "repaid" ? '<div>Repaid ' + svN(l.repaid) + '. Left to repay <b>' + svN(l.outstanding) + '</b>.' +
+        (l.repay_method === "payroll" && l.status === "active" ? " " + svN(l.monthly_deduction) + " comes off the salary each month." : "") + '</div>' : '') +
+      '</div>').join("") + '</div>' : "";
+  document.body.classList.add("sv-open");
+  $("sv").classList.remove("hidden"); $("sv").scrollTop = 0;
+  setTimeout(() => $("sv-close").focus(), 50);
+}
+function svClose(){
+  $("sv").classList.add("hidden"); document.body.classList.remove("sv-open");
+  $("sv-slip").innerHTML = ""; $("sv-loans").innerHTML = ""; $("sv-name").textContent = ""; SV = null;   // nothing of theirs left behind
+}
+document.addEventListener("keydown", e => { if(e.key === "Escape" && SV) svClose(); });
+function svSlip(){
+  const ps = (SV && SV.payslips) || [];
+  if(!ps.length){ $("sv-slip").innerHTML = '<div class="alert info"><b>No payslip yet</b>One appears once their timesheet is approved and Finance has run the month.</div>'; return; }
+  const p = ps[Number($("sv-month").value) || 0];
+  const certified = p.status === "certified" || p.status === "paid";
+  const row = (k, v, cls) => '<tr class="' + (cls || "") + '"><td>' + k + '</td><td class="n">' + v + '</td></tr>';
+  const neg = v => Number(v) > 0 ? "(" + svN(v) + ")" : "—";
+  const has = k => Number(p[k] || 0) > 0;
+  $("sv-slip").innerHTML = '<div class="sv-card">' +
+    '<div class="sv-top"><div><b class="sv-h">Payslip</b><div class="sv-sub">' + MONTHS[p.month - 1] + " " + p.year + '</div></div>' +
+      '<span class="sv-st ' + (certified ? "ok" : "") + '">' + (p.status === "paid" ? "Paid" : certified ? "Certified" : "Not yet certified") + '</span></div>' +
+    (certified ? "" : '<div class="alert warn" style="margin-top:0"><b>Provisional</b>Not certified yet, so the figures may still change.</div>') +
+    '<table class="sv-t">' +
+      (p.working_days != null ? row("Working days in the month", p.working_days) : "") +
+      (p.days_paid != null ? row("Days paid", p.days_paid) : "") +
+      (has("unpaid_days") ? row("Unpaid days", p.unpaid_days) : "") +
+      row("Basic", svN(p.basic), "rule") + row("Housing", svN(p.housing)) + row("Transport", svN(p.transport)) +
+      (has("other_allow") ? row("Other allowance", svN(p.other_allow)) : "") +
+      (has("extra_pay") ? row("Extra hours", svN(p.extra_pay)) : "") +
+      row("<b>Gross salary</b>", "<b>" + svN(p.gross_salary) + "</b>", "total") +
+      (p.paye_exempt ? row("PAYE", "Exempt", "rule") : row("PAYE", neg(p.paye), "rule")) +
+      (has("pension_employee") ? row("Pension", neg(p.pension_employee)) : "") +
+      (has("nhf") ? row("National Housing Fund", neg(p.nhf)) : "") +
+      (has("nhis") ? row("National Health Insurance", neg(p.nhis)) : "") +
+      (has("loan_repayment") ? row("Loan repayment", neg(p.loan_repayment)) : "") +
+      (has("salary_advance") ? row("Salary advance", neg(p.salary_advance)) : "") +
+      (has("union_dues") ? row("Union dues", neg(p.union_dues)) : "") +
+      (has("other_deductions") ? row("Other deductions", neg(p.other_deductions)) : "") +
+      row("<b>Net pay</b>", "<b>" + svN(p.net_pay) + "</b>", "total") +
+      (has("data_claim") ? row("Data claim", svN(p.data_claim), "rule") : "") +
+      (has("travel_claim") ? row("Travel claim", svN(p.travel_claim)) : "") +
+      (has("other_claim") ? row("Other claim", svN(p.other_claim)) : "") +
+      row("<b>Amount transferred</b>", "<b>" + svN(p.transfer_amount) + "</b>", "total") +
+    '</table>' +
+    (has("rent_relief_yr") ? '<p class="sv-sub" style="margin-top:12px">Rent relief of ' + svN(p.rent_relief_yr) + ' a year was applied to the tax' +
+      (p.rent_is_assumed ? ", based on an assumed rent. A tenancy agreement would let it reflect the real rent." : ".") + '</p>' : "") +
+    (certified && p.certified_at ? '<p class="sv-sub">Certified ' + new Date(p.certified_at).toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" }) +
+      (p.certified_by_name ? " by " + esc(p.certified_by_name) : "") + (p.paid_on ? ". Paid " + new Date(p.paid_on + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" }) : "") + '.</p>' : "") +
+  '</div>';
+}
+
+// ============================================================
+// A MONTH WITH NO TIMESHEET
+// Payroll pays only an approved month. When someone worked but never
+// submitted, the CEO or COO can approve the month here, with a reason.
+// It is recorded as their decision and marked as not submitted by the
+// staff member, so it can never pass for the person's own sign-off.
+// ============================================================
+window.pApproveDays = pApproveDays; window.apAll = apAll; window.apCount = apCount; window.svOpenPerson = () => { if(P) svOpen(P.id); };
+let AP = null;
+async function pApprove(id, Y, M){
+  const box = $("p-approve"); if(!box) return;
+  box.innerHTML = ""; AP = null;
+  const roles = (ME && ME.roles) || [];
+  if(!(roles.includes("super_admin") || roles.includes("coo"))) return;
+  const now = new Date();
+  if(Y > now.getFullYear() || (Y === now.getFullYear() && M > now.getMonth() + 1)) return;
+  const [st, dl] = await Promise.all([ db.rpc("month_approval_state", { p_staff:id, p_year:Y, p_month:M }),
+                                       db.rpc("month_unlogged_days", { p_staff:id, p_year:Y, p_month:M }) ]);
+  if(st.error){ console.warn("month_approval_state:", st.error.message); return; }
+  const s = st.data || {}, mn = MONTHS[M-1], approved = s.status === "director_approved";
+  if(s.payroll === "certified" || s.payroll === "paid"){
+    if(approved && !s.signed_by_staff)
+      box.innerHTML = '<div class="ap-box"><div class="alert ok" style="margin:0"><b>' + mn + ' was approved without a timesheet</b>By ' + esc(s.approved_by || "") + ': ' + esc(s.note || "") + '. Pay is certified.</div></div>';
+    return;
+  }
+  if(s.status === "submitted" || s.status === "manager_approved"){
+    box.innerHTML = '<div class="ap-box"><p style="color:var(--muted);font-size:13px;margin:0">They submitted ' + mn + '. It is approved the usual way, from the timesheets waiting for review.</p></div>';
+    return;
+  }
+  if(P && ME && P.id === ME.id) return;
+  const days = (dl.data || []);
+  AP = { Y, M, mn, logged:Number(s.logged || 0), leave:Number(s.leave_days || 0), wd:Number(s.working_days || 0), approved, days };
+  const head = approved
+    ? '<div class="alert ok" style="margin:0 0 12px"><b>' + mn + ' is approved' + (s.signed_by_staff ? '' : ' without a timesheet') + '</b>' +
+        (s.signed_by_staff ? '' : 'By ' + esc(s.approved_by || "") + ': ' + esc(s.note || "") + '. ') + 'Finance can now run ' + mn + ' payroll, and it will include them.</div>' +
+      (days.length ? '<b style="font-size:14px">Change the days paid without a log</b>' : '')
+    : '<b style="font-size:14px">' + mn + ' has no approved timesheet</b>' +
+      '<p style="color:var(--muted);font-size:13px;margin:4px 0 0">' + (s.status === "returned" ? "It was sent back and not resubmitted. " : "They did not submit one. ") +
+      'Payroll pays only an approved month, and only for the days counted. Tick the days they worked, give one reason, and approve. It is recorded as your decision, not their sign-off.</p>';
+  if(!days.length){ box.innerHTML = '<div class="ap-box">' + head + (approved ? '' : '<p style="font-size:13px;margin:8px 0 0">There are no unlogged working days in ' + mn + ' to choose.</p>') + '</div>'; return; }
+  box.innerHTML = '<div class="ap-box">' + head +
+    '<div class="ap-tools"><button type="button" onclick="apAll(true)">Tick all</button><button type="button" onclick="apAll(false)">Clear</button></div>' +
+    '<div class="ap-days">' + days.map(d => { const dt = new Date(d.work_date + "T00:00:00");
+      return '<label class="ap-day"><input type="checkbox" value="' + d.work_date + '"' + (d.counted ? " checked" : "") + ' onchange="apCount()">' +
+        '<span>' + DOWFULL[dt.getDay()].slice(0,3) + " " + dt.getDate() + '</span></label>'; }).join("") + '</div>' +
+    '<p class="ap-sum" id="amw-sum"></p>' +
+    '<div class="fld"><label>Why (kept on record)</label><input id="amw-why" placeholder="Worked these days on the VACE fieldwork; did not submit"></div>' +
+    '<div id="amw-msg"></div>' +
+    '<button class="btn-primary" id="amw-btn" onclick="pApproveDays()"></button></div>';
+  apCount();
+}
+function apPicked(){ return [...document.querySelectorAll("#p-approve .ap-day input:checked")].map(x => x.value); }
+function apAll(on){ document.querySelectorAll("#p-approve .ap-day input").forEach(x => x.checked = on); apCount(); }
+function apCount(){
+  if(!AP) return;
+  const n = apPicked().length, total = AP.logged + AP.leave + n;
+  $("amw-sum").innerHTML = 'Pay will cover <b>' + total + ' of ' + AP.wd + ' working days</b>: ' +
+    [AP.logged ? AP.logged + " they logged" : "", AP.leave ? AP.leave + " on leave" : "", n + " you ticked"].filter(Boolean).join(", ") + '.';
+  const b = $("amw-btn");
+  b.textContent = AP.approved ? "Save the days paid" : (n ? "Approve " + AP.mn + " for " + n + " day" + (n === 1 ? "" : "s") : "Tick at least one day");
+  b.disabled = !n;
+}
+async function pApproveDays(){
+  const why = val("amw-why"), picked = apPicked(), mn = AP.mn;
+  if(!picked.length){ msg("amw-msg","err","No days ticked","Tick the days they worked."); return; }
+  if(!why){ msg("amw-msg","err","A reason is needed","It is the only record of why these days were paid without a timesheet."); return; }
+  const who = P.display_name || P.full_name;
+  if(!confirm((AP.approved ? "Pay " : "Approve " + mn + " " + AP.Y + " for " + who + ", paying ") + picked.length + " day" + (picked.length === 1 ? "" : "s") +
+              " without a timesheet?\n\nDays left unticked will not be paid. It is recorded in your name.")) return;
+  const label = $("amw-btn").textContent;
+  btn("amw-btn", true, "Saving");
+  const { error } = await db.rpc("admin_approve_days", { p_staff:P.id, p_year:AP.Y, p_month:AP.M, p_dates:picked, p_reason:why });
+  btn("amw-btn", false, label);
+  if(error){ msg("amw-msg","err","Not approved", error.message); return; }
+  toast(AP.approved ? "Days saved." : mn + " approved for " + picked.length + " day" + (picked.length === 1 ? "" : "s") + ". Finance can now run " + mn + " payroll for them.");
+  await Promise.all([ pMonth(P.id, AP.Y, AP.M), pApprove(P.id, AP.Y, AP.M) ]);
+}
+
+// ============================================================
 // EMPLOYMENT STATUS
 // ============================================================
 function toggleStatus(){
@@ -3869,5 +4063,17 @@ async function loadEmails(){
     esc(n.status) + '</span></div>').join("");
 }
 </script>
+<div id="sv" class="sv hidden" role="dialog" aria-modal="true" aria-labelledby="sv-name">
+  <div class="sv-bar">
+    <div><span class="sv-eye">Showing only</span><b id="sv-name"></b></div>
+    <button id="sv-close" onclick="svClose()">Close</button>
+  </div>
+  <div class="sv-wrap">
+    <div class="sv-pickrow" id="sv-pick"><label for="sv-month">Month</label><select id="sv-month" onchange="svSlip()"></select>
+      <button onclick="window.print()">Print or save as PDF</button></div>
+    <div id="sv-slip"></div>
+    <div id="sv-loans"></div>
+  </div>
+</div>
 </body>
 </html>
