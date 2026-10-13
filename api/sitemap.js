@@ -13,7 +13,7 @@
 // sitemap that answers 500 is treated by Google as a broken sitemap, and
 // it stops asking for a while.
 
-import { getCatalogue, SITE_ORIGIN } from "./_academy-data.js";
+import { ACADEMY_PUBLIC, getCatalogue, SITE_ORIGIN } from "./_academy-data.js";
 import { PUBLIC_ROUTES } from "./_site-routes.js";
 
 export const config = { runtime: "edge" };
@@ -43,18 +43,36 @@ function asDate(iso) {
  * preview deployment's addresses would be asking Google to index a
  * second copy of the site.
  */
-export function buildSitemap(origin, courses) {
+export function buildSitemap(origin, courses, academyPublic = ACADEMY_PUBLIC) {
   const entries = [];
 
+  // THE LAUNCH SWITCH. While the Academy is not public, no /lms address
+  // is listed at all: not /lms, not /lms/courses, and not one course.
+  // Everything else on the site is listed exactly as before, because a
+  // sitemap that loses the blog because the Academy is not ready yet
+  // would be a far more expensive mistake than the one it is avoiding.
+  //
+  // A sitemap is a request to index. Listing a page that answers
+  // noindex is asking for the one thing and forbidding it in the same
+  // breath, and Search Console reports it as an error on the whole
+  // sitemap rather than on the one line.
+  //
+  // academyPublic is a parameter only so one test can check both
+  // values. In production it is always the constant.
+  const skipAcademy = !academyPublic;
+
   for (const path of PUBLIC_ROUTES) {
+    if (skipAcademy && (path === "/lms" || path.startsWith("/lms/"))) continue;
     entries.push({ loc: `${origin}${path === "/" ? "/" : path}` });
   }
 
-  for (const c of courses || []) {
-    entries.push({
-      loc: `${origin}/lms/courses/${c.slug}`,
-      lastmod: asDate(c.updated_at || c.published_at),
-    });
+  if (!skipAcademy) {
+    for (const c of courses || []) {
+      entries.push({
+        loc: `${origin}/lms/courses/${c.slug}`,
+        lastmod: asDate(c.updated_at || c.published_at),
+      });
+    }
   }
 
   const body = entries

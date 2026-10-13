@@ -1,3 +1,4 @@
+import "../../css/dla-mark.css";
 import "./Pitch.css";
 import { PlayIcon, SealIcon, TickIcon } from "./ui/Icons";
 
@@ -28,8 +29,10 @@ type Props = {
 export default function Pitch({ headline, lead, showPath = true }: Props) {
   return (
     <div className="acad-pitch">
+      {/* The mark, in place of the pulsing dot. Decoration: the words
+          beside it say the same thing. */}
       <p className="acad-eyebrow">
-        <i />
+        <span className="dla-mark" aria-hidden="true" />
         Data-Lead Academy
       </p>
 

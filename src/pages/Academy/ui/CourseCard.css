@@ -1,11 +1,12 @@
 .acad-coursecard {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  /* A fixed minimum so a grid of cards does not reflow as they arrive.
-     This is most of what keeps the layout shift under 0.1. */
-  min-height: 268px;
-  padding: 20px;
+  /* No padding on the card itself: the cover runs edge to edge, which is
+     what makes it read as a card rather than as a row with a thumbnail
+     stuck on it. The padding is on the body below. */
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--acad-line);
   border-radius: var(--acad-r-l);
   background: var(--acad-surface);
@@ -16,22 +17,19 @@
   border-color: var(--acad-line-strong);
 }
 
-.acad-coursecard__top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+/* The cover's own rounded corners are squared off here, because the
+   card's corners are already doing that job and two radii at the same
+   corner draw a visible notch. */
+.acad-coursecard > .acad-cover {
+  border-radius: 0;
 }
 
-.acad-coursecard__glyph {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--acad-signal-wash);
-  color: var(--acad-signal-deep);
-  font: 600 13px/1 var(--acad-f-mono);
+.acad-coursecard__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 9px;
+  padding: 15px 18px 17px;
 }
 
 /* .acad-chip is not here. It moved to academy.css, because the Phase 4
@@ -51,8 +49,15 @@
 }
 
 .acad-coursecard__title {
-  margin: 4px 0 0;
-  font: 500 18px/1.25 var(--acad-f-display);
+  margin: 0;
+  font: 500 17.5px/1.25 var(--acad-f-display);
+  /* Two lines at most. A card whose title runs to four lines pushes its
+     own price off the bottom of the row. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 .acad-coursecard__title a {
   color: inherit;
@@ -65,9 +70,6 @@
   position: absolute;
   inset: 0;
 }
-.acad-coursecard {
-  position: relative;
-}
 .acad-coursecard__title a:hover {
   text-decoration: underline;
 }
@@ -77,15 +79,27 @@
   color: var(--acad-muted);
   font-size: 13.5px;
   line-height: 1.5;
+  /* Exactly two lines, so every card in a row is the same height and
+     the prices line up across the grid. A summary longer than this is
+     a summary somebody can read on the course page. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  /* 2 lines at 13.5px and 1.5 line height, held open so a one line
+     summary does not shorten the card. */
+  min-height: calc(2 * 1.5 * 13.5px);
 }
 
 .acad-coursecard__facts {
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  flex-wrap: wrap;
   margin: auto 0 0;
-  padding-top: 10px;
+  padding-top: 8px;
   color: var(--acad-muted);
-  font: 500 12px/1 var(--acad-f-mono);
+  font: 500 12px/1.4 var(--acad-f-mono);
 }
 .acad-coursecard__facts span {
   display: inline-flex;
@@ -105,7 +119,7 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  padding-top: 12px;
+  padding-top: 11px;
   border-top: 1px dashed var(--acad-line-strong);
 }
 

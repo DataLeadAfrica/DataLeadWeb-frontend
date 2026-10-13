@@ -24,6 +24,8 @@ export const SUPABASE_TIMEOUT_MS = 1500;
 // The title and description rules live in one file that the React page
 // imports too, so the two cannot drift apart. See api/_seo-rules.js.
 export {
+  ACADEMY_PUBLIC,
+  PREVIEW_NOTICE,
   SITE_ORIGIN,
   siteUrl,
   siteAsset,

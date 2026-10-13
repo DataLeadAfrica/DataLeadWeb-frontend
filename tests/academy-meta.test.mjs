@@ -1,7 +1,7 @@
 // Tests for the Academy edge functions, run in plain Node with a stubbed
 // global fetch. No network, no Supabase, no Vercel.
 //
-//   node --test tests/
+//   npm test
 //
 // The five cases the brief asks for are the five contexts below: a normal
 // course, a draft one, an unknown slug, Supabase being slow, and Supabase
@@ -19,6 +19,7 @@ import handler, {
   plural,
 } from "../api/academy-meta.js";
 import {
+  ACADEMY_PUBLIC,
   clip,
   asLength,
   asNaira,
@@ -305,7 +306,26 @@ test("Supabase slower than 1.5 seconds: the ordinary page, never a 500", async (
 async function assertServedAnyway(res, what) {
   assert.equal(res.status, 200, `${what}: status must be 200, never 404`);
   const html = await res.text();
-  assert.doesNotMatch(html, /noindex/, `${what}: must not carry noindex`);
+
+  // NOTHING ABOUT SUPABASE MAY ADD A noindex. That is the whole point
+  // of these three tests: slow, down and paused must not be able to
+  // tell a search engine the course is gone.
+  //
+  // Written against the launch switch rather than against "no noindex
+  // ever", because while ACADEMY_PUBLIC is false every /lms page
+  // carries noindex on purpose, for a completely different reason, and
+  // a test that could not tell the two apart would start passing for
+  // the wrong reason on launch day. tests/launch-switch.test.mjs
+  // checks both values of the switch end to end.
+  const hasNoindex = /noindex/.test(html);
+  assert.equal(
+    hasNoindex,
+    !ACADEMY_PUBLIC,
+    ACADEMY_PUBLIC
+      ? `${what}: must not carry noindex`
+      : `${what}: should carry noindex only because the Academy is not public yet, and it does not`,
+  );
+
   assert.doesNotMatch(
     html,
     /Course not found/,
@@ -529,7 +549,11 @@ test("a course whose words contain HTML cannot break out of a tag", async () => 
 // ============================================================= sitemap
 
 test("the sitemap lists the fixed pages and every published course", () => {
-  const xml = buildSitemap(ORIGIN, [COURSE]);
+  // The Academy's own three lines are listed only once the launch
+  // switch is on. Passing it in here keeps this test about everything
+  // else in the sitemap; tests/launch-switch.test.mjs is where both
+  // values of the switch are checked.
+  const xml = buildSitemap(ORIGIN, [COURSE], true);
   assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
   assert.match(xml, /<loc>https:\/\/dataleadafrica\.com\/<\/loc>/);
   assert.match(xml, /<loc>https:\/\/dataleadafrica\.com\/lms<\/loc>/);
@@ -547,9 +571,15 @@ test("the sitemap lists the fixed pages and every published course", () => {
 });
 
 test("the sitemap survives Supabase being unreachable", () => {
-  const xml = buildSitemap(ORIGIN, null);
-  assert.match(xml, /<loc>https:\/\/dataleadafrica\.com\/lms<\/loc>/);
-  assert.doesNotMatch(xml, /undefined/);
+  // Both values, because this is about the fixed pages surviving, and
+  // they have to survive either way.
+  for (const academyPublic of [true, false]) {
+    const xml = buildSitemap(ORIGIN, null, academyPublic);
+    assert.match(xml, /<loc>https:\/\/dataleadafrica\.com\/<\/loc>/);
+    assert.match(xml, /<loc>https:\/\/dataleadafrica\.com\/courses<\/loc>/);
+    assert.doesNotMatch(xml, /undefined/);
+  }
+  assert.match(buildSitemap(ORIGIN, null, true), /<loc>https:\/\/dataleadafrica\.com\/lms<\/loc>/);
 });
 
 // =====================================================================

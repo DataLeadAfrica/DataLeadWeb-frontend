@@ -5,6 +5,8 @@
 // TypeScript. This file is only the shape of them.
 
 export declare const SITE_ORIGIN: string;
+export declare const ACADEMY_PUBLIC: boolean;
+export declare const PREVIEW_NOTICE: string;
 export declare function siteUrl(path: string): string;
 export declare function siteAsset(pathWithQuery: string): string;
 

@@ -1,0 +1,109 @@
+/* The three short lists. See QuickPicks.tsx. */
+
+.acad-picks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+/* One under the other rather than squeezed: each row holds a picture, a
+   title and a price, and three of those across a tablet leaves the
+   titles one word wide. */
+@media (max-width: 900px) {
+  .acad-picks {
+    grid-template-columns: 1fr;
+  }
+}
+
+.acad-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+
+.acad-pick h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font: 500 18px/1.2 var(--acad-f-display);
+}
+.acad-pick h3 small {
+  margin-left: auto;
+  font: 500 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+}
+
+.acad-pick ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acad-pick li a {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 6px;
+  border-radius: 14px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.acad-pick li + li a {
+  border-top: 1px dashed var(--acad-line);
+}
+.acad-pick li a:hover {
+  background: var(--acad-surface-2);
+}
+.acad-pick li a:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+.acad-pick .acad-cover {
+  width: 100%;
+}
+
+.acad-pick__mid {
+  min-width: 0;
+}
+.acad-pick__mid b {
+  display: block;
+  font: 500 15px/1.25 var(--acad-f-display);
+  /* One line. A wrapping title would push the rows out of step with
+     the column beside it. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acad-pick__mid small {
+  font: 500 11.5px/1.4 var(--acad-f-mono);
+  color: var(--acad-muted);
+}
+
+.acad-pick em {
+  font: 600 12px/1 var(--acad-f-mono);
+  font-style: normal;
+  color: var(--acad-text);
+  white-space: nowrap;
+}
+.acad-pick em.is-free {
+  color: var(--acad-ok);
+}
+
+/* Pushed to the bottom, so the three links line up across the columns
+   however many rows each one has. */
+.acad-pick__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+}

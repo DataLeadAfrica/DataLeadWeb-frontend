@@ -1,0 +1,225 @@
+/* The goal chips and the card rail. See GoalRail.tsx. */
+
+.acad-goals {
+  display: flex;
+  gap: 8px;
+  /* The chips scroll sideways rather than wrapping, so the row stays
+     one line however many areas there are. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* 2px of room so a focus ring is not clipped by the overflow. */
+  padding: 2px 2px 4px;
+  margin: 0 -2px 16px;
+}
+.acad-goals::-webkit-scrollbar {
+  display: none;
+}
+
+.acad-goal {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+  color: var(--acad-text);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.acad-goal svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--acad-signal-text);
+  fill: none;
+  stroke-width: 1.7;
+}
+.acad-goal:hover {
+  border-color: var(--acad-signal);
+}
+.acad-goal[aria-pressed="true"] {
+  background: var(--acad-text);
+  border-color: var(--acad-text);
+  color: #fff;
+}
+.acad-goal[aria-pressed="true"] svg {
+  stroke: var(--acad-signal-soft);
+}
+.acad-goal b {
+  margin-left: 2px;
+  font: 600 11px/1 var(--acad-f-mono);
+  color: var(--acad-muted);
+}
+.acad-goal[aria-pressed="true"] b {
+  color: #b9b2ad;
+}
+
+/* ---------------------------------------------------------- the rail */
+
+.acad-crail {
+  position: relative;
+}
+
+.acad-crail__track {
+  display: grid;
+  grid-auto-flow: column;
+  /* Three across, with the gaps taken out of the width so the third
+     card ends exactly at the right edge rather than half off it. */
+  grid-auto-columns: calc((100% - 32px) / 3);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 2px;
+  padding: 4px 2px 18px;
+  scrollbar-width: none;
+  /* Stops a sideways flick on the rail from also dragging the page
+     back, which on iOS looks like the page is trying to leave. */
+  overscroll-behavior-x: contain;
+}
+.acad-crail__track::-webkit-scrollbar {
+  display: none;
+}
+.acad-crail__track > * {
+  scroll-snap-align: start;
+}
+.acad-crail__track .acad-skeleton {
+  height: 340px;
+}
+
+@media (max-width: 980px) {
+  .acad-crail__track {
+    grid-auto-columns: calc((100% - 16px) / 2);
+  }
+}
+@media (max-width: 620px) {
+  /* A card and a sliver of the next one, which is what says the rail
+     moves without needing an arrow to say it. The negative margin lets
+     the cards run to the edge of the screen while keeping the first one
+     lined up with the text above. */
+  .acad-crail__track {
+    grid-auto-columns: 84%;
+    margin: 0 -16px;
+    padding: 4px 16px 18px;
+    scroll-padding: 0 16px;
+  }
+}
+
+.acad-crail__btn {
+  /* Hidden by default and switched on only where something can hover.
+     any-hover rather than hover: a laptop with a touchscreen has both,
+     and should still get the arrows. On a phone they would be two
+     permanent targets covering the cards, for a gesture the phone
+     already has. */
+  display: none;
+  position: absolute;
+  top: calc(50% - 30px);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+  box-shadow: var(--acad-shadow);
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+@media (any-hover: hover) {
+  .acad-crail__btn {
+    display: grid;
+  }
+}
+.acad-crail__btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--acad-text);
+  fill: none;
+  stroke-width: 2;
+}
+.acad-crail__btn--prev {
+  left: -20px;
+}
+.acad-crail__btn--prev svg {
+  transform: rotate(180deg);
+}
+.acad-crail__btn--next {
+  right: -20px;
+}
+/* Invisible rather than removed, so the rail does not jump sideways
+   when you reach an end. */
+.acad-crail__btn[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 1260px) {
+  .acad-crail__btn--prev {
+    left: -8px;
+  }
+  .acad-crail__btn--next {
+    right: -8px;
+  }
+}
+
+/* ----------------------------------------- never on a phone, twice over
+
+   The rule above switches the arrows on only where something can
+   hover, which should already have been enough. On a phone it was not:
+   in Chromium's phone mode at 390 pixels the next arrow was still
+   drawn, sitting on top of the second card, over the very thing it was
+   meant to help you reach.
+
+   So it is said again, two ways, because the two catch different
+   things and neither catches both.
+
+     any-hover: none      a real phone, and Chromium's phone mode,
+                          whatever the window is doing. Said as its own
+                          rule rather than left to the absence of
+                          any-hover: hover, so it is visible in the
+                          file and in a search.
+
+     max-width: 620px     a narrow window on a laptop, which CAN hover
+                          and would otherwise keep its arrows at a
+                          width where a 46 pixel circle covers a
+                          quarter of a card. This is the width the
+                          concept used, and the width at which the rail
+                          already changes to one card and a sliver of
+                          the next, which is what says it moves.
+
+   AFTER the any-hover: hover rule on purpose. The two have the same
+   specificity, so the later one wins, and written above it neither
+   would do anything at all. */
+
+@media (any-hover: none) {
+  .acad-crail__btn {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .acad-crail__btn {
+    display: none;
+  }
+}
+
+.acad-crail__dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 0;
+}
+.acad-crail__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--acad-line-strong);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.acad-crail__dots i.is-on {
+  width: 22px;
+  background: var(--acad-signal);
+}

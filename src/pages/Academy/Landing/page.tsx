@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import "../academy.css";
+import "../../../css/dla-mark.css";
 import "./page.css";
 import Seo from "../../../components/Seo/component";
 import AcadStage from "../ui/AcadStage";
-import CourseCardTile from "../ui/CourseCard";
+import CourseCover from "../ui/CourseCover";
 import Faq from "../ui/Faq";
+import GoalRail from "./GoalRail";
+import PathBanner from "./PathBanner";
+import QuickPicks from "./QuickPicks";
 import ToolRack from "../ui/ToolRack";
-import { ArrowIcon, PlayIcon, SealIcon, TickIcon } from "../ui/Icons";
+import { ArrowIcon, ChartIcon, PlayIcon, SealIcon, TickIcon } from "../ui/Icons";
 import { routes } from "../../routes";
 import {
-  coverCode,
   getCatalogue,
   getPaths,
   getSettings,
@@ -19,7 +22,7 @@ import {
   type CourseCard,
   type LearningPath,
 } from "../../../lib/catalogue";
-import { SITE_ORIGIN } from "../../../lib/site";
+import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
 import { landingWords, plural } from "../../../lib/courseSeo";
 
 // /lms. The page somebody lands on from a search result or a WhatsApp
@@ -135,9 +138,10 @@ export default function AcademyLanding() {
 
   const list = courses || [];
   const tools = toolsOf(list);
-  // The three most recently published. The catalogue function already
-  // returns them newest first.
-  const latest = list.slice(0, 3);
+  // The catalogue by slug, so a learning path can borrow a course's
+  // area and tool for its cover. getPaths returns only enough to make
+  // a link, which is right: a path should not re-fetch the catalogue.
+  const bySlug = new Map(list.map((c) => [c.slug, c]));
   const head = headlineParts(words.headline);
 
   return (
@@ -146,6 +150,13 @@ export default function AcademyLanding() {
         title={words.title}
         description={words.description}
         canonicalPath={routes.academy}
+        // THE LAUNCH SWITCH. The edge function already wrote noindex
+        // into the HTML; this sets it again once React starts, because
+        // React replaces the head tags and a page that is noindex in
+        // the HTML and indexable half a second later is worse than one
+        // that was never marked at all. The canonical is untouched.
+        noindex={!ACADEMY_PUBLIC}
+        robots="noindex, follow"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "EducationalOrganization",
@@ -163,8 +174,12 @@ export default function AcademyLanding() {
       {/* ------------------------------------------------------- hero */}
       <section className="acad-hero">
         <div>
+          {/* The mark replaces the pulsing dot that used to be here.
+              A span rather than an i, so the dot's own rule in
+              academy.css does not also paint on it. It is decoration:
+              the words next to it already say Data-Lead Academy. */}
           <p className="acad-eyebrow">
-            <i />
+            <span className="dla-mark" aria-hidden="true" />
             Data-Lead Academy
           </p>
           <h1 className="acad-h1">
@@ -201,11 +216,68 @@ export default function AcademyLanding() {
         {/* The rack needs four tools to look like a rack. Below that it
             is pills, which look deliberate at any number. */}
         <div className="acad-hero__rack">
-          {!loaded ? (
-            <div className="acad-hero__waiting" aria-hidden="true" />
-          ) : tools.length >= 4 ? (
-            <ToolRack courses={list} />
-          ) : null}
+          {/* The map of the continent, behind the tool rack.
+              DECORATION, AND IT SAYS NOTHING. No city names, no
+              numbers, no claim about where anybody is learning. It is
+              a shape people recognise, nothing more, so there is no
+              fact on it that could become untrue. Hidden from screen
+              readers for the same reason: there is nothing to read.
+              It sits INSIDE the rack's column rather than being
+              positioned across the hero. That is what keeps it off
+              the headline at every width: it cannot reach the words
+              because it is not in their half of the page. */}
+          <div className="acad-hero__bg" aria-hidden="true">
+            <img
+              className="acad-hero__map"
+              src="/academy/africa-dots.svg"
+              width={574}
+              height={597}
+              alt=""
+              decoding="async"
+              fetchPriority="low"
+            />
+          </div>
+
+          {/* THE CARD, AND WHY IT IS ITS OWN BOX.
+              On a wide screen this is narrower than the column it sits
+              in and pushed to the right of it, which is what frees the
+              band of space on its left for Nigeria and the glow on
+              Abuja to show in. Before this they were both behind the
+              frosted rack and all that came through was a faint orange
+              smudge, which is not the part of the picture Big Sam
+              chose it for.
+              The map stays outside this box, pinned to the column, so
+              narrowing the card widens the clear band rather than
+              moving the map with it. The four tiles are inside it,
+              because they are tucked around the card's corners and
+              have to travel with it. */}
+          <div className="acad-hero__card">
+            {/* Four small tiles tucked around the corners of the rack,
+                so the rack looks placed on the page rather than
+                dropped on it. Decoration: each one repeats something
+                the words already say, and the last two are gone on a
+                phone where there is no room.
+                Play, tick, chart, certificate, which is the concept's
+                set and its order. */}
+            <span className="acad-sticker acad-sticker--1" aria-hidden="true">
+              <PlayIcon />
+            </span>
+            <span className="acad-sticker acad-sticker--2 is-ok" aria-hidden="true">
+              <TickIcon />
+            </span>
+            <span className="acad-sticker acad-sticker--3" aria-hidden="true">
+              <ChartIcon />
+            </span>
+            <span className="acad-sticker acad-sticker--4" aria-hidden="true">
+              <SealIcon />
+            </span>
+
+            {!loaded ? (
+              <div className="acad-hero__waiting" aria-hidden="true" />
+            ) : tools.length >= 4 ? (
+              <ToolRack courses={list} />
+            ) : null}
+          </div>
         </div>
       </section>
 
@@ -238,43 +310,35 @@ export default function AcademyLanding() {
         </div>
       </section>
 
-      {/* -------------------------------------------- latest courses */}
-      {/* "Latest", not "Popular". We do not measure how popular a course
-          is, so calling three courses popular would be a number we made
-          up on the page a stranger trusts least. */}
-      <section className="acad-band">
-        <div className="acad-band__head">
-          <div>
-            <p className="acad-band__eyebrow">Start here</p>
-            <h2 className="acad-h2">Latest courses</h2>
-          </div>
-          {latest.length > 0 ? (
-            <Link className="acad-link acad-band__more" to={routes.academyCourses}>
-              See all courses
-              <ArrowIcon />
-            </Link>
-          ) : null}
-        </div>
+      {/* ----------------------------------- what do you want to do? */}
+      {/* This replaces "Latest courses", which showed three cards and a
+          link. The rail shows every course, newest first, and the chips
+          above it are the goals somebody actually arrives with. There is
+          still no "Popular" anywhere: we do not measure how popular a
+          course is, so the word would be one we made up on the page a
+          stranger trusts least. */}
+      <GoalRail courses={list} loaded={loaded} />
 
-        {!loaded ? (
-          <div className="acad-grid3" aria-hidden="true">
-            <div className="acad-skeleton" />
-            <div className="acad-skeleton" />
-            <div className="acad-skeleton" />
+      {/* The one case the rail hides itself for: no courses at all. */}
+      {loaded && list.length === 0 ? (
+        <section className="acad-band">
+          <div className="acad-band__head">
+            <div>
+              <p className="acad-band__eyebrow">Start here</p>
+              <h2 className="acad-h2">Courses</h2>
+            </div>
           </div>
-        ) : latest.length > 0 ? (
-          <div className="acad-grid3">
-            {latest.map((c) => (
-              <CourseCardTile key={c.id} course={c} />
-            ))}
-          </div>
-        ) : (
           <p className="acad-empty-line">
             The first courses are on their way. Create an account now and it will
             be waiting when they open.
           </p>
-        )}
-      </section>
+        </section>
+      ) : null}
+
+      {/* ------------------------------------------------ quick picks */}
+      {/* Hides itself entirely below four courses, when it would just be
+          the rail above written out again. */}
+      {loaded ? <QuickPicks courses={list} /> : null}
 
       {/* -------------------------------------------- learning paths */}
       {/* Hidden entirely when there are none, which is the normal state
@@ -285,50 +349,67 @@ export default function AcademyLanding() {
           no courses at all. */}
       {paths.length > 0 ? (
         <section className="acad-band">
-          <div className="acad-band__head">
-            <div>
-              <p className="acad-band__eyebrow">Go further</p>
-              <h2 className="acad-h2">Learning paths</h2>
-            </div>
-          </div>
-          <p className="acad-lead acad-paths__lead">
-            Several courses in the order that makes sense, so you are not
-            guessing what to learn next.
-          </p>
-          <div className="acad-paths">
-            {paths.map((p) => (
-              <article key={p.id} className="acad-path">
-                <h3 className="acad-h3">{p.name}</h3>
-                {p.description ? (
-                  <p className="acad-path__sum">{p.description}</p>
-                ) : null}
-                <p className="acad-path__count">
-                  {plural(p.courses.length, "course")}
-                </p>
-                <ol className="acad-path__list">
-                  {p.courses.map((c, i) => (
-                    <li key={c.slug}>
-                      <span className="acad-path__n" aria-hidden="true">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <Link
-                        className="acad-path__link"
-                        to={routes.academyCourse.replace(":slug", c.slug)}
-                      >
-                        <span className="acad-path__cover" aria-hidden="true">
-                          {coverCode(c)}
-                        </span>
-                        <span>
-                          <strong>{c.title}</strong>
-                          {c.summary ? <em>{c.summary}</em> : null}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              </article>
-            ))}
-          </div>
+          {/* The first path as a banner, with its covers fanned out. A
+              path is the most valuable thing here and the easiest to
+              scroll past, so one of them gets to be a picture. */}
+          <PathBanner path={paths[0]} catalogue={list} />
+
+          {/* Any others stay as the compact cards. Several banners in a
+              row would be a list again, with more scrolling. */}
+          {paths.length > 1 ? (
+            <>
+              <p className="acad-lead acad-paths__lead">
+                Several courses in the order that makes sense, so you are not
+                guessing what to learn next.
+              </p>
+              <div className="acad-paths">
+                    {paths.slice(1).map((p) => (
+                  <article key={p.id} className="acad-path">
+                    <h3 className="acad-h3">{p.name}</h3>
+                    {p.description ? (
+                      <p className="acad-path__sum">{p.description}</p>
+                    ) : null}
+                    <p className="acad-path__count">
+                      {plural(p.courses.length, "course")}
+                    </p>
+                    <ol className="acad-path__list">
+                      {p.courses.map((c, i) => (
+                        <li key={c.slug}>
+                          <span className="acad-path__n" aria-hidden="true">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <Link
+                            className="acad-path__link"
+                            to={routes.academyCourse.replace(":slug", c.slug)}
+                          >
+                            {/* The course's own cover, looked up by slug
+                                in the catalogue already loaded above.
+                                Not in it, because it was unpublished
+                                between the two answers, means the
+                                neutral art. */}
+                            <CourseCover
+                              variant="square"
+                              course={{
+                                slug: c.slug,
+                                title: c.title,
+                                cover_code: c.cover_code,
+                                area: bySlug.get(c.slug)?.area ?? null,
+                                tool: bySlug.get(c.slug)?.tool ?? null,
+                              }}
+                            />
+                            <span>
+                              <strong>{c.title}</strong>
+                              {c.summary ? <em>{c.summary}</em> : null}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ol>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : null}
         </section>
       ) : null}
 

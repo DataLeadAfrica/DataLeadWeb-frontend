@@ -3,6 +3,7 @@ import { Link } from "react-router";
 
 import "./component.css";
 import { getCatalogue } from "../../lib/catalogue";
+import { ACADEMY_PUBLIC } from "../../lib/site";
 import { routes } from "../../pages/routes";
 
 // A small band on the bootcamps page pointing at the Academy.
@@ -18,11 +19,19 @@ import { routes } from "../../pages/routes";
 // catalogue is worse than no link: the visitor bounces, and the page
 // they land on has nothing on it for a search engine either. It appears
 // the moment the first course is published, and not before.
+//
+// AND IT HIDES ITSELF UNTIL LAUNCH DAY. While ACADEMY_PUBLIC is false
+// this band never shows, whatever the catalogue holds. /courses is the
+// busiest page on the site, and on 9 October it was showing this band
+// pointing at a test course, which anybody could sign up for and earn a
+// real certificate from. The switch is checked before the catalogue is
+// even asked for, so there is no moment where it appears and then goes.
 
 export default function AcademyBand() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (!ACADEMY_PUBLIC) return;
     let alive = true;
     getCatalogue().then((got) => {
       // Only a successful answer may set the count. If we could not ask,
@@ -34,6 +43,9 @@ export default function AcademyBand() {
     };
   }, []);
 
+  // The switch first, and on its own line: a reader should not have to
+  // work out which of two conditions hid the band.
+  if (!ACADEMY_PUBLIC) return null;
   if (count === 0) return null;
 
   return (

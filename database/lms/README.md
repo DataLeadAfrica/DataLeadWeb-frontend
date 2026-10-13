@@ -22,27 +22,22 @@ Nothing in this folder contains a key, a token, a password or a project URL.
 | 05 | `05_functions.sql` | The rules. Everything a learner could cheat by editing their browser lives here as a `SECURITY DEFINER` function: access checks, watch recording, unlocking, marking, publishing. | Run |
 | 06 | `06_policies.sql` | The locks. Row level security on every table, and the sign up trigger on `auth.users`. | Run |
 | 07 | `07_quizzes.sql` | Two kinds of questions. A lesson check that reports counts only, and a module quiz with a pass mark. Replaces the marking function from 05. | Run |
-| 10 | `not-yet-run/10_roles_and_access.sql` | Renames the staff role to facilitator and makes access follow two email lists. | **NOT YET RUN** |
+| 10 | `10_roles_and_access.sql` | Renames the staff role to facilitator and makes access follow two email lists. | Run |
 
 There is no 08 or 09 in this folder. Both were written and lost before being delivered: 08 was
 storage housekeeping, 09 was an archive to Google Sheets that was deliberately deferred. See
 `docs/lms/STATUS.md`.
 
-## The not-yet-run folder
+## There is no longer a not-yet-run folder
 
-Three files sit in `not-yet-run/` because they have not been applied to the live database. They
-are tested but unrun. Do not merge them into the numbered list above until they have actually
-been run.
+It held a second copy of file 10 and a README, and file 10 itself was run on the live database on
+6 October 2026. The copy sat there for another week, one edit away from being the one somebody
+pasted into the SQL editor, which is the only thing a stale duplicate of a migration is for. The
+folder was deleted on 13 October. The real files 10, 10_verify and 10_undo are in this folder with
+all the others.
 
-| File | What it does |
-| --- | --- |
-| `10_roles_and_access.sql` | Renames the `uploader` role to `facilitator`, repairs the function bodies that renaming breaks, creates the `lms_facilitators` email list, and adds `lms_sync_my_access()` which is called once after each sign in. |
-| `10_verify.sql` | Run straight after. Returns ten rows that should all answer yes. |
-| `10_undo.sql` | Puts the database back if something goes wrong. Afterwards re-run 05, 06 and 07. |
-
-File 10 has been tested against all seven files above on a real PostgreSQL 16 database:
-43 tests as real signed in and signed out roles, all passing, and holding through an
-apply, undo, apply round trip.
+File 10 was tested against files 01 to 07 on a real PostgreSQL 16 database: 43 tests as real
+signed in and signed out roles, all passing, and holding through an apply, undo, apply round trip.
 
 **One known fault in file 10, left in place on purpose.** Its Step 1 comment says the rename
 breaks `lms_lesson_is_open`, "which decides whether anyone can open a lesson at all". That is
@@ -50,6 +45,12 @@ wrong: the real `lms_lesson_is_open` does not mention the role. The function the
 breaks is `lms_is_staff`, which the catalogue read policies call. The comment changes no
 behaviour and the repair step handles the real case correctly, but the sentence should be
 corrected before anybody relies on it.
+
+## The table above stops at 10
+
+Files 11 to 15 are in this folder and have been run. They are not in the table yet.
+`docs/lms/STATUS.md` is the record of what has actually been run on the live database, and it is
+the one to read.
 
 ## schema-snapshot.md
 

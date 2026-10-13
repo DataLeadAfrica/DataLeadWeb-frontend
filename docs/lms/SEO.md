@@ -35,7 +35,7 @@ They must agree. Section 6 explains how that is kept true.
 `index.html` no longer carries a `canonical` or an `og:url`. Both pointed at the homepage, on every
 page of the site.
 
-This is listed separately in `CHANGELOG.md` because it is **not an Academy change**. It affects
+This is listed separately in `docs/lms/CHANGELOG.md` because it is **not an Academy change**. It affects
 every page on dataleadafrica.com, and it is the single largest SEO problem the site had.
 
 There is a comment in `index.html` where they used to be, saying why, because the obvious thing to

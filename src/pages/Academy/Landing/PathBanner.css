@@ -1,0 +1,182 @@
+/* The learning path banner and its fan of covers. See PathBanner.tsx. */
+
+.acad-promo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 32px;
+  align-items: center;
+  padding: 40px;
+  border: 1px solid var(--acad-line);
+  border-radius: 28px;
+  background: linear-gradient(120deg, #fff 0%, #fff4ec 60%, #ffe6d3 100%);
+  overflow: hidden;
+  /* Keeps the z-index of the graph paper below from escaping into the
+     rest of the page. */
+  isolation: isolate;
+}
+
+/* The same graph paper the Academy's pages sit on, faded in from the
+   left so it never sits behind the words. */
+.acad-promo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(var(--acad-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--acad-grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(90deg, transparent 30%, #000);
+  -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000);
+}
+
+.acad-promo .acad-h2 {
+  margin: 4px 0 12px;
+  font-size: clamp(28px, 3.4vw, 40px);
+}
+
+.acad-promo__sum {
+  max-width: 44ch;
+  margin: 0 0 16px;
+  color: var(--acad-muted);
+}
+
+.acad-promo__steps {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acad-promo__steps li {
+  display: grid;
+  grid-template-columns: auto 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+}
+.acad-promo__steps li > span:first-child {
+  font: 600 11px/1 var(--acad-f-mono);
+  color: var(--acad-signal-text);
+}
+.acad-promo__steps .acad-cover {
+  width: 40px;
+  border-radius: 10px;
+}
+.acad-promo__steps a {
+  min-width: 0;
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+}
+.acad-promo__steps a:hover {
+  text-decoration: underline;
+}
+.acad-promo__steps small {
+  display: block;
+  font: 500 11px/1.3 var(--acad-f-mono);
+  color: var(--acad-muted);
+  /* One line: the summary here is a reminder, not the course page. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acad-promo__row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px 0 0;
+}
+.acad-promo__count {
+  font: 500 12px/1 var(--acad-f-mono);
+  color: var(--acad-muted);
+}
+
+/* ----------------------------------------------------------- the fan */
+
+.acad-fan {
+  position: relative;
+  /* The height FOLLOWS THE WIDTH rather than being a fixed number of
+     pixels, and that is the whole trick here. The covers inside are a
+     percentage of the fan's width and are 16 by 9, so their height is
+     a percentage of the width too. A fixed height worked at the one
+     size it was chosen at and clipped the bottom cover off everywhere
+     else: at the breakpoint where this column goes full width, the fan
+     was 778 pixels wide and 200 tall, holding covers 289 tall.
+     Everything below is a percentage, so there is no width at which
+     the numbers stop agreeing. */
+  aspect-ratio: 16 / 9;
+}
+
+.acad-fan__item {
+  position: absolute;
+  display: block;
+  width: 52%;
+  /* The step number is sized in cqw and is a SIBLING of the cover
+     rather than inside it, so it cannot measure against the cover's
+     own container. This element is the container it measures against,
+     and it is exactly the same width. */
+  container-type: inline-size;
+  box-shadow: 0 30px 50px -28px rgba(30, 36, 52, 0.5);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* A cover is 52% of the width, so 52 * 9/16 = 29.25% of the width
+   tall, and the fan is 56.25% of its width tall, which makes a cover
+   52% of the HEIGHT. The lowest one therefore starts at 38% and ends
+   at 90%, and the 10% left over is the room a rotated corner needs.
+   The 2% and 3% insets at the sides are the same thing sideways. */
+.acad-fan__item:nth-child(1) {
+  left: 2%;
+  top: 27%;
+  transform: rotate(-8deg);
+}
+.acad-fan__item:nth-child(2) {
+  left: 24%;
+  top: 3%;
+  z-index: 3;
+  transform: rotate(-2deg);
+}
+.acad-fan__item:nth-child(3) {
+  right: 3%;
+  top: 38%;
+  z-index: 1;
+  transform: rotate(6deg);
+}
+.acad-promo:hover .acad-fan__item:nth-child(1) {
+  transform: rotate(-10deg) translate(-8px, 6px);
+}
+.acad-promo:hover .acad-fan__item:nth-child(3) {
+  transform: rotate(9deg) translate(8px, 6px);
+}
+
+/* THERE ARE NO STEP NUMBERS ON THE FAN, and that is a decision rather
+   than an oversight. They were there, and every place they could go
+   was already taken: the bottom right of a cover is where a long tool
+   name like "KoboToolbox" ends, the bottom left is where a short one
+   like "STATA" starts, the top left is the Data-Lead Academy line, and
+   the one corner left over on the back cover is underneath the cover
+   in front of it. A number sitting on top of the tool name is worse
+   than no number.
+   Nothing is lost. The fan says "these courses go together"; the
+   numbered list beside it, which is the part a screen reader reads and
+   the part you can click, says what order they go in. */
+
+@media (max-width: 860px) {
+  .acad-promo {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+  /* The fan goes above the words on a phone: it is the thing that says
+     what this block is, and it is quicker to read than the heading.
+     Capped and centred, because at full tablet width the same shape
+     would be over 400 pixels tall before the words even start. */
+  .acad-fan {
+    order: -1;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+}

@@ -1,9 +1,28 @@
 .acad-rack {
+  position: relative;
   padding: 20px;
   border: 1px solid var(--acad-line);
   border-radius: var(--acad-r-l);
+  /* Frosted, because the map of the continent now sits behind this.
+     White at 82% lets the dots show through as a texture while the
+     tool names stay at full contrast against it, and the small blur
+     stops any one dot reading as a mark on the card.
+     The solid colour is written FIRST and the translucent one second,
+     so a browser without colour-mix, or with backdrop-filter turned
+     off, keeps the opaque card it has today rather than losing the
+     text onto the dots. */
   background: var(--acad-surface);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: var(--acad-shadow);
+}
+/* A browser that cannot frost gets the opaque card instead of text on
+   top of a pattern. */
+@supports not ((backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px))) {
+  .acad-rack {
+    background: var(--acad-surface);
+  }
 }
 
 .acad-rack__top {
@@ -99,16 +118,12 @@
   text-decoration: none;
 }
 
-.acad-rack__glyph {
-  display: grid;
-  place-items: center;
+/* The square cover in the readout. .acad-rack__glyph, the two letter
+   square that used to be here, is gone: the cover carries the letters
+   itself now. See CourseCover.css. */
+.acad-rack__course .acad-cover {
+  width: 44px;
   flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--acad-signal-wash);
-  color: var(--acad-signal-deep);
-  font: 600 13px/1 var(--acad-f-mono);
 }
 
 .acad-rack__words {

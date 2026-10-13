@@ -256,15 +256,12 @@ export function asPrice(kobo: number | null | undefined): string {
   return `₦${Math.round(n / 100).toLocaleString("en-NG")}`;
 }
 
-/** The two letters on a course's tile, from the database or the title. */
-export function coverCode(course: {
-  cover_code?: string | null;
-  title?: string;
-}): string {
-  const given = (course.cover_code || "").trim();
-  if (given) return given.slice(0, 2).toUpperCase();
-  return (course.title || "??").slice(0, 2).toUpperCase();
-}
+/* coverCode was here. It moved to api/_cover-art.js, which draws every
+   course cover and needs the same two letters: having the rule in two
+   files meant two places to change it and one of them would eventually
+   be missed. The edge function that makes the share picture cannot
+   import from here, so the single copy lives there, where both the
+   pages and that function can reach it. */
 
 /**
  * The areas to offer as filters: the ones that actually have a course.

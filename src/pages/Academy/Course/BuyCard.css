@@ -7,6 +7,13 @@
   box-shadow: var(--acad-shadow);
 }
 
+/* The cover sits above the price, inset from the card's edge rather
+   than bleeding to it: this is a panel with a picture in it, not a
+   card that is mostly picture. */
+.acad-buy > .acad-cover {
+  margin-bottom: 18px;
+}
+
 .acad-buy__label {
   margin: 0 0 8px;
   font: 500 11px/1 var(--acad-f-mono);
@@ -89,7 +96,9 @@
   .acad-buy__label,
   .acad-buy__note,
   .acad-buy__list,
-  .acad-buy__second {
+  .acad-buy__second,
+  /* The bar has room for a price and a button and nothing else. */
+  .acad-buy > .acad-cover {
     display: none;
   }
   /* The price and the payment line together, as one block inside the

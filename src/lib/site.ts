@@ -9,9 +9,31 @@
 // To change the site's address, change that one line. Nothing else on
 // either side names it.
 
-import { SITE_ORIGIN as ORIGIN, siteUrl as urlJs } from "../../api/_seo-rules.js";
+import {
+  ACADEMY_PUBLIC as PUBLIC_JS,
+  PREVIEW_NOTICE as NOTICE_JS,
+  SITE_ORIGIN as ORIGIN,
+  siteUrl as urlJs,
+} from "../../api/_seo-rules.js";
 
 export const SITE_ORIGIN: string = ORIGIN;
+
+/**
+ * Is the Academy open to the public yet?
+ *
+ * The one constant is in api/_seo-rules.js, which the edge functions
+ * import as well. It comes through here so a React page has one import
+ * for it and TypeScript can see it.
+ *
+ * While it is false the Academy works exactly as it does today, and
+ * nothing sends anybody to it: no band on /courses, no /lms line in the
+ * sitemap, noindex on every /lms page, and a slim notice at the top of
+ * each one saying so.
+ */
+export const ACADEMY_PUBLIC: boolean = PUBLIC_JS;
+
+/** The one sentence the preview notice shows. */
+export const PREVIEW_NOTICE: string = NOTICE_JS;
 
 /** The full address of a path on this site, for a canonical or og:url. */
 export function siteUrl(path: string): string {

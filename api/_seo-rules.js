@@ -45,6 +45,48 @@
 // deployment must read its own files, not production's.
 export const SITE_ORIGIN = "https://dataleadafrica.com";
 
+// =====================================================================
+// THE LAUNCH SWITCH. ONE CONSTANT, FOR BOTH SIDES OF THE SITE.
+// =====================================================================
+//
+// false means the Academy works but nobody is sent to it. True means
+// the Academy is open, which is how the site behaved before this
+// constant existed.
+//
+// THE LAUNCH PR FLIPS THIS ONE LINE TO true AND CHANGES NOTHING ELSE.
+//
+// What false does, and the one place each is done:
+//
+//   api/academy-meta.js   the HTML a crawler gets for /lms,
+//                         /lms/courses and /lms/courses/:slug carries
+//                         noindex. Canonicals are untouched.
+//   api/sitemap.js        no /lms address is listed at all. Every other
+//                         page of the site is listed as before.
+//   src/pages/Academy/
+//     ui/PreviewNotice     one slim line at the top of every /lms page
+//   src/components/
+//     AcademyBand          the band on /courses never shows, whatever
+//                          the catalogue holds
+//   the three public pages pass noindex to <Seo> as well, because the
+//   edge function's tag is replaced the moment React starts and a page
+//   that is noindex in the HTML and indexable a second later is worse
+//   than one that was never marked at all.
+//
+// WHY IT IS IN THIS FILE. This is the one module both the edge
+// functions and the React bundle already import, which is the whole
+// reason it exists. A second copy of this flag, in a .env or in the
+// React side, is a flag that can be half flipped: the sitemap would
+// start advertising pages that still say noindex, and that is a worse
+// state than either of the two it sits between.
+//
+// IT IS NOT AN ENVIRONMENT VARIABLE on purpose. This site has none,
+// previews would need it set separately, and a switch you cannot see
+// in the diff of a pull request is a switch nobody reviews.
+export const ACADEMY_PUBLIC = false;
+
+/** The one sentence shown while ACADEMY_PUBLIC is false. */
+export const PREVIEW_NOTICE = "Preview. The Academy is not open to the public yet.";
+
 /** The full address of a path on this site. Never a query string. */
 export function siteUrl(path) {
   const clean = String(path || "/").split("?")[0].split("#")[0];

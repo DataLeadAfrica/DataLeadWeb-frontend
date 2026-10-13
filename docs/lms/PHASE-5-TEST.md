@@ -39,120 +39,48 @@ video, and that matters more than any of the rest of this.
 
 ---
 
-## 1. Build the test course
+## 1. Show the test course again
 
-Paste this into the SQL editor, with **your own video id and length** in the two places marked.
-It makes one course with two modules, three lessons and one module quiz.
+**The test course already exists and was hidden on 12 Oct. Once this round is merged, run
+`database/lms/show-test-course.sql` (below) and carry on from section 2.**
 
-```sql
--- =============================================== CHANGE THESE TWO LINES
--- Your unlisted video's id is the part after v= in its address, and the
--- length must be the REAL length in seconds. The whole lesson gate is
--- built on it: a wrong length means the bar fills at the wrong moment.
-\set video_ref  'PUT_YOUR_VIDEO_ID_HERE'
-\set video_secs 600
--- =======================================================================
-
--- A programme, which a course needs before it can be published.
-insert into programmes (slug, title, code, template_key, active)
-select 'p4-programme', 'Phase 4 test programme', 'P4T', 'default', true
- where not exists (select 1 from programmes where slug = 'p4-programme');
-
-insert into lms_courses (slug, title, summary, tool, area, level, cover_code,
-                         price_kobo, first_module_free, status, programme_id,
-                         outcomes, audience, prerequisites)
-values ('p4-test-course', 'Phase 4 test course',
-        'A throwaway course for testing the learning pages. Delete it afterwards.',
-        'STATA', 'Analysis', 'Beginner', 'P4', 0, false, 'draft',
-        (select id from programmes where slug = 'p4-programme'),
-        array['Watch a lesson all the way through',
-              'Pass a lesson check',
-              'Pass a module quiz'],
-        array['Whoever is testing this'],
-        array['Nothing']);
-
-insert into lms_modules (course_id, title, position)
-select c.id, m.title, m.position
-  from lms_courses c,
-       (values ('Module one', 1), ('Module two', 2)) as m(title, position)
- where c.slug = 'p4-test-course';
-
--- Three lessons, all the same video. coverage_percent is 90, so the
--- check opens at 90 percent watched.
-insert into lms_lessons (module_id, title, position, type, video_provider,
-                         video_ref, duration_seconds, bucket_seconds, coverage_percent)
-select m.id, l.title, l.position, 'video', 'youtube',
-       :'video_ref', :video_secs, 10, 90
-  from lms_modules m
-  join lms_courses c on c.id = m.course_id
-  join (values ('Module one', 'Lesson one', 1),
-               ('Module one', 'Lesson two', 2),
-               ('Module two', 'Lesson three', 1)) as l(modtitle, title, position)
-    on l.modtitle = m.title
- where c.slug = 'p4-test-course';
-```
-
-Then the questions, as an administrator, so they get the real defaults:
+It runs as the first administrator, in one transaction, because the SQL Editor is not signed in
+and `lms_publish_course` refuses anybody who is not an administrator. It is tested, and safe to
+run twice.
 
 ```sql
+begin;
+select set_config('request.jwt.claim.sub', a.id::text, true),
+       set_config('request.jwt.claims',
+                  json_build_object('sub', a.id, 'role', 'authenticated')::text, true)
+  from (select id from lms_profiles where role = 'admin' order by id limit 1) a;
 do $$
-declare v_l1 uuid; v_m1 uuid; v_check uuid; v_quiz uuid; i integer;
 begin
-  select l.id into v_l1 from lms_lessons l
-    join lms_modules m on m.id = l.module_id
-    join lms_courses c on c.id = m.course_id
-   where c.slug = 'p4-test-course' and l.title = 'Lesson one';
-  select m.id into v_m1 from lms_modules m
-    join lms_courses c on c.id = m.course_id
-   where c.slug = 'p4-test-course' and m.title = 'Module one';
-
-  v_check := lms_create_quiz(v_l1, null, 'Lesson one check');
-  v_quiz  := lms_create_quiz(null, v_m1, 'Module one quiz');
-
-  for i in 1..3 loop
-    insert into lms_questions (quiz_id, prompt, type, position, marks, explanation)
-    values (v_check, 'Check question ' || i || ': which answer is the right one?',
-            'single', i, 1,
-            'The right one is the one that says RIGHT. This sentence is the explanation, '
-            || 'and you should see it under question ' || i || ' whether you got it right or wrong.');
-    insert into lms_options (question_id, label, is_correct, position)
-    select q.id, o.label, o.ok, o.position
-      from lms_questions q,
-           (values ('RIGHT', true, 1), ('wrong', false, 2), ('also wrong', false, 3))
-             as o(label, ok, position)
-     where q.quiz_id = v_check and q.position = i;
-
-    insert into lms_questions (quiz_id, prompt, type, position, marks, explanation)
-    values (v_quiz, 'Quiz question ' || i || ': which answer is the right one?',
-            'single', i, 1, 'The explanation for quiz question ' || i || '.');
-    insert into lms_options (question_id, label, is_correct, position)
-    select q.id, o.label, o.ok, o.position
-      from lms_questions q,
-           (values ('RIGHT', true, 1), ('wrong', false, 2), ('also wrong', false, 3))
-             as o(label, ok, position)
-     where q.quiz_id = v_quiz and q.position = i;
-  end loop;
-
-  update lms_quizzes set status = 'published', shuffle = false
-   where id in (v_check, v_quiz);
+  if not exists (select 1 from lms_profiles where role = 'admin') then
+    raise exception 'No administrator account found. Nothing has been changed.';
+  end if;
+  if not exists (select 1 from lms_courses where slug = 'p4-test-course') then
+    raise exception 'The test course was not found. Nothing has been changed.';
+  end if;
 end $$;
+select * from lms_publish_course((select id from lms_courses where slug = 'p4-test-course'));
+select slug, status from lms_courses where slug = 'p4-test-course';
+commit;
 ```
 
-**Check the course is ready to publish**, which prints the checklist rather than just failing:
+The last line should say `p4-test-course | published`.
+
+**Hide it again when you have finished testing**, with:
 
 ```sql
-select * from lms_course_blockers(
-  (select id from lms_courses where slug = 'p4-test-course'));
+update lms_courses set status = 'draft' where slug = 'p4-test-course';
 ```
 
-Every row should say `ok = true`. Then publish it:
+While the Academy's launch switch is off, the bootcamps page at `/courses` will not show the
+Academy band whatever this course's status is, and no `/lms` address is in the sitemap. The
+course is still reachable by anybody who knows its address, which is why it goes back to a draft
+afterwards.
 
-```sql
-select * from lms_publish_course(
-  (select id from lms_courses where slug = 'p4-test-course'));
-```
-
----
 
 ## 2. Sign up as a learner
 

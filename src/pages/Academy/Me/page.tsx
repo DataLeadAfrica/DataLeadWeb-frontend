@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router";
 
 import "../academy.css";
 import "../Learn/learn.css";
+import "../../../css/dla-mark.css";
 import "./page.css";
 import Seo from "../../../components/Seo/component";
 import AcadStage from "../ui/AcadStage";
+import CourseCover from "../ui/CourseCover";
 import PassCard from "../ui/PassCard";
 import ProgressRing from "../ui/ProgressRing";
 import { ArrowIcon, SealIcon, TickIcon } from "../ui/Icons";
 import { useAccess } from "../useAccess";
 import { routes } from "../../routes";
+import { getCatalogue, type CourseCard } from "../../../lib/catalogue";
 import {
   getSession,
   greeting,
@@ -62,6 +65,16 @@ export default function AcademyMe() {
   const [courses, setCourses] = useState<MyCourseRow[]>([]);
   const [certs, setCerts] = useState<MyCertificate[]>([]);
   const [week, setWeek] = useState<WeekDay[]>([]);
+  // The public catalogue, for ONE purpose: the picture on each of your
+  // courses. lms_my_courses does not return the area or the tool, and
+  // this is a design change, so it does not get to change the database
+  // to ask for them. The catalogue has both, keyed by slug.
+  //
+  // Nothing on this page waits for it. Until it arrives, and if it
+  // never arrives, every cover draws the neutral art with the right two
+  // letters on it, which is the same size, so nothing on the page
+  // moves when the real art appears.
+  const [catalogue, setCatalogue] = useState<Map<string, CourseCard>>(new Map());
   const [trouble, setTrouble] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -83,6 +96,10 @@ export default function AcademyMe() {
     });
     getMyWeek().then((w) => {
       if (alive) setWeek(w);
+    });
+    getCatalogue().then((got) => {
+      if (!alive) return;
+      setCatalogue(new Map(got.courses.map((c) => [c.slug, c])));
     });
     return () => {
       alive = false;
@@ -282,7 +299,20 @@ export default function AcademyMe() {
                   className="acad-course"
                   to={routes.academyLearn.replace(":slug", c.slug)}
                 >
-                  <span className="acad-course__glyph">{c.cover_code}</span>
+                  {/* The course's own cover, square. Looked up by slug:
+                      a course that has since been unpublished is not in
+                      the catalogue, and gets the neutral art rather
+                      than nothing. */}
+                  <CourseCover
+                    variant="square"
+                    course={{
+                      slug: c.slug,
+                      title: c.title,
+                      cover_code: c.cover_code,
+                      area: catalogue.get(c.slug)?.area ?? null,
+                      tool: catalogue.get(c.slug)?.tool ?? null,
+                    }}
+                  />
                   <span className="acad-course__mid">
                     <b>{c.title}</b>
                     <small>
@@ -331,8 +361,13 @@ export default function AcademyMe() {
                   className="acad-cert"
                   to={`/certificate/${encodeURIComponent(c.certificate_number)}`}
                 >
+                  {/* The seal with the mark on it, so a certificate row
+                      carries the same mark as everything else that
+                      comes from Data-Lead. Decoration: the row says
+                      the course and the number in words. */}
                   <span className="acad-cert__seal">
                     <SealIcon />
+                    <i className="dla-mark" aria-hidden="true" />
                   </span>
                   <span className="acad-cert__mid">
                     <b>{c.course_title}</b>
