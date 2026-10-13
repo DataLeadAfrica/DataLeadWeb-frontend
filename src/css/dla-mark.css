@@ -1,0 +1,37 @@
+/* The Data-Lead mark.
+   ONE class, used in several places, so this file is imported by each
+   component that uses it rather than living in any one of their
+   stylesheets. The Academy and the certificate pages do not share a
+   stylesheet, and a class that lives in a file one of them never loads
+   is a class that silently does nothing there.
+
+   It is a background image, not an <img>, because every use is
+   decorative: the words next to it always say Data-Lead. So it is
+   always marked aria-hidden by whatever renders it, and a screen
+   reader never announces it. */
+
+.dla-mark {
+  display: inline-block;
+  /* Sized from the text it sits beside, so it matches whatever label
+     it is put next to without a size for every use. The mark is
+     67 by 96, so 0.7em wide keeps its shape at 1em tall. */
+  width: 0.7em;
+  height: 1em;
+  flex: none;
+  background: url("/brand/dla-mark.webp") center / contain no-repeat;
+  /* Lines the mark up with the letters beside it rather than with the
+     bottom of the line box. */
+  vertical-align: -0.1em;
+}
+
+/* On the orange Programming covers the mark sits on orange, which it
+   was not drawn for. A white pill puts it back on white. */
+.dla-mark--pill {
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0.3em 0.4em;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background-color: #fff;
+  background-size: contain;
+}

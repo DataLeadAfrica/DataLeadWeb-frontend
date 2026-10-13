@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import "./BuyCard.css";
 import { asPrice, type FullCourse } from "../../../lib/catalogue";
+import CourseCover from "../ui/CourseCover";
 import { ArrowIcon, TickIcon } from "../ui/Icons";
 import { routes } from "../../routes";
 
@@ -68,6 +69,14 @@ export default function BuyCard({ course, state }: Props) {
 
   return (
     <aside className="acad-buy" aria-label="Price and how to start">
+      {/* The course's cover, so the card a person scrolled down to is
+          plainly still the course they arrived on. No badge: the price
+          and the "Try module 1 free" button below say the same thing
+          better, and a badge repeating them is noise. Hidden when the
+          card becomes the bar at the bottom of a phone, where there is
+          only room for the price and the button. */}
+      <CourseCover course={course} badge={false} />
+
       {/* The price, and under it the line about payment. Under, not
           floating above the bar on a phone, where it used to sit over
           the page content as a separate box. */}

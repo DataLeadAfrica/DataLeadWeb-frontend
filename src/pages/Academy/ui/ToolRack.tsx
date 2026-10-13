@@ -5,9 +5,9 @@ import "./ToolRack.css";
 import {
   asLength,
   asPrice,
-  coverCode,
   type CourseCard,
 } from "../../../lib/catalogue";
+import CourseCover from "./CourseCover";
 import { routes } from "../../routes";
 
 // The hero of the landing page: one key per tool that has a published
@@ -116,9 +116,10 @@ export default function ToolRack({ courses }: Props) {
           className="acad-rack__course"
           to={routes.academyCourse.replace(":slug", current.slug)}
         >
-          <span className="acad-rack__glyph" aria-hidden="true">
-            {coverCode(current)}
-          </span>
+          {/* The course's own cover, square, so the readout shows the
+              same picture the person will meet again on the card and on
+              the course page. */}
+          <CourseCover course={current} variant="square" />
           <span className="acad-rack__words">
             <b>{current.title}</b>
             <small>

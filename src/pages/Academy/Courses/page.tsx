@@ -10,7 +10,8 @@ import CourseCardTile from "../ui/CourseCard";
 import EmptyState from "../ui/EmptyState";
 import { ArrowIcon } from "../ui/Icons";
 import { routes } from "../../routes";
-import { SITE_ORIGIN } from "../../../lib/site";
+import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
+import { areaKey } from "../../../../api/_cover-art.js";
 import {
   areasOf,
   getCatalogue,
@@ -80,6 +81,9 @@ export default function AcademyCourses() {
         title={TITLE}
         description={DESCRIPTION}
         canonicalPath={routes.academyCourses}
+        // The launch switch. See the note on the landing page.
+        noindex={!ACADEMY_PUBLIC}
+        robots="noindex, follow"
         // Two blocks, the same two the edge function writes: the list of
         // courses, and the trail that matches the breadcrumb a person
         // reads at the top of the page. The edge's copies are removed
@@ -166,6 +170,14 @@ export default function AcademyCourses() {
                   aria-pressed={a === area}
                   onClick={() => setArea(a)}
                 >
+                  {/* The area's own colour, the same one its course
+                      covers are drawn on, so the filter and the cards
+                      it produces are plainly the same thing. The
+                      colour is never the only thing saying which area
+                      this is: the name is right beside it. */}
+                  {a === "All" ? null : (
+                    <i className={`acad-swatch acad-cv-${areaKey(a)}`} aria-hidden="true" />
+                  )}
                   {a}
                 </button>
               ))}

@@ -1,0 +1,206 @@
+/* The designed course cover. See CourseCover.tsx for how it is built.
+
+   The colours live here rather than in the SVG, because a gradient in
+   an SVG needs an id and twenty covers on one page would all define
+   the same one. Here they are four CSS custom properties set by the
+   area class, which cannot collide with anything. */
+
+.acad-cv-an {
+  --cv-bg: linear-gradient(155deg, #fff6ef 0%, #ffe3cd 100%);
+  --cv-ink: #16151b;
+  --cv-grid: rgba(22, 21, 27, 0.06);
+  --cv-dot: #f56e0f;
+}
+.acad-cv-vi {
+  --cv-bg: linear-gradient(155deg, #ffffff 0%, #f1f3f7 100%);
+  --cv-ink: #16151b;
+  --cv-grid: rgba(22, 21, 27, 0.05);
+  --cv-dot: #f56e0f;
+}
+.acad-cv-dc {
+  --cv-bg: linear-gradient(155deg, #f2f5f9 0%, #dfe6ef 100%);
+  --cv-ink: #16151b;
+  --cv-grid: rgba(22, 21, 27, 0.06);
+  --cv-dot: #f56e0f;
+}
+.acad-cv-pr {
+  --cv-bg: linear-gradient(135deg, #ff9550 0%, #f56e0f 52%, #de5a00 100%);
+  --cv-ink: #ffffff;
+  --cv-grid: rgba(255, 255, 255, 0.12);
+  --cv-dot: #ffffff;
+}
+/* Any area the art does not know, and no area at all. */
+.acad-cv-x {
+  --cv-bg: linear-gradient(155deg, #fff6ef 0%, #f3eee9 100%);
+  --cv-ink: #16151b;
+  --cv-grid: rgba(22, 21, 27, 0.06);
+  --cv-dot: #f56e0f;
+}
+
+.acad-cover {
+  position: relative;
+  display: block;
+  /* The type inside is sized in cqw, so it scales with the cover
+     rather than with the page. One set of numbers then works on a
+     300 pixel card and a 1200 pixel share picture. */
+  container-type: inline-size;
+  /* Set before anything is drawn, so the box is the right shape from
+     the first paint and nothing on the page shifts. */
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--acad-r-m);
+  /* The graph paper and the area's own gradient, in that order: two
+     one pixel lines repeating over the colour underneath.
+     It is here rather than inside the SVG because it is a background,
+     and because drawn in the SVG it was the same 290 characters of
+     markup inside every cover, inline in the HTML, on a page that
+     carries nine of them. The share picture still draws it, because
+     api/og.js has no stylesheet. */
+  background-image:
+    linear-gradient(var(--cv-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cv-grid) 1px, transparent 1px),
+    var(--cv-bg);
+  background-size: 6.25cqw 6.25cqw, 6.25cqw 6.25cqw, auto;
+  color: var(--cv-ink);
+  isolation: isolate;
+}
+
+/* A hairline inside the edge, so a white cover still has a shape
+   against a white card. */
+.acad-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(22, 24, 32, 0.07);
+  pointer-events: none;
+}
+
+.acad-cover__wrap {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.acad-cover__art,
+.acad-cover__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: -1;
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------ the words */
+
+.acad-cover__label {
+  position: absolute;
+  left: 5.5cqw;
+  top: 5.6cqw;
+  display: flex;
+  align-items: center;
+  gap: 1.8cqw;
+  font: 600 2.9cqw/1 var(--acad-f-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.78;
+  white-space: nowrap;
+}
+
+.acad-cover__name {
+  position: absolute;
+  left: 5.5cqw;
+  bottom: 5cqw;
+  font-family: var(--acad-f-display);
+  font-weight: 600;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.acad-cover__title {
+  position: absolute;
+  left: 5.5cqw;
+  bottom: 5cqw;
+  max-width: 58%;
+  font: 600 6.2cqw/1.02 var(--acad-f-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* On the share picture the tool name moves to the top and becomes a
+   small label, because the course TITLE is the thing a person reads in
+   a WhatsApp group. */
+.acad-cover--og .acad-cover__name {
+  bottom: auto;
+  top: 15cqw;
+  font-size: 4.2cqw !important;
+  letter-spacing: 0.02em;
+  font-family: var(--acad-f-mono);
+  opacity: 0.8;
+}
+
+.acad-cover__badge {
+  position: absolute;
+  right: 4cqw;
+  top: 4cqw;
+  /* max() so the badge never shrinks below readable on a small
+     thumbnail, however small the container gets. */
+  font: 600 max(10px, 2.7cqw) / 1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1.6cqw 2.4cqw;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--acad-signal-text);
+  box-shadow: 0 6px 16px -8px rgba(22, 24, 32, 0.35);
+}
+.acad-cover__badge--free {
+  color: var(--acad-ok);
+}
+
+/* ---------------------------------------------------------- the variants */
+
+.acad-cover--og {
+  aspect-ratio: 1200 / 630;
+  border-radius: 0;
+}
+
+.acad-cover--square {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  flex: none;
+}
+/* The art is quieter behind a thumbnail, because at 44 pixels the two
+   letters are the only thing that can actually be read. */
+.acad-cover--square .acad-cover__art {
+  opacity: 0.4;
+}
+
+.acad-cover__code {
+  position: absolute;
+  left: 11cqw;
+  bottom: 9cqw;
+  font: 600 40cqw/0.9 var(--acad-f-display);
+  letter-spacing: -0.05em;
+}
+
+/* The caret at the end of the code, on a Programming cover. It is the
+   one moving thing on a cover, and it stops entirely when somebody has
+   asked for less movement. */
+.acad-cover__caret {
+  animation: acad-cover-blink 1.1s steps(1) infinite;
+}
+@keyframes acad-cover-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-cover__caret {
+    animation: none;
+  }
+}

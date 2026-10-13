@@ -3,6 +3,7 @@ import { Route } from "react-router";
 
 import { routes } from "../routes";
 import RequireAccount from "./RequireAccount";
+import PreviewNotice from "./ui/PreviewNotice";
 import Waiting from "./ui/Waiting";
 
 // Every Academy route. Mounted from src/main.tsx the same way the other
@@ -41,8 +42,20 @@ const AcademyLesson = lazy(() => import("./Learn/Player/page"));
 const AcademyQuiz = lazy(() => import("./Learn/Quiz/page"));
 const AcademyComplete = lazy(() => import("./Learn/Complete/page"));
 
+// Every Academy page goes through here, which is why the preview
+// notice is rendered here and not in eleven separate pages. It renders
+// nothing at all once ACADEMY_PUBLIC is true.
+//
+// It is OUTSIDE the Suspense boundary on purpose: the notice should be
+// on the screen while the page itself is still arriving, not appear a
+// moment after it.
 function page(element: React.ReactNode) {
-  return <Suspense fallback={<Waiting />}>{element}</Suspense>;
+  return (
+    <>
+      <PreviewNotice />
+      <Suspense fallback={<Waiting />}>{element}</Suspense>
+    </>
+  );
 }
 
 export default function academyRouter() {

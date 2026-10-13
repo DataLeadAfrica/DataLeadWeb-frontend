@@ -81,6 +81,22 @@
       "destination": "/register/excel-basics/index.html"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/lms",
+      "destination": "/api/academy-meta?path=/lms"
+    },
+    {
+      "source": "/lms/courses",
+      "destination": "/api/academy-meta?path=/lms/courses"
+    },
+    {
+      "source": "/lms/courses/:slug",
+      "destination": "/api/academy-meta?path=/lms/courses/:slug"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

@@ -1,7 +1,43 @@
 # Data-Lead Academy: status
 
-Last updated 8 October 2026, after file 13 was run on the live database. **The database layer is
-finished.** From here the work is the website.
+Last updated 13 October 2026, after the Academy reached the live site by accident on 9 October.
+**The database layer is finished.** From here the work is the website.
+
+> ## 9 OCTOBER 2026: THE ACADEMY WENT LIVE BY ACCIDENT
+>
+> The `Excel-basics` branch was created from `lms-academy` instead of from `main`. When PR #62 was
+> merged at 14:22 on 9 October, the whole Academy, Phases 2 to 4, went to `main` with it. Main is
+> now `226e3f0`, and the real dataleadafrica.com has been serving the Academy since that merge.
+>
+> **What that cost, as found on 12 October:**
+>
+> - The bootcamps page at `/courses` showed the Academy band reading "1 self paced course",
+>   linking to the test course. Anybody could have signed up for it and earned a real,
+>   verifiable certificate. Big Sam unpublished the test course, which hid the band.
+> - The Excel commit rewrote `vercel.json` from an older copy and dropped four rewrites:
+>   `/sitemap.xml`, `/lms`, `/lms/courses` and `/lms/courses/:slug`. So `robots.txt` went on
+>   advertising a sitemap that returned the home page, and the three public Academy pages were
+>   served the home page's title and description instead of the edge function's.
+> - `CHANGELOG.md` and `PREVIEW-DATA.md` ended up in the root of the live repository.
+>
+> **We did not revert.** Phases 2 to 4 had been reviewed and tested, and reverting a merge in git
+> makes the later re-merge silently drop the reverted files, which is a worse problem arriving
+> later. The Phase 5 round 2 package makes `main` safe instead: a launch switch, the merged
+> `vercel.json`, and a test that fails if any of those six rewrites ever goes missing again.
+>
+> **THE RULE THAT COMES OUT OF IT, and it is now rule 9 below: every package is laid on `main`
+> (226e3f0 or later), goes on a NEW BRANCH FROM MAIN, and comes in by pull request. Never branch
+> from `lms-academy`, and never commit to `main`.**
+>
+> **`lms-academy` is finished and can be deleted once this round is merged.** Everything on it is
+> on `main`. Leaving it there is leaving the thing that caused this, for somebody to branch from
+> again.
+>
+> **The launch switch.** `ACADEMY_PUBLIC` in `api/_seo-rules.js` is `false`. While it is, the
+> Academy works but nothing sends anybody to it: no band on `/courses`, no `/lms` address in the
+> sitemap, `noindex` on all three public pages, and a one line notice at the top of every `/lms`
+> page saying it is a preview. The launch PR flips that one line to `true` and changes nothing
+> else.
 
 ## Where we are in one paragraph
 
@@ -330,6 +366,16 @@ is doing the work.
    noticing, add it to `system_health` in the same change that adds the part.
 8. **An undo file restores the previous state except where the previous state was the fault.** Then
    it says so in a comment at the top, and gives a query that shows who a full revert would harm.
+9. **Every package is laid on `main` and comes in by pull request.** Branch from `main`, never
+   from another feature branch, and never commit to `main` directly. On 9 October a branch cut
+   from `lms-academy` carried the entire unreleased Academy to the live site inside a pull request
+   about an Excel registration page, and nobody saw it in the diff because the diff was against
+   the wrong base.
+10. **A configuration file that several parts of the site depend on is MERGED, never replaced.**
+    `vercel.json` is the worked example: a package built from an older copy of it silently dropped
+    four rewrites and nothing failed, because a missing rewrite is not an error, it is a
+    different page. `tests/vercel-rewrites.test.mjs` now fails if any of the six rewrites that
+    something live depends on goes missing.
 
 ## Glossary, written for a twelve year old
 

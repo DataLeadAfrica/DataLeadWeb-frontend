@@ -14,6 +14,20 @@ type SeoProps = {
   jsonLd?: object | object[];
   noindex?: boolean;
   /**
+   * What the robots tag should say when noindex is set. The default,
+   * "noindex, nofollow", is right for a page behind a sign in: there is
+   * nothing on it a crawler should index OR follow.
+   *
+   * The Academy's three PUBLIC pages pass "noindex, follow" instead,
+   * because while the launch switch is off they are hidden on purpose
+   * rather than private, and api/academy-meta.js writes exactly that
+   * into the HTML before React starts. The two have to say the same
+   * thing: a tag that is "noindex, follow" in the HTML and "noindex,
+   * nofollow" half a second later is a tag that changed under the
+   * crawler, which is the one thing worse than not having one.
+   */
+  robots?: "noindex, nofollow" | "noindex, follow";
+  /**
    * The path this page's canonical should point at, when it is not
    * simply the address in the bar. Optional, and every page that does
    * not pass it behaves exactly as it always did.
@@ -57,6 +71,7 @@ export default function Seo({
   description,
   jsonLd,
   noindex,
+  robots: robotsContent = "noindex, nofollow",
   canonicalPath,
 }: SeoProps) {
   useEffect(() => {
@@ -86,7 +101,7 @@ export default function Seo({
     if (noindex) {
       robots = document.createElement("meta");
       robots.setAttribute("name", "robots");
-      robots.setAttribute("content", "noindex, nofollow");
+      robots.setAttribute("content", robotsContent);
       document.head.appendChild(robots);
     }
 
@@ -118,7 +133,7 @@ export default function Seo({
       if (script && script.parentNode) script.parentNode.removeChild(script);
       if (robots && robots.parentNode) robots.parentNode.removeChild(robots);
     };
-  }, [title, description, JSON.stringify(jsonLd), noindex, canonicalPath]);
+  }, [title, description, JSON.stringify(jsonLd), noindex, robotsContent, canonicalPath]);
 
   return null;
 }

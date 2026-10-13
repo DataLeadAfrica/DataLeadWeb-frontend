@@ -7,6 +7,10 @@
 
 import { ImageResponse } from "@vercel/og";
 
+// The same cover art the cards on the site use. One copy, so the
+// picture shared to WhatsApp is the picture the person saw.
+import { AREA_PAINT, areaKey, coverArt, coverName } from "./_cover-art.js";
+
 // The fonts are built into this file on purpose.
 //
 // They used to be fetched from the site's own /fonts/ folder. That was
@@ -891,34 +895,97 @@ function coursePrice(kobo) {
   return `NGN ${Math.round(n / 100).toLocaleString("en-NG")}`;
 }
 
-function courseCard({ title, facts }) {
+// The mark, built into this file for exactly the same reason as the
+// fonts above: a fetch for it could be answered by the catch-all
+// rewrite with a page of HTML, and the renderer would be handed HTML
+// where it expected a picture. Built in, there is nothing to fail.
+// The same file is at public/brand/dla-mark.webp for the pages.
+const DLA_MARK_B64 =
+  "iVBORw0KGgoAAAANSUhEUgAAAEMAAABgBAMAAAC03NLYAAAAMFBMVEUAAADzZyEFBwjvZRzzZiDzZyGsLgEJBQbSIgEHBQXzkFZf" +
+  "EAX/y2XuhSitTA/qdUa8v9I4AAAAEHRSTlMA+/oPnmABnwFfEwYBAwQDbyOQBwAABU9JREFUeNqFll1sU2UYx3/nfduddl/sdZCQ" +
+  "bcFuASRA2dm6CRph42PgheAQEqMJYcn8utJeaGbihRiMEfWi4UovMIvGj2iWNMKNCSRLRgxZqByphpDAchJUhhu0jAAr3Wm9OOe0" +
+  "Xem6c3ee8z/P83++H0nZU0P/3ecb/6HKc7FLqZWyVCLLIZNqmvzmVdNFia8MEUg2ArWPSkSiDOK8Jw9VoVIzrFQZmXIudr7LYjGZ" +
+  "ckMYFkBtNaelXymlmj+pBhlWSqlVK6rEJZ9vn4bc+gFzSS4E0gAtZjVLPqWUav5taY/gKIDYvjQXj8wrl6poIQ1w26gCSRoF3DLB" +
+  "O14Nk1icSVkBMrk4k5Xobls+k4HlyQSOK6XUytoqXBZS7dOQ3/Ta+JJc3Eyuji+fyTeW9gg+BBA/VuTy6Z49ZyGfap+G3Mg5ALSS" +
+  "7/VbchdgojXQYmgW0GeZZZDtExCBBET4owHIh8ogkYR8adYE2XUnQe81QKTtRZBra3vrvXqNrBhTgEwtggyfOnyuhFZ34ziw7qdQ" +
+  "ESLtnuuP+96ZNotxCVdCuAPC0TL8TX3FKKdsT0sg8ULFINuRcQ/ywZ/jlZPVEnUTUDP7lFuDcjdKNa8pzJYbAwmHy+mDDY6kZ8aJ" +
+  "TO81bxLem3e0XHGV7Doz0z3RcpY6a2zKkeQ2Dpj4QP7luNM9FgmPrgXx+os7/a6HLSFndHUppZRahduiJ0PI8R6llFKq2QCNwKYp" +
+  "ANlWf96BdPiv0jh3cBzAd8dGkL0MwOakiwiShbm3zjhjApBsbU4D8mrYdTXXxNELXNyi0kB+/eppwXwTwOaIVwlR+BVIOsqbQMr/" +
+  "UgB1C168boFvFvKdXRYws+uSJrWGYoEBeivkLMD5IFO2CIcBtoe9mGcdWyA7AeywIWgCuDFIkYoDeWSHAEJostF13306QL8ycgII" +
+  "LDQAYr8QAFrBjg7s42eA7FEARkUe4NlChXwOxHSigJ0wAA1xBMAqUImBnyxxgJo0YKeFCcjkMbzoQ4YoOkAvAP0iBGgeggwwGIyT" +
+  "BfgyCRASALkvSuwQy3h+awBpkfZ+9iA6MZw0kXMK+i6Qe9ftgGADZNNXATsFek4HpgWAUUolGiyYLB1kQ6XRz3iQebsE4oUl7lFx" +
+  "3D/2OEQHHrqQTJmheLEQrGDRaKmWWEHqJwOMAHECsghJ7i1QyRAD3gR0J8QgDAC7QGXQiV4Usu7/higZ4W4hwD7eA6K60wOiyW2o" +
+  "YiFAjAwQX3DkwgLsSGkh4HfCoD8KA1gOF2F40ScOmbrkUAyysRAgTc3X4E3PkzGY0lvhQIy6hVbI3QV8M07tJg+5VGJZIDYcWZcB" +
+  "gmkghxjCLbsgkP0qCn7uTN0YGnRzINGM9nFg431ThICcgFxyDTKVD8HbH0GfJbAA/G4SRoDBJ8De73fzYg26be/LzHUAWCG49W8I" +
+  "xO0O0N+P+u7NC+eiWejQAfQo6PeHAI0oZIbJfY2GoUxAPIgBD29CJhYBOHY4Crtf7rNMjeHfLYAny+4rozYKJ6bmbDSkqAfwPfjO" +
+  "K89vY8DlegDxw14AY6dSSqnBhqGijkiNKzRAw7Mk25LhwnJMdFmFhaSBpNHZCa3J59pHgXe2vuouuWdmJ522dRY3+FpN+dn3BM/j" +
+  "IuSGj/sdiKcG2XfdBCJr3P7tnrznNb+nBqSh8rc9RrJt1PAgkh2Vrs7OCbtQ2Xb4fAWEb+JIyeUR2FAwVdzAbZgl98vCg7/3lWN2" +
+  "TNxcdAXNnfqlfzFi12lvWntnRd265IGSZS37xgyzDEJgg1m8G3pmzKcnK1xqBvLwTqWUGjiE3Fb88D8vx6xvdkjWgAAAAABJRU5E" +
+  "rkJggg==";
+
+// PNG, not the WebP at public/brand/dla-mark.webp that the pages use.
+// The renderer in this file cannot decode WebP: handed one it throws
+// part way through, and every course would quietly fall through to the
+// plain certificate card instead of its own picture. Nothing in a
+// build catches that, which is why there is a test that renders these
+// for real. Sixteen colours, because the mark has about four.
+const DLA_MARK = `data:image/png;base64,${DLA_MARK_B64}`;
+
+/**
+ * The course's own cover art, as a data URL the renderer can draw.
+ *
+ * The same api/_cover-art.js the cards use, so the picture that turns
+ * up in a WhatsApp group is the picture the person saw on the site.
+ * Sized explicitly, because here there is no stylesheet to size it.
+ */
+function artUrl(course) {
+  const svg = coverArt({
+    slug: course.slug,
+    title: course.title,
+    area: course.area,
+    variant: "og",
+    width: 1200,
+    height: 630,
+  });
+  // encodeURIComponent rather than base64: the SVG is plain ASCII
+  // shapes, this keeps it readable in a browser's network tab, and it
+  // avoids needing btoa on a runtime that may not have it.
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function courseCard({ title, name, label, facts, area, slug }) {
+  const key = areaKey(area);
+  const paint = AREA_PAINT[key] || AREA_PAINT.x;
+  // The orange cover is the one with white text on it, so the pills and
+  // the mark need their own treatment there.
+  const onOrange = key === "pr";
+
   return {
     type: "div",
     props: {
       style: {
+        position: "relative",
         width: "1200px",
         height: "630px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         padding: "72px 80px",
-        backgroundColor: "#eceff3",
-        backgroundImage:
-          "radial-gradient(900px 520px at 85% -10%, rgba(245,110,15,0.30), rgba(236,239,243,0))",
+        backgroundColor: onOrange ? "#f56e0f" : "#f4f2ef",
+        backgroundImage: paint.bg,
+        color: paint.ink,
         fontFamily: "Poppins",
       },
       children: [
+        // The art, behind everything. Absolute so the words sit on top
+        // of it rather than after it.
         {
-          type: "div",
+          type: "img",
           props: {
-            style: {
-              display: "flex",
-              fontSize: 24,
-              letterSpacing: "0.18em",
-              color: "#a8440a",
-              fontFamily: "Poppins Bold",
-            },
-            children: "DATA-LEAD ACADEMY",
+            src: artUrl({ title, area, slug }),
+            width: 1200,
+            height: 630,
+            style: { position: "absolute", top: 0, left: 0 },
           },
         },
         {
@@ -926,10 +993,74 @@ function courseCard({ title, facts }) {
           props: {
             style: {
               display: "flex",
-              marginTop: "28px",
-              fontSize: title.length > 38 ? 64 : 80,
+              alignItems: "center",
+              gap: "14px",
+              fontSize: 24,
+              letterSpacing: "0.18em",
+              color: onOrange ? "#ffffff" : "#a8440a",
+              fontFamily: "Poppins Bold",
+            },
+            children: [
+              // On orange the mark goes on a white pill, because it was
+              // not drawn to sit on orange. The pill is a wrapper and
+              // not padding on the picture itself: padding on an image
+              // squeezes the image rather than growing the box around
+              // it, which drew the mark as a sliver.
+              {
+                type: "div",
+                props: {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    ...(onOrange
+                      ? {
+                          width: "46px",
+                          height: "46px",
+                          borderRadius: "999px",
+                          backgroundColor: "#ffffff",
+                        }
+                      : {}),
+                  },
+                  children: [
+                    {
+                      type: "img",
+                      props: { src: DLA_MARK, width: 21, height: 30 },
+                    },
+                  ],
+                },
+              },
+              { type: "div", props: { style: { display: "flex" }, children: label } },
+            ],
+          },
+        },
+        // The tool name, small, above the title. On a card it is the big
+        // word at the bottom; here the TITLE is what somebody reads in a
+        // WhatsApp group, so the two swap places.
+        name
+          ? {
+              type: "div",
+              props: {
+                style: {
+                  display: "flex",
+                  marginTop: "34px",
+                  fontSize: 30,
+                  letterSpacing: "0.02em",
+                  opacity: 0.75,
+                },
+                children: name,
+              },
+            }
+          : null,
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              marginTop: name ? "10px" : "28px",
+              maxWidth: "700px",
+              fontSize: title.length > 38 ? 62 : 78,
               lineHeight: 1.05,
-              color: "#16151b",
               fontFamily: "Poppins Bold",
             },
             children: title,
@@ -938,7 +1069,7 @@ function courseCard({ title, facts }) {
         {
           type: "div",
           props: {
-            style: { display: "flex", marginTop: "48px", gap: "16px" },
+            style: { display: "flex", marginTop: "44px", gap: "16px" },
             children: facts.map((f) => ({
               type: "div",
               props: {
@@ -949,6 +1080,8 @@ function courseCard({ title, facts }) {
                   border: "1px solid rgba(22,24,32,0.18)",
                   backgroundColor: "#ffffff",
                   fontSize: 28,
+                  // Always dark on the white pill, whatever the cover's
+                  // own ink is: white on white is nothing at all.
                   color: "#16151b",
                 },
                 children: f,
@@ -959,6 +1092,52 @@ function courseCard({ title, facts }) {
       ],
     },
   };
+}
+
+/**
+ * Draw a picture and hand back the finished bytes.
+ *
+ * WHY NOT JUST RETURN THE ImageResponse. Because it renders lazily:
+ * constructing one does almost nothing, and the drawing happens when
+ * something reads the body. A try/catch around the constructor
+ * therefore catches nothing. The response had already gone out with a
+ * 200 and the right headers, and the drawing then died part way
+ * through sending, which in a browser is a completely blank page and in
+ * WhatsApp is no preview at all. That is the same failure the note
+ * about the fonts at the top of this file describes, arriving by a
+ * different route.
+ *
+ * Awaiting the bytes here moves the drawing INSIDE the caller's try, so
+ * a picture that cannot be drawn falls through to the simpler one
+ * instead of breaking in the reader's hands. It costs holding about a
+ * hundred kilobytes in memory for a moment, which is nothing next to a
+ * share link that shows nothing.
+ *
+ * IT ALSO FIXES THE CACHE HEADER, which was wrong in a way nothing
+ * would ever have reported. ImageResponse sets its own
+ * "public, immutable, no-transform, max-age=31536000" and APPENDS
+ * whatever it is given, so the header that actually went out read
+ *
+ *   public, immutable, no-transform, max-age=31536000, public,
+ *   max-age=3600, s-maxage=86400
+ *
+ * which says two different things. A cache takes the first max-age it
+ * reads, so these pictures were being held, immutable, for a year
+ * rather than the day that was intended: a certificate that was later
+ * revoked would have gone on showing its old picture. Building the
+ * Response here means the header is only what we asked for. The
+ * numbers themselves are unchanged.
+ */
+async function drawn(tree, { fonts, headers }) {
+  const image = new ImageResponse(tree, { width: 1200, height: 630, fonts });
+  const body = await image.arrayBuffer();
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "image/png",
+      ...(headers || {}),
+    },
+  });
 }
 
 export default async function handler(request) {
@@ -993,9 +1172,15 @@ export default async function handler(request) {
     if (course) {
       const lessons = Number(course.lesson_count) || 0;
       try {
-        return new ImageResponse(
+        return await drawn(
           courseCard({
             title: course.title || "Data-Lead Academy",
+            // The tool name, or the two letter code when the tool name
+            // is too long to read at this size. Same rule as the cards.
+            name: coverName(course),
+            label: "DATA-LEAD ACADEMY",
+            area: course.area,
+            slug: course.slug || courseSlug,
             facts: [
               `${lessons} lesson${lessons === 1 ? "" : "s"}`,
               courseLength(course.total_seconds),
@@ -1003,8 +1188,6 @@ export default async function handler(request) {
             ],
           }),
           {
-            width: 1200,
-            height: 630,
             fonts,
             headers: { "Cache-Control": "public, max-age=3600, s-maxage=86400" },
           },
@@ -1043,7 +1226,7 @@ export default async function handler(request) {
   }
 
   try {
-    return new ImageResponse(
+    return await drawn(
       card({
         eyebrow: ok ? "VERIFIED CERTIFICATE" : "CERTIFICATE CHECK",
         name,
@@ -1053,8 +1236,6 @@ export default async function handler(request) {
         plateUrl,
       }),
       {
-        width: 1200,
-        height: 630,
         fonts,
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=86400",
@@ -1063,7 +1244,7 @@ export default async function handler(request) {
     );
   } catch {
     // A broken picture is worse than a plain one, so never throw.
-    return new ImageResponse(
+    return await drawn(
       card({
         eyebrow: "CERTIFICATE CHECK",
         name: "Data-Lead Africa",
@@ -1072,7 +1253,7 @@ export default async function handler(request) {
         number: number || "",
         plateUrl: null,
       }),
-      { width: 1200, height: 630, fonts },
+      { fonts },
     );
   }
 }

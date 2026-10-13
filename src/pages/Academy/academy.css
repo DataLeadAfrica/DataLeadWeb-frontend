@@ -358,6 +358,24 @@
   cursor: default;
   text-decoration: none;
 }
+/* An .acad-link often has a small arrow after the words, and until now
+   each place that used one sized the arrow itself. A new use that
+   forgot drew it at the browser's default size for an SVG with no
+   dimensions, which is 300 by 150 and filled solid black. So the size
+   belongs here, on the class they all share.
+   SIZE AND COLOUR ONLY, deliberately: three of these links sit inside
+   a running sentence ("Wrong address? Start again"), and giving the
+   class a flex display would take them out of the line of text. A
+   link that wants its arrow on a row of its own says so itself. */
+.acad-link svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  vertical-align: -0.15em;
+}
 
 .acad-foot {
   margin: 20px 0 0;
@@ -477,18 +495,8 @@
   flex-wrap: wrap;
 }
 
-.acad-band__more {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.acad-band__more svg {
-  width: 15px;
-  height: 15px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-}
+/* .acad-band__more is gone with the "Latest courses" block it belonged
+   to. Its arrow sizing is on .acad-link now, where every link gets it. */
 
 .acad-grid3 {
   display: grid;

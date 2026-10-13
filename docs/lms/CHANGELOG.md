@@ -5,6 +5,371 @@ One cumulative package. Every phase adds to it, and this file says what each pha
 Everything sits at its real path in the repository, so the package can be laid on top of `main` as
 it is.
 
+From round 2 onwards the packages hold ONLY the files that differ from `main`, not a cumulative
+copy of everything, because this is now a change to a live site. Each entry says which base it was
+laid on.
+
+---
+
+## PHASE 5 ROUND 2, 13 October 2026. Making main safe
+
+On 9 October the `Excel-basics` branch was created from `lms-academy` rather than from `main`, and
+PR #62 carried the whole Academy, Phases 2 to 4, onto `main` with it. The real dataleadafrica.com
+has been serving the Academy since. This round does not revert that. It makes `main` safe where it
+stands, and finishes the job there.
+
+No database change. No new dependency.
+
+### The launch switch
+
+**One constant, `ACADEMY_PUBLIC`, in `api/_seo-rules.js`, set to `false`.** That file is the one
+module both the edge functions and the React bundle already import, which is the whole reason it
+exists, so there is one value and it cannot be half flipped. The launch PR changes that one line
+to `true` and nothing else.
+
+While it is false:
+
+| What | Where it is done |
+| --- | --- |
+| The Academy band never shows on `/courses`, whatever the catalogue holds | `src/components/AcademyBand/component.tsx` |
+| `/lms`, `/lms/courses` and `/lms/courses/:slug` carry `noindex` in the HTML a crawler is handed | `api/academy-meta.js` |
+| The same three set `noindex` again once React starts | the three pages, through `<Seo>` |
+| No `/lms` address is in the sitemap. Everything else still is | `api/sitemap.js` |
+| A slim line at the top of every `/lms` page: "Preview. The Academy is not open to the public yet." | `src/pages/Academy/ui/PreviewNotice.tsx` |
+
+**Canonicals are deliberately untouched.** `noindex` says "do not list this page". A canonical says
+"when you do list it, this is its one address". Moving the second would mean every Academy address
+changed on launch day, which is the one thing a canonical exists to prevent. A test asserts that the
+canonical, the title, the description and the share picture are byte for byte the same at both
+values of the switch, and that the robots tag is the only thing that moves.
+
+**The notice has no close button**, because a notice that can be dismissed needs somewhere to
+remember that it was, and somebody who dismissed it on Tuesday and comes back on Thursday now
+believes the Academy is open. It is rendered once, inside the router's `page()` wrapper, so all
+eleven `/lms` routes have it rather than eleven places to forget it. It is not in the HTML the edge
+function writes and not in the share picture: a picture is cached for an hour and shared onwards for
+much longer, so a "not open yet" picture would still be going round after launch day.
+
+**The two halves say the same words.** The edge function writes `noindex, follow`, and `<Seo>` said
+`noindex, nofollow`, which is right for a page behind a sign in and wrong for a page that is hidden
+on purpose rather than private. `<Seo>` now takes a `robots` prop, the three public pages pass
+`noindex, follow`, and a test reads the real response from the edge function and compares it with
+what the pages say. Every other page that passes `noindex` is unchanged.
+
+**Both values are really tested.** `tests/launch-switch.test.mjs` copies the whole `api/` folder to
+a temporary place, rewrites that one line to `true`, and runs the sitemap and all three edge pages
+against the copy. So the launch PR is proven before it is written.
+
+### vercel.json
+
+**Dr Ayoola's merged file, used exactly as supplied.** It is `main`'s file, with the Excel basics
+rewrites that serve a live registration page, plus our four. The round 1 package's own `vercel.json`
+was NOT used: it would have deleted the Excel basics lines and taken that page down.
+
+**`tests/vercel-rewrites.test.mjs` is new**, and it fails if any of six rewrites goes missing:
+`/sitemap.xml`, `/lms`, `/lms/courses`, `/lms/courses/:slug`, `/register/excel-basics` and
+`/register/excel-basics/`. It also fails if the catch-all is not last, because Vercel takes the
+first match and the catch-all matches everything, so anything after it is dead.
+
+This is the test that would have caught 9 October. A missing rewrite is not an error. The build
+passes, the deployment goes green, and the page simply becomes a different page: `robots.txt` went
+on advertising a sitemap at `/sitemap.xml` that from then on returned the home page, and the three
+public Academy pages were served the home page's title and description.
+
+### Three fixes to the design update
+
+**1. Nigeria and the glow on Abuja are out from behind the rack.** The picture was chosen for the
+country picked out in orange and the ring of glow on Abuja, and on a desktop both sat behind the
+frosted rack, with only a faint orange smudge coming through the frost.
+
+From 1024 pixels up the rack is now given a width of its own and pushed to the right of its column,
+which opens a clear band down the left of it, and the map is sized so that Nigeria lands in that
+band. The map is pinned to the COLUMN, not to the rack, so narrowing the rack widens the band
+instead of dragging the map along with it. That is why the rack became its own element,
+`.acad-hero__card`.
+
+The size is not a guess. The orange country is at x 170 to 260 of the picture's own coordinates and
+the outer Abuja ring runs x 168 to 248, so with strokes the whole feature sits between 29.9 and 46.8
+percent of however wide the map is drawn. 46.8 percent of the map therefore has to fit in the band,
+and that is the sum in the stylesheet. Below 1024 the map may sit behind the rack exactly as before.
+
+The soft glow now follows Nigeria rather than sitting in the middle of the box. Getting that right
+turned up a trap worth writing down: **a custom property holding a percentage is substituted as
+text**, so the same variable means the containing block's WIDTH inside `width` and `left`, and its
+HEIGHT inside `top`. It put the glow 144 pixels above Nigeria, and the sum that produced it looked
+perfectly correct. There are no percentages in that block now.
+
+**2. The fourth floating tile is no longer a question mark.** A "?" in a white tile reads as a help
+button, and people tap help buttons: the tile is decoration and does nothing. It is now the chart
+from the concept, so the four are play, tick, chart, certificate, which is the concept's set and its
+order.
+
+**3. The rail's arrows are gone on a phone.** They were already switched on only under
+`(any-hover: hover)`, which should have been enough and was not: a browser window narrowed to 390
+pixels can still hover, so the next arrow sat on top of the second card, over the very thing it was
+meant to help you reach. The rule is now said twice, `(any-hover: none)` for a real phone and
+`max-width: 620px` for a narrow window, and both come after the `any-hover: hover` rule because
+they have the same specificity and written above it neither would do anything.
+
+Measured at 1600, 1360, 1180, 1024, 980, 900, 760, 620 and 390 pixels, with the real boxes: the map
+clear of every piece of hero text, at least 10 pixels of air between Nigeria and the rack from 1024
+up, the whole feature drawn and not clipped, no sideways scroll, and the arrows shown or hidden as
+they should be at each width with a mouse and with touch.
+
+### Tidying
+
+- `CHANGELOG.md` and `PREVIEW-DATA.md` moved from the root of the repository into `docs/lms/`, and
+  every link that pointed at them fixed.
+- `database/lms/not-yet-run/` deleted. It held a second copy of file 10, which was run on the live
+  database on 6 October, and a stale duplicate of a migration is one edit away from being the one
+  somebody pastes into the SQL editor. `database/lms/README.md` no longer points at it.
+- `docs/lms/PHASE-5-TEST.md` section 1 replaced. The test course already exists and was hidden on
+  12 October, so section 1 is now one SQL file to run rather than a course to build.
+- `database/lms/show-test-course.sql` added, holding that SQL, so the name the document uses points
+  at something real. It runs as the first administrator inside one transaction, because the SQL
+  Editor is not signed in and `lms_publish_course` refuses anybody who is not an administrator.
+  Proved locally on PostgreSQL 16: it publishes, it is safe to run twice, it leaves nothing set
+  afterwards, and it refuses with a clear message and changes nothing when there is no
+  administrator or no test course.
+- `docs/lms/STATUS.md` records what happened on 9 October and what it cost, and adds two standing
+  rules: branch from `main` and come in by pull request, and merge a shared configuration file
+  rather than replacing it. It says `lms-academy` is finished and can be deleted once this round is
+  merged.
+
+### The numbers
+
+`npm run build` passes. `npm test` is 123 of 123, up from 103: 15 new for the launch switch, 5 for
+`vercel.json`. Lint is unchanged from `main`: the same 3 errors and 7 warnings, all in files this
+package does not touch.
+
+---
+
+## PHASE 5, 9 October 2026. The design update
+
+Every course now has a cover, drawn in code from its own details. The landing page asks what you
+want to do instead of listing three courses. No database change, and nothing the Phase 5 test
+covers was touched, with one exception that is set out in full under **The certificate picture**
+below.
+
+### What was left out, and why
+
+**Step numbers on the fan of covers in the learning path banner.** They were built, and every
+corner they could sit in was already taken: the bottom right of a cover is where a long tool name
+like "KoboToolbox" ends, the bottom left is where a short one like "STATA" starts, the top left is
+the Data-Lead Academy line, and the one free corner on the back cover is underneath the cover in
+front of it. A number sitting on top of the tool name is worse than no number. Nothing is lost:
+the numbered list beside the fan is the part that is read aloud and the part you can click, and it
+still says 01, 02, 03.
+
+**The area art on thumbnails.** A square cover is about forty pixels wide, with the art at forty
+percent opacity behind two large letters. At that size a thirty point scatter plot is not small,
+it is invisible, and it was costing 2,250 characters of markup per thumbnail inside the HTML. The
+twelve thumbnails on the landing page now carry the Academy's rings instead, at 500 characters.
+The area is still unmistakable, because the background colour is the area's and colour is the part
+that survives being shrunk.
+
+**The landing page is 2 KB over one reading of the 40 KB budget.** Set out in full under **Page
+weight** below, with both numbers and the one line that would close it.
+
+### A. Every course has a cover
+
+New file `api/_cover-art.js`, plain JavaScript with no imports, the same pattern as
+`api/_seo-rules.js`: the React pages need it, `api/og.js` needs it, and the tests run it in plain
+Node. One copy, so the picture on a card and the picture in a WhatsApp group cannot drift apart.
+
+Four pieces of art, one per area, each drawing the work rather than a symbol of it: a scatter with
+a fitted line for Analysis, bars with a trend over them for Visualisation, a form being filled in
+for Data collection, lines of code for Programming. An area nobody has written art for gets a
+constellation, which varies by course so that five courses in a new area are not five identical
+cards.
+
+Three rules the art obeys, each for a reason that has bitten real sites:
+
+- **Shapes only, no words.** Every word on a cover is real HTML over the top, so it is selectable,
+  translatable, read aloud correctly, and set in the fonts the page already loaded. A font that
+  fails to load cannot turn a cover into a row of boxes.
+- **No `id`, no gradient, no filter, no clipPath.** An `id` is global to the page, so twenty covers
+  each defining the same gradient id would every one of them draw the twentieth. The background is
+  a CSS gradient on the element instead.
+- **Nothing from the database goes inside the SVG.** The slug only seeds the random numbers. The
+  title, tool and summary never appear in it, which is what makes it safe to set as HTML. There is
+  a test that pushes a `<script>` tag through every field and checks it comes out the other side.
+
+The same slug gives byte for byte the same picture every time, in Node and in the browser, and
+there are tests for both.
+
+### B. Where the covers appear
+
+Course cards, the tool rack readout, the course page buy card, My learning, the catalogue, the
+learning path banner, and the share picture. The card was rebuilt around the picture: it opens with
+the cover, then the title, a two line summary, one line of facts and the price. The tool chip is
+gone from the card because the cover says the tool, and the "Module 1 free" tag moved onto the
+cover where it is seen before the price rather than after it.
+
+On My learning the cover is found by looking the course up by slug in the public catalogue, which
+that page now also fetches. No database change. A course that has since been unpublished is not in
+the catalogue and gets the neutral art rather than a hole, and nothing on the page waits for it or
+moves when it arrives.
+
+### C. The landing page
+
+"Latest courses" showed three cards and a link. It is now **What do you want to do?**: a row of
+goal chips built from the data, counts and all, and a rail holding every published course, newest
+first. Add a course in a new area and a chip for it appears with the right number on it; an area
+with no published course has no chip, because a filter leading to an empty rail is a dead end.
+
+Pressing a chip does not change the address. Someone who presses three chips and then presses Back
+expects to leave the Academy, not to walk back through their own filtering; the catalogue at
+`/lms/courses` is the page with real, linkable filters.
+
+The arrows on the rail appear only where something can hover, using `any-hover` rather than `hover`
+so a laptop with a touchscreen still gets them. On a phone there are dots instead, and the rail is
+moved with a finger.
+
+Below it, **Quick picks**: Free to start, Newest, Under 90 minutes. A column with fewer than two
+courses hides, and the whole section hides below four courses, when it would just be the rail above
+written out again. There is no "Popular" column and there will not be one: we do not count
+enrolments on the public site, so the word would be one we made up on the page a stranger trusts
+least.
+
+The first learning path becomes a banner with its first three covers fanned out beside it. Any
+other paths keep the compact cards.
+
+### D. The catalogue
+
+Picture cards, from the same component, and each area filter now carries a small square of that
+area's own colour so the filter and the cards it produces are plainly the same thing. The colour is
+never the only signal: the area's name is beside it.
+
+### E. Page weight
+
+Measured in a real browser, with six courses, before and after, in the same session.
+
+| | before | after | change |
+|---|---|---|---|
+| `/lms` every file, uncompressed | 1830.9 KB | 1873.0 KB | **+42.0 KB** |
+| `/lms` the HTML itself, uncompressed | 24.9 KB | 53.3 KB | **+28.3 KB** |
+| `/lms` what a visitor downloads | 758.8 KB | 771.6 KB | **+12.8 KB** |
+| `/lms/courses` every file, uncompressed | 1801.0 KB | 1796.2 KB | **-4.8 KB** |
+| `/lms/courses` the HTML itself | 23.9 KB | 38.3 KB | **+14.3 KB** |
+| `/lms/courses` what a visitor downloads | 735.9 KB | 723.5 KB | **-12.4 KB** |
+
+The budget was 40 KB on the landing page before compression. **On the HTML that is +28.3 KB and
+under. On every file added together it is +42.0 KB and 2 KB over.** Both numbers are uncompressed,
+so which one the budget meant decides it, and I would rather give you both than pick the flattering
+one.
+
+What the +42.0 KB is made of:
+
+| | |
+|---|---|
+| the HTML, mostly the covers themselves | +28.3 KB |
+| `africa-dots.svg`, the map behind the hero | +11.8 KB |
+| the three new components' CSS and JavaScript | +14.0 KB |
+| the mark, fetched once and then cached for the whole site | +4.4 KB |
+| smaller bundles elsewhere, and one import removed | -16.5 KB |
+
+**If you want it under 40 KB on the strict reading, the one line is to drop the map.** That is
+11.8 KB uncompressed and the page is immediately 10 KB inside the budget. It is only 0.6 KB over
+the wire, though, because a field of repeated dots compresses to almost nothing, which is why I
+have not dropped it on my own judgement.
+
+Four things made it smaller along the way, each a real improvement rather than a trick:
+
+- The landing page was pulling in `lib/learn`, the learner area's whole data layer, because the
+  path banner imported one word-pluralising helper from it. Four kilobytes of code for pages the
+  visitor has not opened. The same helper exists in `lib/courseSeo`, which the page already uses.
+- The graph paper inside every cover moved to CSS, where a background belongs. It was 290
+  characters of identical markup inside each one.
+- Thumbnails stopped drawing art nobody can see, as above.
+- Coordinates are whole numbers. The art is drawn in a 320 by 180 box and scaled up, so half a
+  unit is a sixth of a pixel on a card: not a difference anybody can see, and two characters on
+  every one of about forty numbers per cover.
+
+Structured data: the `Course` entry now carries `image`, pointing at `/api/og?course=<slug>`, the
+same address the `og:image` tag already used, so there is one picture and one cache entry. The edge
+function already wrote `og:image:width`, `og:image:height` and `og:image:alt`; I checked rather
+than adding them twice. Nothing about the snapshot, the canonicals, the sitemap or robots changed.
+
+### F. The awkward cases
+
+A course with no area and no tool, an eighteen character tool name, one course on its own, and a
+screen 390 pixels wide. All checked in a real browser, and all in the test harness:
+
+- no area and no tool gets the neutral art and its two letters
+- "Advanced Excel 365" is too long to read on a cover, so it becomes the two letter code
+- one course means no arrows, no dots, and no Quick picks section at all
+- no cover's words overflow its cover at either width
+- no page scrolls sideways at 390
+- the same slug gives the identical SVG in Node and in the browser
+
+### G. The mark and the icons
+
+`dla-mark.webp` is at `public/brand/`, used through one CSS class in `src/css/dla-mark.css`, which
+every component that uses it imports. One file, because the Academy and the certificate pages do
+not share a stylesheet and a class defined in a file one of them never loads is a class that
+silently does nothing there.
+
+It appears on every cover's label, on the landing and account page eyebrows in place of the pulsing
+dot, on the certificate rows in My learning, and in front of the issuer line on a certificate page.
+It is always `aria-hidden`: the words beside it always say Data-Lead. On the orange Programming
+covers it sits on a white pill, because it was not drawn to sit on orange.
+
+Three new icon files, all the mark on white so it reads on a dark tab bar as well as a light one:
+`public/favicon.ico` (16, 32 and 48 in one file), `public/apple-touch-icon.png` (180), and
+`public/icon-192.png`. All three are listed in `index.html`. **`public/logo.svg` is unchanged** and
+is still what a modern browser uses.
+
+### H. The map behind the hero
+
+`africa-dots.svg` at `public/academy/`, kept exactly as you sent it. The dots were generated by a
+script that sampled an outline onto a ten pixel grid, which is why it is one very long path and not
+something to edit by hand; there is a comment in the CSS saying so.
+
+It is decoration and it says nothing: no city names, no numbers, no claim about where anybody is
+learning. A decorative `img` with width, height, empty alt, `aria-hidden` on its holder,
+`decoding="async"` and `fetchpriority="low"`.
+
+The tool rack in front of it is frosted, white at 82 percent with a small blur, so the dots read as
+a texture while the tool names stay at full contrast. A browser that cannot frost gets the opaque
+card it has today rather than text on top of a pattern.
+
+Four small white tiles float at the corners of the rack, two on a phone. Each repeats something the
+words already say, so all four are hidden from screen readers, and they stop moving entirely when
+somebody has asked for less movement.
+
+**The map is positioned inside the rack's own column, not across the hero.** That is what keeps it
+off the headline at every width: it cannot reach the words because it is not in their half of the
+page. The first version placed it at "33% of the hero", which looked right at the width I chose it
+at and slid under the headline at others. Checked at 1360, 1024 and 390, against every piece of
+text in the hero rather than a list of four I had to remember to keep up to date.
+
+### The certificate picture, which is the one thing I touched outside the Academy
+
+`api/og.js` draws both the course share picture and the certificate share picture. Redrawing the
+course half meant editing that file, and two faults in it came out:
+
+**It could not draw the mark.** Built in as the WebP the pages use, which that renderer cannot
+decode. It threw, and every course quietly fell through to the plain certificate card. The build
+passed, the types passed, every other test passed. Fixed with a PNG of the same mark, and there is
+now a test that renders the real thing and fails if a course card comes back smaller than a course
+card could possibly be.
+
+**The fallback in that file had never worked, and the cache header said two different things.**
+`ImageResponse` draws lazily, so the `try`/`catch` around it caught nothing: the response had
+already gone out with a 200 and the drawing then died part way through sending, which is a blank
+preview. Waiting for the finished bytes inside the `try` fixes it. The same change fixed a header
+that read `max-age=31536000, public, max-age=3600, s-maxage=86400`, because the renderer appends
+its own rule to ours. A cache takes the first one, so these pictures were being kept **immutable
+for a year** instead of a day: a certificate revoked afterwards would have gone on showing its old
+picture.
+
+**The certificate picture itself is unchanged.** I rendered all four of its states before and after
+and compared the bytes: identical, all four. What changed for certificates is that their cache
+header is now the one the code always asked for, and that a drawing failure degrades instead of
+breaking. If you would rather hold even that back, it is `api/og.js` on its own and I can send a
+version with only the course half changed.
+
 ---
 
 ## PHASE 4 REVIEW ROUND, 9 October 2026

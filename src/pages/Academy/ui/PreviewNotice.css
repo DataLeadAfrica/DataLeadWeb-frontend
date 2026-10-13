@@ -1,0 +1,49 @@
+/* The preview notice. One line, light, and deliberately quiet.
+ *
+ * It sits above everything on the page, so it has to be small enough
+ * not to push the hero down the screen on a phone and plain enough that
+ * nobody mistakes it for part of the design. A banner in the Academy's
+ * orange would read as a promotion; this reads as a note.
+ *
+ * NO FIXED OR STICKY POSITION. Sticky would eat a line of a phone
+ * screen on every page and sit over the lesson player's controls. It
+ * scrolls away like any other paragraph.
+ */
+
+.acad-preview {
+  margin: 0;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--acad-line);
+  background: var(--acad-surface-2);
+  color: var(--acad-muted);
+  font-family: var(--acad-f-body);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: center;
+
+  /* One line, and if the viewport is narrow enough that it cannot be,
+   * the sentence is cut rather than wrapped to two. At 390 pixels it
+   * fits; this is only in case the sentence is ever reworded longer. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 420px) {
+  /* Below this the sentence does not fit on one line at the size
+   * above, so it is allowed to wrap rather than be cut. A notice
+   * reading "Preview. The Academy is not open to the pu..." would be
+   * worse than two short lines. */
+  .acad-preview {
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media print {
+  .acad-preview {
+    display: none;
+  }
+}

@@ -13,7 +13,7 @@ import Curriculum from "./Curriculum";
 import Faq from "../ui/Faq";
 import { ArrowIcon, SealIcon, WarnIcon } from "../ui/Icons";
 import { routes } from "../../routes";
-import { SITE_ORIGIN } from "../../../lib/site";
+import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
 import { getSession } from "../../../lib/academy";
 import { courseDescription, courseTitle } from "../../../lib/courseSeo";
 import {
@@ -211,6 +211,9 @@ export default function AcademyCourse() {
         title={title}
         description={description}
         canonicalPath={`/lms/courses/${course.slug}`}
+        // The launch switch. See the note on the landing page.
+        noindex={!ACADEMY_PUBLIC}
+        robots="noindex, follow"
         jsonLd={[
           {
             "@context": "https://schema.org",
@@ -218,6 +221,11 @@ export default function AcademyCourse() {
             name: course.title,
             description,
             url,
+            // The course's own share picture. A Course entry with no
+            // image is one a search engine can only show as a line of
+            // text. This is the same address the og:image tag uses, so
+            // there is one picture and one cache entry, not two.
+            image: `${SITE_ORIGIN}/api/og?course=${encodeURIComponent(course.slug)}`,
             provider: {
               "@type": "Organization",
               name: "Data-Lead Academy",

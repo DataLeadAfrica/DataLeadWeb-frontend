@@ -33,6 +33,7 @@
 //   often, and a 500 helps nobody who is reading.
 
 import {
+  ACADEMY_PUBLIC,
   esc,
   clip,
   asLength,
@@ -67,6 +68,23 @@ const CATALOGUE_TITLE = CATALOGUE.title;
 const CATALOGUE_DESCRIPTION = CATALOGUE.description;
 const NOT_FOUND_TITLE = NOT_FOUND.title;
 const NOT_FOUND_DESCRIPTION = NOT_FOUND.description;
+
+// THE LAUNCH SWITCH, AS THIS FILE USES IT.
+//
+// While the Academy is not public, the HTML a crawler is handed for
+// /lms, /lms/courses and /lms/courses/:slug carries noindex. Nothing
+// else about these pages changes: the title, the description, the
+// canonical, the share picture and the structured data are all exactly
+// what they will be on launch day, which is the point. The Phase 5 test
+// has to be able to read the real page on the real site.
+//
+// CANONICALS ARE DELIBERATELY UNTOUCHED. noindex says "do not list
+// this"; a canonical says "when you do list it, this is its one
+// address". Changing the second would mean the addresses move on launch
+// day, which is the one thing a canonical exists to prevent.
+//
+// The not-found page already carries noindex either way.
+const PREVIEW_NOINDEX = !ACADEMY_PUBLIC;
 
 // plural and landingWords are rules both sides use, so they live in
 // api/_seo-rules.js with the rest. Re-exported here because the tests
@@ -383,6 +401,7 @@ export default async function handler(request) {
           description: clip(words.description, MAX_DESCRIPTION),
           canonical,
           image: siteAsset("/api/og"),
+          noindex: PREVIEW_NOINDEX,
           jsonLd: landingJsonLd(clip(words.description, MAX_DESCRIPTION)),
         }),
         landingBody(words, cat.courses),
@@ -401,6 +420,7 @@ export default async function handler(request) {
           description: clip(CATALOGUE_DESCRIPTION, MAX_DESCRIPTION),
           canonical,
           image: siteAsset("/api/og"),
+          noindex: PREVIEW_NOINDEX,
           jsonLd: catalogueJsonLd(cat.courses),
         }),
         catalogueBody(cat.courses),
@@ -441,6 +461,7 @@ export default async function handler(request) {
             title: clip(`Course | ${ACADEMY}`, MAX_TITLE),
             description: CATALOGUE_DESCRIPTION,
             canonical,
+            noindex: PREVIEW_NOINDEX,
           }),
           "",
         ),
@@ -486,6 +507,7 @@ export default async function handler(request) {
           description: courseDescription(course),
           canonical: siteUrl(`/lms/courses/${course.slug}`),
           image: siteAsset(`/api/og?course=${encodeURIComponent(course.slug)}`),
+          noindex: PREVIEW_NOINDEX,
           jsonLd: courseJsonLd(course),
         }),
         courseBody(course),

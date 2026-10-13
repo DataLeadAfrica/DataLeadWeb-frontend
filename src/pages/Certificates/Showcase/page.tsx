@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router";
 import qrcode from "qrcode-generator";
 
+import "../../../css/dla-mark.css";
 import "./page.css";
 import Seo from "../../../components/Seo/component";
 import { routes } from "../../routes";
@@ -252,6 +253,10 @@ export default function ShowcaseCertificate() {
             </section>
 
             <p className="shc__issuer">
+              {/* Decoration only. The sentence it sits in already says
+                  who issued this, which is the part that matters on a
+                  page whose whole job is proving a certificate real. */}
+              <i className="dla-mark" aria-hidden="true" />
               Issued by Data-Lead Africa, Abuja, Nigeria.{" "}
               <Link to={routes.courses}>Browse our programmes</Link>.
             </p>
