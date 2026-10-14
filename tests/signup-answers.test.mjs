@@ -442,11 +442,21 @@ test("abandoned sign ups go, and the free courses do not save them", () => {
     ["a watch slice", "lms_watch_buckets"],
     ["About you answers", "lms_learner_profiles"],
     ["a certificate", "certificates"],
-    ["a profile row somebody has edited", "pr.full_name <> ''"],
+    // The name is NOT on this list, and that is round 3 item 1. It is
+    // copied off the sign up metadata by lms_handle_new_user and the
+    // form will not submit without one, so testing it kept every real
+    // unconfirmed account for ever. The three below are things a
+    // trigger cannot do, so each really does mean a human touched the
+    // account.
+    ["a phone number, which needs a confirmed sign in", "pr.phone is not null"],
+    ["a role above learner, which staff grant", "pr.role <> 'learner'"],
+    ["a participant link, which the certification system sets", "pr.participant_id is not null"],
   ]) {
     assert.ok(fn.includes(needle),
       `the prune does not check for ${what}, so an account with one could be deleted`);
   }
+  assert.ok(!fn.includes("full_name"),
+    "the prune tests the name again, so every real unconfirmed account is kept for ever with its About you answers still in user_metadata");
   assert.ok(fn.includes("email_confirmed_at is null"), "it does not check the email was never confirmed");
   assert.ok(fn.includes("make_interval(hours => p_hours)"), "it does not check the age");
   assert.ok(fn.includes("lms_admin_actions"), "the count is not written down");

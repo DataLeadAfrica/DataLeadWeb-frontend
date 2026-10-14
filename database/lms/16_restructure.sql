@@ -3090,11 +3090,21 @@ alter table lms_learner_profiles
 -- ----- unconfirmed sign ups go after a day
 --
 -- SIX CONDITIONS, ALL OF THEM. An account only goes if the email was
--- never confirmed, it is more than p_hours old, its lms_profiles row is
--- still exactly as the sign up trigger left it, and it has no
+-- never confirmed, it is more than p_hours old, its lms_profiles row has
+-- nothing on it a trigger could not have put there, and it has no
 -- entitlement it did anything to get, no quiz or exam attempt, no
 -- lesson progress, no watch slice, no About you answers and no
 -- certificate.
+--
+-- WHAT THIS FUNCTION IS ACTUALLY PROTECTING is not disk space. An
+-- unconfirmed account still holds the whole About you form in
+-- user_metadata, because file 16 only moves those answers into
+-- lms_learner_profiles once the email is confirmed, and empties the
+-- metadata at the same moment. Disability detail is in there. So an
+-- unconfirmed account that is never pruned is sensitive personal data
+-- kept indefinitely with nobody's consent completed, which the NDPA
+-- 2023 does not allow. If this function is ever loosened, that is the
+-- thing being traded away.
 --
 -- Most of those cannot happen without confirming first, which is the
 -- point: if one of them is somehow true, something has happened that
@@ -3154,10 +3164,38 @@ begin
              where pr.id = v_id and pr.participant_id is not null)
        or exists (
             -- the profile row is not the one the sign up trigger made
+            --
+            -- THE NAME COLUMN IS NOT ON THIS LIST, and leaving it on
+            -- was the bug that made this whole function do nothing. The
+            -- name is copied straight off the sign up metadata by
+            -- lms_handle_new_user (file 05), and the sign up form will
+            -- not submit without one, so EVERY real account has a name
+            -- from the moment it exists. Testing it meant "keep anything
+            -- a real person made", which is the exact opposite of what
+            -- this function is for: every unconfirmed sign up would have
+            -- been kept for ever, with its About you answers still
+            -- sitting in user_metadata, disability detail among them.
+            -- That is the thing the 24 hour rule exists to stop, and it
+            -- is sensitive personal data under the NDPA 2023.
+            --
+            -- The column is not named in words anywhere in this
+            -- function, and that is deliberate rather than shy of it:
+            -- verify row 56 and check 10h of file_16_tests both read
+            -- this function's own source with pg_get_functiondef and
+            -- fail if the name appears in it. A comment mentioning it
+            -- would set both of them off, which is how this comment was
+            -- written the first time.
+            --
+            -- The three that remain are all things a trigger cannot do:
+            -- a phone number is typed on the profile page, which needs a
+            -- confirmed sign in; a role above learner is granted by
+            -- staff; a participant_id is set by the certification system
+            -- when somebody is enrolled. Any of those means a human
+            -- touched the account, and a human touching it is the reason
+            -- to leave it alone.
             select 1 from lms_profiles pr
              where pr.id = v_id
-               and (pr.full_name <> ''
-                 or pr.phone is not null
+               and (pr.phone is not null
                  or pr.role <> 'learner'
                  or pr.participant_id is not null))
     then
@@ -3446,6 +3484,51 @@ begin
 
   select tables_tidied into v_n from lms_tidy_table_privileges();
   raise notice 'Step 16: locked down 7 reference tables, then checked permissions on % Academy tables and views.', v_n;
+end $$;
+
+-- =====================================================================
+-- STEP 17. THE HEADLINE SAYS SKILL, NOT TOOL
+-- =====================================================================
+--
+-- File 02 set the landing headline's default to "Learn one tool at a
+-- time." The Academy teaches skills as well as tools now, and item 6 of
+-- the brief makes "Learn one skill at a time." the headline.
+--
+-- ONLY WHERE IT IS STILL THE OLD DEFAULT, EXACTLY. The whole point of
+-- keeping the headline in lms_settings is that staff can change it
+-- without a deployment. If somebody has already written their own, a
+-- blanket update would throw their words away, and they would have no
+-- way of knowing a database file had done it. So the update is
+-- conditional on the string still being the one nobody chose, which also
+-- makes this step safe to run twice: the second run matches nothing.
+--
+-- The column default moves too, so a project that installs file 02 fresh
+-- and then file 16 does not end up with the old wording waiting in the
+-- default for the first row somebody inserts.
+--
+-- The same sentence is written once more outside the database, as the
+-- fallback in api/_seo-rules.js, for the case where lms_settings has no
+-- row at all and a crawler still has to be given an h1. That copy is
+-- changed in the same package, and tests/academy-meta.test.mjs fails if
+-- the two ever stop agreeing.
+do $$
+declare
+  v_old constant text := 'Learn one tool at a time.';
+  v_new constant text := 'Learn one skill at a time.';
+  v_n   integer;
+begin
+  execute format('alter table lms_settings alter column headline set default %L', v_new);
+
+  update lms_settings set headline = v_new where headline = v_old;
+  get diagnostics v_n = row_count;
+
+  if v_n > 0 then
+    raise notice 'Step 17: headline updated to "%" on % row(s).', v_new, v_n;
+  elsif exists (select 1 from lms_settings where headline <> v_new) then
+    raise notice 'Step 17: headline left alone. Somebody has written their own, and that is not ours to overwrite.';
+  else
+    raise notice 'Step 17: headline already "%", nothing to do.', v_new;
+  end if;
 end $$;
 
 commit;

@@ -5,7 +5,7 @@ Three files, in this order. Nothing else in this branch touches the database.
 | Order | File | What it does | How long |
 |---|---|---|---|
 | 1 | `database/lms/16_restructure.sql` | The whole restructure, in one transaction | A few seconds |
-| 2 | `database/lms/16_verify.sql` | Changes nothing. Prints 55 rows | Instant |
+| 2 | `database/lms/16_verify.sql` | Changes nothing. Prints 57 rows | Instant |
 | 3 | only if it has to come off: `database/lms/16_undo.sql` | Puts it back as file 15 left it | A few seconds |
 
 ## Before you start
@@ -28,13 +28,17 @@ You should see a line of notices, one per step, ending with:
 
 ```
 Step 16: locked down 7 reference tables, then checked permissions on 30 Academy tables and views.
+Step 17: headline updated to "Learn one skill at a time." on 1 row(s).
 ```
+
+If step 17 says it left the headline alone, that is not a problem: it means somebody has already
+written their own, and the step will not overwrite it.
 
 ## 2. Run the verify
 
 Paste the whole of `16_verify.sql` and run it. It writes nothing.
 
-**Read every row. All 55 should say yes in the answer column.** If one says NO, the fourth column
+**Read every row. All 57 should say yes in the answer column.** If one says NO, the fourth column
 says what that row was protecting and what to do about it.
 
 - **Rows 1 to 36** are the brief.
@@ -43,8 +47,11 @@ says what that row was protecting and what to do about it.
 - **Rows 49 to 55** are what the learner pages needed: the lesson door handing over the chapters
   and the furthest second, `lms_my_course` with no module quiz rows, `lms_my_path`, and the places
   a popup may not appear.
+- **Rows 56 and 57** are round 3: the prune no longer keeping an account just because somebody
+  typed a name, and the headline. Row 56 is backwards on purpose, because what it checks for is a
+  phrase that must be ABSENT.
 
-If you run this one before the restructure by mistake, you get 50 NOs rather than a Postgres error,
+If you run this one before the restructure by mistake, you get 52 NOs rather than a Postgres error,
 which is the answer: run the restructure first. That is what the file is for, so if it ever gives
 you an error instead of a column of NOs, tell me.
 
@@ -104,7 +111,7 @@ select at, detail from lms_system_heartbeat where name = 'signup_answers_refused
 
 ## The test file, which does not go near Supabase
 
-`database/lms/tests/file_16_tests.sql` runs 52 checks, and it is **not** for the Supabase editor: it
+`database/lms/tests/file_16_tests.sql` runs 55 checks, and it is **not** for the Supabase editor: it
 makes a learner, sits an exam twice, and gets refused a third time, so it writes rows and then rolls
 them back. I run it on a local copy of the database. It is in the package so the checks are written
 down and can be run again, not because you need to run it.

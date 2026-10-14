@@ -545,6 +545,28 @@ with checks as (
        where ns.nspname='public' and p.proname='lms_my_path'
     ) like '%also_in%' then 'yes' else 'NO' end,
     'A course is one course wherever it appears. Without this a learner sees a tick on a course they have never opened and no reason for it.'
+
+  union all select 56,
+    'The prune does not keep an account just because somebody typed their name',
+    -- Two halves, because "does not contain the phrase" is also true of
+    -- a function that does not exist, and this row said yes on a
+    -- database where file 16 had never been run.
+    case when exists (
+           select 1 from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+            where ns.nspname='public' and p.proname='lms_prune_unconfirmed_signups')
+         and (
+           select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+            where ns.nspname='public' and p.proname='lms_prune_unconfirmed_signups'
+         ) not like '%full\_name%' escape '\'
+         then 'yes' else 'NO' end,
+    'Round 3 item 1, and it is the one that matters before anything is run. full_name is copied off the sign up metadata by lms_handle_new_user and the form will not submit without a name, so testing it kept EVERY real unconfirmed account for ever, with its About you answers still in user_metadata, disability detail among them. That is the thing the 24 hour rule exists to stop. This row is backwards on purpose: it answers yes when the phrase is ABSENT.'
+
+  union all select 57,
+    'The headline says skill, not tool',
+    case when exists (
+      select 1 from lms_settings s where s.headline = 'Learn one skill at a time.'
+    ) or not exists (select 1 from lms_settings) then 'yes' else 'NO' end,
+    'Round 3 item 6. Step 17 changes it only where it still equals the old default exactly, so if staff have written their own headline this row says NO and that is correct: leave it alone.'
 )
 select n as "#", checking as "what was checked", answer as "answer",
        what_it_means as "what it means if the answer is not yes"

@@ -176,7 +176,13 @@ export function courseDescription(course) {
 
 export const LANDING = {
   title: "Data-Lead Academy: self paced data courses online",
-  headline: "Learn one tool at a time.",
+  // The fallback for the case where lms_settings has no row at all and
+  // a crawler still has to be given an h1. It has to be the same
+  // sentence as the database's default, which step 17 of file 16 sets,
+  // or the page a crawler reads and the page a person reads would say
+  // different things. tests/academy-meta.test.mjs fails if the two stop
+  // agreeing.
+  headline: "Learn one skill at a time.",
   subhead:
     "Self paced video courses in the tools data professionals use every day, from the team that trains Data-Lead Africa's bootcamps. Learn on your phone or laptop, prove it in short checks, and finish with a certificate anyone can verify.",
   description:

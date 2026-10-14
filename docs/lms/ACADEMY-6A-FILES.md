@@ -7,9 +7,12 @@ The zip holds **68 files** and asks for **2 deletions**, listed again in
 Laid on `main` at `422aa9f`. New branch `academy-6a` from `main`, in by PR, Vercel preview, you
 test, then merge.
 
-**Not in the package, on purpose:** `vercel.json`, `api/_seo-rules.js`, `package.json`. The launch
-switch and the rewrites are exactly as round 2 left them, and there is no new dependency, so there
-is nothing to change in any of the three.
+**Not in the package, on purpose:** `vercel.json` and `package.json`. The rewrites are exactly as
+round 2 left them and there is no new dependency, so there is nothing to change in either.
+
+`api/_seo-rules.js` IS in the package now, for one line: the fallback headline, which has to say the
+same sentence as the database's default (round 3 item 6). `ACADEMY_PUBLIC` in that file is untouched
+and still `false`, and a test fails if it is not.
 
 ---
 
@@ -93,10 +96,10 @@ rules can be read by `node --test` without a build step.
 | `tests/signup-answers.test.mjs` | 40, new | The skip logic, the lists, the countries against the database's own tables, the nightly prune |
 | `tests/chapters.test.mjs` | 20, new | Every refusal names its line, and the SQL parser still refuses the same things in the same words |
 | `tests/exam-state.test.mjs` | 18, new | The five states, the countdown, no option id in a result, a late submit marked at the deadline |
-| `tests/learner-pages.test.mjs` | 23, new | The promises about what a page must NEVER do, and the launch switch on the four public pages and the four behind a sign in |
+| `tests/learner-pages.test.mjs` | 29, new | The promises about what a page must NEVER do, and the launch switch on the four public pages and the four behind a sign in |
 | `tests/cover-art.test.mjs` | 24, was 21 | The area and the kind, and no tool name breaking inside a word |
 
-`npm test` runs **227**, all passing. `main` runs 123.
+`npm test` runs **233**, all passing. `main` runs 123.
 
 ## The documents, 5 files
 
@@ -129,7 +132,7 @@ dead component for somebody to find in six months and wonder about.
 | | |
 |---|---|
 | `npm run build` | passes |
-| `npm test` | 227 of 227 |
+| `npm test` | 233 of 233 |
 | lint | unchanged from `main`: 3 errors and 7 warnings, all of them in files this package does not touch |
 | no new dependency | `package.json` is not in the package |
 | the launch switch | still `false`; `api/_seo-rules.js` is not in the package |

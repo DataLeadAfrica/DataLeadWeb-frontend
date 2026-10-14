@@ -14,6 +14,71 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## ACADEMY 6A, ROUND 3, 13 October 2026. Big Sam's six
+
+Laid on `main` at `de0c998`, which adds a timesheet change outside the Academy and touches none of
+this package's files. Round 2 of 6A was approved; this is the six fixes from the review of it.
+
+### 1. The nightly prune never deleted a real sign up
+
+`lms_prune_unconfirmed_signups` kept any account whose profile had a name on it. The name is copied
+off the sign up metadata by `lms_handle_new_user`, and the form will not submit without one, so
+**every real account has a name from the moment it exists**. The test meant "keep anything a real
+person made", which is the exact opposite of what the function is for. Of Big Sam's four accounts,
+only the nameless one was ever deleted.
+
+What that costs is not disk space. An unconfirmed account still holds the whole About you form in
+`user_metadata`, because the answers only move into `lms_learner_profiles` when the email is
+confirmed. Disability detail is in there. So the job was keeping sensitive personal data
+indefinitely, with nobody's consent completed, which is the thing the 24 hour rule exists to stop
+and which the NDPA 2023 does not allow.
+
+The name is gone from the test. What keeps an account now is a phone number, a role above learner,
+a participant link, an entitlement whose source is not `free`, an attempt, progress, a watch record,
+About you answers or a certificate. All three profile conditions are things a trigger cannot do, so
+each one really does mean a human touched the account.
+
+Big Sam's case is now check 10e of `file_16_tests.sql`, with 10f as its control: an account that got
+as far as typing a phone number must still be kept, or 10e could pass by deleting everything. 10h
+and verify row 56 both read the function's own source and fail if the name comes back. That is also
+why the function's comments no longer spell the column: the first version of this fix set off its
+own check, which is the second time this round that `pg_get_functiondef` has matched my own prose.
+
+### 2 to 6
+
+| | |
+|---|---|
+| 2 | The landing page's **How it works** card said "a short quiz after each module". There are none. It now reads "A quick check after each lesson, and one exam at the end of the course, so you know it stuck", and the heading is **Watch, check, certify** rather than "Three steps, every lesson", because the certificate comes once per course. |
+| 3 | After the FIRST failed exam the result offered only "Back to the course", so a learner with a try left was not told. It now offers **Try again**, which opens the rules, where the button already reads "Start my last try". It goes to the rules rather than straight into the questions: a second try begun by accident is a try spent. After the second fail the state is `waiting` rather than `open`, so nothing is offered, which is deliberate: a button that will not work for 24 hours is worse than no button. |
+| 4 | The **path banner** came from `getPaths`, a second read, while `lms_public_landing` already returns the path. It now comes from the landing call. `getPaths` is gone from the page. |
+| 5 | **Databases, Qualitative and Research skills** were all falling through to the four pane fallback, so three of the seven areas looked identical. They now have the concept's shapes: a cylinder, a speech bubble with lines, and a page with a folded corner. A test reads the seven seeded `icon_key` values out of file 16 and fails if any of them has no drawing. |
+| 6 | **Step 17** sets `lms_settings.headline` to "Learn one skill at a time.", and only where it still equals file 02's default exactly, so a headline staff have written is never overwritten and the step is safe to run twice. The column default moves with it, and the undo puts both back the same way. Verify row 57. |
+
+### What fix 4 costs, written down rather than discovered
+
+`lms_public_landing` returns ONE path, the featured one. `getPaths` returned every published path,
+and the compact cards that listed any OTHER paths below the banner have gone with it. Nothing
+visible changes today, because there is one path. If a second is ever built and should show there,
+the fix belongs in the database rather than in the page: have `lms_public_landing` return the rest
+alongside the featured one.
+
+### Still says tool, and left alone on purpose
+
+The closing dark band reads "Start with one tool this week." It is hardcoded, not from
+`lms_settings`, and it was not in the six. It is not wrong, but it now sits two screens under a
+headline that says skill. Say the word and it changes.
+
+### What passes
+
+`npm test` runs **233**, all passing. `npm run build` is clean and lint is unchanged from `main`.
+
+The database matrix on a fresh 01 to 15 build: 52 NO before file 16 with no Postgres error, three
+runs of file 16 in a row with no error, **57 of 57 yes** after, **55 of 55** checks in
+`file_16_tests.sql`, undo clean and the headline put back, file 16 runs again after the undo, 57 yes
+again.
+
+---
+
 ## ACADEMY 6A, 13 October 2026. The restructure, and the learner pages on it
 
 Big Sam reshaped the Academy. Part A is the database under that shape. Part B is the thirteen

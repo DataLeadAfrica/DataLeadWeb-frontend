@@ -738,6 +738,22 @@ drop table    if exists lms_areas;
 alter table lms_courses drop constraint if exists lms_courses_kind_ck;
 alter table lms_courses drop column if exists kind;
 
+-- ----- the headline, back to file 02's wording
+--
+-- Same rule on the way out as on the way in: only where it is still
+-- exactly the sentence step 17 wrote. A headline staff have since
+-- changed is theirs, and the undo has no more right to overwrite it than
+-- the restructure did.
+do $$
+declare v_n integer;
+begin
+  alter table lms_settings alter column headline set default 'Learn one tool at a time.';
+  update lms_settings set headline = 'Learn one tool at a time.'
+   where headline = 'Learn one skill at a time.';
+  get diagnostics v_n = row_count;
+  raise notice 'Undo: headline put back to file 02''s wording on % row(s).', v_n;
+end $$;
+
 do $$ begin
   raise notice 'Undo: file 16 is off. lms_courses.area is unchanged and still holds the area name.';
   raise notice 'Undo: country and state are free text again, and the stored values were left exactly as they were.';

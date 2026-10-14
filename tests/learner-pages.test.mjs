@@ -388,3 +388,134 @@ test("the path page is not in the sitemap, and the note in _site-routes is true"
   assert.match(routesFile, /does NOT answer it/,
     "the note no longer says the edge function does not answer a path address");
 });
+
+// ---------------------------------------------------------------------
+// Round 3, 13 October. Big Sam's six.
+// ---------------------------------------------------------------------
+
+test("the nightly prune does not keep an account just because somebody typed a name", () => {
+  // THE ONE THAT MATTERED. lms_handle_new_user copies the name off the
+  // sign up metadata and the form will not submit without one, so every
+  // real account has a name from the moment it exists. Testing it meant
+  // every unconfirmed sign up was kept for ever, with its About you
+  // answers still in user_metadata, disability detail among them, which
+  // is the thing the 24 hour rule exists to stop and is sensitive
+  // personal data under the NDPA 2023.
+  const sql = read("database/lms/16_restructure.sql");
+  const i = sql.indexOf("create or replace function lms_prune_unconfirmed_signups");
+  assert.ok(i > 0, "the prune is not in file 16 any more");
+  const fn = sql.slice(i, sql.indexOf("\nrevoke all on function lms_prune_unconfirmed_signups", i));
+
+  assert.ok(!/full_name/.test(fn),
+    "the prune tests the name again, so it keeps every real unconfirmed account for ever");
+
+  // The three that remain are all things a trigger cannot do, so each
+  // one really does mean a human touched the account.
+  for (const keep of ["pr.phone is not null", "pr.role <> 'learner'", "pr.participant_id is not null"]) {
+    assert.ok(fn.includes(keep), `the prune no longer keeps an account on ${keep}`);
+  }
+  // And the free grants are still ignored, which was round 2's find.
+  assert.match(fn, /e\.source <> 'free'/,
+    "the prune counts the free courses every new account is given, so it matches nobody");
+
+  // Both the verify file and the SQL tests read this function's source
+  // and fail if the name comes back. That is why the function's own
+  // comments must not spell it either.
+  assert.match(read("database/lms/16_verify.sql"), /union all select 56,/,
+    "verify row 56 is gone");
+  assert.match(read("database/lms/tests/file_16_tests.sql"), /10e an unconfirmed sign up with a typed name goes too/,
+    "the SQL tests no longer cover a sign up with a name on it");
+  assert.match(read("database/lms/tests/file_16_tests.sql"), /10f but one that got as far as a phone number stays/,
+    "the control case is gone, so 10e could pass by deleting everything");
+});
+
+test("How it works promises one exam, not a quiz per module", () => {
+  const src = read("src/pages/Academy/Landing/page.tsx");
+  assert.match(src, /A quick check after each lesson, and one exam at the end of the course, so you know it stuck\./,
+    "the card still describes module quizzes, which step 7 of file 16 made history");
+  assert.ok(!/quiz after each module/.test(src), "the old wording is still there");
+  assert.match(src, /<h2 className="acad-h2">Watch, check, certify<\/h2>/,
+    "the heading still promises all three every lesson; the certificate comes once, per course");
+});
+
+test("a first failed exam offers the try that is left", () => {
+  const state = read("src/pages/Academy/Learn/Exam/state.js");
+  // "open" with a try already used means they have just failed the
+  // first of two. After the second the state is "waiting", so this
+  // stays false there and the result offers only the way back.
+  assert.match(state, /showTryAgain: used > 0,/,
+    "the open state never offers Try again, so a learner with a try left is not told");
+  const waiting = state.slice(state.indexOf('if (state === "waiting")'), state.indexOf('if (state === "open")'));
+  assert.match(waiting, /showTryAgain: false/,
+    "Try again is offered after the second fail, when it cannot be pressed for 24 hours");
+
+  const page = read("src/pages/Academy/Learn/Exam/page.tsx");
+  assert.match(page, /!result\.passed && view\.showTryAgain/,
+    "the result page does not ask whether a try remains");
+  assert.match(page, /Try again/, "there is no Try again button on the result");
+  assert.match(page, /setPhase\("rules"\)/,
+    "Try again goes straight into the questions; a try begun by accident is a try spent");
+  // And the rules page already names the last try, so nobody spends it
+  // thinking there is another behind it.
+  assert.match(state, /"Start my last try" : "Start the exam"/,
+    "the last try is no longer named as the last try");
+});
+
+test("the landing page reads its path from lms_public_landing, not from a second call", () => {
+  const page = read("src/pages/Academy/Landing/page.tsx");
+  assert.ok(!/getPaths/.test(code(page)),
+    "the landing page still makes a second read for its paths, which can disagree with the first");
+  assert.match(page, /setLandingPath\(got\.landing\.path\)/,
+    "the path does not come from the landing call");
+
+  const banner = read("src/pages/Academy/Landing/PathBanner.tsx");
+  assert.match(banner, /type Props = \{ path: LandingPath \}/,
+    "the banner still takes a separately fetched path");
+  // Not the import line, which still points at lib/catalogue because
+  // that is where the type lives: the thing that must be gone is the
+  // lookup, where a cover's area came from a different answer than the
+  // path it was drawn in.
+  assert.ok(!/bySlug|catalogue:|catalogue\.map|\bcatalogue\b\s*\}/.test(code(banner)),
+    "the banner still borrows the covers' area and tool from the catalogue");
+  // LandingPath carries the area, the tool and the total itself, so
+  // there is nothing left to reconcile.
+  assert.match(banner, /area: c\.area/, "the cover's area is not taken from the path's own row");
+  assert.match(banner, /path\.total_seconds/, "the total is still added up from the catalogue");
+});
+
+test("every area has an icon of its own", () => {
+  // Databases, Qualitative and Research skills were all falling through
+  // to the four pane fallback, so three of the seven areas looked the
+  // same.
+  const icons = read("src/pages/Academy/ui/Icons.tsx");
+  const sql = read("database/lms/16_restructure.sql");
+  const seeded = [...sql.matchAll(/^\s*\('[a-z-]+',\s*'[^']+',\s*\d+,\s*'(\w+)'\),?$/gm)].map((m) => m[1]);
+  assert.ok(seeded.length >= 7, `expected the seven seeded areas, found ${seeded.length}`);
+
+  const body = icons.slice(icons.indexOf("export function GoalIcon"));
+  for (const key of seeded) {
+    assert.match(body, new RegExp(`^\\s{4}${key}: `, "m"),
+      `area icon "${key}" has no drawing, so it falls back to the four pane grid`);
+  }
+  // The three new ones are the shapes the concept asks for.
+  assert.match(body, /db: \([\s\S]*?<ellipse/, "Databases is not a cylinder");
+  assert.match(body, /ql: \([\s\S]*?M20 4H4/, "Qualitative is not a speech bubble");
+  assert.match(body, /rs: \([\s\S]*?M14 3v4a1 1 0 001 1h4/, "Research skills has no folded corner");
+});
+
+test("the headline says skill, and the two places it is written agree", () => {
+  const sql = read("database/lms/16_restructure.sql");
+  assert.match(sql, /STEP 17\. THE HEADLINE SAYS SKILL, NOT TOOL/, "step 17 is gone");
+  // Only where it is still the old default, exactly, so a headline
+  // staff have written is never overwritten.
+  assert.match(sql, /update lms_settings set headline = v_new where headline = v_old;/,
+    "step 17 overwrites a headline staff may have chosen themselves");
+  assert.match(sql, /alter table lms_settings alter column headline set default %L/,
+    "the column default is left on the old wording for the next row inserted");
+
+  // The fallback outside the database, for when there is no row at all.
+  assert.match(read("api/_seo-rules.js"), /headline: "Learn one skill at a time\.",/,
+    "the fallback a crawler is given still says tool, so the two pages would disagree");
+  assert.match(read("database/lms/16_undo.sql"), /update lms_settings set headline = 'Learn one tool at a time\.'/,
+    "the undo does not put the headline back");
+});

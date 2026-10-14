@@ -172,6 +172,13 @@ export default function AcademyExam() {
     );
   }
 
+  // What the server says about the exam right now, turned into words.
+  // Worked out before the three phases below rather than inside the
+  // last one, because the RESULT phase needs it too: it asks whether a
+  // try remains before offering Try again. finish() calls load() after
+  // a submit, so by the time this matters the status is the fresh one.
+  const view = examView(exam, now);
+
   // ------------------------------------------------------- the result
   if (phase === "result" && result) {
     return (
@@ -229,7 +236,38 @@ export default function AcademyExam() {
           </section>
         ) : null}
 
+        {/* TRY AGAIN, while there is a try to spend. After the first of
+            two fails the learner still has one, and a result page whose
+            only way on is "Back to the course" hides that from them: it
+            reads as the end of the matter, and the second try is left
+            unused by somebody who would have taken it.
+
+            It goes back to the rules rather than straight into the
+            questions. The rules page already says "Start my last try",
+            and a second try begun by accident is a try spent.
+
+            After the SECOND fail the server's state is "waiting" rather
+            than "open", so examView says no and this is not drawn. That
+            is on purpose: a Try again button that will not work for 24
+            hours is worse than no button. */}
         <p className="acad-exam__after">
+          {!result.passed && view.showTryAgain ? (
+            <button
+              type="button"
+              className="acad-btn acad-btn--auto"
+              onClick={() => {
+                setResult(null);
+                setRewatch([]);
+                setSitting(null);
+                setChosen({});
+                setError("");
+                setPhase("rules");
+              }}
+            >
+              Try again
+              <ArrowIcon />
+            </button>
+          ) : null}
           <Link className="acad-link" to={routes.academyLearn.replace(":slug", slug)}>
             Back to the course
           </Link>
@@ -302,8 +340,6 @@ export default function AcademyExam() {
   }
 
   // --------------------------------------------------------- the rules
-  const view = examView(exam, now);
-
   return (
     <AcadStage width="wide">
       <Seo title={`Course exam | ${title}`} noindex />

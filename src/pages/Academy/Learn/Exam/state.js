@@ -95,7 +95,19 @@ export function examView(s, now = Date.now()) {
         + `${s.question_count || 0} questions, ${s.minutes || 0} minutes, `
         + `${s.pass_mark || 0} percent to pass.`,
       canStart: true,
-      showTryAgain: false,
+      // THE RESULT PAGE AFTER A FAIL asks this, and it is the only
+      // thing that asks it. "open" with a try still on it means the
+      // learner has just failed their first of two and has another, so
+      // the result offers Try again. It sends them back to the rules,
+      // where the button already reads "Start my last try" from the
+      // branch above, rather than straight into the questions: a second
+      // try begun by accident is a try spent.
+      //
+      // After the SECOND fail the state is "waiting", not "open", so
+      // this is false and the result offers only the way back to the
+      // course. That is deliberate. A Try again button that cannot be
+      // pressed for 24 hours is a worse answer than no button.
+      showTryAgain: used > 0,
     };
   }
 

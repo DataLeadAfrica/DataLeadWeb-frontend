@@ -254,8 +254,29 @@
   }
 }
 
+/* Try again and the way back to the course sit on one line, with the
+   button first: it is the thing most people want after a first fail,
+   and the plain link beside it stays a plain link so the two never read
+   as a pair of equal choices. On a phone they stack and the button
+   spans, because a 90 pixel button next to a link is a target nobody
+   hits first time. */
 .acad-exam__after {
+  display: flex;
+  align-items: center;
+  gap: 18px;
   margin-top: 28px;
+}
+
+@media (max-width: 520px) {
+  .acad-exam__after {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    text-align: center;
+  }
+  .acad-exam__after .acad-btn {
+    width: 100%;
+  }
 }
 
 /* ------------------------------------------------- the three notes ---

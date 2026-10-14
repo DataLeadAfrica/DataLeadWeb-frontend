@@ -6,7 +6,6 @@ import "../../../css/dla-mark.css";
 import "./page.css";
 import Seo from "../../../components/Seo/component";
 import AcadStage from "../ui/AcadStage";
-import CourseCover from "../ui/CourseCover";
 import Faq from "../ui/Faq";
 import GoalRail from "./GoalRail";
 import PathBanner from "./PathBanner";
@@ -18,14 +17,13 @@ import { routes } from "../../routes";
 import {
   getCatalogue,
   getLanding,
-  getPaths,
   getSettings,
   type CourseCard,
   type LandingArea,
-  type LearningPath,
+  type LandingPath,
 } from "../../../lib/catalogue";
 import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
-import { landingWords, plural } from "../../../lib/courseSeo";
+import { landingWords } from "../../../lib/courseSeo";
 import Popup from "../ui/Popup";
 
 // /lms. The page somebody lands on from a search result or a WhatsApp
@@ -62,7 +60,9 @@ const STEPS = [
     n: "02",
     icon: <TickIcon />,
     title: "Check",
-    body: "A quick question after each lesson and a short quiz after each module, so you know it stuck.",
+    // Module quizzes became history in step 7 of file 16. There is one
+    // exam, at the end of the course.
+    body: "A quick check after each lesson, and one exam at the end of the course, so you know it stuck.",
   },
   {
     n: "03",
@@ -115,7 +115,10 @@ export default function AcademyLanding() {
   const [loaded, setLoaded] = useState(false);
   const [number, setNumber] = useState("");
   const [words, setWords] = useState(() => landingWords(null));
-  const [paths, setPaths] = useState<LearningPath[]>([]);
+  // The featured path, from lms_public_landing rather than from a read
+  // of its own. One answer, so the banner and the rest of the page
+  // cannot describe different paths.
+  const [landingPath, setLandingPath] = useState<LandingPath | null>(null);
   // The seven areas with their tools, for the hero picker and the
   // Explore by area strip. One call, and an empty answer simply means
   // the hero keeps its waiting block: before file 16 has been run there
@@ -131,19 +134,17 @@ export default function AcademyLanding() {
       setCourses(got.courses);
       setLoaded(true);
     });
-    // The words and the paths are fetched separately rather than with
-    // the catalogue, so a slow one of the three does not hold the
-    // others back. Each has a fallback that is what the page shows
+    // The words and the landing block are fetched separately rather
+    // than with the catalogue, so a slow one of the three does not hold
+    // the others back. Each has a fallback that is what the page shows
     // today, so a failure is invisible.
     getSettings().then((s) => {
       if (alive && s) setWords(landingWords(s));
     });
-    getPaths().then((p) => {
-      if (alive) setPaths(p);
-    });
     getLanding().then((got) => {
       if (!alive) return;
       setAreas(got.landing.areas);
+      setLandingPath(got.landing.path);
       setAreasIn(true);
     });
     return () => {
@@ -152,10 +153,6 @@ export default function AcademyLanding() {
   }, []);
 
   const list = courses || [];
-  // The catalogue by slug, so a learning path can borrow a course's
-  // area and tool for its cover. getPaths returns only enough to make
-  // a link, which is right: a path should not re-fetch the catalogue.
-  const bySlug = new Map(list.map((c) => [c.slug, c]));
   const head = headlineParts(words.headline);
 
   return (
@@ -311,7 +308,10 @@ export default function AcademyLanding() {
       {/* ------------------------------------------------ how it works */}
       <section className="acad-band">
         <p className="acad-band__eyebrow">How it works</p>
-        <h2 className="acad-h2">Three steps, every lesson</h2>
+        {/* Not "every lesson": the certificate comes once, at the end of
+            the course, so a heading promising all three every lesson
+            describes something the Academy does not do. */}
+        <h2 className="acad-h2">Watch, check, certify</h2>
         <div className="acad-steps">
           {STEPS.map((s) => (
             <article key={s.n} className="acad-step">
@@ -358,76 +358,27 @@ export default function AcademyLanding() {
           the rail above written out again. */}
       {loaded ? <QuickPicks courses={list} /> : null}
 
-      {/* -------------------------------------------- learning paths */}
-      {/* Hidden entirely when there are none, which is the normal state
-          until somebody builds one. A heading over an empty box reads
-          like something is broken. getPaths also drops any course in a
-          path that has since been unpublished, so a path cannot show a
-          link to a page that is not there, and drops a path left with
-          no courses at all. */}
-      {paths.length > 0 ? (
-        <section className="acad-band">
-          {/* The first path as a banner, with its covers fanned out. A
-              path is the most valuable thing here and the easiest to
-              scroll past, so one of them gets to be a picture. */}
-          <PathBanner path={paths[0]} catalogue={list} />
+      {/* -------------------------------------------- learning path */}
+      {/* THE PATH COMES FROM lms_public_landing, the same call as the
+          areas, so the page makes one request for its data and the
+          banner cannot disagree with the rest of the page. It used to
+          come from a second read, getPaths, which returned every
+          published path with its courses embedded.
 
-          {/* Any others stay as the compact cards. Several banners in a
-              row would be a list again, with more scrolling. */}
-          {paths.length > 1 ? (
-            <>
-              <p className="acad-lead acad-paths__lead">
-                Several courses in the order that makes sense, so you are not
-                guessing what to learn next.
-              </p>
-              <div className="acad-paths">
-                    {paths.slice(1).map((p) => (
-                  <article key={p.id} className="acad-path">
-                    <h3 className="acad-h3">{p.name}</h3>
-                    {p.description ? (
-                      <p className="acad-path__sum">{p.description}</p>
-                    ) : null}
-                    <p className="acad-path__count">
-                      {plural(p.courses.length, "course")}
-                    </p>
-                    <ol className="acad-path__list">
-                      {p.courses.map((c, i) => (
-                        <li key={c.slug}>
-                          <span className="acad-path__n" aria-hidden="true">
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
-                          <Link
-                            className="acad-path__link"
-                            to={routes.academyCourse.replace(":slug", c.slug)}
-                          >
-                            {/* The course's own cover, looked up by slug
-                                in the catalogue already loaded above.
-                                Not in it, because it was unpublished
-                                between the two answers, means the
-                                neutral art. */}
-                            <CourseCover
-                              variant="square"
-                              course={{
-                                slug: c.slug,
-                                title: c.title,
-                                cover_code: c.cover_code,
-                                area: bySlug.get(c.slug)?.area ?? null,
-                                tool: bySlug.get(c.slug)?.tool ?? null,
-                              }}
-                            />
-                            <span>
-                              <strong>{c.title}</strong>
-                              {c.summary ? <em>{c.summary}</em> : null}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ol>
-                  </article>
-                ))}
-              </div>
-            </>
-          ) : null}
+          WHAT THAT COSTS, SO IT IS WRITTEN DOWN RATHER THAN DISCOVERED:
+          lms_public_landing returns ONE path, the featured one, so the
+          compact cards that used to list any OTHER paths are gone with
+          it. Nothing visible changes today, because there is one path.
+          If a second one is ever built and should show here, the fix is
+          in the database rather than in this file: have
+          lms_public_landing return the rest alongside the featured one.
+
+          Hidden entirely when there is no path, which is the normal
+          state until somebody builds one. A heading over an empty box
+          reads like something is broken. */}
+      {landingPath ? (
+        <section className="acad-band">
+          <PathBanner path={landingPath} />
         </section>
       ) : null}
 

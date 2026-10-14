@@ -473,6 +473,8 @@ declare
   v_fresh uuid := '55555555-0000-0000-0000-000000000002';  -- 1 hour
   v_conf  uuid := '55555555-0000-0000-0000-000000000003';  -- 48 hours, confirmed
   v_paid  uuid := '55555555-0000-0000-0000-000000000004';  -- 48 hours, has a course
+  v_named uuid := '55555555-0000-0000-0000-000000000005';  -- 48 hours, typed a name
+  v_phone uuid := '55555555-0000-0000-0000-000000000006';  -- 48 hours, typed a phone
   v_gone  integer;
 begin
   insert into auth.users (id, email, created_at, email_confirmed_at) values
@@ -480,6 +482,27 @@ begin
     (v_fresh, 'fresh@test.invalid', now() - interval '1 hour',   null),
     (v_conf,  'conf@test.invalid',  now() - interval '48 hours', now() - interval '47 hours'),
     (v_paid,  'paid@test.invalid',  now() - interval '48 hours', null);
+
+  -- BIG SAM'S CASE, and it is the one that found the bug. A real person
+  -- who starts a sign up and never opens the email: unconfirmed, two
+  -- days old, and with a name, because lms_handle_new_user copies
+  -- full_name off the metadata and the form will not submit without
+  -- one. The first version of the prune kept any account whose profile
+  -- had a name, which is every real account there has ever been, so the
+  -- job deleted nothing for ever while the About you answers sat in
+  -- user_metadata with the disability detail in them.
+  insert into auth.users (id, email, created_at, email_confirmed_at, raw_user_meta_data)
+  values (v_named, 'named@test.invalid', now() - interval '48 hours', null,
+          jsonb_build_object('full_name', 'Amina Yusuf'));
+
+  -- The control for it: a phone number cannot be typed without a
+  -- confirmed sign in, so this one IS somebody who got further, and it
+  -- must still be kept. If this and the one above ever gave the same
+  -- answer, the test would be proving nothing.
+  insert into auth.users (id, email, created_at, email_confirmed_at, raw_user_meta_data)
+  values (v_phone, 'phone@test.invalid', now() - interval '48 hours', null,
+          jsonb_build_object('full_name', 'Bola Eze'));
+  update lms_profiles set phone = '+2348000000000' where id = v_phone;
 
   -- NOT source 'free': every new account is given the free courses by
   -- the sign up trigger, so a free grant proves nothing. This is a
@@ -498,11 +521,25 @@ begin
     (select count(*)::text from auth.users where id = v_conf), '1');
   perform t16_say('10d nor is one with a grant somebody had to give it',
     (select count(*)::text from auth.users where id = v_paid), '1');
-  perform t16_say('10e and the count is written down',
+  perform t16_say('10e an unconfirmed sign up with a typed name goes too',
+    (select count(*)::text from auth.users where id = v_named), '0');
+  perform t16_say('10f but one that got as far as a phone number stays',
+    (select count(*)::text from auth.users where id = v_phone), '1');
+  perform t16_say('10g and the count is written down',
     (select (detail ->> 'deleted') || ' deleted, ' || (detail ->> 'left_alone_because_they_had_something') || ' kept'
        from lms_admin_actions where action = 'prune_unconfirmed_signups'
       order by created_at desc limit 1),
-    '1 deleted, 1 kept');
+    '2 deleted, 2 kept');
+
+  -- And the phrase itself, so that putting the name test back is caught
+  -- here and not only by the verify file.
+  perform t16_say('10h the name is not one of the things that keeps an account',
+    case when pg_get_functiondef(
+           (select p.oid from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+             where ns.nspname = 'public' and p.proname = 'lms_prune_unconfirmed_signups')
+         ) like '%full\_name%' escape '\'
+         then 'full_name is tested' else 'full_name is not tested' end,
+    'full_name is not tested');
 end $$;
 
 
