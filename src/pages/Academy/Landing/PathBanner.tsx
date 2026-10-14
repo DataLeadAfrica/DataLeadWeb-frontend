@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import "./PathBanner.css";
-import type { CourseCard as Course, LearningPath } from "../../../lib/catalogue";
+import { asLength, type CourseCard as Course, type LearningPath } from "../../../lib/catalogue";
 import CourseCover from "../ui/CourseCover";
 import { ArrowIcon } from "../ui/Icons";
 // plural from courseSeo, NOT from lib/learn. Both export it, but
@@ -35,7 +35,14 @@ type Props = { path: LearningPath; catalogue: Course[] };
 export default function PathBanner({ path, catalogue }: Props) {
   const bySlug = new Map(catalogue.map((c) => [c.slug, c]));
   const fan = path.courses.slice(0, 3);
-  const first = path.courses[0];
+
+  // The total time, added up from the catalogue rather than typed. Any
+  // course the catalogue does not have simply adds nothing, and the
+  // line says the number of courses either way.
+  const totalSeconds = path.courses.reduce(
+    (sum, c) => sum + (bySlug.get(c.slug)?.total_seconds || 0),
+    0,
+  );
 
   return (
     <div className="acad-promo">
@@ -69,17 +76,24 @@ export default function PathBanner({ path, catalogue }: Props) {
           })}
         </ol>
 
+        {/* SEE THE PATH, not "start with the first course".
+            A path is a decision about five courses and an exam, and the
+            page that lays that out is the path page. Sending somebody
+            straight into course one skips the part where they find out
+            what they are agreeing to, including that one of the courses
+            may already be ticked from another path. */}
         <p className="acad-promo__row">
-          {first ? (
-            <Link
-              className="acad-btn acad-btn--auto"
-              to={routes.academyCourse.replace(":slug", first.slug)}
-            >
-              Start with {first.title}
-              <ArrowIcon />
-            </Link>
-          ) : null}
-          <span className="acad-promo__count">{plural(path.courses.length, "course")}</span>
+          <Link
+            className="acad-btn acad-btn--auto"
+            to={routes.academyPath.replace(":slug", path.slug)}
+          >
+            See the path
+            <ArrowIcon />
+          </Link>
+          <span className="acad-promo__count">
+            {plural(path.courses.length, "course")}
+            {totalSeconds > 0 ? ` · ${asLength(totalSeconds)}` : ""}
+          </span>
         </p>
       </div>
 

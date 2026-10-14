@@ -1,0 +1,123 @@
+/* The video's own chapters, under the player.
+ *
+ * A table, not a list of links: three columns that line up down the
+ * page, so the times read as a column of times and the states as a
+ * column of states. A row is a whole button, because a target the width
+ * of the panel is one nobody has to aim at on a phone.
+ */
+
+.acad-chapters {
+  margin-top: 16px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+  overflow: hidden;
+}
+
+.acad-chapters__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--acad-line);
+  background: var(--acad-surface-2);
+  font-family: var(--acad-f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-chapters ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.acad-chapters__row + .acad-chapters__row button {
+  border-top: 1px solid var(--acad-line);
+}
+
+.acad-chapters__row button {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 13px 18px;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-family: var(--acad-f-body);
+  color: var(--acad-text);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.acad-chapters__row button:disabled {
+  cursor: default;
+  color: var(--acad-faint);
+}
+
+.acad-chapters__row.is-open button:hover {
+  background: var(--acad-surface-2);
+}
+
+.acad-chapters__row button:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: -2px;
+}
+
+.acad-chapters__row b {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--acad-faint);
+}
+
+/* A chapter that can be jumped to has its time in the signal colour,
+   which is the same thing the page does everywhere else for something
+   you can press. */
+.acad-chapters__row.is-open b {
+  color: var(--acad-signal-text);
+}
+
+.acad-chapters__row span {
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.acad-chapters__row small {
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  color: var(--acad-faint);
+  white-space: nowrap;
+}
+
+/* The one being watched. A left edge rather than a background, so it
+   reads as a position in a list and not as a selection. */
+.acad-chapters__row.is-now button {
+  background: var(--acad-signal-wash);
+  box-shadow: inset 3px 0 0 var(--acad-signal);
+}
+
+.acad-chapters__row.is-now small {
+  color: var(--acad-signal-deep);
+}
+
+@media (max-width: 560px) {
+  .acad-chapters__row button {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  /* The state drops under the title rather than squeezing it. */
+  .acad-chapters__row small {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-chapters__row button {
+    transition: none;
+  }
+}

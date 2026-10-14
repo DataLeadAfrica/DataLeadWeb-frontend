@@ -1,0 +1,291 @@
+/* The course exam: the rules, sitting it, and the result. */
+
+.acad-exam__waiting {
+  height: 420px;
+  border-radius: var(--acad-r-l);
+}
+
+/* ------------------------------------------------------- the rules ---
+
+   What it is on the left, whether it can be started on the right. The
+   right hand card is the only thing on the page that changes with the
+   state, so it is the only thing somebody has to read twice. */
+
+.acad-exam__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+  gap: 40px;
+  align-items: start;
+  margin: 18px 0 40px;
+}
+@media (max-width: 920px) {
+  .acad-exam__top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* The four numbers. Big figure, small label, because the figure is what
+   somebody is comparing against the time they have this evening. */
+.acad-exam__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 28px;
+}
+@media (max-width: 480px) {
+  .acad-exam__facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.acad-exam__facts div {
+  padding: 16px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.acad-exam__facts b {
+  display: block;
+  font-family: var(--acad-f-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--acad-text);
+}
+
+.acad-exam__facts small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--acad-f-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-exam__card {
+  padding: 22px;
+  border: 1px solid var(--acad-signal-soft);
+  border-radius: var(--acad-r-l);
+  background: linear-gradient(170deg, #fff8f3, var(--acad-surface));
+  box-shadow: var(--acad-shadow);
+}
+
+.acad-exam__card .acad-btn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* One pip per try, filled for each one used. A number alone does not
+   show at a glance how much is left, and this is the number somebody
+   most wants to be sure about before they press the button. */
+.acad-exam__pips {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0 14px;
+}
+
+.acad-exam__pips i {
+  width: 26px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--acad-cell-off);
+}
+
+.acad-exam__pips i.is-used {
+  background: var(--acad-signal);
+}
+
+.acad-exam__note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--acad-muted);
+}
+
+/* ------------------------------------------------------ sitting it ---
+
+   A bar that stays put while the questions scroll under it, because the
+   time left is the one thing somebody wants to glance at without losing
+   their place. */
+
+.acad-exam__bar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 12px 18px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-m);
+  background: color-mix(in srgb, var(--acad-surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 13.5px;
+  color: var(--acad-muted);
+}
+
+.acad-exam__bar b {
+  font-family: var(--acad-f-mono);
+  color: var(--acad-text);
+}
+
+.acad-exam__saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--acad-ok);
+  font-size: 12.5px;
+}
+
+.acad-exam__saved svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-exam__clock {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--acad-text);
+}
+
+.acad-exam__qs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.acad-exam__send {
+  margin-top: 24px;
+}
+
+/* -------------------------------------------------------- the result */
+
+.acad-exam__verdict {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin: 18px 0 32px;
+  padding: 24px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+
+.acad-exam__verdict.is-pass {
+  border-color: var(--acad-ok-line);
+  background: linear-gradient(140deg, var(--acad-ok-soft), var(--acad-surface) 55%);
+}
+
+.acad-exam__mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+}
+
+.acad-exam__mark svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--acad-signal-text);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-exam__verdict.is-pass .acad-exam__mark svg {
+  stroke: var(--acad-ok);
+}
+
+.acad-exam__again ul {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.acad-exam__again li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.acad-exam__again b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-exam__again small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  color: var(--acad-faint);
+}
+
+@media (max-width: 560px) {
+  .acad-exam__again li {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+}
+
+.acad-exam__after {
+  margin-top: 28px;
+}
+
+/* ------------------------------------------------- the three notes ---
+   The same shape as the ones at the bottom of a learning path. */
+
+.acad-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--acad-line);
+}
+@media (max-width: 860px) {
+  .acad-notes {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.acad-notes h3 {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-notes p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--acad-muted);
+}

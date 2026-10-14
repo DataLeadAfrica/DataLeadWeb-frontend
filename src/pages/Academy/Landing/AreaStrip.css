@@ -1,0 +1,79 @@
+/* The Explore by area strip, under the hero and above the map.
+ *
+ * It wraps. Seven areas plus a label do not fit on one line below about
+ * 1100 pixels, and the alternative is a row that scrolls sideways,
+ * which hides the last areas behind a gesture nobody is told about.
+ */
+
+.acad-strip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.acad-strip__label {
+  margin-right: 4px;
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-strip__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-family: var(--acad-f-body);
+  font-size: 13px;
+  color: var(--acad-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.acad-strip__pill svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: var(--acad-signal-text);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-strip__pill:hover {
+  border-color: var(--acad-signal);
+  background: var(--acad-signal-wash);
+}
+
+.acad-strip__pill:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .acad-strip {
+    margin-top: 22px;
+    gap: 6px;
+  }
+  .acad-strip__label {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-strip__pill {
+    transition: none;
+  }
+}

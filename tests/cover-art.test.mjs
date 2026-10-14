@@ -41,6 +41,7 @@ import {
   coverCode,
   coverName,
   coverNameSize,
+  coverNameWraps,
 } from "../api/_cover-art.js";
 
 // Every area the database has today, plus two it does not: an area
@@ -225,18 +226,84 @@ test("there are no words in the art at all", () => {
 // ---------------------------------------------------------------------
 
 test("a long tool name becomes the two letter code instead of overflowing", () => {
-  // An eighteen character tool name, which the brief asks for by name.
-  // "Advanced Excel 365" is the sort of thing staff type into the tool
-  // field, and at a readable size it does not fit on one line.
+  // THE RULE CHANGED in academy-6a: a name with a space in it may be
+  // longer than one line, because it can go on two. A name with no
+  // space still cannot, because there is nowhere to break it.
+  //
+  // Three words is a sentence rather than a tool, so it still gets the
+  // code. "Advanced Excel 365" is the sort of thing staff type into the
+  // tool field.
   const long = { slug: "x", title: "Spreadsheet skills", tool: "Advanced Excel 365", area: "Analysis" };
   assert.equal(long.tool.length, 18, "the test is no longer using an 18 character name");
-  assert.equal(coverName(long), "SP", "an 18 character tool name was not swapped for the code");
+  assert.equal(coverName(long), "SP", "a three word tool name was not swapped for the code");
 
-  // The longest name that is still allowed to show, and the shortest one
-  // that is not. The cut off is a judgement about what fits, so it is
-  // pinned here rather than left to drift.
+  // One word: eleven fits, thirteen does not. The cut off is a
+  // judgement about what fits, so it is pinned here rather than left to
+  // drift.
   assert.equal(coverName({ tool: "KoboToolbox", title: "Kobo" }), "KoboToolbox", "11 characters should fit");
-  assert.equal(coverName({ tool: "Thirteen chrs", title: "Too long" }), "TO", "13 characters should not fit");
+  assert.equal(coverName({ tool: "Thirteenchars", title: "Too long" }), "TO", "13 characters in one word should not fit");
+
+  // Two words: the two Dr Ayoola named, both of which used to come out
+  // as a meaningless pair of letters.
+  assert.equal(coverName({ tool: "Looker Studio", title: "Dashboards" }), "Looker Studio");
+  assert.equal(coverName({ tool: "Research methods", title: "Methods" }), "Research methods");
+
+  // And the limits on a wrapping name: two words, eighteen characters,
+  // and no word longer than eleven.
+  assert.equal(coverName({ tool: "Microsoft Power Automate", title: "Automation" }), "AU",
+    "three words should still get the code");
+  assert.equal(coverName({ tool: "Extraordinarily wide", title: "Wide thing" }), "WI",
+    "a twenty character name should still get the code");
+  assert.equal(coverName({ tool: "Supercalifragilistic x", title: "Long word" }), "LO",
+    "a word that cannot fit on a line should get the code even with a space after it");
+});
+
+test("a two word name goes on two lines, sized from its longest word", () => {
+  // Sized from the whole name, "Looker Studio" would be thirteen
+  // characters and get 7.3, which is SMALLER than the two letter code
+  // it replaced. It is sized from "Looker" instead, then 80 percent of
+  // that because two lines need the room one line did not.
+  assert.equal(coverNameWraps("Looker Studio"), true);
+  assert.equal(coverNameWraps("Research methods"), true);
+
+  // Eight characters with a space stays on one line: "Power BI" looks
+  // right as it is.
+  assert.equal(coverNameWraps("Power BI"), false);
+  assert.equal(coverNameWraps("KoboToolbox"), false, "no space, so nowhere to wrap");
+  assert.equal(coverNameWraps(""), false);
+  assert.equal(coverNameWraps(null), false);
+
+  assert.equal(coverNameSize("Looker Studio"), 10, "not sized from the longest word");
+  assert.ok(
+    coverNameSize("Looker Studio") > coverNameSize("KoboToolbox"),
+    "a wrapping name came out smaller than the long single word it is shorter than",
+  );
+  // 80 percent of the one line size for the longest word.
+  assert.equal(coverNameSize("Research methods"), Math.round(9.8 * 0.8 * 10) / 10);
+});
+
+test("five letter names are a little smaller than four", () => {
+  // Dr Ayoola's note: STATA and NVivo sat a touch proud of the corner.
+  assert.ok(coverNameSize("STATA") < coverNameSize("Kobo"), "five is not smaller than four");
+  assert.equal(coverNameSize("STATA"), 13);
+  assert.equal(coverNameSize("NVivo"), 13);
+  assert.equal(coverNameSize("Kobo"), 15);
+});
+
+test("the art leaves a clear band for the two pieces of writing", () => {
+  // The eyebrow sits top left and the tool name bottom left, both as
+  // real HTML over the picture. The art is pushed out of their way
+  // rather than running underneath them.
+  for (const variant of ["card", "og"]) {
+    const art = coverArt({ slug: "s", title: "T", area: "Analysis", variant });
+    assert.match(art, /<g transform="translate\(46 16\) scale\(\.86\)">/,
+      `the ${variant} cover draws its art without the clear zone`);
+    assert.ok(art.endsWith("</g></svg>"), `the ${variant} cover does not close the clear zone group`);
+  }
+  // Not the thumbnail: it is rings only, with no art to move, and the
+  // two letters are centred rather than in a corner.
+  const square = coverArt({ slug: "s", title: "T", area: "Analysis", variant: "square" });
+  assert.ok(!/translate\(46 16\)/.test(square), "a thumbnail does not need a clear zone");
 });
 
 test("the name is always sized to fit the slot", () => {

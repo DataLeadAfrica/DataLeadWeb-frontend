@@ -202,3 +202,57 @@
   color: #a0a4ae;
   font-style: italic;
 }
+
+/* "Counts towards Data Analytics, 3 of 5", one line per path.
+   Links, because the obvious next question is what else is in it. */
+
+.acad-done__paths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.acad-done__path {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--acad-signal-soft);
+  border-radius: 999px;
+  background: var(--acad-signal-wash);
+  font-size: 13px;
+  color: var(--acad-signal-deep);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.acad-done__path b {
+  font-size: 12px;
+  color: var(--acad-signal-text);
+}
+
+.acad-done__path svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-done__path:hover {
+  border-color: var(--acad-signal);
+}
+
+.acad-done__path:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-done__path {
+    transition: none;
+  }
+}

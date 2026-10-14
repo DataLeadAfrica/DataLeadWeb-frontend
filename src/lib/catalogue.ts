@@ -91,6 +91,90 @@ export async function getCatalogue(): Promise<{ ok: boolean; courses: CourseCard
   }
 }
 
+// ---------------------------------------------------- the landing page
+//
+// ONE CALL FOR THE WHOLE PAGE. The landing page needs the seven areas
+// with their tools, the first published path with its courses, and the
+// two short lists. Before file 16 that was five round trips, each of
+// which could be the one that is slow, and the page could not draw its
+// hero until the slowest of them came back.
+//
+// lms_public_landing returns the lot as one jsonb object. It is a
+// security definer function, so a signed out visitor gets exactly these
+// columns and no table is readable behind it.
+
+export type AreaTool = {
+  name: string;
+  /** The published course for this tool in this area, or null. */
+  course: {
+    slug: string;
+    title: string;
+    cover_code: string | null;
+    kind: string | null;
+    level: string | null;
+    price_kobo: number | null;
+    lesson_count: number;
+    total_seconds: number;
+  } | null;
+};
+
+export type LandingArea = {
+  slug: string;
+  name: string;
+  icon_key: string;
+  course_count: number;
+  tools: AreaTool[];
+};
+
+export type LandingPath = {
+  slug: string;
+  name: string;
+  description: string | null;
+  course_count: number;
+  total_seconds: number;
+  courses: { slug: string; title: string; summary: string; cover_code: string; tool: string; area: string }[];
+};
+
+export type Landing = {
+  areas: LandingArea[];
+  path: LandingPath | null;
+  free: CourseCard[];
+  short: CourseCard[];
+};
+
+const EMPTY_LANDING: Landing = { areas: [], path: null, free: [], short: [] };
+
+/**
+ * Everything the landing page draws, in one call.
+ *
+ * An empty answer is the normal state before file 16 has been run, and
+ * every part of the page that uses it hides itself rather than showing
+ * an empty heading. So a preview of this branch against a database that
+ * has not had file 16 yet looks like the page before this round rather
+ * than like a broken page.
+ */
+export async function getLanding(): Promise<{ ok: boolean; landing: Landing }> {
+  if (!certDb) return { ok: false, landing: EMPTY_LANDING };
+  try {
+    const { data, error } = await certDb.rpc("lms_public_landing");
+    if (error || !data || typeof data !== "object") {
+      return { ok: false, landing: EMPTY_LANDING };
+    }
+    const d = data as Partial<Landing>;
+    return {
+      ok: true,
+      landing: {
+        areas: Array.isArray(d.areas) ? d.areas : [],
+        path: d.path || null,
+        free: Array.isArray(d.free) ? d.free : [],
+        short: Array.isArray(d.short) ? d.short : [],
+      },
+    };
+  } catch {
+    return { ok: false, landing: EMPTY_LANDING };
+  }
+}
+
 /**
  * The landing page's words.
  *
@@ -185,6 +269,126 @@ export async function getPaths(): Promise<LearningPath[]> {
  * false for anybody not signed in, and false when we could not ask,
  * because the safe wrong answer is "you do not have it yet".
  */
+// ------------------------------------------------------- one path ---
+
+export type PathCourseState = {
+  position: number;
+  slug: string;
+  title: string;
+  summary: string;
+  cover_code: string | null;
+  tool: string | null;
+  area: string | null;
+  lesson_count: number;
+  total_seconds: number;
+  /** Set once the learner holds this course's certificate. */
+  certificate_number: string | null;
+  percent: number;
+  /** Another published path this course is in, named only when it is done. */
+  also_in: string | null;
+};
+
+export type PathExam = {
+  state: string;
+  tries_allowed?: number;
+  tries_used?: number;
+  tries_left?: number;
+  lessons_done?: number;
+  lessons_total?: number;
+  pass_mark?: number;
+  question_count?: number;
+  minutes?: number;
+  reopens_at?: string | null;
+  best_percent?: number | null;
+} | null;
+
+export type MyPath = {
+  slug: string;
+  name: string;
+  description: string | null;
+  certificate_name: string;
+  course_count: number;
+  total_seconds: number;
+  courses: PathCourseState[];
+  exam: PathExam;
+};
+
+/**
+ * One learning path, with whatever the signed in learner has done to it.
+ *
+ * A SIGNED OUT VISITOR GETS THE SAME PAGE WITH NOTHING TICKED. The
+ * function does not refuse them: a path is a public thing, and what you
+ * have done to it is not, so every per learner field simply comes back
+ * empty.
+ *
+ * null means there is no published path with that slug, which the page
+ * shows as a not found rather than as an error.
+ */
+export async function getMyPath(slug: string): Promise<MyPath | null> {
+  if (!certDb) return null;
+  try {
+    const { data, error } = await certDb.rpc("lms_my_path", { p_slug: slug });
+    if (error || !data || typeof data !== "object") return null;
+    return data as MyPath;
+  } catch {
+    return null;
+  }
+}
+
+// -------------------------------------------------------- the popup ---
+
+export type LivePopup = {
+  id: string;
+  heading: string;
+  message: string;
+  button_text: string;
+  course_slug: string | null;
+  path_slug: string | null;
+  url: string | null;
+  picture: string | null;
+  picture_url: string | null;
+  how_often: string;
+};
+
+/**
+ * The one popup for this place, if there is one.
+ *
+ * WHICH PLACES ARE ALLOWED IS THE DATABASE'S ANSWER, not this
+ * function's: lms_live_popup returns nothing for anything that is not
+ * the landing page, the catalogue, a course page or My learning. A
+ * lesson, a check or an exam gets nothing, quietly.
+ *
+ * At most one row ever comes back, so there is no queue and no
+ * stacking: which one it is was decided in the control room.
+ */
+export async function getLivePopup(place: string): Promise<LivePopup | null> {
+  if (!certDb) return null;
+  try {
+    const { data, error } = await certDb.rpc("lms_live_popup", { p_place: place });
+    const rows = Array.isArray(data) ? data : [];
+    if (error || rows.length === 0) return null;
+    return rows[0] as LivePopup;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Write down that somebody saw it, so "once per person" means once.
+ *
+ * Best effort. If it fails the worst that happens is somebody sees the
+ * same popup again, which is a far smaller problem than a page that
+ * will not draw because a popup could not be recorded.
+ */
+export async function popupShown(popupId: string): Promise<void> {
+  if (!certDb || !popupId) return;
+  try {
+    await certDb.rpc("lms_popup_shown", { p_popup: popupId });
+  } catch {
+    // nothing to do, and nothing worth saying
+  }
+}
+
 export async function hasCourseAccess(courseId: string): Promise<boolean> {
   if (!certDb || !courseId) return false;
   try {

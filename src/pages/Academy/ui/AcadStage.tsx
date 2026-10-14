@@ -17,8 +17,16 @@ import "./AcadStage.css";
 
 type Props = {
   children: React.ReactNode;
-  /** "split" is the two column account layout, "wide" is a full width page. */
-  width?: "split" | "wide";
+  /**
+   * "split" is the two column account layout, "wide" is a full width
+   * page, and "form" is the split layout with a wider right column.
+   *
+   * The sign up form is the only "form": it asks twenty questions in two
+   * columns, and at 460 pixels those columns are 200 wide, which is not
+   * enough for "Sector of your place of primary assignment" or for a
+   * dropdown holding "Research, monitoring and evaluation".
+   */
+  width?: "split" | "wide" | "form";
   /** True on a page whose whole job is one task: sign up, sign in, reset,
       My learning, and in Phase 4 the lesson player. It adds
       .acad-stage--focus, which academy.css uses to hide the site's

@@ -24,6 +24,7 @@ import {
   type CourseCard,
   type FullCourse,
 } from "../../../lib/catalogue";
+import Popup from "../ui/Popup";
 
 // /lms/courses/:slug. One course, everything about it.
 //
@@ -392,6 +393,10 @@ export default function AcademyCourse() {
           </div>
         </section>
       ) : null}
+      {/* The one popup for this page, if there is one. A lesson, a
+          check and an exam are not on the list, in the database as
+          well as here. */}
+      <Popup place="course" />
     </AcadStage>
   );
 }

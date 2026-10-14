@@ -11,19 +11,22 @@ import Faq from "../ui/Faq";
 import GoalRail from "./GoalRail";
 import PathBanner from "./PathBanner";
 import QuickPicks from "./QuickPicks";
-import ToolRack from "../ui/ToolRack";
+import AreaPicker from "./AreaPicker";
+import AreaStrip from "./AreaStrip";
 import { ArrowIcon, ChartIcon, PlayIcon, SealIcon, TickIcon } from "../ui/Icons";
 import { routes } from "../../routes";
 import {
   getCatalogue,
+  getLanding,
   getPaths,
   getSettings,
-  toolsOf,
   type CourseCard,
+  type LandingArea,
   type LearningPath,
 } from "../../../lib/catalogue";
 import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
 import { landingWords, plural } from "../../../lib/courseSeo";
+import Popup from "../ui/Popup";
 
 // /lms. The page somebody lands on from a search result or a WhatsApp
 // link, and the first thing they ever see of the Academy.
@@ -113,6 +116,13 @@ export default function AcademyLanding() {
   const [number, setNumber] = useState("");
   const [words, setWords] = useState(() => landingWords(null));
   const [paths, setPaths] = useState<LearningPath[]>([]);
+  // The seven areas with their tools, for the hero picker and the
+  // Explore by area strip. One call, and an empty answer simply means
+  // the hero keeps its waiting block: before file 16 has been run there
+  // are no areas, and a preview of this branch should look like the
+  // page before this round rather than like a broken page.
+  const [areas, setAreas] = useState<LandingArea[]>([]);
+  const [areasIn, setAreasIn] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -131,13 +141,17 @@ export default function AcademyLanding() {
     getPaths().then((p) => {
       if (alive) setPaths(p);
     });
+    getLanding().then((got) => {
+      if (!alive) return;
+      setAreas(got.landing.areas);
+      setAreasIn(true);
+    });
     return () => {
       alive = false;
     };
   }, []);
 
   const list = courses || [];
-  const tools = toolsOf(list);
   // The catalogue by slug, so a learning path can borrow a course's
   // area and tool for its cover. getPaths returns only enough to make
   // a link, which is right: a path should not re-fetch the catalogue.
@@ -272,23 +286,27 @@ export default function AcademyLanding() {
               <SealIcon />
             </span>
 
-            {!loaded ? (
-              <div className="acad-hero__waiting" aria-hidden="true" />
-            ) : tools.length >= 4 ? (
-              <ToolRack courses={list} />
-            ) : null}
+            {/* THE PICKER REPLACED THE RACK. The rack listed only the
+                tools that had a published course and cycled through
+                them by itself; this lists every tool of every area,
+                says "Coming soon" where there is no course yet, and
+                moves only when somebody presses something. */}
+            <AreaPicker areas={areas} waiting={!areasIn} />
           </div>
         </div>
+
+        {/* Under the hero and ABOVE the map, which is the whole point:
+            a row of links drawn over a picture reads as part of the
+            picture. */}
+        <AreaStrip areas={areas} />
       </section>
 
-      {loaded && tools.length > 0 && tools.length < 4 ? (
-        <p className="acad-pills">
-          <span className="acad-pills__label">Tools you will learn</span>
-          {tools.map((t) => (
-            <span key={t}>{t}</span>
-          ))}
-        </p>
-      ) : null}
+      {/* The "Tools you will learn" pills were here. They were the
+          fallback for a catalogue with fewer than four tools in it,
+          because the old rack needed four to look like a rack. The
+          picker does not: it lists every tool of every area whether or
+          not a course exists for it, so a new Academy with one course
+          still shows what it is going to cover. */}
 
       {/* ------------------------------------------------ how it works */}
       <section className="acad-band">
@@ -477,6 +495,10 @@ export default function AcademyLanding() {
           <ArrowIcon />
         </Link>
       </section>
+      {/* The one popup for this page, if there is one. A lesson, a
+          check and an exam are not on the list, in the database as
+          well as here. */}
+      <Popup place="landing" />
     </AcadStage>
   );
 }

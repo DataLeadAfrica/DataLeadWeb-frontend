@@ -11,15 +11,19 @@ import EmptyState from "../ui/EmptyState";
 import { ArrowIcon } from "../ui/Icons";
 import { routes } from "../../routes";
 import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
+import { useSearchParams } from "react-router";
+
 import { areaKey } from "../../../../api/_cover-art.js";
+import { GoalIcon } from "../ui/Icons";
 import {
   areasOf,
+  getLanding,
   getCatalogue,
   matches,
-  sortCourses,
   type CourseCard,
-  type SortOrder,
+  type LandingArea,
 } from "../../../lib/catalogue";
+import Popup from "../ui/Popup";
 
 // /lms/courses. Every published course, with a search box, filters and
 // a sort.
@@ -49,8 +53,25 @@ export default function AcademyCourses() {
   // way", which sends somebody away believing there is nothing here.
   const [trouble, setTrouble] = useState(false);
   const [query, setQuery] = useState("");
-  const [area, setArea] = useState("All");
-  const [order, setOrder] = useState<SortOrder>("newest");
+  const [areaList, setAreaList] = useState<LandingArea[]>([]);
+
+  // THE FILTERS COME IN THE ADDRESS, and only on the way in.
+  //
+  // "See free courses" and "See short courses" on the landing page open
+  // this page with that toggle already on, and the Explore by area strip
+  // opens it filtered to an area. Any other way in starts with nothing
+  // on, which is what the brief asks for: somebody who typed
+  // /lms/courses wants the catalogue, not whatever the last person
+  // looked at.
+  //
+  // The address is read ONCE, as the starting state. Pressing a filter
+  // afterwards does not change the address: a page per combination of
+  // filters is a page per combination for a search engine to find, and
+  // the canonical already says this page is one page.
+  const [params] = useSearchParams();
+  const [area, setArea] = useState(() => params.get("area") || "All");
+  const [freeOnly, setFreeOnly] = useState(() => params.get("free") === "1");
+  const [shortOnly, setShortOnly] = useState(() => params.get("short") === "1");
 
   useEffect(() => {
     let alive = true;
@@ -60,20 +81,53 @@ export default function AcademyCourses() {
       setCourses(got.courses);
       setLoaded(true);
     });
+    // The areas, with their icons and their order, from the database.
+    // Worked out from the catalogue the page already has would give the
+    // areas that happen to have a course in them, in whatever order the
+    // courses came back, and no icons.
+    getLanding().then((got) => {
+      if (alive) setAreaList(got.landing.areas);
+    });
     return () => {
       alive = false;
     };
   }, []);
 
   const all = useMemo(() => courses || [], [courses]);
-  const areas = useMemo(() => areasOf(all), [all]);
 
-  const shown = useMemo(() => {
-    const picked = all.filter(
-      (c) => (area === "All" || c.area === area) && matches(c, query),
-    );
-    return sortCourses(picked, order);
-  }, [all, area, query, order]);
+  // The areas to offer. From the database when it answered, and from
+  // the catalogue itself otherwise, so a database without file 16 still
+  // gets filters rather than none.
+  const areas = useMemo(() => {
+    if (areaList.length > 0) {
+      const have = new Set(all.map((c) => (c.area || "").trim()));
+      return areaList.filter((a) => have.has(a.name)).map((a) => ({
+        name: a.name,
+        icon: a.icon_key,
+      }));
+    }
+    return areasOf(all).map((name) => ({ name, icon: areaKey(name) }));
+  }, [areaList, all]);
+
+  /** Free to start: free outright, or with the first module free. */
+  const startsFree = (c: CourseCard) =>
+    (c.price_kobo || 0) <= 0 || Boolean(c.first_module_free);
+
+  /** Under 90 minutes of video. */
+  const isShort = (c: CourseCard) =>
+    (c.total_seconds || 0) > 0 && (c.total_seconds || 0) <= 5400;
+
+  const shown = useMemo(
+    () =>
+      all.filter(
+        (c) =>
+          (area === "All" || c.area === area) &&
+          (!freeOnly || startsFree(c)) &&
+          (!shortOnly || isShort(c)) &&
+          matches(c, query),
+      ),
+    [all, area, query, freeOnly, shortOnly],
+  );
 
   return (
     <AcadStage width="wide">
@@ -162,39 +216,61 @@ export default function AcademyCourses() {
 
           {areas.length > 1 ? (
             <div className="acad-toolbar__areas" role="group" aria-label="Filter by area">
-              {["All", ...areas].map((a) => (
+              <button
+                type="button"
+                className={`acad-toolbar__area${area === "All" ? " is-on" : ""}`}
+                aria-pressed={area === "All"}
+                onClick={() => setArea("All")}
+              >
+                All
+              </button>
+              {areas.map((a) => (
                 <button
-                  key={a}
+                  key={a.name}
                   type="button"
-                  className={`acad-toolbar__area${a === area ? " is-on" : ""}`}
-                  aria-pressed={a === area}
-                  onClick={() => setArea(a)}
+                  className={`acad-toolbar__area${a.name === area ? " is-on" : ""}`}
+                  aria-pressed={a.name === area}
+                  onClick={() => setArea(a.name)}
                 >
-                  {/* The area's own colour, the same one its course
-                      covers are drawn on, so the filter and the cards
-                      it produces are plainly the same thing. The
-                      colour is never the only thing saying which area
-                      this is: the name is right beside it. */}
-                  {a === "All" ? null : (
-                    <i className={`acad-swatch acad-cv-${areaKey(a)}`} aria-hidden="true" />
-                  )}
-                  {a}
+                  {/* The area's own small picture, the same one the
+                      landing page's strip uses, so a filter and the
+                      place it was pressed from are plainly the same
+                      thing. The name is always beside it: the picture
+                      is never the only thing saying which area this
+                      is. */}
+                  <GoalIcon area={a.icon} className="acad-toolbar__aico" />
+                  {a.name}
                 </button>
               ))}
             </div>
           ) : null}
 
-          <label className="acad-toolbar__sort">
-            <span className="acad-sr">Sort courses</span>
-            <select
-              value={order}
-              onChange={(e) => setOrder(e.target.value as SortOrder)}
+          {/* TWO TOGGLES, AND NO SORT.
+              A sort dropdown is a question nobody arrives with: the
+              order of a catalogue of twenty courses is not what is
+              stopping somebody choosing. These two are the questions
+              people actually arrive with, and both of them come off the
+              course itself rather than out of a preference. */}
+          <div className="acad-toolbar__toggles" role="group" aria-label="Narrow the list">
+            <button
+              type="button"
+              className={`acad-toggle${freeOnly ? " is-on" : ""}`}
+              aria-pressed={freeOnly}
+              onClick={() => setFreeOnly((v) => !v)}
             >
-              <option value="newest">Newest first</option>
-              <option value="shortest">Shortest first</option>
-              <option value="title">A to Z</option>
-            </select>
-          </label>
+              <i className="acad-toggle__dot" aria-hidden="true" />
+              Free to start
+            </button>
+            <button
+              type="button"
+              className={`acad-toggle${shortOnly ? " is-on" : ""}`}
+              aria-pressed={shortOnly}
+              onClick={() => setShortOnly((v) => !v)}
+            >
+              <i className="acad-toggle__dot" aria-hidden="true" />
+              Under 90 minutes
+            </button>
+          </div>
         </div>
       ) : null}
 
@@ -262,6 +338,10 @@ export default function AcademyCourses() {
           </div>
         )}
       </div>
+      {/* The one popup for this page, if there is one. A lesson, a
+          check and an exam are not on the list, in the database as
+          well as here. */}
+      <Popup place="courses" />
     </AcadStage>
   );
 }

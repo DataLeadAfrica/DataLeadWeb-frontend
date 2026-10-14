@@ -224,3 +224,8 @@
   margin: 16px 0 0;
   font-size: 13px;
 }
+
+/* The way back to the check or the exam somebody was sent here from. */
+.acad-player__back {
+  margin: -6px 0 14px;
+}

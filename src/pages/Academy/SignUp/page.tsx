@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 
 import "../academy.css";
 import Seo from "../../../components/Seo/component";
+import AboutYou from "./AboutYou";
 import AcadCard from "../ui/AcadCard";
 import AcadStage from "../ui/AcadStage";
 import CodeStep from "../CodeStep";
@@ -14,6 +15,7 @@ import { ArrowIcon, TickIcon, WarnIcon } from "../ui/Icons";
 import { handOver } from "../useAccess";
 import { useCodeTimers } from "../useCodeTimers";
 import { routes } from "../../routes";
+import { clearHidden, firstProblem, toMetadata, type Answers } from "./answers.js";
 import {
   CODE_LENGTH,
   confirmSignUp,
@@ -21,7 +23,6 @@ import {
   signUp,
   syncAccess,
   type AccessState,
-  type ErrorField,
 } from "../../../lib/academy";
 
 // Create an Academy account. Two steps on one page: the details, then the
@@ -43,14 +44,45 @@ export default function AcademySignUp() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<Step>("details");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  // ONE OBJECT, NOT TWENTY PIECES OF STATE. The rules in answers.js all
+  // take the whole set of answers, because most of them are about one
+  // answer in the light of another: a postal code is only asked for in
+  // Nigeria, a qualification only after tertiary. Twenty separate
+  // useState calls would mean assembling that object at every call site.
+  //
+  // NOT IN localStorage, and that is deliberate. A half filled form left
+  // in a browser's storage on a shared machine, with the disability
+  // answer in it, is exactly what the Nigeria Data Protection Act is
+  // about. If the tab is closed the answers are gone, which is the
+  // right trade.
+  const [a, setA] = useState<Answers>({ goals: [] });
   const [code, setCode] = useState("");
+
+  const fullName = a.full_name || "";
+  const email = a.email || "";
+  const password = a.password || "";
+
+  /**
+   * Change some answers, and clear anything those changes just hid.
+   *
+   * THE CLEARING IS THE IMPORTANT HALF. Somebody picks Nigeria, types a
+   * postal code, then changes to Ghana: without this the postal code is
+   * still in the object, is still sent, and the database refuses the
+   * whole row for a question the form stopped asking. It is done here,
+   * once, rather than in twenty onChange handlers.
+   */
+  function set(patch: Partial<Answers>) {
+    setA((old) => clearHidden({ ...old, ...patch }));
+    if (error) setError("");
+  }
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [errorField, setErrorField] = useState<ErrorField>("form");
+  // A plain string, not ErrorField. ErrorField is the four fields the
+  // auth helpers know about; this form has twenty more, named by
+  // firstProblem in answers.js, and the name is only ever compared.
+  const [errorField, setErrorField] = useState<string>("form");
   const [note, setNote] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [access, setAccess] = useState<AccessState | null>(null);
@@ -61,11 +93,11 @@ export default function AcademySignUp() {
   // about, so it is cleared then rather than being left on screen to argue
   // with what they are now typing. A message about the submission as a
   // whole clears on any change.
-  function edited(field: ErrorField) {
+  function edited(field: string) {
     if (error && (errorField === field || errorField === "form")) setError("");
   }
 
-  function fail(message: string, field: ErrorField = "form") {
+  function fail(message: string, field: string = "form") {
     setError(message);
     setErrorField(field);
   }
@@ -73,8 +105,32 @@ export default function AcademySignUp() {
   async function onCreate() {
     setError("");
     setNote("");
+
+    // EVERY FIELD IS CHECKED BEFORE ANYTHING IS SENT, and one message at
+    // a time. firstProblem walks the questions in the order they are
+    // asked and returns the first that is wrong, so the message is
+    // always about the field nearest the top that still needs
+    // attention. A form that lists eight problems at once tells somebody
+    // they got everything wrong.
+    //
+    // The same rules are in the database as check constraints, so a
+    // request that skips this page is refused there too. This is the
+    // polite half; that is the real one.
+    const problem = firstProblem(a);
+    if (problem) {
+      fail(problem.message, problem.field);
+      // Put the field on screen. On a phone the work section is a long
+      // way below the fold and a message about it would otherwise
+      // appear somewhere nobody is looking.
+      requestAnimationFrame(() => {
+        const el = document.querySelector('[aria-invalid="true"]');
+        if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
+      return;
+    }
+
     setBusy(true);
-    const r = await signUp(fullName, email, password);
+    const r = await signUp(fullName, email, password, toMetadata(a));
     setBusy(false);
 
     if (!r.ok) {
@@ -200,7 +256,7 @@ export default function AcademySignUp() {
   }
 
   return (
-    <AcadStage focus>
+    <AcadStage width="form" focus>
       {seo}
       <Pitch
         headline={
@@ -223,16 +279,13 @@ export default function AcademySignUp() {
         <StepRail current={1} />
 
         <h2 className="acad-h2">Create your account</h2>
-        <p className="acad-sub">It takes about a minute.</p>
+        <p className="acad-sub">About two minutes.</p>
 
         <div className="acad-fields">
           <Field
             label="Full name"
             value={fullName}
-            onChange={(v) => {
-              setFullName(v);
-              edited("name");
-            }}
+            onChange={(v) => set({ full_name: v })}
             autoComplete="name"
             disabled={busy}
             invalid={Boolean(error) && errorField === "name"}
@@ -243,10 +296,7 @@ export default function AcademySignUp() {
             label="Email address"
             type="email"
             value={email}
-            onChange={(v) => {
-              setEmail(v);
-              edited("email");
-            }}
+            onChange={(v) => set({ email: v })}
             autoComplete="email"
             disabled={busy}
             invalid={Boolean(error) && errorField === "email"}
@@ -258,10 +308,7 @@ export default function AcademySignUp() {
               label="Password"
               type="password"
               value={password}
-              onChange={(v) => {
-                setPassword(v);
-                edited("password");
-              }}
+              onChange={(v) => set({ password: v })}
               autoComplete="new-password"
               disabled={busy}
               canReveal
@@ -270,9 +317,38 @@ export default function AcademySignUp() {
             />
             <PasswordStrength password={password} />
           </div>
+        </div>
+
+        {/* ----------------------------------------------- About you */}
+        <h3 className="acad-su__about">About you</h3>
+
+        <AboutYou
+          a={a}
+          set={set}
+          badField={error ? String(errorField) : ""}
+          errorId="acad-su-err"
+          disabled={busy}
+        />
+
+        <div className="acad-fields acad-su__end">
+          <label className="acad-agree">
+            <input
+              type="checkbox"
+              checked={Boolean(a.consent)}
+              disabled={busy}
+              aria-invalid={(Boolean(error) && errorField === "consent") || undefined}
+              onChange={(e) => set({ consent: e.target.checked })}
+            />
+            <span>
+              I agree to the{" "}
+              <a href="/privacy-policy" target="_blank" rel="noreferrer">
+                terms and privacy policy
+              </a>
+            </span>
+          </label>
 
           {error ? (
-            <p className="acad-msg acad-msg--bad" id="acad-su-err">
+            <p className="acad-msg acad-msg--bad" id="acad-su-err" role="alert">
               <WarnIcon />
               <span>{error}</span>
             </p>

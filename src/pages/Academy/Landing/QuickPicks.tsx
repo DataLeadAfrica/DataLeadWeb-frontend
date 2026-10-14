@@ -24,7 +24,14 @@ const MAX = 3;
 // An hour and a half: the brief's "under 90 minutes", in seconds.
 const SHORT_SECONDS = 90 * 60;
 
-type Column = { title: string; note: string; courses: Course[] };
+type Column = {
+  title: string;
+  note: string;
+  courses: Course[];
+  /** Where this column's own link goes, and what it says. */
+  to: string;
+  all: string;
+};
 
 export default function QuickPicks({ courses }: { courses: Course[] }) {
   // getCatalogue returns newest first, so "newest" is the order it
@@ -34,6 +41,11 @@ export default function QuickPicks({ courses }: { courses: Course[] }) {
     {
       title: "Free to start",
       note: "No payment",
+      // Where the column's own link goes. "See free courses" opens the
+      // catalogue with the Free to start toggle already on, which is
+      // the same question this column is answering.
+      to: `${routes.academyCourses}?free=1`,
+      all: "See free courses",
       // Wholly free courses first, then the ones whose first module is
       // free. Both are a way to start without paying, so both belong
       // here, but without the sort this column tends to come out as
@@ -48,10 +60,18 @@ export default function QuickPicks({ courses }: { courses: Course[] }) {
         )
         .slice(0, MAX),
     },
-    { title: "Newest", note: "Just published", courses: courses.slice(0, MAX) },
+    {
+      title: "Newest",
+      note: "Just published",
+      to: routes.academyCourses,
+      all: "See all courses",
+      courses: courses.slice(0, MAX),
+    },
     {
       title: "Under 90 minutes",
       note: "One sitting",
+      to: `${routes.academyCourses}?short=1`,
+      all: "See short courses",
       courses: [...courses]
         .filter((c) => (c.total_seconds || 0) > 0 && c.total_seconds <= SHORT_SECONDS)
         .sort((a, b) => (a.total_seconds || 0) - (b.total_seconds || 0))
@@ -103,8 +123,8 @@ export default function QuickPicks({ courses }: { courses: Course[] }) {
                 );
               })}
             </ol>
-            <Link className="acad-link acad-pick__all" to={routes.academyCourses}>
-              See all courses
+            <Link className="acad-link acad-pick__all" to={col.to}>
+              {col.all}
               <ArrowIcon />
             </Link>
           </article>

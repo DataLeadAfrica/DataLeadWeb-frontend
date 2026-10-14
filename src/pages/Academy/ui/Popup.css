@@ -1,0 +1,121 @@
+/* The one popup.
+ *
+ * A CARD IN THE CORNER, NOT A SHEET OVER THE PAGE. There is no dark
+ * overlay and nothing behind it is blocked: the page carries on working
+ * while it is there, and somebody who wants to read the page can simply
+ * read it. That is the difference between a card and the thing people
+ * mean when they say popup, and it is why this one does not need a
+ * "do not show again" link to be bearable.
+ *
+ * aria-modal is false for the same reason. Saying modal when nothing is
+ * blocked tells a screen reader to trap somebody inside a box they
+ * could have walked past.
+ */
+
+.acad-popup {
+  position: fixed;
+  z-index: 40;
+  right: 20px;
+  bottom: 20px;
+  width: min(360px, calc(100vw - 32px));
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+  box-shadow: 0 30px 70px -28px rgba(30, 36, 52, 0.5);
+  overflow: hidden;
+  animation: acad-popup-in 0.28s ease both;
+}
+
+/* On a phone it spans the width, above the thumb rather than under it,
+   and it still is not a sheet. */
+@media (max-width: 520px) {
+  .acad-popup {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    width: auto;
+  }
+}
+
+@keyframes acad-popup-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+/* Somebody who has asked for no motion gets it simply appearing. */
+@media (prefers-reduced-motion: reduce) {
+  .acad-popup {
+    animation: none;
+  }
+}
+
+.acad-popup__x {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--acad-line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--acad-surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.acad-popup__x svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--acad-text);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.acad-popup__x:hover {
+  border-color: var(--acad-line-strong);
+}
+
+.acad-popup__x:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-popup .acad-cover,
+.acad-popup__pic {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.acad-popup__words {
+  padding: 18px;
+}
+
+.acad-popup__words h2 {
+  margin: 0;
+  font-family: var(--acad-f-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--acad-text);
+}
+
+.acad-popup__words p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--acad-muted);
+}
+
+.acad-popup__words .acad-btn {
+  width: 100%;
+  margin-top: 16px;
+}

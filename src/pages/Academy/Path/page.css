@@ -1,0 +1,287 @@
+/* /lms/paths/:slug. One learning path. */
+
+.acad-path__waiting {
+  height: 420px;
+  border-radius: var(--acad-r-l);
+}
+
+.acad-path__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 30px;
+}
+@media (max-width: 880px) {
+  .acad-path__top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.acad-path__intro .acad-h1 {
+  margin: 4px 0 10px;
+}
+
+/* The three facts, as pills rather than a sentence. They are read at a
+   glance and compared, which is what a row of pills is for and what a
+   sentence is not. */
+.acad-path__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 0;
+}
+
+.acad-path__stats span {
+  padding: 9px 14px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-size: 13px;
+  color: var(--acad-muted);
+}
+
+.acad-path__stats b {
+  font-family: var(--acad-f-mono);
+  color: var(--acad-signal-text);
+}
+
+/* ------------------------------------------------- the certificate ---
+   A picture of the thing the path is for. */
+
+.acad-path__cert {
+  padding: 20px;
+  border: 1px solid var(--acad-signal-soft);
+  border-radius: var(--acad-r-m);
+  background: linear-gradient(170deg, #fffaf6, var(--acad-surface));
+  box-shadow: var(--acad-shadow);
+}
+
+.acad-path__certlabel {
+  margin: 0 0 8px;
+  font-family: var(--acad-f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-path__cert b {
+  display: block;
+  font-family: var(--acad-f-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--acad-text);
+}
+
+.acad-path__cert small {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--acad-muted);
+}
+
+.acad-path__certno {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--acad-faint);
+}
+
+/* ---------------------------------------------------- the courses ---
+
+   A numbered list, because the order is the point: the path is a route
+   through them, not a set. The numbers are real list numbers from the
+   database's own position, not counted in CSS, so a course that is
+   taken out does not silently renumber the rest in the page while the
+   database still calls it 04. */
+
+.acad-path__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.acad-path__row {
+  display: grid;
+  grid-template-columns: 28px 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+/* A finished course reads as finished at a glance, without having to
+   get to the tag on the right. */
+.acad-path__row.is-done {
+  border-color: var(--acad-ok-line);
+  background: linear-gradient(90deg, var(--acad-ok-soft), var(--acad-surface) 40%);
+}
+
+@media (max-width: 760px) {
+  .acad-path__row {
+    grid-template-columns: 24px 48px minmax(0, 1fr);
+    gap: 10px;
+  }
+  /* The button or tag drops to its own line and spans the row, rather
+     than squeezing the title into three words a line. */
+  .acad-path__state {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+  .acad-path__state .acad-btn {
+    width: 100%;
+  }
+}
+
+.acad-path__no {
+  font-family: var(--acad-f-mono);
+  font-size: 12px;
+  color: var(--acad-faint);
+}
+
+.acad-path__row .acad-cover {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+}
+
+.acad-path__words {
+  min-width: 0;
+}
+
+.acad-path__area {
+  display: block;
+  font-family: var(--acad-f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-signal-text);
+}
+
+.acad-path__words b {
+  display: block;
+  font-family: var(--acad-f-body);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--acad-text);
+}
+
+.acad-path__words small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  color: var(--acad-faint);
+}
+
+/* The line that explains a tick on a course they have never opened. */
+.acad-path__also {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--acad-ok-soft);
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--acad-ok);
+}
+
+.acad-path__also svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-path__tag {
+  display: inline-block;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--acad-ok-soft);
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acad-ok);
+  white-space: nowrap;
+}
+
+.acad-path__tag.is-other {
+  background: var(--acad-surface-3);
+  color: var(--acad-muted);
+}
+
+/* ------------------------------------------------------- the exam ---
+
+   Shown before it can be opened, because what it takes to open it is
+   the shape of the whole path and somebody deciding whether to start
+   should be able to see it. */
+
+.acad-path__exam {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid var(--acad-signal-soft);
+  border-radius: var(--acad-r-m);
+  background: linear-gradient(120deg, #fff6ef, var(--acad-surface) 65%);
+}
+@media (max-width: 760px) {
+  .acad-path__exam {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .acad-path__exam > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.acad-path__examicon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--acad-line-strong);
+  background: var(--acad-surface);
+}
+
+.acad-path__examicon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--acad-signal-text);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-path__exam h2 {
+  margin: 2px 0 6px;
+}
+
+.acad-path__exam p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--acad-muted);
+}

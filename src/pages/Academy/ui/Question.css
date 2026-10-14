@@ -136,3 +136,23 @@
     transition: none;
   }
 }
+
+/* The "watch this part again" row under a missed question.
+ *
+ * A place, not an answer. The check can be taken as often as you like,
+ * so telling somebody which option was right turns the next go into
+ * copying: the only thing that teaches anybody anything here is going
+ * back to the part of the video it came from. */
+
+.acad-q__again {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 12px 0 0;
+}
+
+.acad-q__again small {
+  font-size: 11.5px;
+  color: var(--acad-faint);
+}

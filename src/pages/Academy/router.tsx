@@ -28,6 +28,7 @@ import Waiting from "./ui/Waiting";
 const AcademyLanding = lazy(() => import("./Landing/page"));
 const AcademyCourses = lazy(() => import("./Courses/page"));
 const AcademyCourse = lazy(() => import("./Course/page"));
+const AcademyPath = lazy(() => import("./Path/page"));
 const AcademySignUp = lazy(() => import("./SignUp/page"));
 const AcademySignIn = lazy(() => import("./SignIn/page"));
 const AcademyReset = lazy(() => import("./Reset/page"));
@@ -41,6 +42,7 @@ const AcademyMyCourse = lazy(() => import("./Learn/MyCourse/page"));
 const AcademyLesson = lazy(() => import("./Learn/Player/page"));
 const AcademyQuiz = lazy(() => import("./Learn/Quiz/page"));
 const AcademyComplete = lazy(() => import("./Learn/Complete/page"));
+const AcademyExam = lazy(() => import("./Learn/Exam/page"));
 
 // Every Academy page goes through here, which is why the preview
 // notice is rendered here and not in eleven separate pages. It renders
@@ -70,6 +72,14 @@ export default function academyRouter() {
       key="lms-course"
       path={routes.academyCourse}
       element={page(<AcademyCourse />)}
+    />,
+    // The path page is public: a path is one of the things somebody is
+    // deciding about before they have an account, and what they have
+    // done to it is simply empty when they are signed out.
+    <Route
+      key="lms-path"
+      path={routes.academyPath}
+      element={page(<AcademyPath />)}
     />,
     <Route key="lms-up" path={routes.academySignUp} element={page(<AcademySignUp />)} />,
     <Route key="lms-in" path={routes.academySignIn} element={page(<AcademySignIn />)} />,
@@ -111,6 +121,15 @@ export default function academyRouter() {
       element={page(
         <RequireAccount>
           <AcademyComplete />
+        </RequireAccount>,
+      )}
+    />,
+    <Route
+      key="lms-exam"
+      path={routes.academyExam}
+      element={page(
+        <RequireAccount>
+          <AcademyExam />
         </RequireAccount>,
       )}
     />,

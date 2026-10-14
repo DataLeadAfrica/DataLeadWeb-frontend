@@ -7,18 +7,19 @@ import "./page.css";
 import Seo from "../../../../components/Seo/component";
 import AcadStage from "../../ui/AcadStage";
 import EmptyState from "../../ui/EmptyState";
-import CourseCardTile from "../../ui/CourseCard";
+import CourseCover from "../../ui/CourseCover";
 import Confetti from "../../ui/Confetti";
 import { ArrowIcon, TickIcon, WarnIcon } from "../../ui/Icons";
 import { routes } from "../../../routes";
 import { SITE_ORIGIN } from "../../../../lib/site";
-import { getCatalogue, type CourseCard } from "../../../../lib/catalogue";
 import {
   claimCertificate,
   getMyCourse,
+  getRecommendations,
   plural,
   profileName,
   type MyCourse,
+  type Recommendation,
 } from "../../../../lib/learn";
 
 // /lms/learn/:slug/complete. The moment the course is finished.
@@ -47,7 +48,7 @@ export default function AcademyComplete() {
   const [number, setNumber] = useState<string | null>(null);
   const [why, setWhy] = useState("");
   const [name, setName] = useState("");
-  const [related, setRelated] = useState<CourseCard[]>([]);
+  const [related, setRelated] = useState<Recommendation[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -93,12 +94,13 @@ export default function AcademyComplete() {
   useEffect(() => {
     if (!course || course === "missing") return;
     let alive = true;
-    getCatalogue().then((got) => {
-      if (!alive || !got.ok) return;
-      const others = got.courses.filter((c) => c.slug !== course.slug);
-      const sameTool = others.filter((c) => c.tool === course.tool);
-      const rest = others.filter((c) => c.tool !== course.tool);
-      setRelated([...sameTool, ...rest].slice(0, 3));
+    // THE SAME RECOMMENDATIONS My learning SHOWS, and for the same
+    // reason: lms_my_recommendations never returns a course somebody
+    // already holds. The old list here was the catalogue with this one
+    // course taken out, so the very first thing it offered a learner
+    // who had just finished their second course was their first one.
+    getRecommendations().then((r) => {
+      if (alive) setRelated(r.slice(0, 3));
     });
     return () => {
       alive = false;
@@ -281,6 +283,31 @@ export default function AcademyComplete() {
           Anyone can check it at dataleadafrica.com/verify
         </p>
 
+        {/* COUNTS TOWARDS. This is the one moment somebody finds out
+            that the course they have just finished was a step towards
+            something bigger, and the count is the part that makes it
+            land: "3 of 5" is a reason to carry on in a way that the
+            path's name on its own is not.
+            One line per path, because a course can be in more than one
+            and each of them is a different distance from done. */}
+        {course.paths && course.paths.length > 0 ? (
+          <p className="acad-done__paths">
+            {course.paths.map((p) => (
+              <Link
+                key={p.slug}
+                className="acad-done__path"
+                to={routes.academyPath.replace(":slug", p.slug)}
+              >
+                Counts towards {p.name}
+                <b className="acad-mono">
+                  {p.done} of {p.total}
+                </b>
+                <ArrowIcon />
+              </Link>
+            ))}
+          </p>
+        ) : null}
+
         {!name ? (
           <p className="acad-note">
             <WarnIcon />
@@ -301,9 +328,30 @@ export default function AcademyComplete() {
               <h2 className="acad-h2">Keep the momentum</h2>
             </div>
           </div>
-          <div className="acad-grid3">
+          <div className="acad-next__grid">
             {related.map((c) => (
-              <CourseCardTile key={c.id} course={c} />
+              <Link
+                key={c.slug}
+                className="acad-next__card"
+                to={routes.academyCourse.replace(":slug", c.slug)}
+              >
+                <CourseCover
+                  course={{
+                    slug: c.slug,
+                    title: c.title,
+                    tool: c.tool,
+                    area: c.area,
+                    cover_code: c.cover_code,
+                  }}
+                  variant="square"
+                  badge={false}
+                />
+                <span className="acad-next__words">
+                  {c.area ? <span className="acad-next__area">{c.area}</span> : null}
+                  <b>{c.title}</b>
+                  <small>{c.reason}</small>
+                </span>
+              </Link>
             ))}
           </div>
         </section>
