@@ -169,6 +169,23 @@ export async function signUp(
   fullName: string,
   email: string,
   password: string,
+  /**
+   * The About you answers, already turned into the shape the database
+   * reads, by toMetadata() in SignUp/answers.js.
+   *
+   * THEY TRAVEL IN options.data AND NOWHERE ELSE. Supabase puts that
+   * into the new account's user_metadata, where it sits until the email
+   * is confirmed, at which point a trigger validates it, writes
+   * lms_learner_profiles and TAKES THE KEYS BACK OUT. So there is no
+   * window in which an unconfirmed account holds answers in a table,
+   * and no window after confirming in which they ride inside a token.
+   *
+   * They are never put in localStorage or sessionStorage on the way
+   * here either. Half a filled in form, including the disability
+   * answer, left in a browser's storage on a shared machine is exactly
+   * the thing the Nigeria Data Protection Act is about.
+   */
+  about?: Record<string, unknown>,
 ): Promise<Result> {
   if (!certDb) return { ok: false, message: NOT_READY, field: "form" };
 
@@ -197,7 +214,7 @@ export async function signUp(
     certDb.auth.signUp({
       email: clean,
       password,
-      options: { data: { full_name: name } },
+      options: { data: { full_name: name, ...(about || {}) } },
     }),
   );
 
@@ -235,6 +252,30 @@ export async function confirmSignUp(email: string, code: string): Promise<Result
   if (bad) return { ok: false, message: bad.message, field: "form" };
 
   if (error) return { ok: false, message: CODE_REFUSED, field: "code" };
+
+  // A FRESH TOKEN, STRAIGHT AWAY, AND THIS IS NOT HOUSEKEEPING.
+  //
+  // Verifying the code signs the person in, and the access token
+  // GoTrue hands back is built from the user record it loaded BEFORE
+  // the confirm trigger ran. So it still carries every About you answer
+  // in its user_metadata, including the disability answer, and it is
+  // good for up to an hour: in the browser's storage, and in the header
+  // of every request the page makes, long after the database has
+  // deleted them.
+  //
+  // refreshSession asks for a new one, built from the record as it is
+  // now, which no longer has them.
+  //
+  // It is not allowed to fail the confirm. If the refresh does not
+  // work, the person is still signed in and the answers are still gone
+  // from the database; the old token simply expires on its own. Telling
+  // somebody their email did not confirm when it did would be worse.
+  try {
+    await certDb.auth.refreshSession();
+  } catch {
+    // nothing to do, and nothing worth saying
+  }
+
   return { ok: true, message: "" };
 }
 

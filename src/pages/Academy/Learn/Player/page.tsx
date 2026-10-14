@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 
 import "../../academy.css";
 import "../learn.css";
@@ -8,6 +8,7 @@ import Seo from "../../../../components/Seo/component";
 import AcadStage from "../../ui/AcadStage";
 import Breadcrumb from "../../ui/Breadcrumb";
 import EmptyState from "../../ui/EmptyState";
+import Chapters from "./Chapters";
 import WatchTape from "../../ui/WatchTape";
 import LessonCheck from "../Check/LessonCheck";
 import { ArrowIcon, InfoIcon, LockIcon, TickIcon, WarnIcon } from "../../ui/Icons";
@@ -75,6 +76,21 @@ export default function AcademyLesson() {
   const slug = params.slug || "";
   const lessonId = params.lessonId || "";
 
+  // ?at= AND ?back=, WHICH IS HOW SOMEBODY GETS SENT HERE FROM A MISS.
+  //
+  // A missed check question and a failed exam both hand back a lesson
+  // and a moment in it. The link carries the second to start at and
+  // where the person came from, so there is a way back to the thing
+  // they were in the middle of. Without the second half, "watch this
+  // part again" is a one way door out of the check.
+  //
+  // THE SEEK IS STILL THE SERVER'S TO ALLOW. This asks the player to
+  // start there; lms_record_watch credits nothing that was skipped,
+  // whatever the address says.
+  const [search] = useSearchParams();
+  const askedSecond = Math.max(0, Number(search.get("at")) || 0);
+  const cameFrom = search.get("back") || "";
+
   const [course, setCourse] = useState<MyCourse | "missing" | null>(null);
   const [lesson, setLesson] = useState<OpenLesson | "closed" | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -117,7 +133,10 @@ export default function AcademyLesson() {
   const duration =
     lesson && lesson !== "closed" ? lesson.duration_seconds || 0 : 0;
   const needed =
-    lesson && lesson !== "closed" ? lesson.coverage_percent || 90 : 90;
+    // 100 is the default from file 16: every video lesson is watched to
+    // the end before its check opens. The fallback only matters for a
+    // lesson row written before that.
+    lesson && lesson !== "closed" ? lesson.coverage_percent || 100 : 100;
   const totalSlices = sliceCount(duration, bucketSeconds);
 
   // The outline, and this lesson's own state inside it.
@@ -156,7 +175,11 @@ export default function AcademyLesson() {
   // later render cannot drag the player backwards.
   const startAt = useRef<number | null>(null);
   if (startAt.current === null && here) {
-    startAt.current = here.completed ? 0 : here.last_position || 0;
+    // A second asked for in the address wins over where they left off:
+    // somebody who pressed "watch this part again" asked for a
+    // particular moment and does not want to be put back where they
+    // stopped.
+    startAt.current = askedSecond || (here.completed ? 0 : here.last_position || 0);
     furthest.current = Math.max(
       here.last_position || 0,
       // Already watched ground is already watched: coverage is the
@@ -493,6 +516,26 @@ export default function AcademyLesson() {
         ]}
       />
 
+      {/* A WAY BACK TO THE THING THEY WERE IN THE MIDDLE OF.
+          Somebody sent here by a missed check question, or by a failed
+          exam, came to watch one part and then go back. Without this
+          the breadcrumb only offers the whole course, and they have to
+          find their way to the check again themselves. */}
+      {cameFrom === "check" || cameFrom === "exam" ? (
+        <p className="acad-player__back">
+          <Link
+            className="acad-link"
+            to={
+              cameFrom === "exam"
+                ? routes.academyExam.replace(":slug", slug)
+                : lessonPath(slug, lessonId)
+            }
+          >
+            Back to the {cameFrom === "exam" ? "exam" : "check"}
+          </Link>
+        </p>
+      ) : null}
+
       <div className="acad-learn">
         <div className="acad-player">
           {/* ------------------------------------------------ the video */}
@@ -521,8 +564,8 @@ export default function AcademyLesson() {
               title={lesson.title}
               note={
                 open
-                  ? "You have watched this one. Skip about as much as you like."
-                  : "Skipping ahead opens once you have watched a part"
+                  ? "You have watched this one through. Skip about as much as you like."
+                  : "No skipping ahead until you have watched to the end once"
               }
             />
           </div>
@@ -675,11 +718,30 @@ export default function AcademyLesson() {
             </div>
           )}
 
+          {/* ----------------------------------------------- the chapters */}
+          {problem ? null : (
+            <Chapters
+              chapters={lesson.chapters || []}
+              furthestSeconds={lesson.furthest_seconds || 0}
+              fullyWatched={Boolean(lesson.fully_watched) || open}
+              position={position}
+              onJump={(seconds) => {
+                try {
+                  if (player.current) player.current.seekTo(seconds, true);
+                } catch {
+                  // the player is not ready, and the next press will work
+                }
+              }}
+            />
+          )}
+
           {/* ------------------------------------------- the lesson check */}
           {showCheck && here && here.has_check ? (
             <LessonCheck
+              slug={course.slug}
               lessonId={lessonId}
               lessonTitle={lesson.title}
+              next={nextLesson}
               onPassed={() => void finish()}
               onWatchAgain={() => {
                 setShowCheck(false);
@@ -760,6 +822,36 @@ function Outline({ course, lessonId }: { course: MyCourse; lessonId: string }) {
           </ol>
         </div>
       ))}
+
+      {/* AT THE END. The exam belongs in the outline because the
+          outline is the shape of the course, and the exam is its last
+          step. Leaving it out makes the course look like it finishes
+          with whatever the last lesson happens to be. */}
+      {course.exam ? (
+        <div>
+          <p className="acad-outline__mod">At the end</p>
+          <ol className="acad-rows">
+            <li>
+              <Link
+                className={`acad-row acad-row--${
+                  course.exam.state === "passed"
+                    ? "done"
+                    : course.exam.state === "open" || course.exam.state === "in_progress"
+                      ? "open"
+                      : "locked"
+                }`}
+                to={routes.academyExam.replace(":slug", course.slug)}
+              >
+                <span className="acad-dot">
+                  {course.exam.state === "passed" ? <TickIcon /> : <LockIcon />}
+                </span>
+                <span className="acad-row__name">Course exam</span>
+                <small className="acad-mono">{course.exam.question_count} Qs</small>
+              </Link>
+            </li>
+          </ol>
+        </div>
+      ) : null}
 
       <p className="acad-outline__back">
         <Link

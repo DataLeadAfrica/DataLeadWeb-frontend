@@ -9,7 +9,7 @@ import AcadStage from "../../ui/AcadStage";
 import Breadcrumb from "../../ui/Breadcrumb";
 import ProgressRing from "../../ui/ProgressRing";
 import EmptyState from "../../ui/EmptyState";
-import { ArrowIcon, LockIcon, SealIcon, TickIcon } from "../../ui/Icons";
+import { ArrowIcon, LockIcon, TickIcon } from "../../ui/Icons";
 import { routes } from "../../../routes";
 import {
   clock,
@@ -17,8 +17,6 @@ import {
   getMyWeek,
   lessonPath,
   plural,
-  quizPath,
-  whenItOpens,
   type LearnLesson,
   type LearnModule,
   type MyCourse,
@@ -169,11 +167,14 @@ export default function AcademyMyCourse({ slug: given }: Props) {
           <h1 className="acad-h1 acad-ctop__h1">{course.title}</h1>
           <p className="acad-ctop__count">
             {course.lessons_done} of {plural(course.lesson_count, "lesson")} done
-            {course.quiz_count > 0 ? (
+            {/* The exam, not the module quizzes. One course, one set of
+                questions that counts, and it is at the end. */}
+            {course.exam ? (
               <>
                 {" · "}
-                {course.quizzes_passed} of{" "}
-                {plural(course.quiz_count, "module quiz", "module quizzes")} passed
+                {course.exam.state === "passed"
+                  ? "course exam passed"
+                  : `course exam opens after lesson ${course.lesson_count}`}
               </>
             ) : null}
           </p>
@@ -224,6 +225,42 @@ export default function AcademyMyCourse({ slug: given }: Props) {
               <ModuleCard key={m.position} slug={course.slug} module={m} />
             ))
           )}
+
+          {/* THE EXAM, AT THE BOTTOM, WHERE IT IS. One set of questions
+              that counts, after every lesson, and this row is where
+              somebody sees the rules before they are anywhere near
+              having to sit it. "See the rules" opens the exam page in
+              whatever state it is actually in, which before the last
+              lesson is "not open yet" with what opens it. */}
+          {course.exam ? (
+            <div
+              className={`acad-examrow${
+                course.exam.state === "passed" ? " is-done" : ""
+              }`}
+            >
+              <span className="acad-dot">
+                {course.exam.state === "passed" ? <TickIcon /> : <LockIcon />}
+              </span>
+              <span className="acad-examrow__mid">
+                <b>Course exam</b>
+                <small>
+                  {plural(course.exam.question_count, "question")} ·{" "}
+                  {course.exam.minutes} minutes · {course.exam.pass_mark}% to pass
+                  {course.exam.state === "passed"
+                    ? " · passed"
+                    : ` · opens after lesson ${course.lesson_count}`}
+                </small>
+              </span>
+              <Link
+                className="acad-btn acad-btn--ghost acad-examrow__go"
+                to={routes.academyExam.replace(":slug", course.slug)}
+              >
+                {course.exam.state === "open" || course.exam.state === "in_progress"
+                  ? "Open the exam"
+                  : "See the rules"}
+              </Link>
+            </div>
+          ) : null}
         </div>
 
         {/* ------------------------------------------------ the side */}
@@ -275,25 +312,18 @@ export default function AcademyMyCourse({ slug: given }: Props) {
                       {course.lessons_done}/{course.lesson_count}
                     </b>
                   </li>
-                  {course.quiz_count > 0 ? (
+                  {course.exam ? (
                     <li
                       className={
-                        course.quizzes_passed >= course.quiz_count
-                          ? "acad-checklist--done"
-                          : ""
+                        course.exam.state === "passed" ? "acad-checklist--done" : ""
                       }
                     >
                       <span className="acad-dot">
-                        {course.quizzes_passed >= course.quiz_count ? (
-                          <TickIcon />
-                        ) : null}
+                        {course.exam.state === "passed" ? <TickIcon /> : null}
                       </span>
-                      Pass{" "}
-                      {course.quiz_count === 1
-                        ? "the module quiz"
-                        : `all ${course.quiz_count} module quizzes`}
+                      Pass the course exam
                       <b className="acad-mono acad-checklist__n">
-                        {course.quizzes_passed}/{course.quiz_count}
+                        {course.exam.state === "passed" ? 1 : 0}/1
                       </b>
                     </li>
                   ) : null}
@@ -355,7 +385,11 @@ function ModuleCard({ slug, module: m }: { slug: string; module: LearnModule }) 
         ))}
       </ol>
 
-      {m.quiz ? <QuizRow slug={slug} quiz={m.quiz} /> : null}
+      {/* The module quiz row was here. File 16 stops new module
+          quizzes being made and lms_my_course no longer returns one, so
+          this was drawing a thing that is always absent. The one set of
+          questions that counts is the course exam, at the bottom of
+          this page. */}
     </article>
   );
 }
@@ -398,68 +432,6 @@ function LessonRow({ slug, lesson: l }: { slug: string; lesson: LearnLesson }) {
   );
 }
 
-/**
- * The module quiz row, which has more states than a lesson does.
- *
- * Every one of them comes from the database. The page does not work out
- * whether a quiz can be started: lms_quiz_status does, and this draws
- * the answer. That is the whole reason that function was added.
- */
-function QuizRow({ slug, quiz: q }: { slug: string; quiz: LearnModuleQuizLike }) {
-  const shut = Boolean(q.next_opens_at);
-
-  return (
-    <div className={"acad-quizrow" + (q.passed ? " acad-quizrow--done" : "")}>
-      <span className="acad-dot">
-        {q.passed ? <TickIcon /> : shut ? <LockIcon /> : <SealIcon />}
-      </span>
-      <span className="acad-quizrow__mid">
-        <b>{q.title}</b>
-        <small>
-          {q.passed ? (
-            <>
-              Passed
-              {q.best_percent !== null ? ` with ${Math.round(q.best_percent)}%` : ""}
-            </>
-          ) : shut ? (
-            <>Opens again at {whenItOpens(q.next_opens_at)}</>
-          ) : (
-            <>
-              {plural(q.question_count, "question")} &middot; pass mark{" "}
-              {q.pass_mark}%
-              {q.tries_used > 0
-                ? ` · ${q.tries_used} of ${q.tries_allowed} tries used`
-                : ` · ${plural(q.tries_allowed, "try", "tries")}`}
-            </>
-          )}
-        </small>
-      </span>
-      {q.passed ? (
-        <Link className="acad-btn acad-btn--ghost acad-quizrow__go" to={quizPath(slug, q.id)}>
-          Review
-        </Link>
-      ) : shut ? (
-        <span className="acad-badge">WAITING</span>
-      ) : (
-        <Link className="acad-btn acad-btn--ghost acad-quizrow__go" to={quizPath(slug, q.id)}>
-          Open
-        </Link>
-      )}
-    </div>
-  );
-}
-
-type LearnModuleQuizLike = {
-  id: string;
-  title: string;
-  pass_mark: number;
-  question_count: number;
-  tries_allowed: number;
-  tries_used: number;
-  passed: boolean;
-  best_percent: number | null;
-  next_opens_at: string | null;
-};
 
 /**
  * The week as cells, one per ten minutes, the same shape as the lesson

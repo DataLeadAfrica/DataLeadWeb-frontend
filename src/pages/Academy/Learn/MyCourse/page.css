@@ -255,3 +255,53 @@
     transition: none;
   }
 }
+
+/* -------------------------------------------------- the exam row
+
+   At the bottom of the module list, where the exam is. It looks like a
+   module card's own row rather than like a new kind of thing, because
+   it is the last step of the same list. */
+
+.acad-examrow {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  padding: 18px 20px;
+  border: 1px dashed var(--acad-line-strong);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface-2);
+}
+
+.acad-examrow.is-done {
+  border-style: solid;
+  border-color: var(--acad-ok-line);
+  background: var(--acad-ok-soft);
+}
+
+.acad-examrow__mid b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-examrow__mid small {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--acad-faint);
+}
+
+@media (max-width: 560px) {
+  .acad-examrow {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+  .acad-examrow__go {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}

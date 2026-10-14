@@ -292,6 +292,7 @@ Access comes from one of three places, and one table decides it:
 | Unlisted YouTube links can be shared outside the platform by anybody who extracts one | Low |
 | `feature/certification` on the remote does not contain the live learning portal. Diff it before merging it into anything | Low, until somebody merges it |
 | **There is no backup of this database anywhere.** The Supabase free plan has no automated backups at all; their own documentation tells free projects to export regularly and keep an off-site copy. The Google Sheets archive that was once planned as file 09 was deferred and never built. So participants, certificates and enrolments exist in exactly one place | **High. It is the largest unmanaged risk in the project** |
+| **`database/lms/16_restructure.sql` is written, tested and NOT run.** Part A and Part B of academy-6a come in together and nothing goes near Supabase until both are reviewed. The order is in `docs/lms/ACADEMY-6A-RUN-ORDER.md`. Until it is run, the academy-6a pages have no database under them, so the branch is reviewable but not mergeable | Expected, and it is the gate on the whole round |
 
 ## The next five tasks
 

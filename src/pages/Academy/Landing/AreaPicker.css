@@ -1,0 +1,299 @@
+/* The hero's picker: areas on top, tools under them, and the course
+ * opening under its own row.
+ *
+ * This replaced ToolRack in the hero. ToolRack is still used by nothing
+ * else, so its file goes with this change.
+ */
+
+.acad-pick {
+  position: relative;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: color-mix(in srgb, var(--acad-surface) 86%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--acad-shadow);
+  padding: 18px;
+}
+
+.acad-pick__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-family: var(--acad-f-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+  white-space: nowrap;
+}
+
+/* "Example courses" is a note about the keys below, not an
+   instruction, so it is the one that goes when there is no room for
+   both on one line. Wrapping the two of them turned a one line header
+   into three. */
+.acad-pick__eg {
+  color: var(--acad-faint);
+  opacity: 0.8;
+}
+@media (max-width: 1200px) and (min-width: 1024px) {
+  .acad-pick__eg {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .acad-pick__eg {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------- the areas ---
+
+   THEY WRAP, THEY NEVER SCROLL SIDEWAYS. Seven areas do not fit on one
+   line at any width this card is ever drawn at, and the two ways out of
+   that are a row that scrolls and a block that wraps. A row that scrolls
+   hides the last three areas behind a gesture nobody is told about, and
+   on a laptop with no touchpad gesture it hides them behind nothing at
+   all. Wrapping shows all seven, always. */
+
+.acad-pick__areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.acad-atab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-family: var(--acad-f-body);
+  font-size: 12.5px;
+  color: var(--acad-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.acad-atab svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad-atab:hover {
+  border-color: var(--acad-signal-soft);
+  color: var(--acad-text);
+}
+
+.acad-atab:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-atab.is-on {
+  border-color: var(--acad-text);
+  background: var(--acad-text);
+  color: #fff;
+}
+
+/* -------------------------------------------------------- the keys ---
+
+   Three columns, which is what a 352 pixel card holds with a tool name
+   and a word underneath it. The number of columns is READ BACK by the
+   component, to work out which key ends the row the open one is in, so
+   these three numbers are the only place it is decided. */
+
+.acad-pick__keys {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (max-width: 1023px) {
+  .acad-pick__keys {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .acad-pick__keys {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.acad-pick__key {
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-height: 58px;
+  padding: 10px 6px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface-2);
+  font: 500 13px/1.15 var(--acad-f-mono);
+  color: var(--acad-text);
+  cursor: pointer;
+  text-align: center;
+  /* NEVER INSIDE A WORD. A tool name is one long word with nowhere to
+     break it, and "KoboTo / olbox" is worse than any amount of small
+     type. The grid above is what gives it the room instead. */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.acad-pick__key small {
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+  font-weight: 400;
+}
+
+.acad-pick__key:hover {
+  border-color: var(--acad-signal-soft);
+}
+
+.acad-pick__key:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-pick__key.is-on {
+  border-color: var(--acad-signal);
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+}
+
+.acad-pick__key.is-on small {
+  color: var(--acad-signal-text);
+}
+
+/* ------------------------------------------------------ the detail ---
+
+   A grid item of its own, spanning every column, placed after the last
+   key of the row the open key is in. */
+
+.acad-pick__detail {
+  position: relative;
+  grid-column: 1 / -1;
+  margin: 4px 0 2px;
+  padding: 14px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+/* The tip, pointing back up at the key that opened this. A rotated
+   square with two of its borders coloured, so it is the panel's own
+   corner rather than a triangle drawn on top of it. */
+.acad-pick__tip {
+  position: absolute;
+  top: -6px;
+  width: 11px;
+  height: 11px;
+  margin-left: -5.5px;
+  background: var(--acad-surface);
+  border-left: 1px solid var(--acad-line-strong);
+  border-top: 1px solid var(--acad-line-strong);
+  transform: rotate(45deg);
+}
+
+.acad-pick__row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+}
+
+.acad-pick__row .acad-cover {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.acad-pick__words {
+  min-width: 0;
+}
+
+.acad-pick__words b {
+  display: block;
+  font-family: var(--acad-f-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--acad-text);
+}
+
+.acad-pick__words small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  color: var(--acad-faint);
+}
+
+.acad-pick__area {
+  display: block;
+  font-family: var(--acad-f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-signal-text);
+}
+
+.acad-pick__price {
+  font-family: var(--acad-f-mono);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--acad-text);
+}
+
+.acad-pick__price.is-free {
+  color: var(--acad-ok);
+}
+
+.acad-pick__see {
+  margin-top: 12px;
+  width: 100%;
+}
+
+/* A tool with no course behind it yet. */
+.acad-pick__soon b {
+  display: block;
+  font-family: var(--acad-f-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-pick__soon span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--acad-muted);
+}
+
+.acad-pick__soon {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-atab,
+  .acad-pick__key {
+    transition: none;
+  }
+}

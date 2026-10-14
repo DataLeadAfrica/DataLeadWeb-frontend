@@ -4,8 +4,10 @@ import "./LessonCheck.css";
 import Question, { type Mark } from "../../ui/Question";
 import { ArrowIcon, TickIcon, WarnIcon } from "../../ui/Icons";
 import {
+  clock,
   getAttemptMarks,
   getQuizStatus,
+  lessonPath,
   plural,
   startQuiz,
   submitQuiz,
@@ -32,15 +34,21 @@ import {
 // browser, so this component could not mark anything if it wanted to.
 
 type Props = {
+  /** The course's slug, so a "watch this part again" link can be built. */
+  slug: string;
   lessonId: string;
   lessonTitle: string;
+  /** The next lesson, so a pass can offer it by name. */
+  next?: { id: string; title: string } | null;
   onPassed: () => void;
   onWatchAgain: () => void;
 };
 
 export default function LessonCheck({
+  slug,
   lessonId,
   lessonTitle,
+  next = null,
   onPassed,
   onWatchAgain,
 }: Props) {
@@ -135,7 +143,22 @@ export default function LessonCheck({
     const got = await getAttemptMarks(attemptId);
     const byId: Record<string, Mark> = {};
     for (const m of got) {
-      byId[m.question_id] = { was_right: m.was_right, explanation: m.explanation };
+      byId[m.question_id] = {
+        was_right: m.was_right,
+        explanation: m.explanation,
+        // A MISS GETS A PLACE TO WATCH, NEVER THE ANSWER. The server
+        // sends the lesson and the chapter the question came from, and
+        // this turns it into a link that opens the lesson at that
+        // second with a way back here.
+        again:
+          !m.was_right && m.lesson_id
+            ? {
+                href: `${lessonPath(slug, m.lesson_id)}?at=${m.chapter_start || 0}&back=check`,
+                at: clock(m.chapter_start || 0),
+                title: m.chapter_title,
+              }
+            : null,
+      };
     }
     setMarks(byId);
     setBusy(false);
@@ -232,8 +255,13 @@ export default function LessonCheck({
 
           <div className="acad-actions">
             {verdict && verdict.ok ? (
+              // NAMED, not "Next lesson". Somebody who has just passed
+              // a check is deciding whether to carry on now or stop,
+              // and "Missing value codes" is a different decision from
+              // "Next lesson". When there is no next one the word is
+              // the honest one: this was the last.
               <button type="button" className="acad-btn" onClick={onPassed}>
-                Next lesson
+                {next ? `Next lesson: ${next.title}` : "Back to the course"}
                 <ArrowIcon />
               </button>
             ) : marked ? (

@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import type { QuizQuestion } from "../../../lib/learn";
 import "./Question.css";
 
@@ -15,7 +16,26 @@ import "./Question.css";
 // than replaced by a div. That is what makes arrow keys, the space bar,
 // a screen reader and "required" all work without writing any of it.
 
-export type Mark = { was_right: boolean; explanation: string };
+export type Mark = {
+  was_right: boolean;
+  /** Only ever set when the answer was right. */
+  explanation: string;
+  /**
+   * For a missed question: the moment of the lesson it came from.
+   *
+   * NEVER THE ANSWER. A wrong answer gets a place to watch, not a
+   * sentence saying which option was right: the check can be taken
+   * again as often as you like, and telling somebody the answer turns
+   * the next go into copying.
+   */
+  again?: {
+    /** Already built by the page that knows the course's slug. */
+    href: string;
+    /** "01:15", from the chapter's start. */
+    at: string;
+    title: string | null;
+  } | null;
+};
 
 type Props = {
   question: QuizQuestion;
@@ -106,6 +126,20 @@ export default function Question({
           part of this that teaches anybody anything. */}
       {mark && mark.explanation ? (
         <p className="acad-q__why">{mark.explanation}</p>
+      ) : null}
+
+      {/* A MISS GETS A PLACE, NOT AN ANSWER. The button opens the lesson
+          at that second with a way back here. */}
+      {mark && !mark.was_right && mark.again ? (
+        <p className="acad-q__again">
+          <Link className="acad-btn acad-btn--ghost acad-btn--auto" to={mark.again.href}>
+            Watch this part again
+          </Link>
+          <small className="acad-mono">
+            {mark.again.at}
+            {mark.again.title ? ` · ${mark.again.title}` : ""}
+          </small>
+        </p>
       ) : null}
     </div>
   );

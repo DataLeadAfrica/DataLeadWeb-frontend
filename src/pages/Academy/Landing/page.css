@@ -146,9 +146,19 @@
 
   .acad-hero__card {
     max-width: var(--acad-card-w);
-    /* Right of its column. Not float, not text-align: the card is a
-       block in a grid cell, and auto on one side is what moves it. */
+    /* Right of its column, but not flush against the edge of the page.
+       The two right hand tiles hang off the card, and at exactly 1024
+       they were being cut in half by the edge of the window. The card
+       is pulled in by the overhang plus a little, so they land inside
+       the page's own gutter rather than outside the window. */
     margin-left: auto;
+    /* The LEFT hand tiles hang into the map's band, which is wide, so
+       they keep the generous overhang they were drawn with. The RIGHT
+       hand ones are against the edge of the page and keep the small
+       one. Pulling the whole card in instead would have been the
+       tidier looking fix and it cost the map 137 pixels of width, which
+       is most of Nigeria. */
+    --acad-tile-l: 30px;
   }
 
   .acad-hero__map {
@@ -238,25 +248,54 @@
 }
 /* The delays are negative so the four are already out of step on the
    first frame, rather than starting together and drifting apart. */
+/* HOW FAR A TILE MAY HANG OFF THE CARD.
+
+   The page's own gutter is 16 pixels at EVERY width, and a 52 pixel
+   tile turned seven degrees is about three pixels wider than it looks.
+   So a tile beside the edge of the page can hang out by about ten
+   before it is off the screen, and no further.
+
+   It used to hang out by up to 36 on every side. At exactly 1024 the
+   two right hand tiles were cut in half by the edge of the window, and
+   at 980 and below the two left hand tiles were half off the other
+   side. Both are inside the window at every width now.
+
+   Only ONE side gets the generous overhang back, and only from 1024 up:
+   the left, where the card is narrower than its column and the map's
+   band is sitting there with room in it. The right is against the edge
+   of the page at every width, so it keeps the small one. Pulling the
+   whole card in from the right instead would have looked tidier and it
+   cost the map 137 pixels of width, which is most of Nigeria. */
+.acad-hero__card {
+  --acad-tile-l: 10px;
+  --acad-tile-r: 10px;
+}
+/* Each tile is clear of the card's own content, measured rather than
+   eyeballed. Tile 1 used to sit on the "Pick a tool" label by 24 by 11
+   pixels and tile 3 sat on the first course's cover by 24 by 38, which
+   is most of the cover. A decoration that covers the thing it is
+   decorating is worse than no decoration. */
 .acad-sticker--1 {
-  left: -30px;
-  top: -24px;
+  left: calc(-1 * var(--acad-tile-l));
+  top: -40px;
   transform: rotate(-8deg);
 }
 .acad-sticker--2 {
-  right: -22px;
+  right: calc(-1 * var(--acad-tile-r));
   top: -30px;
   transform: rotate(7deg);
   animation-delay: -1.5s;
 }
 .acad-sticker--3 {
-  left: -36px;
-  bottom: 30px;
+  left: calc(-1 * var(--acad-tile-l));
+  /* At the bottom corner, mirroring tile 4, rather than a third of the
+     way up the card where the first course's cover now sits. */
+  bottom: -38px;
   transform: rotate(6deg);
   animation-delay: -3s;
 }
 .acad-sticker--4 {
-  right: -26px;
+  right: calc(-1 * var(--acad-tile-r));
   bottom: -26px;
   transform: rotate(-6deg);
   animation-delay: -4.5s;
@@ -279,13 +318,16 @@
     width: 20px;
     height: 20px;
   }
+  /* A smaller tile, so the numbers are its own rather than the ones
+     above. Still clear of the "Pick a tool" label: at -22 it sat on it
+     by 20 by 4 pixels. */
   .acad-sticker--1 {
     left: -6px;
-    top: -22px;
+    top: -34px;
   }
   .acad-sticker--2 {
     right: -6px;
-    top: -26px;
+    top: -30px;
   }
   /* Two, not four. The other two would sit on top of the rack's own
      content at this width. */
@@ -340,50 +382,10 @@
   }
 }
 
-/* ------------------------------------------------------ how it works */
-
-.acad-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 22px;
-}
-@media (max-width: 860px) {
-  .acad-steps {
-    grid-template-columns: 1fr;
-  }
-}
-
-.acad-step {
-  padding: 22px;
-  border: 1px solid var(--acad-line);
-  border-radius: var(--acad-r-l);
-  background: var(--acad-surface);
-}
-.acad-step__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-.acad-step__n {
-  font: 600 12px/1 var(--acad-f-mono);
-  letter-spacing: 0.1em;
-  color: var(--acad-signal-deep);
-}
-.acad-step__icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--acad-signal-text);
-  fill: none;
-  stroke-width: 1.6;
-}
-.acad-step p {
-  margin: 8px 0 0;
-  color: var(--acad-muted);
-  font-size: 13.5px;
-  line-height: 1.6;
-}
+/* The "how it works" cards moved to academy.css. Two pages draw them
+   now, the landing and a learning path, and a rule that two pages need
+   belongs in the design system rather than in whichever page happened
+   to want it first. */
 
 /* --------------------------------------------------- verify a number */
 

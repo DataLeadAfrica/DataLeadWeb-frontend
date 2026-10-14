@@ -9,6 +9,249 @@ From round 2 onwards the packages hold ONLY the files that differ from `main`, n
 copy of everything, because this is now a change to a live site. Each entry says which base it was
 laid on.
 
+There is ONE changelog for the Academy and it is this file. An earlier `academy-6a` package carried
+a second copy of its own; that copy is gone and its entry is below.
+
+---
+
+## ACADEMY 6A, ROUND 3, 13 October 2026. Big Sam's six
+
+Laid on `main` at `de0c998`, which adds a timesheet change outside the Academy and touches none of
+this package's files. Round 2 of 6A was approved; this is the six fixes from the review of it.
+
+### 1. The nightly prune never deleted a real sign up
+
+`lms_prune_unconfirmed_signups` kept any account whose profile had a name on it. The name is copied
+off the sign up metadata by `lms_handle_new_user`, and the form will not submit without one, so
+**every real account has a name from the moment it exists**. The test meant "keep anything a real
+person made", which is the exact opposite of what the function is for. Of Big Sam's four accounts,
+only the nameless one was ever deleted.
+
+What that costs is not disk space. An unconfirmed account still holds the whole About you form in
+`user_metadata`, because the answers only move into `lms_learner_profiles` when the email is
+confirmed. Disability detail is in there. So the job was keeping sensitive personal data
+indefinitely, with nobody's consent completed, which is the thing the 24 hour rule exists to stop
+and which the NDPA 2023 does not allow.
+
+The name is gone from the test. What keeps an account now is a phone number, a role above learner,
+a participant link, an entitlement whose source is not `free`, an attempt, progress, a watch record,
+About you answers or a certificate. All three profile conditions are things a trigger cannot do, so
+each one really does mean a human touched the account.
+
+Big Sam's case is now check 10e of `file_16_tests.sql`, with 10f as its control: an account that got
+as far as typing a phone number must still be kept, or 10e could pass by deleting everything. 10h
+and verify row 56 both read the function's own source and fail if the name comes back. That is also
+why the function's comments no longer spell the column: the first version of this fix set off its
+own check, which is the second time this round that `pg_get_functiondef` has matched my own prose.
+
+### 2 to 6
+
+| | |
+|---|---|
+| 2 | The landing page's **How it works** card said "a short quiz after each module". There are none. It now reads "A quick check after each lesson, and one exam at the end of the course, so you know it stuck", and the heading is **Watch, check, certify** rather than "Three steps, every lesson", because the certificate comes once per course. |
+| 3 | After the FIRST failed exam the result offered only "Back to the course", so a learner with a try left was not told. It now offers **Try again**, which opens the rules, where the button already reads "Start my last try". It goes to the rules rather than straight into the questions: a second try begun by accident is a try spent. After the second fail the state is `waiting` rather than `open`, so nothing is offered, which is deliberate: a button that will not work for 24 hours is worse than no button. |
+| 4 | The **path banner** came from `getPaths`, a second read, while `lms_public_landing` already returns the path. It now comes from the landing call. `getPaths` is gone from the page. |
+| 5 | **Databases, Qualitative and Research skills** were all falling through to the four pane fallback, so three of the seven areas looked identical. They now have the concept's shapes: a cylinder, a speech bubble with lines, and a page with a folded corner. A test reads the seven seeded `icon_key` values out of file 16 and fails if any of them has no drawing. |
+| 6 | **Step 17** sets `lms_settings.headline` to "Learn one skill at a time.", and only where it still equals file 02's default exactly, so a headline staff have written is never overwritten and the step is safe to run twice. The column default moves with it, and the undo puts both back the same way. Verify row 57. |
+
+### What fix 4 costs, written down rather than discovered
+
+`lms_public_landing` returns ONE path, the featured one. `getPaths` returned every published path,
+and the compact cards that listed any OTHER paths below the banner have gone with it. Nothing
+visible changes today, because there is one path. If a second is ever built and should show there,
+the fix belongs in the database rather than in the page: have `lms_public_landing` return the rest
+alongside the featured one.
+
+### Still says tool, and left alone on purpose
+
+The closing dark band reads "Start with one tool this week." It is hardcoded, not from
+`lms_settings`, and it was not in the six. It is not wrong, but it now sits two screens under a
+headline that says skill. Say the word and it changes.
+
+### What passes
+
+`npm test` runs **233**, all passing. `npm run build` is clean and lint is unchanged from `main`.
+
+The database matrix on a fresh 01 to 15 build: 52 NO before file 16 with no Postgres error, three
+runs of file 16 in a row with no error, **57 of 57 yes** after, **55 of 55** checks in
+`file_16_tests.sql`, undo clean and the headline put back, file 16 runs again after the undo, 57 yes
+again.
+
+---
+
+## ACADEMY 6A, 13 October 2026. The restructure, and the learner pages on it
+
+Big Sam reshaped the Academy. Part A is the database under that shape. Part B is the thirteen
+learner pages that sit on it. Part C is the tests. They come in together, because half of each is
+useless without the other half.
+
+Laid on `main` at `422aa9f` (PR #63, Phase 5 round 2). New branch `academy-6a` from `main`, in by
+PR. Nothing is edited on `main`.
+
+**Nobody is sent to the Academy yet.** `ACADEMY_PUBLIC` stays `false`. This package does not touch
+it, and it does not touch `vercel.json`.
+
+No new dependency.
+
+### Part A, the database: file 16
+
+One file, `database/lms/16_restructure.sql`, in one transaction, safe to run twice, with
+`16_undo.sql` and `16_verify.sql` beside it. `docs/lms/ACADEMY-6A-RUN-ORDER.md` is the order to run
+them in.
+
+| | |
+|---|---|
+| 1 | `lms_areas` and `lms_course_areas`. Seven areas, and a course can sit in several. The one at position 1 is the main area and decides the cover. `lms_courses.area` stays, filled from the main area by a trigger, so nothing that reads it breaks. `lms_courses.kind` is `tool` or `skill`. |
+| 2 | `lms_area_tools`. Every tool or skill an area teaches, including ones with no course yet, which is what the landing picker shows as "Coming soon". Exact names: MySQL, not SQL. |
+| 3 | A path gets `certificate_name` and `programme_id`, so the Professional Certificate goes through `programmes` exactly as a course certificate does. `lms_publish_path` refuses while any course in it is unpublished or the path exam's bank is short. |
+| 4 | `lms_lessons.chapters_text` keeps what was pasted; `lms_lesson_chapters` holds it parsed. `lms_parse_chapters` refuses a bad list with a message naming the line. |
+| 5 | Every video lesson needs 100 percent, and so will every new one. `lms_lesson_watch_state` is where the player asks what speed and seeking are allowed: 1.5x and no seeking on a first watch, 2x and seek anywhere after it. |
+| 6 | A missed check question returns the lesson, the chapter and its start second, never the right answer. The explanation is returned only when they were right. |
+| 7 | No new module quiz can be made. The old rows and their attempts stay as history and are hidden from every learner function. |
+| 8 | The course exam. One per course, 20 of a bank of 30, 40 minutes timed by the server, 70 percent, two tries then a day. `lms_exam_status` returns one of five states. |
+| 9 | The path exam, same machinery: 40 of 60, 90 minutes. Opens only when every course certificate in the path is held. |
+| 10 | `lms_learner_profiles`, the About you answers, with the skip logic as check constraints. |
+| 11 | Nothing is stored until the email is confirmed, and the answers are then taken back out of `user_metadata`. |
+| 12 | Disability is read one record at a time, by administrators only, and every read is logged. Totals under 5 come back as "fewer than 5". |
+| 13 | `lms_course_next` and `lms_my_recommendations`, rule based, four reasons, never a course they hold. |
+| 14 | `lms_popups` and `lms_live_popup`. The `place` check constraint cannot name a lesson, a check or an exam. |
+| 15 | The catalogue and course page gain areas, kind and a chapter count. `lms_public_landing` draws the whole landing page in one call. |
+| 16 | Permissions, named table by table rather than assumed. |
+
+Three steps exist only because Part B needed them, and they are numbered where they belong rather
+than appended: **5b** replaces `lms_open_lesson` so the player is handed the chapters, the furthest
+second reached and whether seeking is allowed; **7b** replaces `lms_my_course` so the module quiz
+rows are gone, `quiz_count` means the exam, and the page is told which paths the course counts
+towards; **9b** adds `lms_my_path`, which draws the whole path page in one call.
+
+### What Part A found, before Big Sam's review
+
+**Five new tables were writable by any signed-in learner.** Supabase grants every new table in
+`public` to `anon` and `authenticated` by default. I revoked it on the tables I was thinking about
+and missed `lms_areas`, `lms_area_tools`, `lms_course_areas`, `lms_course_next` and
+`lms_lesson_chapters`. The `anon` half was read only. The `authenticated` half was INSERT, UPDATE
+and DELETE with no row level security, so a learner could have renamed an area, emptied the landing
+picker, moved a course or rewritten a lesson's chapters. File 10's tidy pass does not catch it,
+because it revokes write access from `anon` and these were granted to `authenticated`. Found by row
+36 of my own verify file. All five now have RLS on, read for signed in users, writing behind
+`lms_is_staff()`, and there is a test that tries it as a learner and gets 0 rows.
+
+**An empty goals list was accepted.** The constraint read `array_length(goals,1) between 1 and 2`.
+For an empty array `array_length` returns null, `null between 1 and 2` is null, and a check
+constraint passes on null. The form cannot produce that answer; a replayed request can. Now
+`coalesce(array_length(goals,1), 0)`.
+
+**Passing the exam would never have issued a certificate.** I called
+`lms_issue_course_certificate`, which does not exist: the real one is
+`lms_claim_course_certificate`. Worse, I had wrapped the call in `exception when undefined_function
+then v_cert := null`, so a learner would have passed, seen "passed", been handed nothing, and
+nothing anywhere would have said why. The catch is gone, the real function is called, and
+`lms_submit_exam` now returns `certificate_message` so the page can say what is missing when there
+is no certificate.
+
+**File 07's `lms_quizzes_one_owner` had to be dropped, not added to.** It says "a lesson or a
+module", written before course exams existed. Left in place, every course exam and every path exam
+would have been refused on the way in. The undo puts it back.
+
+**The undo left the site with no catalogue.** It dropped `lms_public_catalogue` and
+`lms_public_course` and stopped there, so every public Academy page went blank and file 16 then
+refused to run again because its own readiness check could not find them. The undo now writes
+file 14's versions back in full.
+
+**An exam was being created already published with an empty bank.** File 07 refuses to publish a
+question set with nothing in it, which is how this surfaced. Exams are created as drafts now, and
+`lms_publish_exam` is the gate that checks the bank is at least 1.5 times a try.
+
+### The eight fixes from Big Sam's review of 13 October
+
+| | |
+|---|---|
+| 1 | **A learner with no entitlement could read an exam question and its explanation.** File 06's `p_q_public` and `p_quiz_public` policies let anyone signed in read a published question set's questions and options. They were written for the certification exams, which is a different gate. I proved it on a 01 to 15 database: as a learner holding nothing, I read a course exam's question text and its explanation. The policies are replaced so a quiz owned by a lesson, a course or a path is readable only through the start-the-exam function, and `lms_start_exam` and `lms_start_quiz` are the only way in. Verify row 37. |
+| 2 | **`lms_prune_unconfirmed_signups` would have deleted paid accounts.** It took every unconfirmed account older than 30 days with no attempts and no progress. An entitlement was not in the list. `lms_handle_new_user` also grants the free courses to every new account, so a plain "has no entitlement" test matches nobody: the prune now refuses anything holding an entitlement whose `source` is not `free`. Verify row 44, a Node test, and a mutation check that the test fails when the clause is removed. |
+| 3 | **The undo was leaving the site broken in two more ways.** It dropped `lms_lesson_watch_state` while file 14's `lms_open_lesson` still called it, and it left `lms_my_path` behind pointing at tables file 16 had changed. The undo now writes file 14's `lms_open_lesson` and file 15's `lms_my_course` back out in full, and drops `lms_my_path`. Verify rows 45 and 46. |
+| 4 | **`lms_attempt_marks` could not be changed in place.** `create or replace` cannot change a function's return type, so file 16 failed on a database where file 06's version already existed. `drop function` first. Verify row 47. |
+| 5 | **The verify file failed with an error instead of printing NO.** `'public.lms_learner_profiles'::regclass` and a bare `cron.job` resolve at parse time, so the whole file aborted on a database where file 16 had not run. Rewritten with `to_regclass` guards and `query_to_xml`. That is what the file is for: it must print 55 NOs before and 55 yeses after, and never an error. |
+| 6 | **The disability total could be worked out by subtraction.** A breakdown that returns "fewer than 5" for one row and a real number for the rest, next to a grand total, gives the small number away. Every total in the same report is now suppressed when any one of them is under 5. Verify row 48. |
+| 7 | **`ON CONFLICT` cannot use a deferrable unique constraint as its arbiter.** Two of the seed inserts did. Rewritten as a `where not exists`. |
+| 8 | **`lms_my_course`'s exam read was ambiguous.** The OUT parameter is named `course_id`, which shadows the column, so the function parsed and then failed at run time on the first call. Every reference is qualified now. This is a class of bug, not one bug: the whole file was re-read for it. |
+
+### Part B, the thirteen learner pages
+
+| | |
+|---|---|
+| 1 | **The landing page.** Area tabs that WRAP, never a sideways scroller, and a tool key grid under them; pressing a key opens a panel inserted after the last key of that key's own row, with a tip pointing up at the key. A tool with no course says "Coming soon" rather than being hidden. "Explore by area" sits above the map. The goal rail slides itself every 4.2 seconds, stops the moment a pointer, a finger or the keyboard reaches it, stays stopped after a touch, and never moves at all for somebody whose system asks for no motion. It has no pause button, because it stops when you touch it. |
+| 2 | **The catalogue.** Two toggles, Free to start and Under 90 minutes, and the sort dropdown is gone. A filter in the address is read once on the way in, so the three Quick picks columns can open it ready, and pressing a toggle does NOT rewrite the address, because a page per combination of filters is a page per combination for a search engine to find. |
+| 3 | **The course page** carries its areas, its kind, its chapter count and the paths it counts towards. |
+| 4 | **Sign up gets the About you questions**, with the skip logic the database enforces, as a form that does not ask what it does not need. Nothing is stored until the email is confirmed. |
+| 5 | **The lesson.** The watch tape needs every cell; the 92 per cent line is gone. The chapters sit under the player and can be jumped to only once they have been reached, and how far that is comes from the database, never from the player. The speed list opens to 2x only after a full watch. The outline ends with the exam. |
+| 6 | **The lesson check.** A missed question offers "Watch this part again" at the chapter it came from, and never says which option was right. Passing offers the next lesson BY NAME. |
+| 7 | **My course.** No module quiz rows. One dashed Course exam row saying what opens it, with See the rules before it opens. The certificate checklist counts the exam. |
+| 8 | **The exam page**, in three phases: the rules with the four numbers and the tries left, the sitting with the server's clock, and the result. A result never holds an option id, and a late submit is marked at the deadline. |
+| 9 | **The path page** at `/lms/paths/:slug`. A course already finished in another path is ticked AND says which path it came from, so the tick does not look like a mistake. The path exam says how many courses are left. |
+| 10 | **Recommendations on My learning**, each with the reason it was picked, and a line saying they are never from what anybody paid to show you. |
+| 11 | **The certificate moment** offers what the course counts towards and the next thing, from the recommendations rather than from the catalogue, so it can no longer offer a course they have just finished. |
+| 12 | **The one popup.** A card in the corner, not a sheet over the page: nothing behind it is blocked. It waits three seconds, and only if the tab is still in front. Four pages may have one, and a lesson, a check and an exam never may; the database refuses those places too, so it is said twice. It has no "do not show again" link, because how often it appears is set on the popup. |
+| 13 | **The covers** carry the area and the kind. |
+
+### The two notes from the round 2 review, and a third defect they led me to
+
+1. **"KoboToolbox" was breaking mid word** in the hero rack at 1360 and 1024. A long name now takes
+   a smaller size, worked out from its longest WORD rather than its total length, and the key grows
+   rather than breaking. There is a test that fails if any name in the rack can break inside a word.
+2. **At exactly 1024 the tick and the certificate tiles were cut off** by the right edge of the
+   window. Every tile is now positioned so it stays wholly inside the viewport at every width from
+   320 to 1600.
+3. While measuring that, **a tile was sitting on top of the card's text** at 1180. Fixed, and the
+   measurement pass now also fails if any tile overlaps anything on the card. Fifteen widths, real
+   boxes from the browser rather than a reading of the CSS.
+
+### And one hole in the launch switch, in my own new page
+
+**The path page was emitting no robots tag at all while the Academy is private.** There are FOUR
+public Academy pages now, not three: the landing page, the catalogue, a course page and a path page.
+The first three carry `noindex, follow`, and `follow` is the whole point of that wording: it tells a
+crawler to walk the links on the page, so that the day the switch flips nothing has to be re-earned.
+One of those links is the path banner on the landing page, pointing at the path page. So the path
+page was a way into the Academy that the switch did not cover, which is exactly what round 2 was
+for. It now says the same as the other three.
+
+Found by measuring, not by reading: seven pages at seven widths, reading the real robots tags out of
+the browser. Two tests now cover it, one for the four public pages and one for the four pages behind
+a sign in, which must stay `nofollow`.
+
+**And a note in `api/_site-routes.js` said something untrue.** I had written that the edge function
+knows how to write a path page's tags. It does not: `vercel.json` rewrites three Academy addresses
+plus the sign up, and `api/academy-meta.js` has never heard of `/lms/paths/`. The note now says what
+is true, and a test fails if either half of it stops being true.
+
+### Part C, the tests
+
+`npm test` runs **227**, all passing. 104 of them are new since `main` at `422aa9f`, which runs 123.
+
+- `tests/signup-answers.test.mjs`, 40. Every branch of the skip logic, the lists the form offers,
+  what is sent and what is not, the country and state lists checked against the database's own two
+  tables, the nightly prune's refusal to touch an account somebody paid for (with a mutation check
+  that the test fails when that clause is taken out), and a last test that reads
+  `16_restructure.sql` and fails if the database stops saying the same thing.
+- `tests/chapters.test.mjs`, 20. Every refusal names its line. A final test checks the SQL parser
+  still refuses the same things in the same words.
+- `tests/exam-state.test.mjs`, 18. The five states and their wording, the countdown, and the two
+  that matter: an exam result never holds an option id, and a late submit is marked at the deadline.
+- `tests/learner-pages.test.mjs`, 23. The promises that are about what a page must NEVER do: never
+  a sideways row of areas, never an answer in a result, never a popup on a lesson, never a
+  recommendation somebody paid for, never a filter in the address. Those are not things a screenshot
+  catches, because the way they go wrong is that somebody later writes one more line, and the page
+  still renders perfectly.
+- `tests/cover-art.test.mjs` gains 3: the area and the kind on a cover, and the one that fails if
+  any tool name in the hero rack can break inside a word.
+
+`database/lms/tests/file_16_tests.sql` runs **52** checks against a real local Postgres, including
+sitting the exam twice and being refused a third time, and the exact query the live check page runs.
+
+The database matrix, run on a fresh 01 to 15 build: 50 NO before file 16 with no error, three runs
+of file 16 in a row with no error, 55 of 55 yes after, 52 of 52 checks pass, undo clean, file 16
+runs again after the undo, 55 yes again.
+
 ---
 
 ## PHASE 5 ROUND 2, 13 October 2026. Making main safe

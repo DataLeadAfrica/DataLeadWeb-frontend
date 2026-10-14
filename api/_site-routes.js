@@ -88,6 +88,12 @@ export const NOT_IN_SITEMAP = {
   academyReset: "carries noindex",
   academyMe: "behind a sign in, and carries noindex",
   academyCourse: "carries a :slug. Each published course is added to the sitemap from the database instead",
+  academyPath:
+    "carries a :slug, so there is no one address to list. The edge function does NOT answer it: " +
+    "vercel.json rewrites /lms, /lms/courses and /lms/courses/:slug only, so a path page is served " +
+    "as the plain app and writes its own tags from React, the same 'noindex, follow' as a course " +
+    "page while the switch is false. If paths are ever to be listed, they go in from the database " +
+    "the way courses do in api/sitemap.js, and api/academy-meta.js has to learn the address first",
 
   // The Phase 4 learning pages. All four are behind a sign in and all
   // four carry noindex. They show one person's own progress through a
@@ -97,6 +103,7 @@ export const NOT_IN_SITEMAP = {
   academyLesson: "behind a sign in, and carries noindex",
   academyQuiz: "behind a sign in, and carries noindex",
   academyComplete: "behind a sign in, and carries noindex",
+  academyExam: "behind a sign in, and carries noindex",
 
   // The end of a payment or a form. Landing on one from a search result
   // would be meaningless.

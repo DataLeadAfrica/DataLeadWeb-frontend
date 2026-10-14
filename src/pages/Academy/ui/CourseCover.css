@@ -119,6 +119,15 @@
   letter-spacing: -0.035em;
   white-space: nowrap;
 }
+/* Two words on two lines. The width is capped so the second word
+   really does go underneath the first rather than beside it on a wide
+   cover, and the name is sized from its longest word, so neither line
+   can be wider than this. */
+.acad-cover__name--two {
+  white-space: normal;
+  max-width: 44cqw;
+  line-height: 0.95;
+}
 
 .acad-cover__title {
   position: absolute;

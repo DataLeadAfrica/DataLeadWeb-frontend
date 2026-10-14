@@ -141,6 +141,37 @@ export function GoalIcon({ area, className }: IconProps & { area: string }) {
         <path d="M9 8h6M9 12h6M9 16h3" />
       </>
     ),
+    // Databases: a cylinder. An ellipse for the top, two sides, and two
+    // more ellipse fronts down the body, which is what reads as a stack
+    // of discs rather than as a tin.
+    db: (
+      <>
+        <ellipse cx="12" cy="6" rx="7" ry="3" />
+        <path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6" />
+        <path d="M5 10.5c0 1.7 3.1 3 7 3s7-1.3 7-3" />
+        <path d="M5 15c0 1.7 3.1 3 7 3s7-1.3 7-3" />
+      </>
+    ),
+    // Qualitative: a speech bubble with lines of talk in it. The tail is
+    // on the left, so it reads as somebody speaking rather than as a
+    // note somebody wrote.
+    ql: (
+      <>
+        <path d="M20 4H4a1 1 0 00-1 1v10a1 1 0 001 1h3v4l4.5-4H20a1 1 0 001-1V5a1 1 0 00-1-1z" />
+        <path d="M7 8h10M7 11.5h6" />
+      </>
+    ),
+    // Research skills: a page with a folded corner. The fold is drawn as
+    // two strokes, the diagonal and the small square it leaves, because
+    // one diagonal alone reads as a crease rather than as a turned
+    // corner.
+    rs: (
+      <>
+        <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z" />
+        <path d="M14 3v4a1 1 0 001 1h4" />
+        <path d="M9 13h6M9 17h4" />
+      </>
+    ),
     // Programming: angle brackets.
     pr: <path d="M8 7l-5 5 5 5M16 7l5 5-5 5" />,
     // Everything, and anything we have no picture for: four panes.

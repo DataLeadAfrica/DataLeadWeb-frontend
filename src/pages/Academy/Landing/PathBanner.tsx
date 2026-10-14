@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import "./PathBanner.css";
-import type { CourseCard as Course, LearningPath } from "../../../lib/catalogue";
+import { asLength, type LandingPath } from "../../../lib/catalogue";
 import CourseCover from "../ui/CourseCover";
 import { ArrowIcon } from "../ui/Icons";
 // plural from courseSeo, NOT from lib/learn. Both export it, but
@@ -22,20 +22,20 @@ import { routes } from "../../routes";
 // be a list again, with more scrolling, so any other paths keep the
 // compact cards below.
 //
-// THE FAN IS THE COVERS WE ALREADY DRAW. getPaths returns only a slug,
-// title, summary and cover code for each course in a path, which is
-// enough for the letters but not for the area, so the covers are looked
-// up by slug in the catalogue this page has already loaded. A course
-// that is not there, because it was unpublished between the two
-// answers, gets the neutral art. Nothing waits for it and nothing in
-// the layout moves when it arrives.
+// EVERYTHING HERE COMES FROM lms_public_landing, in the one call the
+// rest of this page already makes. It used to come from a second read,
+// getPaths, with the covers' area and tool looked up by slug in the
+// catalogue. Two answers describing the same thing can disagree, and
+// this pair did: a course unpublished between the two reads lost its
+// art, and the banner's total time was added up from whichever courses
+// the catalogue happened to have. lms_public_landing carries the area,
+// the tool and the total on the path itself, so there is one answer and
+// nothing to reconcile.
 
-type Props = { path: LearningPath; catalogue: Course[] };
+type Props = { path: LandingPath };
 
-export default function PathBanner({ path, catalogue }: Props) {
-  const bySlug = new Map(catalogue.map((c) => [c.slug, c]));
+export default function PathBanner({ path }: Props) {
   const fan = path.courses.slice(0, 3);
-  const first = path.courses[0];
 
   return (
     <div className="acad-promo">
@@ -45,41 +45,45 @@ export default function PathBanner({ path, catalogue }: Props) {
         {path.description ? <p className="acad-promo__sum">{path.description}</p> : null}
 
         <ol className="acad-promo__steps">
-          {path.courses.map((c, i) => {
-            const full = bySlug.get(c.slug);
-            return (
-              <li key={c.slug}>
-                <span>{String(i + 1).padStart(2, "0")}</span>
-                <CourseCover
-                  variant="square"
-                  course={{
-                    slug: c.slug,
-                    title: c.title,
-                    cover_code: c.cover_code,
-                    area: full?.area ?? null,
-                    tool: full?.tool ?? null,
-                  }}
-                />
-                <Link to={routes.academyCourse.replace(":slug", c.slug)}>
-                  {c.title}
-                  {c.summary ? <small>{c.summary}</small> : null}
-                </Link>
-              </li>
-            );
-          })}
+          {path.courses.map((c, i) => (
+            <li key={c.slug}>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              <CourseCover
+                variant="square"
+                course={{
+                  slug: c.slug,
+                  title: c.title,
+                  cover_code: c.cover_code,
+                  area: c.area,
+                  tool: c.tool,
+                }}
+              />
+              <Link to={routes.academyCourse.replace(":slug", c.slug)}>
+                {c.title}
+                {c.summary ? <small>{c.summary}</small> : null}
+              </Link>
+            </li>
+          ))}
         </ol>
 
+        {/* SEE THE PATH, not "start with the first course".
+            A path is a decision about five courses and an exam, and the
+            page that lays that out is the path page. Sending somebody
+            straight into course one skips the part where they find out
+            what they are agreeing to, including that one of the courses
+            may already be ticked from another path. */}
         <p className="acad-promo__row">
-          {first ? (
-            <Link
-              className="acad-btn acad-btn--auto"
-              to={routes.academyCourse.replace(":slug", first.slug)}
-            >
-              Start with {first.title}
-              <ArrowIcon />
-            </Link>
-          ) : null}
-          <span className="acad-promo__count">{plural(path.courses.length, "course")}</span>
+          <Link
+            className="acad-btn acad-btn--auto"
+            to={routes.academyPath.replace(":slug", path.slug)}
+          >
+            See the path
+            <ArrowIcon />
+          </Link>
+          <span className="acad-promo__count">
+            {plural(path.course_count, "course")}
+            {path.total_seconds > 0 ? ` · ${asLength(path.total_seconds)}` : ""}
+          </span>
         </p>
       </div>
 
@@ -87,23 +91,20 @@ export default function PathBanner({ path, catalogue }: Props) {
           list beside it, so a screen reader reading the fan as well
           would read the path twice. */}
       <div className="acad-fan" aria-hidden="true">
-        {fan.map((c) => {
-          const full = bySlug.get(c.slug);
-          return (
-            <span className="acad-fan__item" key={c.slug}>
-              <CourseCover
-                badge={false}
-                course={{
-                  slug: c.slug,
-                  title: c.title,
-                  cover_code: c.cover_code,
-                  area: full?.area ?? null,
-                  tool: full?.tool ?? null,
-                }}
-              />
-            </span>
-          );
-        })}
+        {fan.map((c) => (
+          <span className="acad-fan__item" key={c.slug}>
+            <CourseCover
+              badge={false}
+              course={{
+                slug: c.slug,
+                title: c.title,
+                cover_code: c.cover_code,
+                area: c.area,
+                tool: c.tool,
+              }}
+            />
+          </span>
+        ))}
       </div>
     </div>
   );

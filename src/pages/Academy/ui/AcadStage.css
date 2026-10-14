@@ -78,6 +78,24 @@
   gap: 56px;
   align-items: center;
 }
+/* The sign up form. The same layout with a wider right column, because
+   it carries twenty questions in two columns rather than three boxes in
+   one. The left column keeps whatever is left, which is still enough
+   for the headline and the three promises. */
+.acad-stage__wrap--form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 660px);
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .acad-stage__wrap--form {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
 @media (max-width: 920px) {
   .acad-stage__wrap--split {
     grid-template-columns: 1fr;

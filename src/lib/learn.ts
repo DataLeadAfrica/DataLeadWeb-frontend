@@ -72,6 +72,46 @@ export type MyCourse = {
   certificate_number: string | null;
   certificate_issued_on: string | null;
   modules: LearnModule[];
+  /**
+   * The course exam, exactly as lms_exam_status returns it, or null
+   * when staff have not made one yet.
+   *
+   * quiz_count and quizzes_passed now mean THIS: one course, one set of
+   * questions that counts, at the end. They used to mean the module
+   * quizzes, which file 16 stopped making.
+   */
+  exam: ExamState | null;
+  /**
+   * Every published path this course is in, with how far this learner
+   * has got through it. The certificate moment says "Counts towards
+   * Data Analytics, 3 of 5" for each one.
+   */
+  paths: { slug: string; name: string; done: number; total: number }[];
+};
+
+/**
+ * The state of a course or path exam.
+ *
+ * The five states are the five lms_exam_status returns, and the page
+ * draws one of five things from them. Anything else it does not know
+ * about shows nothing rather than guessing, because a guess here is a
+ * button that does the wrong thing to somebody's two tries.
+ */
+export type ExamState = {
+  exam_id: string;
+  state: "not_open" | "open" | "in_progress" | "waiting" | "passed" | string;
+  tries_allowed: number;
+  tries_used: number;
+  tries_left: number;
+  lessons_done: number;
+  lessons_total: number;
+  pass_mark: number;
+  question_count: number;
+  minutes: number;
+  attempt_id?: string | null;
+  deadline_at?: string | null;
+  reopens_at?: string | null;
+  best_percent?: number | null;
 };
 
 export type QuizStatus = {
@@ -116,8 +156,21 @@ export type QuestionMark = {
   question_id: string;
   prompt: string;
   was_right: boolean;
+  /**
+   * Why the right answer is right. Only ever filled in when the answer
+   * WAS right: a wrong one gets a chapter to watch instead, because an
+   * explanation of a question somebody is about to try again is the
+   * answer in a sentence.
+   */
   explanation: string;
+  /** Where to watch again, for a question that was missed. */
+  lesson_id: string | null;
+  lesson_title: string | null;
+  chapter_title: string | null;
+  chapter_start: number | null;
 };
+
+export type LessonChapter = { start_seconds: number; title: string };
 
 export type OpenLesson = {
   lesson_id: string;
@@ -128,6 +181,20 @@ export type OpenLesson = {
   duration_seconds: number | null;
   bucket_seconds: number;
   coverage_percent: number;
+  /** The video's own chapters, in order. Empty when nobody has pasted any. */
+  chapters: LessonChapter[];
+  /**
+   * How far through this learner has actually got, and whether they
+   * have been through it once.
+   *
+   * THE SERVER'S ANSWER, not the player's. A chapter can be jumped to
+   * only once it has been reached, and the page greys out the rest from
+   * these two numbers. lms_record_watch refuses to credit a jump that
+   * was not allowed anyway, whatever the page lets somebody press.
+   */
+  furthest_seconds: number;
+  fully_watched: boolean;
+  may_seek: boolean;
 };
 
 export type WeekDay = { day: string; seconds: number; minutes: number };
@@ -198,6 +265,144 @@ export async function getMyCourse(
   }
 }
 
+// ------------------------------------------------------- the exam ---
+
+export type StartedExam = {
+  attempt_id: string;
+  /** The SERVER's deadline. A clock in the page is a clock anybody can change. */
+  deadline_at: string;
+  questions: QuizQuestion[];
+};
+
+export type ExamResult = {
+  percent: number;
+  passed: boolean;
+  certificate_number: string | null;
+  certificate_message: string | null;
+};
+
+export type ExamRewatch = {
+  lesson_id: string;
+  lesson_title: string;
+  chapter_title: string | null;
+  chapter_start: number;
+};
+
+/** The exam's state, for the page that draws one of five things. */
+export async function getExamStatus(examId: string): Promise<ExamState | null> {
+  if (!certDb || !examId) return null;
+  try {
+    const { data, error } = await certDb.rpc("lms_exam_status", { p_exam: examId });
+    const rows = Array.isArray(data) ? data : data ? [data] : [];
+    if (error || rows.length === 0) return null;
+    return rows[0] as ExamState;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Begin a try, or pick up the one already running.
+ *
+ * THE QUESTIONS COME FROM HERE AND NOWHERE ELSE, and they arrive
+ * without is_correct on them: lms_start_exam does not select it. The
+ * browser never holds the answer key, so no amount of looking at the
+ * network tab gives anybody the exam.
+ *
+ * The deadline comes with them and is the SERVER'S. A clock in the page
+ * is a clock somebody can change.
+ */
+export async function startExam(examId: string): Promise<StartedExam | null> {
+  if (!certDb || !examId) return null;
+  try {
+    const { data, error } = await certDb.rpc("lms_start_exam", { p_exam: examId });
+    if (error || !Array.isArray(data) || data.length === 0) return null;
+
+    // One row per question per option, the same shape lms_start_quiz
+    // uses, grouped here rather than in the database. Grouping in SQL
+    // would mean building the questions as jsonb, and the flat shape is
+    // what makes it obvious that is_correct is not in the select list.
+    type Row = {
+      attempt_id: string;
+      deadline_at: string;
+      question_id: string;
+      prompt: string;
+      qtype: string;
+      marks: number;
+      option_id: string | null;
+      option_label: string | null;
+      option_position: number | null;
+    };
+    const rows = data as Row[];
+    const byId = new Map<string, QuizQuestion>();
+    const order: string[] = [];
+
+    for (const r of rows) {
+      if (!byId.has(r.question_id)) {
+        byId.set(r.question_id, {
+          id: r.question_id,
+          prompt: r.prompt,
+          type: r.qtype,
+          marks: r.marks,
+          options: [],
+        });
+        order.push(r.question_id);
+      }
+      if (r.option_id) {
+        byId.get(r.question_id)!.options.push({
+          id: r.option_id,
+          label: r.option_label || "",
+        });
+      }
+    }
+
+    return {
+      attempt_id: rows[0].attempt_id,
+      deadline_at: rows[0].deadline_at,
+      questions: order.map((id) => byId.get(id)!),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Save what has been chosen so far, and get the result. */
+export async function submitExam(
+  attemptId: string,
+  answers: Record<string, string[]>,
+): Promise<ExamResult | null> {
+  if (!certDb || !attemptId) return null;
+  try {
+    const { data, error } = await certDb.rpc("lms_submit_exam", {
+      p_attempt: attemptId,
+      p_answers: answers,
+    });
+    const rows = Array.isArray(data) ? data : data ? [data] : [];
+    if (error || rows.length === 0) return null;
+    return rows[0] as ExamResult;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * What to watch again after a try that did not pass.
+ *
+ * A lesson and a moment in it, never a question and never an answer.
+ * lms_exam_rewatch does not return a question id either, so a second
+ * try cannot be worked out backwards from the first one's advice.
+ */
+export async function examRewatch(attemptId: string): Promise<ExamRewatch[]> {
+  if (!certDb || !attemptId) return [];
+  try {
+    const { data, error } = await certDb.rpc("lms_exam_rewatch", { p_attempt: attemptId });
+    if (error || !Array.isArray(data)) return [];
+    return data as ExamRewatch[];
+  } catch {
+    return [];
+  }
+}
+
 /** Why a quiz can or cannot be started, in words a page can show. */
 export async function getQuizStatus(quizId: string): Promise<QuizStatus | null> {
   if (!certDb || !quizId) return null;
@@ -238,6 +443,42 @@ export async function getMyWeek(): Promise<WeekDay[]> {
     const { data, error } = await certDb.rpc("lms_my_week");
     if (error || !Array.isArray(data)) return [];
     return data as WeekDay[];
+  } catch {
+    return [];
+  }
+}
+
+export type Recommendation = {
+  slug: string;
+  title: string;
+  summary: string;
+  cover_code: string | null;
+  tool: string | null;
+  area: string | null;
+  kind: string | null;
+  price_kobo: number | null;
+  /** Why this one, in words, from the database. */
+  reason: string;
+};
+
+/**
+ * Up to three courses to take next, each with its reason.
+ *
+ * RULE BASED, NEVER PAID. The reasons are the four the brief names:
+ * next in a path, people who finished this often take that, it matches
+ * a goal they gave us, or it is free and a good first course. There is
+ * no field anywhere for promoting a course, and the page says so in
+ * words underneath, because a recommendation nobody can see the
+ * workings of is an advert.
+ *
+ * Never a course they already hold.
+ */
+export async function getRecommendations(): Promise<Recommendation[]> {
+  if (!certDb) return [];
+  try {
+    const { data, error } = await certDb.rpc("lms_my_recommendations");
+    if (error || !Array.isArray(data)) return [];
+    return data as Recommendation[];
   } catch {
     return [];
   }

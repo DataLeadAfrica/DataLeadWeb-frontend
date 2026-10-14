@@ -53,7 +53,7 @@ const MAX_CELLS = 120;
 export default function WatchTape({
   durationSeconds,
   watchedSeconds,
-  unlockPercent = 92,
+  unlockPercent = 100,
   title,
   note,
   compact = false,
@@ -65,11 +65,10 @@ export default function WatchTape({
     0,
     Math.min(buckets, Math.round(watchedSeconds / BUCKET)),
   );
-  // ROUNDED DOWN, never to nearest. This number sits next to the line
-  // marking where the lesson check opens, and 91.67 rounded to nearest
-  // is 92: the page would say "92% watched" beside a 92% line and a
-  // button that still refuses. Rounding down can only understate, and
-  // the moment it reaches the mark the button really is open.
+  // ROUNDED DOWN, never to nearest. 99.6 rounded to nearest is 100, and
+  // the page would say "100% watched" beside a button that still
+  // refuses. Rounding down can only understate, and the moment it says
+  // 100 the last cell really is filled.
   const percent = timed
     ? Math.min(100, Math.floor((watchedSeconds / durationSeconds) * 100))
     : 0;
@@ -102,15 +101,29 @@ export default function WatchTape({
           className="acad-tape__cells"
           style={{ "--acad-tape-cells": drawn } as React.CSSProperties}
           role="img"
-          aria-label={`${percent}% watched. The lesson check opens at ${unlockPercent}%.`}
+          aria-label={
+            unlockPercent >= 100
+              ? `${percent} percent watched. The lesson check opens at the end.`
+              : `${percent} percent watched. The lesson check opens at ${unlockPercent} percent.`
+          }
         >
           {cells}
-          <span
-            className="acad-tape__mark"
-            style={{ left: `${unlockPercent}%` }}
-            data-mark={`${unlockPercent}%`}
-            aria-hidden="true"
-          />
+          {/* THE LINE IS GONE WHEN THE MARK IS THE END, which from file
+              16 is every video lesson. A line drawn at 100 percent sits
+              exactly on the last cell's right hand edge, where it reads
+              as the end of the tape rather than as a mark on it, and it
+              labels itself "100%" beside a tape that is 100 percent
+              long. The rule is said in words underneath instead.
+              The line is kept for anything that still unlocks early,
+              because a mark in the middle of a tape does need drawing. */}
+          {unlockPercent < 100 ? (
+            <span
+              className="acad-tape__mark"
+              style={{ left: `${unlockPercent}%` }}
+              data-mark={`${unlockPercent}%`}
+              aria-hidden="true"
+            />
+          ) : null}
         </div>
       ) : (
         <div className="acad-tape__blank" />

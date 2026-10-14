@@ -24,6 +24,8 @@ import {
 import {
   clock,
   getMyCertificates,
+  getRecommendations,
+  type Recommendation,
   getMyCourses,
   getMyWeek,
   lessonPath,
@@ -32,6 +34,7 @@ import {
   type MyCourseRow,
   type WeekDay,
 } from "../../../lib/learn";
+import Popup from "../ui/Popup";
 
 // My learning. The full bento, as of Phase 4.
 //
@@ -64,6 +67,7 @@ export default function AcademyMe() {
 
   const [courses, setCourses] = useState<MyCourseRow[]>([]);
   const [certs, setCerts] = useState<MyCertificate[]>([]);
+  const [picks, setPicks] = useState<Recommendation[]>([]);
   const [week, setWeek] = useState<WeekDay[]>([]);
   // The public catalogue, for ONE purpose: the picture on each of your
   // courses. lms_my_courses does not return the area or the tool, and
@@ -90,6 +94,12 @@ export default function AcademyMe() {
       setTrouble(!got.ok);
       setCourses(got.courses);
       setLoaded(true);
+    });
+    // Up to three courses to take next, each with its reason. Fetched
+    // on its own: it is the least important thing on the page and must
+    // never hold the rest of it up.
+    getRecommendations().then((r) => {
+      if (alive) setPicks(r);
     });
     getMyCertificates().then((c) => {
       if (alive) setCerts(c);
@@ -386,6 +396,61 @@ export default function AcademyMe() {
           </article>
         ) : null}
       </div>
+
+      {/* ------------------------------------------- what to learn next
+          RULE BASED, AND THE PAGE SAYS SO. Each card carries the reason
+          the database gave for it: next in a path, people who finished
+          one often take another, it matches a goal they told us, or it
+          is free and a good first course. The line underneath is not
+          decoration: a list of courses with no workings on show is an
+          advert, and this one is not for sale. */}
+      {picks.length > 0 ? (
+        <section className="acad-band acad-next">
+          <div className="acad-band__head">
+            <div>
+              <p className="acad-band__eyebrow">Recommended for you</p>
+              <h2 className="acad-h2">What to learn next</h2>
+            </div>
+          </div>
+
+          <div className="acad-next__grid">
+            {picks.map((p) => (
+              <Link
+                key={p.slug}
+                className="acad-next__card"
+                to={routes.academyCourse.replace(":slug", p.slug)}
+              >
+                <CourseCover
+                  course={{
+                    slug: p.slug,
+                    title: p.title,
+                    tool: p.tool,
+                    area: p.area,
+                    cover_code: p.cover_code,
+                  }}
+                  variant="square"
+                  badge={false}
+                />
+                <span className="acad-next__words">
+                  {p.area ? <span className="acad-next__area">{p.area}</span> : null}
+                  <b>{p.title}</b>
+                  <small>{p.reason}</small>
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <p className="acad-next__why">
+            Picked from what you have finished, the paths you are on and the goal
+            you gave us. Never from what anybody paid to show you.
+          </p>
+        </section>
+      ) : null}
+
+      {/* The one popup for this page, if there is one. A lesson, a
+          check and an exam are not on the list, in the database as
+          well as here. */}
+      <Popup place="me" />
     </AcadStage>
   );
 }

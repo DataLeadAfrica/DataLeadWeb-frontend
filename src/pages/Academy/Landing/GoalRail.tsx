@@ -101,6 +101,77 @@ export default function GoalRail({ courses, loaded }: Props) {
     el.scrollBy({ left: by * el.clientWidth, behavior: smooth ? "smooth" : "auto" });
   }
 
+  // ------------------------------------------------- it moves by itself
+  //
+  // One card every 4.2 seconds, and back to the beginning at the end.
+  //
+  // WHY IT MOVES AT ALL. The rail holds more courses than fit, and a row
+  // that is cut off at the right edge reads as the end of the row unless
+  // something shows otherwise. The arrows say so on a laptop; on a phone
+  // there are no arrows, and the only thing that says "there is more" is
+  // the sliver of the next card and this.
+  //
+  // IT STOPS THE MOMENT SOMEBODY IS USING IT: a pointer over it, the
+  // keyboard focus inside it, or a finger on it. Moving the thing
+  // somebody is reading is the single worst behaviour a carousel has,
+  // and it is the reason most of them are hated.
+  //
+  // AFTER A TOUCH IT STAYS STOPPED FOR SIX SECONDS. A finger does not
+  // "leave" the way a mouse does: there is no pointerleave to wait for,
+  // so touching it once would otherwise stop it for exactly as long as
+  // the finger was down.
+  //
+  // IT DOES NOT MOVE AT ALL WITH REDUCED MOTION, and it does not move in
+  // a tab nobody is looking at. Not slower, not smaller: not at all. A
+  // person who has asked their system for no motion has asked for no
+  // motion.
+  //
+  // THERE IS NO PAUSE BUTTON. A pause button is what a carousel offers
+  // instead of stopping when you touch it, and it is a button that does
+  // nothing for everybody who never notices it. This stops on its own,
+  // every way in.
+  const [held, setHeld] = useState(false);
+  const holdUntil = useRef(0);
+
+  useEffect(() => {
+    if (held) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const id = window.setInterval(() => {
+      const el = track.current;
+      if (!el) return;
+      if (document.hidden) return;
+      if (Date.now() < holdUntil.current) return;
+
+      const card = el.firstElementChild as HTMLElement | null;
+      if (!card) return;
+      const step = card.getBoundingClientRect().width + 16;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 1) return;
+
+      el.scrollTo({
+        left: el.scrollLeft >= max - 4 ? 0 : el.scrollLeft + step,
+        behavior: "smooth",
+      });
+    }, 4200);
+
+    return () => window.clearInterval(id);
+  }, [held, shown.length]);
+
+  /** Stop while a pointer, the keyboard or a finger is on the rail. */
+  const holdProps = {
+    onPointerEnter: () => setHeld(true),
+    onPointerLeave: () => setHeld(false),
+    onFocus: () => setHeld(true),
+    onBlur: () => setHeld(false),
+    onTouchStart: () => setHeld(true),
+    onTouchEnd: () => {
+      // Six seconds, then it may start again. A finger has no "leave".
+      holdUntil.current = Date.now() + 6000;
+      setHeld(false);
+    },
+  };
+
   if (loaded && courses.length === 0) return null;
 
   return (
@@ -139,7 +210,9 @@ export default function GoalRail({ courses, loaded }: Props) {
         </div>
       ) : null}
 
-      <div className="acad-crail">
+      {/* The hold handlers go on the WRAPPER, not the track, so the
+          arrows and anything else inside it stop the slide too. */}
+      <div className="acad-crail" {...holdProps}>
         {!loaded ? (
           <div className="acad-crail__track" aria-hidden="true">
             <div className="acad-skeleton" />

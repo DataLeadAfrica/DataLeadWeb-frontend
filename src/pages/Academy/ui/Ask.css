@@ -1,0 +1,214 @@
+/* The About you controls: a dropdown, a plain box and a row of chips.
+ *
+ * Two columns on a laptop, one on a phone. The grid is on the section
+ * rather than on each control, so a question that does not apply simply
+ * is not there and the ones after it close the gap. Nothing is left
+ * holding an empty column.
+ */
+
+.acad-asks {
+  margin-top: 22px;
+}
+
+.acad-asks__title {
+  margin: 0 0 14px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--acad-line);
+}
+
+.acad-asks__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .acad-asks__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* A question that needs the whole width: the goal chips, the disability
+   question, and anything with a long label. */
+.acad-ask--wide {
+  grid-column: 1 / -1;
+}
+
+.acad-ask {
+  min-width: 0;
+}
+
+.acad-ask__label {
+  display: block;
+  margin: 0 0 7px;
+  font-family: var(--acad-f-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--acad-text);
+}
+
+.acad-ask__note {
+  margin-left: 8px;
+  font-weight: 400;
+  font-size: 12.5px;
+  color: var(--acad-faint);
+}
+
+.acad-ask__hint {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--acad-faint);
+}
+
+/* ------------------------------------------------------------ a box */
+
+.acad-ask__box,
+.acad-ask__pick {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface);
+  font-family: var(--acad-f-body);
+  font-size: 15px;
+  color: var(--acad-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.acad-ask__box:focus-visible,
+.acad-ask__pick:focus-visible {
+  outline: none;
+  border-color: var(--acad-signal);
+  box-shadow: 0 0 0 3px var(--acad-signal-wash);
+}
+
+.acad-ask__box.is-bad,
+.acad-ask__pick.is-bad {
+  border-color: var(--acad-bad);
+  box-shadow: 0 0 0 3px rgba(201, 52, 52, 0.12);
+}
+
+.acad-ask__box:disabled,
+.acad-ask__pick:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------- a dropdown */
+
+.acad-ask__wrap {
+  position: relative;
+}
+
+.acad-ask__pick {
+  /* The browser's own arrow is a different shape and position on every
+     platform, and on Safari it sits inside a grey well. One drawn arrow
+     looks the same everywhere. */
+  appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.acad-ask__caret {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  fill: none;
+  stroke: var(--acad-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------- the chips */
+
+.acad-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.acad-answer {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-family: var(--acad-f-body);
+  font-size: 14px;
+  color: var(--acad-text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.acad-answer:hover {
+  border-color: var(--acad-signal-soft);
+}
+
+.acad-answer:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+/* The dot, not a tick: a tick in a pill reads as "done" and these are
+   answers rather than tasks. It only takes up room once it is on, so an
+   unchosen chip is the width of its words. */
+.acad-answer__dot {
+  width: 0;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acad-signal);
+  opacity: 0;
+  transition: width 0.15s ease, opacity 0.15s ease;
+}
+
+.acad-answer.is-on {
+  border-color: var(--acad-signal);
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font-weight: 500;
+}
+
+.acad-answer.is-on .acad-answer__dot {
+  width: 7px;
+  opacity: 1;
+}
+
+/* At the limit. Faded rather than disabled, because a disabled button
+   says nothing about why it cannot be pressed, and the way to choose a
+   different one is to turn one off. */
+.acad-answer.is-full {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.acad-answers.is-bad .acad-answer {
+  border-color: var(--acad-bad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-answer,
+  .acad-answer__dot,
+  .acad-ask__box,
+  .acad-ask__pick {
+    transition: none;
+  }
+}

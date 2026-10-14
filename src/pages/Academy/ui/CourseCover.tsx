@@ -8,6 +8,7 @@ import {
   coverCode,
   coverName,
   coverNameSize,
+  coverNameWraps,
   type CoverCourse,
 } from "../../../../api/_cover-art.js";
 
@@ -113,8 +114,14 @@ export default function CourseCover({
         <i className={key === "pr" ? "dla-mark dla-mark--pill" : "dla-mark"} />
         Data-Lead Academy
       </span>
+      {/* A name with a space in it and more than nine characters goes
+          on two lines, sized from its longest word. "Looker Studio"
+          and "Research methods" used to come out as a two letter code,
+          which tells a reader nothing. */}
       <b
-        className="acad-cover__name"
+        className={
+          "acad-cover__name" + (coverNameWraps(name) ? " acad-cover__name--two" : "")
+        }
         style={{ fontSize: `${coverNameSize(name)}cqw` }}
       >
         {name}

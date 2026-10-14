@@ -30,3 +30,4 @@ export declare function coverArt(course: CoverCourse): string;
 export declare function coverCode(course: CoverCourse): string;
 export declare function coverName(course: CoverCourse): string;
 export declare function coverNameSize(name: string): number;
+export declare function coverNameWraps(name: string): boolean;

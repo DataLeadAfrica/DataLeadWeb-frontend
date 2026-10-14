@@ -579,3 +579,274 @@ body:has(.acad-stage--focus) .wa-float {
     transition: none !important;
   }
 }
+
+/* ------------------------------------------------- the sign up form
+   The About you half. One form, four short sections, and a line at the
+   end. The sections themselves are in ui/Ask.css. */
+
+.acad-su__about {
+  margin: 26px 0 0;
+  padding-top: 22px;
+  border-top: 1px dashed var(--acad-line-strong);
+  font-family: var(--acad-f-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--acad-text);
+}
+
+.acad-su__end {
+  margin-top: 26px;
+}
+
+/* The one line of agreement. A checkbox and a sentence, no paragraph of
+   explanation: the brief asks for no "why we ask" text anywhere, and a
+   wall of reassurance beside a checkbox reads as something to be
+   reassured about. */
+.acad-agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--acad-muted);
+  cursor: pointer;
+}
+
+.acad-agree input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--acad-signal);
+  cursor: pointer;
+}
+
+.acad-agree a {
+  color: var(--acad-signal-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------------------------------------------- the three up cards
+
+   "Watch, check, certify" on the landing page and "How certificates
+   work" on a learning path. Three cards across on a laptop, one under
+   the other below 860, where three columns would be 240 pixels each
+   and a sentence would be four words a line. */
+
+.acad-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+@media (max-width: 860px) {
+  .acad-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.acad-step {
+  padding: 22px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background: var(--acad-surface);
+}
+.acad-step__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.acad-step__n {
+  font: 600 12px/1 var(--acad-f-mono);
+  letter-spacing: 0.1em;
+  color: var(--acad-signal-deep);
+}
+.acad-step__icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--acad-signal-text);
+  fill: none;
+  stroke-width: 1.6;
+}
+.acad-step p {
+  margin: 8px 0 0;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+/* ----------------------------------------- the catalogue's two toggles
+
+   "Free to start" and "Under 90 minutes". They replaced a sort
+   dropdown, which was a question nobody arrives with: the order of a
+   catalogue of twenty courses is not what stops somebody choosing.
+
+   They look like the chips on the sign up form on purpose. Both are the
+   same gesture, one tap to narrow something down, and a site that draws
+   the same gesture two ways is a site somebody has to learn twice. */
+
+.acad-toolbar__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.acad-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  font-family: var(--acad-f-body);
+  font-size: 13.5px;
+  color: var(--acad-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.acad-toggle:hover {
+  border-color: var(--acad-signal-soft);
+}
+
+.acad-toggle:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-toggle__dot {
+  width: 0;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acad-signal);
+  opacity: 0;
+  transition: width 0.15s ease, opacity 0.15s ease;
+}
+
+.acad-toggle.is-on {
+  border-color: var(--acad-signal);
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font-weight: 500;
+}
+
+.acad-toggle.is-on .acad-toggle__dot {
+  width: 7px;
+  opacity: 1;
+}
+
+/* The small picture on an area filter. */
+.acad-toolbar__aico {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-toggle,
+  .acad-toggle__dot {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------ what to learn next
+
+   Three cards, each carrying the reason the database gave for it. The
+   reason is in the signal colour and is the second thing read after the
+   title, because it is the part that makes this a recommendation rather
+   than a list. */
+
+.acad-next__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+@media (max-width: 900px) {
+  .acad-next__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.acad-next__card {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.acad-next__card:hover {
+  border-color: var(--acad-signal-soft);
+  transform: translateY(-1px);
+}
+
+.acad-next__card:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-next__card .acad-cover {
+  width: 52px;
+  height: 52px;
+  border-radius: 11px;
+}
+
+.acad-next__words {
+  min-width: 0;
+}
+
+.acad-next__area {
+  display: block;
+  font-family: var(--acad-f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-next__words b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--acad-text);
+}
+
+.acad-next__words small {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--acad-signal-text);
+}
+
+.acad-next__why {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--acad-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acad-next__card {
+    transition: none;
+  }
+}

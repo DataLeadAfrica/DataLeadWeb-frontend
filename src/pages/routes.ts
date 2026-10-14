@@ -85,6 +85,7 @@ export const routes = {
   academy: "/lms",
   academyCourses: "/lms/courses",
   academyCourse: "/lms/courses/:slug",
+  academyPath: "/lms/paths/:slug",
   academySignUp: "/lms/sign-up",
   academySignIn: "/lms/sign-in",
   academyReset: "/lms/reset",
@@ -105,4 +106,5 @@ export const routes = {
   academyLesson: "/lms/learn/:slug/:lessonId",
   academyQuiz: "/lms/learn/:slug/quiz/:quizId",
   academyComplete: "/lms/learn/:slug/complete",
+  academyExam: "/lms/learn/:slug/exam",
 };

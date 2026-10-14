@@ -663,7 +663,11 @@ test("the landing page falls back silently when the settings read fails", async 
     const res = await handler(request("/lms"));
     assert.equal(res.status, 200);
     const html = await res.text();
-    assert.match(html, /<h1>Learn one tool at a time\.<\/h1>/);
+    // The fallback in api/_seo-rules.js, which step 17 of file 16 keeps
+    // in step with the database's own default. If these two ever
+    // disagree, the page a crawler reads and the page a person reads
+    // say different things.
+    assert.match(html, /<h1>Learn one skill at a time\.<\/h1>/);
     assert.doesNotMatch(html, /undefined/);
   } finally {
     restore();

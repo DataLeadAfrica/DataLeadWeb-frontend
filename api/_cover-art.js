@@ -481,10 +481,30 @@ export function coverArt(course) {
     );
   }
 
+  // A CLEAR ZONE FOR THE WORDS.
+  //
+  // The art is drawn through translate(46 16) scale(.86), which moves
+  // the whole picture right and down and shrinks it a little. What that
+  // frees is a band about forty five units wide down the left and
+  // sixteen along the top, and that band is exactly where the two
+  // pieces of writing sit: the Data-Lead Academy eyebrow at the top
+  // left and the tool name at the bottom left.
+  //
+  // WHY IT WAS NEEDED. Both are real HTML over the top of the picture,
+  // so they are always legible as shapes, but a scatter plot or a bar
+  // chart running underneath a word makes it hard to read even at full
+  // contrast, and the area art is what tells you which area the course
+  // is in. Pushed over, both are readable and the art still reads as
+  // the same picture.
+  //
+  // The viewBox does not change, so nothing that measures or crops the
+  // cover has to know about this.
   return (
     `<svg class="acad-cover__art"${sizeAttr(c)} viewBox="${box}" ` +
     `preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">` +
+    `<g transform="translate(46 16) scale(.86)">` +
     ART[key](random, gridFor(c.variant, key)) +
+    `</g>` +
     `</svg>`
   );
 }
@@ -509,16 +529,67 @@ export function coverCode(course) {
 /**
  * What goes in the big slot at the bottom left of a cover.
  *
- * The tool name, unless there is not one or it is too long to fit on
- * one line at a readable size, in which case the two letter code. The
- * cut off is twelve characters: "KoboToolbox" is eleven and fits,
- * "NVivo for qualitative research" is a title rather than a tool and
- * would have to be shrunk past readable.
+ * The tool name, unless there is not one or it cannot be made to fit at
+ * a readable size, in which case the two letter code.
+ *
+ * A NAME WITH A SPACE IN IT IS ALLOWED TO BE LONGER, because it can go
+ * on two lines. "Looker Studio" is thirteen characters and used to come
+ * out as "LO"; so did "Research methods". Both are now drawn in full,
+ * wrapped, because the thing somebody is looking for on a cover is the
+ * name of the tool.
+ *
+ * A single word still has to fit on one line, because there is nowhere
+ * to break it: "KoboToolbox" is eleven and fits, and anything past
+ * twelve would have to be shrunk past readable.
  */
 export function coverName(course) {
   const tool = String((course || {}).tool || "").trim();
-  if (!tool || tool.length > 12) return coverCode(course);
-  return tool;
+  if (!tool) return coverCode(course);
+  if (coverNameWraps(tool)) {
+    // TWO lines, so: two words, each of which fits on one, and
+    // eighteen characters in all. "Research methods" is sixteen and
+    // fits. "Microsoft Power Automate" is three words and twenty four,
+    // which is a sentence rather than a tool, and gets the code.
+    return tool.split(/\s+/).length === 2 &&
+      tool.length <= 18 &&
+      longestWord(tool).length <= 11
+      ? tool
+      : coverCode(course);
+  }
+  return tool.length > 12 ? coverCode(course) : tool;
+}
+
+/** The longest word in a name, which is what has to fit on a line. */
+function longestWord(name) {
+  return String(name || "")
+    .split(/\s+/)
+    .reduce((a, b) => (b.length > a.length ? b : a), "");
+}
+
+/**
+ * Does this name go on two lines?
+ *
+ * Longer than nine characters AND with a space to break at. Nine
+ * because "Power BI" is eight and looks right on one line, and
+ * "Looker Studio" is thirteen and does not.
+ */
+export function coverNameWraps(name) {
+  const s = String(name || "");
+  return s.length > 9 && /\s/.test(s);
+}
+
+/** The one line size for a name of this many characters. */
+function oneLineSize(n) {
+  if (n <= 4) return 15;
+  // Five letters a little smaller than four. "STATA" and "NVivo" were
+  // sitting a touch proud of the cover's bottom left corner.
+  if (n <= 5) return 13;
+  if (n <= 6) return 12.5;
+  if (n <= 7) return 11;
+  if (n <= 8) return 9.8;
+  if (n <= 9) return 8.8;
+  if (n <= 10) return 8;
+  return 7.3;
 }
 
 /**
@@ -528,15 +599,17 @@ export function coverName(course) {
  * somebody chose by looking at them. cqw means it scales with the
  * cover, so the same number works on a 300 pixel card and a 1200 pixel
  * share picture.
+ *
+ * A WRAPPING NAME IS SIZED FROM ITS LONGEST WORD, not from the whole
+ * name, because the whole name is never on one line. Then 80 percent of
+ * that, because two lines need the room that one line did not.
+ * Sizing "Looker Studio" as thirteen characters would have given 7.3,
+ * which is smaller than the code it replaced.
  */
 export function coverNameSize(name) {
-  const n = String(name || "").length;
-  if (n <= 4) return 15;
-  if (n <= 5) return 14;
-  if (n <= 6) return 12.5;
-  if (n <= 7) return 11;
-  if (n <= 8) return 9.8;
-  if (n <= 9) return 8.8;
-  if (n <= 10) return 8;
-  return 7.3;
+  const s = String(name || "");
+  if (coverNameWraps(s)) {
+    return Math.round(oneLineSize(longestWord(s).length) * 0.8 * 10) / 10;
+  }
+  return oneLineSize(s.length);
 }
