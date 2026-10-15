@@ -1,6 +1,42 @@
 -- =====================================================================
 -- show-test-course.sql
 --
+-- ONCE FILE 17 HAS BEEN RUN, THIS FILE IS REFUSED. Measured, not
+-- guessed: file 17 makes lms_publish_course run the nine publish
+-- checks, and the Phase 4 test course fails three of them.
+--
+--   7  Every video lesson has a lesson check     3 of 3 have no check
+--   8  Has a certificate programme               it has none
+--   9  The course exam has enough questions      it has no exam
+--
+-- The last line then reads:
+--
+--   published | message
+--   f         | This course is not ready yet, followed by the three
+--               checks above, named in order.
+--
+-- THAT IS THE CHECKS WORKING, NOT A FAULT. The test course was never a
+-- finished course: it is three lessons with no checks, no exam and no
+-- programme, which is exactly what it was for. A gate that let it
+-- through would let anything through.
+--
+-- SO WHEN DO YOU RUN THIS? Before file 17, and not after. If the test
+-- course is needed live once file 17 is in, there are two honest ways:
+--
+--   1. Finish it. Give it a programme, write a check on each lesson and
+--      fill its exam bank, and it will publish like any other course.
+--      That is a day's work for a course nobody is meant to take.
+--
+--   2. Put it live by hand, which skips the checks on purpose:
+--
+--        update lms_courses
+--           set status = 'published', published_at = coalesce(published_at, now())
+--         where slug = 'p4-test-course'
+--
+--      Nothing is logged by that, because nothing called the function
+--      that logs. Use it for a test and hide the course again after,
+--      with the line further down.
+--
 -- Publishes the Phase 4 test course again, so the Phase 5 test can be
 -- run. It was hidden on 12 October because the Academy had reached the
 -- live site by accident and anybody could have signed up for it and
@@ -18,7 +54,7 @@
 -- The last line should say: p4-test-course | published
 --
 -- HIDE IT AGAIN when the test is finished:
---   update lms_courses set status = 'draft' where slug = 'p4-test-course';
+--   update lms_courses set status = 'draft' where slug = 'p4-test-course'
 -- =====================================================================
 
 begin;

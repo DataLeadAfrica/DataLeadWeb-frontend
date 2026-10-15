@@ -1,0 +1,1505 @@
+/* ===========================================================================
+   The control room's own chrome: the rail, the top bar, panels, tables,
+   the queue, the drawer, the command bar and the phone tabs.
+
+   IT REUSES THE ACADEMY'S DESIGN SYSTEM RATHER THAN BRINGING ITS OWN.
+   academy.css already declares --acad-signal as #f56e0f, --acad-text as
+   #16151b and the three faces, which are the same values the control room
+   mockup uses. A second set of tokens saying the same things would be two
+   places to change the orange, and the day they disagreed the staff side
+   would quietly stop looking like the site it runs.
+
+   So every page here sits inside .acad, exactly as a learner page does, and
+   this file adds only what a learner page has no use for.
+
+   THE TOKENS ARE ON .acad TOO, never on :root. That is academy.css's first
+   rule and it is not relaxed here: portal.css rewrites :root, Vite bundles
+   every stylesheet together, and anything declared globally would leak into
+   the staff portal the moment somebody opened it.
+   =========================================================================== */
+
+/* EVERY ICON IN HERE HAS A SIZE AND NO FILL, declared once.
+   Icons.tsx draws plain <svg viewBox="0 0 24 24"> with no width, no
+   height and no fill, which is right: the thing around an icon should
+   decide how big it is and what colour it takes. But "the thing around
+   it" has to actually say so, and several places did not. An svg with
+   no size takes its natural one, roughly 300 pixels, and fills solid
+   black by default, so the queue on the Overview came out as two black
+   arrowheads the size of the card.
+
+   This is the floor. Anything that wants a different size says so
+   after it. */
+.acad .stu svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad .stu {
+  --stu-rail: 248px;
+  --stu-top: 60px;
+  --stu-warn: #b97806;
+  --stu-warn-soft: rgba(214, 146, 9, 0.13);
+  --stu-bad-soft: rgba(201, 52, 52, 0.09);
+
+  min-height: 100vh;
+  background: var(--acad-bg);
+}
+
+/* --------------------------------------------------------------- shell --- */
+
+.stu__wrap {
+  display: grid;
+  grid-template-columns: var(--stu-rail) minmax(0, 1fr);
+  align-items: start;
+}
+
+.stu__main {
+  min-width: 0;
+  padding: 26px 30px 80px;
+}
+
+@media (max-width: 1100px) {
+  .stu__wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stu__main {
+    padding: 20px 18px 96px;
+  }
+}
+
+@media (max-width: 620px) {
+  .stu__main {
+    padding: 16px 16px 96px;
+  }
+}
+
+/* ----------------------------------------------------------- the top bar */
+
+.stu__top {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: var(--stu-top);
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--acad-line);
+  background: color-mix(in srgb, var(--acad-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.stu__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 160px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.stu__brand b {
+  font-family: var(--acad-f-display);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.stu__brand span {
+  font-family: var(--acad-f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.stu__find {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 520px;
+  padding: 9px 14px;
+  border: 1px solid var(--acad-line);
+  border-radius: 999px;
+  background: var(--acad-surface-2);
+  color: var(--acad-muted);
+  font: 400 13.5px/1 var(--acad-f-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stu__find:hover {
+  border-color: var(--acad-line-strong);
+}
+
+.stu__find svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.stu__find kbd {
+  margin-left: auto;
+  padding: 2px 7px;
+  border: 1px solid var(--acad-line);
+  border-radius: 6px;
+  background: var(--acad-surface);
+  font: 500 10px/1.5 var(--acad-f-mono);
+  color: var(--acad-faint);
+}
+
+.stu__me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.stu__av {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font: 500 12px/1 var(--acad-f-mono);
+}
+
+.stu__me div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.stu__me b {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.stu__me small {
+  font-family: var(--acad-f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+/* THE TOP BAR IS THE THING THAT OVERFLOWED. Three children with their
+   own minimum widths, on a 390 pixel phone, came to 582: the brand had
+   min-width 160, the find button had flex 1 with its own text, and the
+   row holding the avatar and the View the Academy chip added the rest.
+   The page then scrolled sideways by 192 pixels on EVERY view, which is
+   how a single wrong rule in the chrome shows up eleven times.
+
+   Below 760 the brand loses its subtitle and its minimum, the find
+   button keeps only its icon and its shortcut, and the View the Academy
+   chip goes: it is a link to a page one tap away in the tabs below. */
+@media (max-width: 760px) {
+  .stu__me div,
+  .stu__brand span,
+  .stu__find,
+  .stu__me .stu__chip {
+    display: none;
+  }
+  .stu__top {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+  .stu__brand {
+    min-width: 0;
+  }
+  .stu__brand b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The search still has to be reachable, so it becomes an icon in the
+     corner rather than disappearing with the bar it was in. */
+  .acad .stu .stu__findsmall {
+    display: grid;
+  }
+}
+
+/* Above 760 there is a full find button in the bar, so this one is not
+   drawn. Stated after the media query, and stronger, for the same
+   reason as the rail. */
+@media (min-width: 761px) {
+  .acad .stu .stu__findsmall {
+    display: none;
+  }
+}
+
+/* Only below 760. Above it, the full find button is there and this
+   would be a second one beside it.
+   
+   display IS NOT SET HERE. It was, and it was the same mistake as the
+   rail: this block sits after the media query that turns the button on,
+   both rules were one class strong, and the later one won. The button
+   was never shown, so on a phone there was no way to reach the command
+   bar at all. The media query below now owns display outright. */
+.stu__findsmall {
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border: 1px solid var(--acad-line);
+  border-radius: 50%;
+  background: var(--acad-surface);
+  cursor: pointer;
+}
+
+.stu__findsmall svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--acad-text);
+  stroke-width: 2;
+}
+
+/* ------------------------------------------------------------- the rail */
+
+.stu__rail {
+  position: sticky;
+  top: var(--stu-top);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  height: calc(100vh - var(--stu-top));
+  padding: 22px 14px;
+  overflow-y: auto;
+  border-right: 1px solid var(--acad-line);
+  background: var(--acad-surface);
+}
+
+/* THE RAIL IS GONE BELOW 1100, AND THIS RULE HAS TO COME AFTER THE ONE
+   ABOVE, not before it.
+   
+   It was written before it. Both rules were one class strong, so the
+   later one won, the rail kept display: flex, and on a phone it covered
+   the whole screen and stayed there as you scrolled: sticky, full
+   height, opaque. The page underneath was never seen.
+   
+   Nothing caught it. The sideways scroll check passed because nothing
+   DOES scroll sideways when a panel is simply on top of the page, and
+   the screenshots were full page, which stretches the window tall
+   enough that a 100vh sticky element no longer covers what is below it.
+   A fault that only exists in a real window is one only a real window
+   finds.
+   
+   So it is written twice over: after the rule it overrides, AND with
+   .acad in front of it so it is stronger as well as later. Either alone
+   would do. Both means the next person who moves a block does not
+   silently bring it back. tests/control-room.test.mjs checks the order
+   and a Chromium run checks the rail is really not visible at 390 and
+   1024. */
+@media (max-width: 1100px) {
+  .acad .stu .stu__rail {
+    display: none;
+  }
+}
+
+.stu__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stu__group > p {
+  margin: 0 0 6px 12px;
+  font: 500 9.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.stu__nav {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: var(--acad-r-s);
+  color: var(--acad-text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.stu__nav svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--acad-muted);
+}
+
+.stu__nav:hover {
+  background: var(--acad-surface-2);
+}
+
+.stu__nav[aria-current="page"] {
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font-weight: 500;
+}
+
+.stu__nav[aria-current="page"] svg {
+  color: var(--acad-signal-text);
+}
+
+/* The count on a nav item. It is COUNTED, never typed: every one of
+   these comes from a number the database returned, so a badge cannot
+   say 3 when there are 4. */
+.stu__n {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--acad-surface-3);
+  font: 500 10.5px/1.6 var(--acad-f-mono);
+  text-align: center;
+  color: var(--acad-muted);
+}
+
+.stu__n.is-hot {
+  background: var(--acad-signal);
+  color: #fff;
+}
+
+.stu__foot {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px dashed var(--acad-line);
+}
+
+.stu__foot a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  color: var(--acad-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.stu__foot a:hover {
+  color: var(--acad-text);
+}
+
+.stu__foot p {
+  margin: 8px 12px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--acad-faint);
+}
+
+/* ------------------------------------------------------- the phone tabs */
+
+.stu__tabs {
+  position: fixed;
+  z-index: 35;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  border-top: 1px solid var(--acad-line);
+  background: color-mix(in srgb, var(--acad-surface) 95%, transparent);
+  backdrop-filter: blur(10px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (max-width: 1100px) {
+  .stu__tabs {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+}
+
+/* .acad .stu__tab, not .stu__tab, and the extra class is the whole
+   point. academy.css has
+   
+     .acad :where(button, input) { font: inherit }
+   
+   and :where() contributes nothing, so that rule is one class strong,
+   exactly like a bare .stu__tab. A tie is settled by source order, and
+   the order of two stylesheets in a bundle is not something this file
+   gets to decide. So four of the five tabs were links at 10.5px and the
+   fifth, which is a button, inherited the body's 15px and sat there
+   half again as large.
+   
+   Being stronger rather than later is the fix that does not depend on
+   which file Vite happens to put first. */
+.acad .stu .stu__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 4px 10px;
+  border: 0;
+  background: none;
+  color: var(--acad-muted);
+  font: 400 10.5px/1.2 var(--acad-f-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.acad .stu .stu__tab svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acad .stu .stu__tab[aria-current="page"] {
+  color: var(--acad-signal-text);
+}
+
+/* ------------------------------------------------------- page headings */
+
+.stu__h {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.stu__h > div:first-child {
+  min-width: 0;
+}
+
+.stu__eyebrow {
+  margin: 0 0 6px;
+  font: 500 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--acad-signal-text);
+}
+
+.stu__h h1 {
+  margin: 0;
+  font-family: var(--acad-f-display);
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.stu__h p {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--acad-muted);
+}
+
+.stu__acts {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 760px) {
+  .stu__h {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stu__acts {
+    flex-wrap: wrap;
+  }
+}
+
+/* -------------------------------------------------------------- panels */
+
+.stu__panel {
+  padding: 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.stu__panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.stu__panel h2,
+.stu__panel h3 {
+  margin: 0;
+  font-family: var(--acad-f-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.stu__label {
+  font: 500 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.stu__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.stu__g2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.stu__g4 {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+/* --------------------------------------------------------- stat tiles */
+
+.stu__stat {
+  padding: 16px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.stu__stat p {
+  margin: 0;
+  font: 500 9.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.stu__stat b {
+  display: block;
+  margin: 10px 0 4px;
+  font-family: var(--acad-f-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.stu__stat small {
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  color: var(--acad-muted);
+}
+
+/* ------------------------------------------------------------ the queue */
+
+.stu__queue {
+  display: grid;
+  gap: 10px;
+}
+
+.stu__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--acad-line);
+  border-left: 3px solid var(--acad-signal);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.stu__item.is-warn {
+  border-left-color: var(--stu-warn);
+}
+
+.stu__item > svg {
+  width: 22px;
+  height: 22px;
+  color: var(--acad-signal-text);
+}
+
+.stu__item.is-warn > svg {
+  color: var(--stu-warn);
+}
+
+.stu__item > div {
+  min-width: 0;
+  /* 1 1 auto rather than flex: 1, so the heading takes the room that is
+     left after the button rather than competing with it for the whole
+     card. */
+  flex: 1 1 auto;
+}
+
+.stu__item > button,
+.stu__item > a {
+  flex: none;
+}
+
+.stu__item b {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.stu__item span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--acad-muted);
+}
+
+@media (max-width: 620px) {
+  .stu__item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ------------------------------------------------------------- tables */
+
+.stu__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.stu__table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--acad-line);
+  font: 500 9.5px/1 var(--acad-f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--acad-faint);
+  white-space: nowrap;
+}
+
+.stu__table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--acad-line);
+  vertical-align: middle;
+}
+
+.stu__table tr:last-child td {
+  border-bottom: 0;
+}
+
+/* A table is the one thing here that genuinely cannot wrap: eight
+   columns of numbers stacked on a phone is not a table any more. So it
+   scrolls, and it SAYS it scrolls, because a row cut off at the edge
+   with nothing to show for it is the thing people never find. */
+/* The negative margin lets a table reach the panel's edges rather than
+   stopping inside its padding, which is what makes the scroll look
+   deliberate. 18px is the panel's padding exactly: any more and the
+   table pushes the panel wider than the page, which is the other half of
+   what went wrong at 390. */
+.stu__scroll {
+  max-width: calc(100% + 36px);
+  overflow-x: auto;
+  margin: 0 -18px;
+  padding: 0 18px;
+}
+
+.stu__scroll + .stu__hint {
+  margin-top: 10px;
+}
+
+.stu__hint {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--acad-faint);
+}
+
+/* --------------------------------------------------------------- chips */
+
+.stu__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stu__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid var(--acad-line);
+  border-radius: 999px;
+  background: var(--acad-surface);
+  color: var(--acad-text);
+  font: 400 13px/1 var(--acad-f-body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.stu__chip:hover {
+  border-color: var(--acad-line-strong);
+}
+
+.stu__chip[aria-pressed="true"] {
+  border-color: var(--acad-text);
+  background: var(--acad-text);
+  color: var(--acad-surface);
+}
+
+.stu__chip small {
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------- tags */
+
+.stu__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--acad-surface-3);
+  font: 500 9.5px/1.7 var(--acad-f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acad-muted);
+  white-space: nowrap;
+}
+
+.stu__tag.is-live {
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+}
+
+.stu__tag.is-review {
+  background: var(--stu-warn-soft);
+  color: var(--stu-warn);
+}
+
+.stu__tag.is-draft {
+  background: var(--acad-surface-3);
+  color: var(--acad-muted);
+}
+
+.stu__tag.is-bad {
+  background: var(--stu-bad-soft);
+  color: var(--acad-bad);
+}
+
+/* ------------------------------------------------------- publish checks */
+
+.stu__checks {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stu__check {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 11px;
+  padding: 9px 0;
+}
+
+.stu__check + .stu__check {
+  border-top: 1px solid var(--acad-line);
+}
+
+.stu__check svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stu__check.is-ok svg {
+  stroke: var(--acad-ok);
+}
+
+.stu__check.is-no svg {
+  stroke: var(--acad-bad);
+}
+
+.stu__check b {
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.stu__check small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--acad-muted);
+}
+
+/* ------------------------------------------------------------ meters */
+
+.stu__meter {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--acad-surface-3);
+  overflow: hidden;
+}
+
+.stu__meter i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--acad-signal);
+}
+
+.stu__meter.is-done i {
+  background: var(--acad-ok);
+}
+
+/* --------------------------------------------------------- bar charts */
+
+.stu__bars {
+  display: grid;
+  gap: 9px;
+}
+
+.stu__bar {
+  display: grid;
+  grid-template-columns: minmax(90px, 150px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.stu__bar > i {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--acad-signal);
+}
+
+.stu__bar > b {
+  font-family: var(--acad-f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- drawer */
+
+.stu__scrim {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  background: rgba(22, 24, 32, 0.4);
+}
+
+.stu__drawer {
+  position: fixed;
+  z-index: 51;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(560px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--acad-surface);
+  box-shadow: var(--acad-shadow);
+}
+
+.stu__drawer > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--acad-line);
+}
+
+.stu__drawer > div {
+  flex: 1;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.stu__x {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--acad-line);
+  border-radius: 50%;
+  background: var(--acad-surface);
+  cursor: pointer;
+}
+
+.stu__x svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--acad-text);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* -------------------------------------------------------- command bar */
+
+.stu__cmd {
+  position: fixed;
+  z-index: 60;
+  top: 12vh;
+  left: 50%;
+  translate: -50% 0;
+  width: min(560px, calc(100vw - 32px));
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+  box-shadow: var(--acad-shadow);
+  overflow: hidden;
+}
+
+.stu__cmd input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--acad-line);
+  background: none;
+  font: 400 15px/1 var(--acad-f-body);
+  color: var(--acad-text);
+}
+
+.stu__cmd input:focus {
+  outline: 0;
+}
+
+.stu__cmd ul {
+  max-height: 46vh;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.stu__cmd button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--acad-r-s);
+  background: none;
+  font: 400 14px/1.3 var(--acad-f-body);
+  color: var(--acad-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stu__cmd button:hover,
+.stu__cmd button.is-on {
+  background: var(--acad-surface-2);
+}
+
+.stu__cmd small {
+  margin-left: auto;
+  font-family: var(--acad-f-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+/* --------------------------------------------------------------- forms */
+
+.stu__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stu__field > span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stu__in {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface);
+  font: 400 14px/1.45 var(--acad-f-body);
+  color: var(--acad-text);
+}
+
+.stu__in:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 1px;
+}
+
+.stu__field small {
+  font-size: 12px;
+  color: var(--acad-faint);
+}
+
+/* ------------------------------------------------------------ messages */
+
+.stu__msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: var(--acad-r-s);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.stu__msg svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.stu__msg.is-bad {
+  background: var(--stu-bad-soft);
+  color: var(--acad-bad);
+}
+
+.stu__msg.is-ok {
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+}
+
+.stu__msg.is-warn {
+  background: var(--stu-warn-soft);
+  color: var(--stu-warn);
+}
+
+/* ---------------------------------------------------------- empty state */
+
+.stu__empty {
+  padding: 34px 20px;
+  border: 1px dashed var(--acad-line-strong);
+  border-radius: var(--acad-r-m);
+  text-align: center;
+  color: var(--acad-muted);
+  font-size: 14px;
+}
+
+/* --------------------------------------------------------------- toast */
+
+.stu__toast {
+  position: fixed;
+  z-index: 70;
+  bottom: 24px;
+  left: 50%;
+  translate: -50% 0;
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--acad-text);
+  color: var(--acad-surface);
+  font-size: 13.5px;
+  box-shadow: var(--acad-shadow);
+}
+
+@media (max-width: 1100px) {
+  .stu__toast {
+    bottom: 78px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stu__drawer,
+  .stu__cmd,
+  .stu__toast {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------- section headings ---
+   Lighter than a page heading. Used above the queue, the week's figures
+   and anything else that is a band rather than a panel. */
+
+.stu__panel__h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.stu__h2 {
+  margin: 0;
+  font-family: var(--acad-f-display);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* ----------------------------------------------- the course pipeline ---
+   Three columns on the Overview: draft, ready for review, live. They
+   wrap rather than scroll, for the same reason the learner side's areas
+   do: nothing on screen says a column scrolls. */
+
+.stu__pipe {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface-2);
+}
+
+.stu__pipe__h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.stu__course {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.stu__course:hover {
+  border-color: var(--acad-line-strong);
+}
+
+.stu__course__code {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--acad-r-s);
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+  font: 500 12px/1 var(--acad-f-mono);
+}
+
+.stu__course > span:last-child {
+  min-width: 0;
+}
+
+.stu__course b {
+  display: block;
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stu__course small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  color: var(--acad-faint);
+}
+
+/* --------------------------------------------- the command bar input ---
+   Named rather than relying on the element, because .stu__cmd input
+   would also catch anything a future list row puts in there. */
+
+.stu__cmdin {
+  width: 100%;
+  padding: 16px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--acad-line);
+  background: none;
+  font: 400 15px/1 var(--acad-f-body);
+  color: var(--acad-text);
+}
+
+.stu__cmdin:focus {
+  outline: 0;
+}
+
+/* --------------------------------------------------- the three steps ---
+   The strip across the top of the builder: paste each video, write a
+   lesson check, write the course exam. Each is a meter with a number,
+   because "32 in the bank (30 needed)" says more than a tick. */
+
+.stu__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stu__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.stu__step > svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  border-radius: 50%;
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stu__step.is-done > svg {
+  background: var(--acad-ok);
+  stroke: #fff;
+}
+
+.stu__step.is-todo > svg {
+  background: var(--acad-surface-3);
+  stroke: var(--acad-muted);
+}
+
+.stu__step > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.stu__step b {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stu__step small {
+  display: block;
+  margin: 2px 0 8px;
+  font-size: 12.5px;
+  color: var(--acad-muted);
+}
+
+/* ------------------------------------------------------- the builder */
+
+.stu__build {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(240px, 300px);
+  align-items: start;
+  gap: 16px;
+}
+
+@media (max-width: 1500px) {
+  .stu__build {
+    grid-template-columns: minmax(230px, 290px) minmax(0, 1fr);
+  }
+  /* The publish panel drops under the editor rather than being squeezed
+     into a column too narrow for a nine row checklist. */
+  .stu__build > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 980px) {
+  .stu__build {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.stu__outline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface);
+}
+
+.stu__mod {
+  margin: 10px 0 4px;
+  padding: 0 4px;
+  font: 500 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.stu__lesson {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--acad-r-s);
+  background: none;
+  color: var(--acad-text);
+  font: 400 13.5px/1.3 var(--acad-f-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stu__lesson:hover {
+  background: var(--acad-surface-2);
+}
+
+.stu__lesson[aria-current="true"] {
+  background: var(--acad-signal-wash);
+  color: var(--acad-signal-deep);
+}
+
+.stu__lesson span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stu__lesson small {
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  color: var(--acad-faint);
+}
+
+.stu__dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acad-cell-off);
+}
+
+.stu__dot.is-ok {
+  background: var(--acad-ok);
+}
+
+.stu__dot.is-no {
+  background: var(--stu-warn);
+}
+
+/* ------------------------------------------------------ learner rows */
+
+.stu__who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stu__who b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.stu__who small {
+  display: block;
+  font-family: var(--acad-f-mono);
+  font-size: 11px;
+  color: var(--acad-faint);
+}
+
+.stu__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--acad-signal-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- the chart ---
+   One line, drawn as an SVG path from the numbers the database
+   returned. No chart library: it is one polyline and an area under it,
+   and a dependency for that would be sixty kilobytes to draw a line. */
+
+/* .acad .stu svg above gives every icon 18 by 18, and this is not an
+   icon. It needs the same weight of selector to say so, or the chart
+   comes out as an 18 pixel smudge, which is exactly what happened. */
+.acad .stu .stu__chart {
+  width: 100%;
+  height: 220px;
+  overflow: visible;
+  stroke-width: 2;
+}
+
+.stu__chart path.line {
+  fill: none;
+  stroke: var(--acad-signal);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stu__chart path.fill {
+  fill: var(--acad-signal-wash);
+  stroke: none;
+}
+
+.stu__chart line {
+  stroke: var(--acad-line);
+  stroke-width: 1;
+}
+
+.stu__chartdays {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-family: var(--acad-f-mono);
+  font-size: 10.5px;
+  color: var(--acad-faint);
+}
+
+.stu__chartdays span:nth-child(2) {
+  color: var(--acad-signal-text);
+}
+
+.stu__areaicon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--acad-signal-text);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

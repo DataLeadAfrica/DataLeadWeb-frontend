@@ -95,6 +95,43 @@ export function areaKey(area) {
   return AREA_KEY[String(area || "").trim()] || "x";
 }
 
+/**
+ * The ICON key for an area, which is a different question from the art
+ * key above and has a different answer.
+ *
+ * WHY THESE ARE TWO MAPS AND NOT ONE. AREA_KEY decides which picture is
+ * PAINTED on a course cover, and every key in it needs an entry in ART
+ * and in AREA_PAINT to paint with. There are four. Adding Databases to
+ * it to fix a chip would send ART["db"] looking for a drawing that does
+ * not exist, and take the covers down to fix an icon.
+ *
+ * This map decides which small line drawing sits on a CHIP, and every
+ * key in it needs an entry in GoalIcon, where there are now seven. So
+ * the two maps answer to different things and are allowed to disagree:
+ * an area can have a chip icon long before anybody draws it a cover.
+ *
+ * THE SEVEN ARE THE DATABASE'S SEVEN. lms_areas.icon_key holds the same
+ * mapping, and the landing picker reads it from there. The goal chips
+ * and the catalogue filter cannot: they are built from the course's own
+ * area NAME, which is all the catalogue carries. So the mapping is
+ * written twice, and tests/cover-art.test.mjs reads the seeded rows out
+ * of 16_restructure.sql and fails if the two ever stop agreeing.
+ */
+const AREA_ICON = {
+  Analysis: "an",
+  Visualisation: "vi",
+  "Data collection": "dc",
+  Databases: "db",
+  Qualitative: "ql",
+  Programming: "pr",
+  "Research skills": "rs",
+};
+
+/** The chip icon for an area, "x" for one nobody has drawn yet. */
+export function areaIconKey(area) {
+  return AREA_ICON[String(area || "").trim()] || "x";
+}
+
 /** The friendly goal wording, or the area's own name if we have none. */
 export function areaGoal(area) {
   const name = String(area || "").trim();

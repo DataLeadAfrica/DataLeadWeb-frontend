@@ -438,7 +438,7 @@ export default function AcademyLanding() {
       {/* -------------------------------------------------- closing band */}
       <section className="acad-closing">
         <div>
-          <h2 className="acad-closing__title">Start with one tool this week.</h2>
+          <h2 className="acad-closing__title">Start with one skill this week.</h2>
           <p>Short lessons, real data, a certificate you can prove.</p>
         </div>
         <Link className="acad-btn acad-btn--auto" to={routes.academyCourses}>

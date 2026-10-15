@@ -184,7 +184,7 @@ export const LANDING = {
   // agreeing.
   headline: "Learn one skill at a time.",
   subhead:
-    "Self paced video courses in the tools data professionals use every day, from the team that trains Data-Lead Africa's bootcamps. Learn on your phone or laptop, prove it in short checks, and finish with a certificate anyone can verify.",
+    "Self paced video courses in the tools and skills data professionals use every day, from the team that trains Data-Lead Africa's bootcamps. Learn on your phone or laptop, prove it in short checks, and finish with a certificate anyone can verify.",
   description:
     "Short video courses in the tools data professionals use every day, from the team behind Data-Lead Africa's bootcamps. Learn at your own pace and earn a certificate anyone can verify.",
 };

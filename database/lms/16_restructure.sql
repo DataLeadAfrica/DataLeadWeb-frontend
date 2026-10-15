@@ -112,7 +112,7 @@ create table if not exists lms_areas (
 );
 
 comment on table lms_areas is
-  'The seven areas of the Academy, in the order they are shown. icon_key picks the small line drawing on a chip; the drawings themselves live in the page code.';
+  'The seven areas of the Academy, in the order they are shown. icon_key picks the small line drawing on a chip, and the drawings themselves live in the page code.';
 
 -- The seven, in Big Sam's order. Written as one statement so a second
 -- run corrects a renamed area rather than making a duplicate.

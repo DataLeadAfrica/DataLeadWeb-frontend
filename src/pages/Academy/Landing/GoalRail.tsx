@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import "./GoalRail.css";
-import { areaGoal, areaKey } from "../../../../api/_cover-art.js";
+import { areaGoal, areaIconKey } from "../../../../api/_cover-art.js";
 import type { CourseCard as Course } from "../../../lib/catalogue";
 import CourseCardTile from "../ui/CourseCard";
 import { ArrowIcon, GoalIcon } from "../ui/Icons";
@@ -55,7 +55,7 @@ export default function GoalRail({ courses, loaded }: Props) {
     ...[...counts.entries()].map(([area, n]) => ({
       area,
       label: areaGoal(area),
-      key: areaKey(area),
+      key: areaIconKey(area),
       n,
     })),
   ];

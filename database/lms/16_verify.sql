@@ -1,6 +1,16 @@
 -- =====================================================================
 -- 16_verify.sql
 --
+-- NO SEMICOLON INSIDE A STRING LITERAL ANYWHERE IN THIS FILE. The
+-- Supabase SQL Editor splits a script on semicolons before sending it,
+-- and does not know that one inside '...' is just a character. Two of
+-- them here cut the final statement in half and the Editor handed
+-- Postgres the tail of an English sentence, which failed with
+-- 'relation "the" does not exist'. The same file ran cleanly in psql
+-- and through node-postgres, which is what made it hard to find.
+-- tests/sql-editor-safe.test.mjs fails if one comes back. In a LIKE
+-- pattern use _ , which matches any single character.
+--
 -- Run this in the Supabase SQL editor straight after
 -- 16_restructure.sql. It changes nothing. Read every row: the answer
 -- column should say yes on every single line. Anything else means the
@@ -376,7 +386,7 @@ with checks as (
     case when (
       select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
        where ns.nspname='public' and p.proname='lms_apply_signup_answers'
-    ) like '%if not v_ok then%perform lms_strip_signup_metadata(p_user);%'
+    ) like '%if not v_ok then%perform lms_strip_signup_metadata(p_user)_%'
     then 'yes' else 'NO' end,
     'Review item 2. Refused means keep the account and store nothing, and nothing includes raw_user_meta_data, which rides inside every access token for up to an hour. Re-run step 11.'
 
@@ -417,7 +427,7 @@ with checks as (
       select 1 from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
        where ns.nspname='public' and p.proname='lms_prune_unconfirmed_signups'
     ) then 'yes' else 'NO' end,
-    'Review item 5, which is brief item 11. Run it by hand with: select lms_prune_unconfirmed_signups();'
+    'Review item 5, which is brief item 11. Run it by hand with: select lms_prune_unconfirmed_signups()'
 
   union all select 44,
     'And it ignores the free courses every new account is given',

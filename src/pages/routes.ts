@@ -107,4 +107,21 @@ export const routes = {
   academyQuiz: "/lms/learn/:slug/quiz/:quizId",
   academyComplete: "/lms/learn/:slug/complete",
   academyExam: "/lms/learn/:slug/exam",
+
+  // The control room, Phase 6B. Everything under /lms/studio is staff
+  // only: RequireStaff asks the database for the role on every one, and
+  // the functions behind each page refuse again underneath that.
+  studio: "/lms/studio",
+  studioCourses: "/lms/studio/courses",
+  studioBuilder: "/lms/studio/courses/:id",
+  studioQuestions: "/lms/studio/courses/:id/questions",
+  studioPaths: "/lms/studio/paths",
+  studioAreas: "/lms/studio/areas",
+  studioLearners: "/lms/studio/learners",
+  studioStaff: "/lms/studio/staff",
+  studioCerts: "/lms/studio/certificates",
+  studioReports: "/lms/studio/reports",
+  studioSettings: "/lms/studio/settings",
+  studioPopups: "/lms/studio/popups",
+  studioHealth: "/lms/studio/health",
 };

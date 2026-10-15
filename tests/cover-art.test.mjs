@@ -533,3 +533,60 @@ test("the pixel size is only ever two numbers, and is left out otherwise", () =>
   const strip = (s) => s.replace(/ width="\d+" height="\d+"/, "");
   assert.equal(strip(sized), coverArt(base), "giving a size changed the picture itself");
 });
+
+// ---------------------------------------------------------------------
+// The chip icons, which are a different map from the cover art
+// ---------------------------------------------------------------------
+
+test("every area the database seeds has a chip icon, and the two maps agree", async () => {
+  const { areaIconKey } = await import("../api/_cover-art.js");
+  const { readFileSync } = await import("node:fs");
+  const sql = readFileSync(new URL("../database/lms/16_restructure.sql", import.meta.url), "utf8");
+
+  // The seven rows step 1 seeds: ('slug', 'Name', position, 'key').
+  const seeded = [...sql.matchAll(/^\s*\('[a-z-]+',\s*'([^']+)',\s*\d+,\s*'(\w+)'\),?$/gm)]
+    .map(([, name, key]) => ({ name, key }));
+  assert.equal(seeded.length, 7, `expected the seven seeded areas, found ${seeded.length}`);
+
+  for (const { name, key } of seeded) {
+    assert.equal(areaIconKey(name), key,
+      `the database gives "${name}" the icon ${key}, the page gives it ${areaIconKey(name)}. `
+        + "The landing picker reads the key from lms_areas; the goal chips and the catalogue "
+        + "filter build it from the course's area name, so the mapping is written twice and "
+        + "these two must say the same thing.");
+  }
+
+  // And every one of those keys has a drawing, or the chip falls back
+  // to the four pane grid that round 3 was about.
+  const icons = readFileSync(new URL("../src/pages/Academy/ui/Icons.tsx", import.meta.url), "utf8");
+  const body = icons.slice(icons.indexOf("export function GoalIcon"));
+  for (const { name, key } of seeded) {
+    assert.match(body, new RegExp(`^\\s{4}${key}: `, "m"),
+      `"${name}" has no drawing for key ${key}, so its chip is the four pane fallback`);
+  }
+});
+
+test("the chip map and the ART map are allowed to differ, and nothing reads the wrong one", async () => {
+  const { areaKey, areaIconKey } = await import("../api/_cover-art.js");
+  const { readFileSync } = await import("node:fs");
+
+  // areaKey decides what is PAINTED, and every key it can return needs
+  // an entry in ART and AREA_PAINT. Adding an area to it to fix a chip
+  // is how the covers break.
+  const art = readFileSync(new URL("../api/_cover-art.js", import.meta.url), "utf8");
+  const painted = /^const AREA_KEY = \{([\s\S]*?)^\};/m.exec(art)[1];
+  for (const [, key] of painted.matchAll(/:\s*"(\w+)"/g)) {
+    assert.match(art, new RegExp(`^\\s{2}${key}: \\{ bg:`, "m"),
+      `AREA_KEY can return "${key}" but AREA_PAINT has no entry for it, so a cover would paint nothing`);
+  }
+
+  // Databases is the case that proves the split: a chip icon, no art.
+  assert.equal(areaIconKey("Databases"), "db");
+  assert.equal(areaKey("Databases"), "x", "Databases now claims cover art that does not exist");
+
+  // The goal chips and the catalogue filter must read the icon map.
+  const rail = readFileSync(new URL("../src/pages/Academy/Landing/GoalRail.tsx", import.meta.url), "utf8");
+  const cat = readFileSync(new URL("../src/pages/Academy/Courses/page.tsx", import.meta.url), "utf8");
+  assert.match(rail, /areaIconKey\(area\)/, "the goal chips still take their icon from the art map");
+  assert.match(cat, /areaIconKey\(name\)/, "the catalogue filter still takes its icon from the art map");
+});
