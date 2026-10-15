@@ -13,7 +13,7 @@ import { routes } from "../../routes";
 import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
 import { useSearchParams } from "react-router";
 
-import { areaKey } from "../../../../api/_cover-art.js";
+import { areaIconKey } from "../../../../api/_cover-art.js";
 import { GoalIcon } from "../ui/Icons";
 import {
   areasOf,
@@ -106,7 +106,7 @@ export default function AcademyCourses() {
         icon: a.icon_key,
       }));
     }
-    return areasOf(all).map((name) => ({ name, icon: areaKey(name) }));
+    return areasOf(all).map((name) => ({ name, icon: areaIconKey(name) }));
   }, [areaList, all]);
 
   /** Free to start: free outright, or with the first module free. */

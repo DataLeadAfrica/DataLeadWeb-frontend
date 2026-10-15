@@ -14,6 +14,337 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6B, ROUND 2, 14 October 2026. Big Sam's eight, and a correction about the SQL Editor
+
+Laid on `881d0d9`, replacing the first `academy-6b` package. Nothing from that package had been
+uploaded or run, so this one stands in its place rather than following it.
+
+Big Sam found eight things. Two of them would have stopped the control room working at all, and
+both got past every test I had. The pattern in both is the same and worth saying plainly: I tested
+the thing I had built against a model of the database and a model of the browser, and neither model
+was the real one.
+
+### The two serious ones
+
+**On a phone the control room could not be used at all.** Below 1100px the side menu filled the
+screen, stuck, and the page underneath was never seen. The rule that hides it was written before the
+rule that shows it, both were one class strong, and in a tie the later rule wins.
+
+My own check for this passed, and that is the part worth keeping in mind: I had tested that nothing
+scrolls sideways. A panel lying ON TOP of the page does not make the page any wider, so a covered
+page and a correct page look identical to that test. The screenshots missed it too, because a
+full page screenshot stretches the window to the height of the document, and a `100vh` sticky panel
+in a window that tall no longer covers anything.
+
+Fixed by stating the small screen rules after the main ones and making them stronger, so moving a
+block cannot bring it back. Then I wrote a scanner that walks the file tracking which media query
+each rule sits in, and it found the same mistake twice more:
+
+- `.stu__findsmall`, the search button that replaces the command bar on a phone, was hidden by its
+  own base rule. There was no way to reach the command bar on a phone at all. Big Sam had not
+  reported this one.
+- `.stu__tab`, which is item 7 below, turned out to be the same family of fault rather than a
+  one-off size slip.
+
+**Certificates and Health failed on the live database.** They read `ct.revoked_at` and
+`mail_outbox.sent_at`. Neither column exists: the columns are `revoked` and `sent`, both booleans.
+
+`database/lms/schema-snapshot.md` has been in this repository since 6 October and says so. I did
+not read it.
+
+I first wrote here that I had built against a local stand in which had the columns I expected. I
+then checked, and that was not true either: the local harness says `revoked boolean` and
+`sent boolean`, exactly like the real database. The model was right and I still got it wrong, which
+leaves only one explanation, and it is the plain one below.
+
+They got past 65 database tests because PL/pgSQL resolves a column name only when a function RUNS,
+and every test I had written was about a refusal, which raises before it reaches the read. Two new
+kinds of test now cover this, because one of them would not have been enough:
+
+- `file_17_tests.sql` section 17 calls every read function in file 17, as an administrator and then
+  as a facilitator. A wrong column name now fails. The file runs 71 checks, up from 65.
+- `tests/control-room.test.mjs` resolves every aliased column read in file 17 against the snapshot.
+  It is scoped to the tables the snapshot marks as predating the Academy, because the snapshot says
+  of itself that it was taken before file 10 was run and its `lms_` sections are therefore missing
+  every column files 10 to 17 add.
+
+That second test was wrong three times before it was right, and each way of being wrong is the kind
+that leaves a test looking like a clean bill of health:
+
+1. It read the comments as well as the code, and matched the comment explaining the `revoked_at`
+   bug. That is the third time a scanner of mine has found my own prose about a bug.
+2. It assumed one alias means one table for the whole file. `pr` is `lms_profiles` in four places
+   and `programmes` in one.
+3. It resolved each alias from the nearest binding ABOVE the read. In SQL the select list is
+   written above the from clause, so a column is routinely read before the join that binds it.
+
+It now resolves aliases per statement, which is the unit Postgres itself resolves names in, and it
+fails if it finds fewer than twelve reads to check, so a regex that quietly matches nothing fails
+rather than passing.
+
+### The other six
+
+| | |
+|---|---|
+| An administrator could demote the other administrator | `lms_set_staff_role` refused the value `admin` and refused changing your own role, but not changing somebody who already was one. It now refuses when the target is an administrator, with a message saying administrators are made and removed in Supabase. Verify row 41 and a new test. |
+| The undo left functions behind | Reported as three. It was six functions, plus `lms_save_popup` dropped with thirteen arguments when it has fourteen, which matches nothing and fails silently. I derived the list off file 17 rather than trusting the count, and a test now reads every function file 17 creates and fails if the undo does not drop each one. |
+| "New learners" counted staff | It counted every row in `auth.users`, so it included staff and sign ups that were never confirmed. On Big Sam's database it said 2 when both accounts were administrators and there were no learners at all. It now counts confirmed accounts whose role is `learner`. Section 19 of the test file makes three accounts of known kinds (a confirmed learner this week, one who never confirmed, one from a month ago) and checks the number goes up by exactly one. It is measured as a CHANGE rather than an absolute, because earlier sections make learners of their own and a test expecting 1 fails for the wrong reason. A test that read the source for the word "learner" would have passed whatever the count came out as, which is why there is a behaviour check for this one and not a source assertion. |
+| "BUILT BY SOMEBODY" | The builder header said that whenever `created_by` was empty, which is every course that already exists. The "built by" part is left out when there is no name. |
+| The "More" tab was bigger than the other four | `academy.css` has `.acad :where(button, input) { font: inherit }`. `:where()` contributes no specificity, so that rule is one class strong, exactly like a bare `.stu__tab`, and a tie is settled by whichever stylesheet the bundler happened to put first. Four tabs are links and the fifth is a button, so the button inherited the body size. The tab rule is now stronger than the tie. |
+| What `show-test-course.sql` does after file 17 | Measured on a real build rather than reasoned about: it is refused. Publishing now runs the nine checks and the Phase 4 test course fails three of them (no lesson checks, no certificate programme, no exam). That is the checks working. Written at the top of the file and in the run order, with the two honest ways round it. |
+
+### The correction about the SQL Editor
+
+Big Sam's earlier explanation of why `16_verify.sql` failed in the Supabase SQL Editor was that it
+had semicolons inside string literals. That was wrong, and by the time he said so I had written it
+into a test comment, a file header and two docs as though it were established.
+
+What actually happened: taking every semicolon out did not fix it, and nor did removing every
+comment. What ran was a version with short labels only, an empty explanation column and no prose.
+The best guess now, and it is a guess, is that the Editor scans the text for a table name after
+words like `from`, `into`, `join`, `update` and `table`, finds one inside an explanation string like
+"from the courses table", and asks Postgres about a table called "the".
+
+So:
+
+- Every place that stated the semicolon cause as fact now says it is a guess, and says what was
+  actually tried. That includes the retraction written into the first commit's entry below.
+- The semicolon rule stays, because it costs nothing and might be right.
+- `tests/sql-editor-safe.test.mjs` also fails now on `from`, `into`, `join`, `update` or `table`
+  followed by a word inside a string literal in any verify file. Strings containing `%` are exempt,
+  because those are LIKE patterns rather than prose. Files numbered 16 and below are grandfathered,
+  so the rule binds what I write from here rather than rewriting history.
+- `database/lms/17_verify_EDITOR.sql` is new and is **the one Big Sam runs**. Labels `check 1` to
+  `check 41`, an empty note column, no comments at all. It is GENERATED from `17_verify.sql` rather
+  than typed, so the two cannot drift, and a test asserts they hold the same check numbers.
+- The 41 explanations live in `docs/lms/PHASE-6B-PLAIN.md`, one row per check number, which is
+  where to look when a row says NO.
+
+## PHASE 6B, 14 October 2026. The control room
+
+The staff side of the Academy, at `/lms/studio`. Part A is `database/lms/17_control_room.sql`, Part
+B is the thirteen pages on it.
+
+Laid on `main` at `881d0d9`, on branch `academy-6b`, which already carries the first commit above.
+No new dependency. The launch switch is untouched and still `false`.
+
+**Nothing a learner sees changes.** File 17 adds staff functions and three columns to
+`lms_courses`. The one existing behaviour it alters is what a live course lets you edit, and that
+is loosened rather than tightened: words may now be fixed without taking the course down.
+
+### Part A, file 17
+
+| | |
+|---|---|
+| 1 | Course workflow. Create a course and it is born with its programme, its first module and an empty course exam, because a course missing any of those cannot be published and nobody can see why. Four states: draft, ready for review, published, archived. `lms_publish_checks` returns the nine checks, each with a fix-it target. |
+| 2 | Course details: areas in order, recommend next, outcomes, audience, prerequisites, FAQ, and price behind its own administrators-only function. |
+| 3 | Question banks: write, edit, retire. Paste from a sheet, judged row by row. Options and answers frozen once anybody has been served the question. |
+| 4 | Learners, administrators only, every route. The list with five filters, the record through file 16's logged function, lift the wait, give and remove access with a reason. |
+| 5 | Paths: create, order, certificate name. Publishing stays file 16's `lms_publish_path`. |
+| 6 | Areas and tools, with counts. |
+| 7 | Reports: active days, the funnel, per-lesson finishing, the hardest questions, and "Who our learners are" through file 16's suppression. |
+| 8 | Certificates, searchable. Revoking stays in the Certificate console. |
+| 9 | Popups: create as a draft, start, stop. One live at a time, enforced in the same statement. |
+| 10 | Site settings, live with no release. |
+| 11 | Health, the biggest tables, and an activity log nobody can edit. |
+| 12 | Permissions: 47 functions revoked from everybody, granted back to signed in callers one name at a time, and **none to anon**. |
+
+### Three decisions worth the space
+
+**`lms_course_blockers` was left exactly as file 11 wrote it, and the nine checks got a new name.**
+File 11's step 0 looks up that function's exact signature and refuses to run if it has changed.
+Widening it to carry a fix-it target would have made file 11 unrunnable on this database for ever,
+and nobody would have found that until the day they needed it. So the richer list is
+`lms_publish_checks`, verify row 7 checks the old one is untouched, and file 11 was run again after
+file 17 to prove it. The same call as `areaIconKey` against `areaKey` in the first commit: when a
+name already carries a contract, add a name rather than redefine one.
+
+**Check 7 would have deadlocked every facilitator.** File 10 says only an administrator may publish
+a set of questions, which matches the brief. But if check 7 demanded *published* lesson checks, a
+facilitator could never reach nine green ticks, because the last thing in their way would be an
+action they are not allowed to take. So check 7 counts a check that exists and has a question in
+it, and publishing the course publishes its checks. One deliberate act rather than fourteen.
+
+**"Ready for review" is not a new enum value.** Postgres will let you add one inside a transaction
+but not USE it until that transaction commits, and file 17 is one transaction that then writes
+functions comparing against it. It is also the truer description: being sent is an event with a
+sender, a time and a note, which is three columns an enum value cannot hold.
+
+### Four things found by building it
+
+**1. Nothing could publish a lesson check at all.** `lms_publish_exam` reads `serve_count`, which is
+always null for a lesson check, and raises "No such exam". The table is behind RLS so no browser can
+do it directly. A course could be built right up to the last check and stop there with nothing
+explaining what to do next. Found only by writing the test that builds a whole course end to end;
+every piece worked on its own.
+
+**2. `lms_give_access` silently did nothing, while the log said it worked.** There is a partial
+unique index allowing one live grant per learner per course, so giving a scholarship to somebody who
+already held the free grant was a no-op, and the log line went in regardless. A silent no-op is
+recoverable; a log that lies is what you later make decisions from. It upserts now, and the log
+carries the old source.
+
+**3. Two of my own permission tests were proving nothing.** psql connects as the table owner, and
+row level security does not apply to an owner unless the table forces it, which ours do not. One
+returned 0 and looked like a pass only because the table was empty; the other returned 32 and caught
+it. Both now run under `set local role authenticated`, and under that a learner reads 0 exam
+questions and 0 options.
+
+**4. I overwrote the blog studio's stylesheet.** The control room was written into
+`src/pages/Studio`, which is the blog tool's folder, and `studio.css` was replaced. Caught before
+delivery by the lint run naming a file I had not written. Restored from git, and the control room
+moved to `src/pages/Academy/Studio/` with its own `control-room.css`. Nothing of the blog studio is
+in this package.
+
+### Part B, the thirteen pages
+
+Overview with the needs-you queue, Courses, the Course builder with its three steps and publish
+panel, Checks and exams with the paste drawer, Learning paths, Areas and tools, Learners and the
+learner drawer, Staff, Certificates, Reports, Site settings, Popups, Health and activity, plus the
+command bar on Ctrl K and the phone tabs.
+
+**The role is asked for, never read from the session.** A token says who somebody is and keeps
+saying it for an hour; somebody taken off the staff list at 10:00 would still hold an
+administrator's token at 10:30. Every page asks the database, and every page is refused again
+underneath that.
+
+**An administrator-only item is absent from the rail, not greyed out.** A disabled control tells
+somebody what they are missing and invites them to ask why, about a page they were never meant to
+see.
+
+**The control room has no site header.** It is a full height tool: the rail is sticky at
+`calc(100vh - 60px)` and the top bar at zero, and both assume they own the window. With the site
+header above, the rail started 90 pixels down and ran 90 off the bottom. `SiteChrome` hides the
+header and footer on `/lms/studio` only; every other page, including the blog studio, is unchanged.
+
+### What passes
+
+`npm test` runs **264**, all passing, of which 21 are the new `tests/control-room.test.mjs`.
+`npm run build` is clean and lint is unchanged from `main`.
+
+The database matrix on a fresh 01 to 16 build: **34 NO before file 17 with no Postgres error, three
+runs of file 17 in a row clean, 40 of 40 yes after, 65 of 65 behaviour checks pass**, undo clean,
+file 17 applies again afterwards. And the two that matter for not breaking what was there: file 16's
+verify still says 57 of 57, and **file 11 still runs**.
+
+In Chromium, eleven pages at 1440, 1100 and 390, in both roles: nothing scrolls sideways, the tables
+scroll rather than clip, a facilitator is refused all six administrator pages and shown the five
+they should see, and a suppressed group in a report draws no bar.
+
+---
+
+## PHASE 6B, FIRST COMMIT, 14 October 2026. The copy, and a rule for every SQL file
+
+Laid on `main` at `881d0d9`, which is 6A merged. This is the copy Big Sam asked to carry into 6B
+rather than open another 6A round, plus the SQL Editor rule and the test that enforces it. The
+control room itself comes next, on its own brief.
+
+No new dependency. The launch switch is untouched and still `false`.
+
+### The semicolon rule
+
+`16_verify.sql` failed in the Supabase SQL Editor with:
+
+```
+relation "the" does not exist
+```
+
+The same file ran cleanly in psql and cleanly through node-postgres. The Editor splits a script on
+semicolons before sending it, to find where the last statement begins, and its splitter does not
+know that a semicolon inside `'...'` is just a character. Two literals held one, so a statement was
+cut in half and Postgres was handed the tail of an English sentence. The word it tripped on was
+"the". The error names nothing real, which is what makes it expensive.
+
+Big Sam found and fixed both. This package carries the same two fixes, made independently and
+checked against his description, plus **two more of the same bug that nobody had hit yet**:
+
+| File | Was | Now |
+|---|---|---|
+| `16_verify.sql` row 39 | the LIKE pattern ended `...(p_user);%'` | `...(p_user)_%'`, and `_` matches any single character |
+| `16_verify.sql` row 43 | "Run it by hand with: select lms_prune_unconfirmed_signups();" | the same sentence without the semicolon |
+| `12_verify.sql` row at line 96 | "if NO: select lms_set_health_token('...');" | the same without it |
+| `16_restructure.sql` line 115 | a `comment on table` reading "...drawing on a chip; the drawings themselves..." | "...on a chip, and the drawings themselves..." |
+| `show-test-course.sql` line 21 | a `--` comment ending in a semicolon | the same without it |
+
+The last two matter less and are fixed anyway. `16_restructure.sql` has run in the Editor three
+times without trouble, because a bad split only bites when the stray semicolon falls inside the
+LAST statement, and that file's happened not to. That is luck, not safety: it changes the next time
+anybody appends to the file.
+
+**`tests/sql-editor-safe.test.mjs`** walks every `.sql` file in the repository character by
+character, tracking whether it is in code, a string, a `--` comment, a `/* */` comment or a `$$`
+body, and reports every semicolon that is not at statement level. Five of its eight checks test the
+detector itself before it is trusted with the real files, including that it is not fooled by `''`
+inside a string or by an apostrophe inside a comment.
+
+### What the rule is, and what the evidence says
+
+Big Sam asked for "never a semicolon inside a string literal or a comment". The first version of
+the test enforced both, and it then reported **135 semicolons sitting in `--` comments across files
+01 to 16**. Every one of those files has been run in the Editor, most more than once, and none has
+ever failed on account of a comment. That is evidence the Editor strips comments before it splits,
+which is the ordinary way to build such a splitter.
+
+So the test is in two halves:
+
+- **A semicolon in a string literal is refused in every file.** That is the one that demonstrably
+  breaks, and all four are now fixed.
+- **A semicolon in a comment is refused in every file written from file 17 onwards.** The files
+  that already exist are grandfathered by name, in a list a third test proves can never gain a file
+  numbered above 16. Rewriting 135 lines of comment in files already applied to the live database
+  would be a large change that fixes nothing, and a large change that fixes nothing is how a real
+  mistake gets lost in a diff. Any of them can come off the list the day somebody wants to tidy it,
+  and the test will say where the work is.
+
+`database/lms/tests/` is skipped by the comment half: those files make a learner, sit an exam and
+roll the lot back, so they run on a local Postgres through psql and never go near the Editor. The
+string half still covers them, because that costs nothing.
+
+### The four copy items
+
+| | |
+|---|---|
+| 1 | The closing dark band: **"Start with one skill this week."** |
+| 2 | The sign up page's left column: **"Learn one skill at a time."** |
+| 3 | The landing lead paragraph: "in the tools **and skills** data professionals use every day". This one is copy only, with no database change, because `lms_settings.subhead` defaults to an empty string and the page falls back to the sentence in `api/_seo-rules.js`. Unlike the headline in round 3, there is nothing in the database holding the old wording. |
+| 4 | The goal chips above the rail now have their own icons for Databases and Research skills, instead of the four pane fallback. |
+
+### Why item 4 needed a second map rather than one more entry
+
+The chips took their icon from `areaKey`, which is the map that decides which picture is **painted**
+on a course cover. Every key it can return needs an entry in `ART` and in `AREA_PAINT`, and there
+are four of those. Adding Databases to it would have sent `ART["db"]` looking for a drawing that
+does not exist, and taken the covers down to fix an icon.
+
+So there is now `areaIconKey`, with all seven areas, used by the goal chips and the catalogue's area
+filter. `areaKey` keeps meaning "what to paint" and keeps its four. The two are allowed to disagree:
+an area can have a chip icon long before anybody draws it a cover, and Databases is exactly that
+case. A test asserts `areaIconKey("Databases") === "db"` and `areaKey("Databases") === "x"`, so
+neither can quietly become the other.
+
+The mapping now exists twice, in `lms_areas.icon_key` and in `_cover-art.js`, because the landing
+picker reads it from the database while the chips and the filter only have the course's area NAME to
+go on. A test reads the seven seeded rows out of `16_restructure.sql` and fails if the two stop
+agreeing, and checks each key has a drawing in `GoalIcon`.
+
+### One thing left alone
+
+Under "What do you want to do?", the four original chips read as goals: "Analyse data", "Build
+dashboards", "Collect clean data", "Start coding". The three new areas have no goal wording, so
+their chips read "Databases", "Qualitative" and "Research skills", which sits oddly under that
+question. Three short phrases would fix it and they are Big Sam's words to choose, not mine.
+
+### What passes
+
+`npm test` runs **243**, all passing. `npm run build` is clean and lint is unchanged from `main`.
+
+`16_verify.sql` after the correction, on a fresh 01 to 15 build: **52 NO before file 16 with no
+error, 57 of 57 yes after**, which is what it said before. Row 39's pattern was mutation checked:
+with the strip call in place it says yes, and with the call removed it says NO, so replacing the
+semicolon with `_` has not turned a real check into one that always passes.
+
+---
+
 ## ACADEMY 6A, ROUND 3, 13 October 2026. Big Sam's six
 
 Laid on `main` at `de0c998`, which adds a timesheet change outside the Academy and touches none of

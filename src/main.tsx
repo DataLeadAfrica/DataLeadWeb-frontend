@@ -3,8 +3,7 @@ import { StrictMode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import "./global.css";
 import ScrollToTop from "./components/ScrollToTop/component";
-import Header from "./components/Header/component";
-import Footer from "./components/Footer/component";
+import { SiteChrome } from "./pages/Academy/Studio/Chrome";
 
 import { routes } from "./pages/routes";
 import NotFound from "./pages/NotFound/page";
@@ -22,13 +21,14 @@ import successRouter from "./pages/Success/router";
 import certificatesRouter from "./pages/Certificates/router";
 import learningRouter from "./pages/Learning/router";
 import academyRouter from "./pages/Academy/router";
+import studioRouter from "./pages/Academy/Studio/router";
 import Certifications from "./pages/Certifications/page";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ScrollToTop />
-      <Header />
+      <SiteChrome which="header" />
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path={routes.index} element={<Index />} />
@@ -46,8 +46,13 @@ createRoot(document.getElementById("root")!).render(
         <Route path={routes.certifications} element={<Certifications />} />
         {learningRouter()}
         {academyRouter()}
+        {/* The control room. Its routes sit beside the Academy's rather than
+            inside them, because /lms/studio is a different place with a
+            different guard, and nesting it under the Academy's routes
+            would put a learner's PreviewNotice on a staff page. */}
+        {studioRouter()}
       </Routes>
-      <Footer />
+      <SiteChrome which="footer" />
     </BrowserRouter>
   </StrictMode>,
 );

@@ -93,7 +93,7 @@ union all
 select '04 the health token has actually been set (part 2)',
        case when exists (select 1 from lms_health_token where id=1) then 'yes'
             else 'NO, not yet' end,
-       'if NO: select lms_set_health_token(''a-long-random-string-of-your-own'');'
+       'if NO: select lms_set_health_token(''a-long-random-string-of-your-own'')'
 union all
 select '05 the health check function exists (part 2)',
        case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace

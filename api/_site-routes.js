@@ -77,6 +77,25 @@ export const NOT_IN_SITEMAP = {
   verifyCertificate: "carries a :number",
   learnerModule: "carries a :slug",
 
+  // The control room, Phase 6B. Thirteen staff pages, none of which a
+  // search engine has any business reaching. They are not merely
+  // noindex: RequireStaff asks the database for the role before drawing
+  // anything, and every function behind them refuses a learner, so a
+  // crawler that followed one would be handed a sign in redirect.
+  studio: "staff only",
+  studioCourses: "staff only",
+  studioBuilder: "staff only, and carries an :id",
+  studioQuestions: "staff only, and carries an :id",
+  studioPaths: "staff only",
+  studioAreas: "staff only",
+  studioLearners: "staff only, administrators",
+  studioStaff: "staff only, administrators",
+  studioCerts: "staff only, administrators",
+  studioReports: "staff only",
+  studioSettings: "staff only, administrators",
+  studioPopups: "staff only, administrators",
+  studioHealth: "staff only, administrators",
+
   // Pages behind a sign in, or that only make sense after an action.
   myCertificate: "behind a sign in",
   staffCertificates: "staff only",

@@ -261,7 +261,7 @@ export default function AcademySignUp() {
       <Pitch
         headline={
           <>
-            Learn one tool
+            Learn one skill
             <br />
             at a <em>time.</em>
           </>

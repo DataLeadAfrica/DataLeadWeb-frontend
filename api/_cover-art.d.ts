@@ -24,6 +24,7 @@ export declare const AREA_PAINT: Record<string, { bg: string; ink: string }>;
 export declare const AREA_GRID: Record<string, string>;
 
 export declare function areaKey(area: string | null | undefined): string;
+export declare function areaIconKey(area: string | null | undefined): string;
 export declare function areaGoal(area: string | null | undefined): string;
 
 export declare function coverArt(course: CoverCourse): string;
