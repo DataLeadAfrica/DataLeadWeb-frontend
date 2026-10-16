@@ -151,4 +151,14 @@ select '12 a visitor who is not signed in holds no write privilege',
           from information_schema.role_table_grants
          where table_schema='public' and table_name like 'lms\_%'
            and grantee='anon' and privilege_type in ('INSERT','UPDATE','DELETE'))
+union all
+select '13 send_email_hook can see the extensions schema',
+       case when (select coalesce(array_to_string(p.proconfig, ' '), '')
+                    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+                   where n.nspname = 'public' and p.proname = 'send_email_hook')
+                 like '%extensions%'
+            then 'yes' else 'NO' end,
+       (select coalesce(array_to_string(p.proconfig, ' '), 'no search_path set')
+          from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+         where n.nspname = 'public' and p.proname = 'send_email_hook')
 order by 1;

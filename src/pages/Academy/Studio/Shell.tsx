@@ -159,9 +159,20 @@ export default function Shell({ role, name, counts = {}, children }: Props) {
             <span>Control room</span>
           </Link>
 
+          {/* The label is in a span of its own so it can be told never to
+              wrap. It used to be a bare text node, and between 761 and
+              1023 it wrapped onto two lines and took the whole bar's
+              height with it, which is what broke the control room on
+              every tablet held upright.
+
+              The round button below 1024 is the fix. This span is the
+              backstop: if the wording ever grows, the label is shortened
+              with an ellipsis rather than the bar growing again. At every
+              width the Academy supports it is never reached, and a test
+              checks that it is not. */}
           <button type="button" className="stu__find" onClick={() => setCmdOpen(true)}>
             <SearchIcon />
-            Find a course, learner, certificate or page
+            <span className="stu__findlabel">Find a course, learner, certificate or page</span>
             <kbd>Ctrl K</kbd>
           </button>
 

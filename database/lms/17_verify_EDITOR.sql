@@ -1,4 +1,5 @@
 with checks (n, checking, answer, note) as (
+
   select 1,
     'check 1',
     case when exists (

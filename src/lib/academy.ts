@@ -443,11 +443,60 @@ export async function getSession(): Promise<Session> {
   return {
     signedIn: true,
     email,
-    // Somebody who signed up before the name was asked for still needs
-    // something to be greeted by, so fall back to the part of the
-    // address before the at sign.
-    fullName: (meta.full_name ?? "").trim() || email.split("@")[0],
+    // NO FALLBACK TO THE EMAIL ADDRESS. This used to end with
+    // `|| email.split("@")[0]`, so somebody signed up as
+    // a.samuel@example.com was greeted as "a.samuel" and their account
+    // card said that was their name. A made up name shown as a real one
+    // is worse than no name: the person cannot tell it is a placeholder
+    // and has no reason to think anything needs fixing.
+    //
+    // Empty is now honest, and every place that reads this handles it:
+    // My learning says "My learning" instead of a greeting and offers
+    // the name field, the control room header says "Signed in", and the
+    // control room greeting uses the name the server returns.
+    fullName: (meta.full_name ?? "").trim(),
   };
+}
+
+/**
+ * Saves the person's own name.
+ *
+ * TWO WRITES, ON PURPOSE, because two different things read the name:
+ *
+ *   lms_set_my_name      writes lms_profiles.full_name, which is what
+ *                        the staff pages and the control room greeting
+ *                        read. It is a function rather than a direct
+ *                        write so the rules about what a name may be
+ *                        live in one place, and because file 18 narrowed
+ *                        the browser's privileges on that table.
+ *
+ *   auth.updateUser      writes the account metadata, which is what
+ *                        getSession above reads. Without it the new name
+ *                        would not appear until the token was next
+ *                        refreshed.
+ *
+ * The function goes first. If it refuses, the metadata is left alone, so
+ * a name the database would not accept never ends up showing anywhere.
+ */
+export async function setMyName(name: string): Promise<{ ok: boolean; name: string; message: string }> {
+  if (!certDb) return { ok: false, name: "", message: "The Academy is not connected just now." };
+
+  const typed = name.trim().replace(/\s+/g, " ");
+  if (!typed) return { ok: false, name: "", message: "Please type your name." };
+
+  const saved = await certDb.rpc("lms_set_my_name", { p_name: typed });
+  if (saved.error) {
+    return { ok: false, name: "", message: saved.error.message || "That name could not be saved." };
+  }
+
+  const stored = ((saved.data as string | null) ?? typed).trim();
+
+  // If this second write fails the name IS saved, and saying otherwise
+  // would send somebody to type it again. It shows everywhere on the
+  // next sign in either way.
+  await certDb.auth.updateUser({ data: { full_name: stored } });
+
+  return { ok: true, name: stored, message: "" };
 }
 
 export async function signOut(): Promise<void> {

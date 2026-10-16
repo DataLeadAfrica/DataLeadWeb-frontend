@@ -197,3 +197,30 @@ Here is what each number is checking, and what a NO would mean.
 | 39 | Ready for review is a draft that was sent, not a new enum value | Postgres will not let a new enum value be USED in the transaction that adds it, and file 17 is one transaction. Being sent is also an event with a sender, a time and a note, which an enum value cannot hold. |
 | 40 | The log writer never fails the thing it is recording | Item 11. A log that can refuse a publish is a log that will one day stop somebody publishing. The failure is recorded in system_health instead. |
 | 41 | Nor can an administrator demote the other administrator | Refusing to CREATE an administrator and refusing to change your OWN role feel complete together and are not. Without this, either administrator could make the other a learner, and with two of them that is one press away and then no one can publish at all. |
+
+## What each check in 18_verify_EDITOR.sql means
+
+Nine rows. The Editor copy says only "check 1", "check 2" and so on, for the same reason as file
+17's, so this is where to look when one says NO.
+
+**Rows 2 to 6 are one fault, and it was live.** A signed in learner could write any column of
+their own profile. A policy can say which ROW somebody may change, and it cannot say which
+COLUMNS, so the table-wide grant meant every column was fair game.
+
+| # | What it checks | What a NO means |
+|---|---|---|
+| 1 | A person can set their own name | There is no way to save a name, so the greeting falls back to the first part of the email address. Somebody signed up as a.samuel@example.com is greeted as "a.samuel" and told that is their name. |
+| 2 | A signed in person cannot write every column of their own profile | The serious one. Table-wide UPDATE is still granted, so rows 3 and 4 cannot be relied on either. |
+| 3 | A learner cannot point themselves at somebody else's certification record | **The hole.** A learner can set their own `participant_id` to any certification record nobody has linked yet, and the certificate pages then show them that person's certificates. An unlinked record is the normal case for anybody certified before they made an Academy account. File 05 says in its own comment that linking is only ever done on a proven address. |
+| 4 | A learner cannot write their own role | The policy refuses this too, by checking `role = lms_my_role()`. It should be refused twice, by privilege and by policy, so that neither has to hold on its own. |
+| 5 | The only columns a person may write are their name and their phone | Says exactly which columns are writable rather than only which are not, so a column somebody adds later is refused by default instead of being allowed because nobody thought about it. That is how this fault happened. |
+| 6 | A visitor who is not signed in can write nothing | Nobody signed out should be able to change a profile at all. This row says yes even before file 18, because it was already true. |
+| 7 | Only a signed in caller may run the name function | The function writes a profile row, so a signed out caller must not reach it. |
+| 8 | The name function refuses an empty name | A blank name saved over a real one leaves somebody worse off than before they tried. |
+| 9 | The name function only ever writes the caller's own row | It takes no id, so there is nothing to point elsewhere. A NO would mean somebody had given it one. |
+
+### What to do if row 3 says NO
+
+Run `18_profile_name_EDITOR.sql`. If it has already been run and the row still says NO, stop and
+say so: it would mean the grant has been handed back by something else, and the undo file is the
+only thing in the package that does that on purpose.

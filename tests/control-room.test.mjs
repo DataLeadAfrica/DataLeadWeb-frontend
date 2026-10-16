@@ -602,11 +602,157 @@ test("show-test-course.sql says at the top that file 17 will refuse it", () => {
   // after file 17 and seeing "published | f" needs to be told so in the
   // file rather than working it out.
   const sql = read("database/lms/show-test-course.sql");
-  const head = sql.slice(0, 2600);
+  const head = sql.slice(0, 3600);
+
+  // Retired on 15 October 2026. The Phase 4 course is out of date since
+  // the restructure, and the first real course built in the control room
+  // is the live test instead. The file is kept rather than deleted so
+  // anybody who finds it named in an older document can see why it
+  // stopped, which means the first thing it says has to be that.
+  assert.match(head, /SUPERSEDED\. DO NOT RUN THIS\./,
+    "show-test-course.sql does not say at the top that it is retired");
+  assert.match(head, /first real course built in the control room/,
+    "it does not say what replaced it");
   assert.match(head, /17/, "the header does not mention file 17");
   assert.match(head, /refuse/i, "the header does not say the last line will be refused");
   for (const reason of [/lesson check/i, /certificate programme/i, /exam/i]) {
     assert.match(head, reason, `the header does not name which of the nine checks fail: ${reason}`);
   }
   assert.match(head, /before file 17/i, "the header does not say when to run it instead");
+});
+
+test("the top bar's search switches at 1024, scoped to the bar itself", () => {
+  // THE BAR WAS 161px TALL AT 768. The labelled find button stayed in the
+  // bar from 761 up with no room for its label, the label wrapped, and
+  // the bar's height is the label's height. 161 at 768, 113 at 820, 89 at
+  // 900, against the 60 it should be. iPad portrait is 768 and 820, so
+  // this was most tablets held upright.
+  //
+  // 1024 is measured, not chosen. Dr Ayoola said below 1000 and that is
+  // what I built first; 1001 then measured 89px, still wrapped. The label
+  // needs 306px on one line and the button only gives it that from 1024.
+  const css = read("src/pages/Academy/Studio/control-room.css");
+
+  assert.match(css, /@media \(max-width: 1023px\)[\s\S]{0,200}?\.acad \.stu \.stu__top \.stu__find \{\s*display: none/,
+    "the top bar's find button is not hidden below 1024");
+  assert.match(css, /@media \(min-width: 1024px\)[\s\S]{0,200}?\.acad \.stu \.stu__findsmall \{\s*display: none/,
+    "the round button is not hidden from 1024 up, so there would be two search controls");
+
+  // SCOPED TO .stu__top. That class is also the search box on the
+  // Courses, Learners and Certificates pages. The old rule said plain
+  // .stu__find, so on a phone those were hidden too and an administrator
+  // could not filter the learner list or the certificate list at all.
+  // That was already true on live. An unscoped rule here would have
+  // extended it to every tablet.
+  const hides = [...css.matchAll(/([^\n{]*\.stu__find)\s*\{[^}]*display:\s*none/g)].map((m) => m[1].trim());
+  for (const sel of hides) {
+    assert.ok(/\.stu__top\b/.test(sel),
+      `"${sel}" hides .stu__find without naming .stu__top, which also hides the page search boxes `
+        + "on Courses, Learners and Certificates");
+  }
+
+  // And the hide is stated after the base rule as well as being
+  // stronger, which is the lesson from the rail.
+  const baseAt = css.search(/^\.stu__find \{/m);
+  const hideAt = css.search(/\.acad \.stu \.stu__top \.stu__find \{\s*display: none/);
+  assert.ok(baseAt > 0 && hideAt > baseAt,
+    "the rule hiding the top bar's find button comes before the rule that draws it");
+});
+
+test("the search label can never take a second line", () => {
+  // The backstop, not the fix. The round button below 1024 is the fix.
+  // This is what stops the bar growing again if the wording ever changes,
+  // and a browser run checks it is never actually reached: the label is
+  // one full line at 1024 and every width above it, so the ellipsis does
+  // not show.
+  const css = read("src/pages/Academy/Studio/control-room.css");
+  const rule = /\.stu__findlabel \{([^}]*)\}/.exec(css);
+  assert.ok(rule, "the search label has no rule of its own, so it is free to wrap");
+  assert.match(rule[1], /white-space: nowrap/, "the search label can still wrap onto two lines");
+  assert.match(rule[1], /text-overflow: ellipsis/, "a label too long would be cut off with no sign of it");
+  // min-width: 0 is the part that is easy to leave out. A flex child will
+  // not shrink below its content without it, so overflow and
+  // text-overflow would never come into play and the rule would look
+  // right while doing nothing.
+  assert.match(rule[1], /min-width: 0/,
+    "without min-width: 0 the label will not shrink, so nowrap pushes the bar wider instead");
+
+  // And the label really is in an element that those rules can reach.
+  assert.match(read("src/pages/Academy/Studio/Shell.tsx"),
+    /<span className="stu__findlabel">/,
+    "the label is a bare text node again, which no rule can stop from wrapping");
+});
+
+// ---------------------------------------------------------------------
+// My learning: the way in, and the person's own name
+// ---------------------------------------------------------------------
+
+test("a staff member has a way into the control room that is not the address bar", () => {
+  // A facilitator signing in landed on My learning with no link to
+  // /lms/studio anywhere. The only way in was knowing the address and
+  // typing it, which is not a thing to ask of somebody.
+  const page = read("src/pages/Academy/Me/page.tsx");
+  assert.match(page, /role === "facilitator" \|\| role === "admin"/,
+    "My learning does not check for a staff role");
+  assert.match(page, /className="acad-tile acad-me__studio" to=\{routes\.studio\}/,
+    "there is no link to the control room on My learning");
+
+  // THE ROLE COMES FROM THE SYNC THAT HAS ALREADY RUN, not from a second
+  // call. lms_my_role used to be asked for here as well, and the two
+  // answers could disagree for a moment, so the page showed one thing
+  // and swapped to the other. academy.ts says so in a comment and this
+  // keeps it true.
+  assert.match(page, /useAccess\(\)/, "My learning no longer uses the access sync");
+  assert.ok(!/getMyRole|lms_my_role/.test(code(page)),
+    "My learning asks for the role a second time, which the sync has already answered");
+});
+
+test("the control room link is drawn, not enforced, and the pages still check", () => {
+  // The link is a convenience. If it ever showed for somebody it should
+  // not, every page behind it asks the database again, so they would be
+  // refused at the door rather than let in.
+  const guard = read("src/pages/Academy/Studio/RequireStaff.tsx");
+  assert.match(guard, /getMyRole\(\)/,
+    "the control room no longer asks the database who the caller is");
+});
+
+test("no page invents a name out of the email address", () => {
+  // Somebody signed up as a.samuel@example.com was greeted as "a.samuel"
+  // and their account card said that was their name. A made up name
+  // shown as a real one is worse than no name: there is nothing to tell
+  // the person that anything needs fixing.
+  const lib = code(read("src/lib/academy.ts"));
+  assert.ok(!/email\.split\("@"\)\[0\]/.test(lib),
+    'the session still falls back to the email address for a name');
+  assert.match(lib, /fullName: \(meta\.full_name \?\? ""\)\.trim\(\),/,
+    "the session name is no longer just the saved name");
+
+  // And every reader copes with it being empty.
+  assert.match(read("src/pages/Academy/Studio/Shell.tsx"), /name \|\| "Signed in"/,
+    "the control room header has no answer for somebody with no name saved");
+  assert.match(read("src/pages/Academy/Me/page.tsx"), /firstName \? `\$\{greeting\(\)\}, \$\{firstName\}` : "My learning"/,
+    "My learning has no answer for somebody with no name saved");
+});
+
+test("saving a name writes the profile first and the account metadata second", () => {
+  // Two writes, because two different things read the name: the staff
+  // pages read lms_profiles, and getSession reads the account metadata.
+  //
+  // The ORDER matters. The function validates, so if it refuses, the
+  // metadata must not already hold a name the database would not accept.
+  const lib = read("src/lib/academy.ts");
+  const fn = /export async function setMyName[\s\S]*?\n}/.exec(lib);
+  assert.ok(fn, "there is no setMyName");
+
+  const rpcAt = fn[0].indexOf('rpc("lms_set_my_name"');
+  const metaAt = fn[0].indexOf("auth.updateUser");
+  assert.ok(rpcAt > 0, "setMyName does not call lms_set_my_name");
+  assert.ok(metaAt > 0, "setMyName does not update the account metadata");
+  assert.ok(rpcAt < metaAt,
+    "setMyName writes the account metadata BEFORE the database has accepted the name, so a name "
+      + "the database refuses could still end up showing");
+
+  // The server's own refusal is shown, not a rewrite of it.
+  assert.match(fn[0], /saved\.error\.message/,
+    "setMyName replaces the server's reason for refusing with wording of its own");
 });

@@ -1,12 +1,54 @@
 # Phase 6B: what to run in Supabase, and in what order
 
-Three files, in this order. Nothing else in this branch touches the database.
+**File 17 is already live.** Big Sam ran it on 15 October. This section is kept because the
+package still carries those files and because the undo is still the undo.
+
+## If you are starting from the merged main, this is the whole list
 
 | Order | File | What it does | How long |
 |---|---|---|---|
-| 1 | `database/lms/17_control_room.sql` | The whole control room, in one transaction | A few seconds |
+| 1 | `database/lms/18_profile_name_EDITOR.sql` | The name function, and the privilege fix below | A few seconds |
+| 2 | `database/lms/18_verify_EDITOR.sql` | Changes nothing. Prints 9 rows, all yes | Instant |
+
+Nothing else in this package has to be run. The `send_email_hook` change is already live, by hand,
+so the file only matters to a rebuild.
+
+### Why file 18 is not optional
+
+It closes a fault that is live now. A signed in learner could write **any** column of their own
+profile, including `participant_id`, which is how a profile is joined to a certification record.
+Setting it to a record nobody had linked yet gave them that person's certificates. An unlinked
+record is the normal case for anybody certified before they made an Academy account.
+
+Row 3 of the verify is the one to read. It must say yes.
+
+## Files 17, for reference, and the Editor copies
+
+| Order | File | What it does | How long |
+|---|---|---|---|
+| 1 | `database/lms/17_control_room_EDITOR.sql` | The whole control room, in one transaction | A few seconds |
 | 2 | `database/lms/17_verify_EDITOR.sql` | Changes nothing. Prints 41 rows. **This is the one to paste** | Instant |
-| 3 | only if it has to come off: `database/lms/17_undo.sql` | Puts it back as file 16 left it | A few seconds |
+| 3 | only if it has to come off: `database/lms/17_undo_EDITOR.sql` | Puts it back as file 16 left it | A few seconds |
+
+## Every file meant for the Editor now ships as a generated copy
+
+Paste the one whose name ends `_EDITOR.sql`. Never the plain one.
+
+They are made by `node scripts/lms/make-editor-sql.mjs`, which is run as part of the package rather
+than by hand, and three tests fail if a copy is stale, if a function body differs by a single
+character, or if any prose survives outside the bodies.
+
+Two shapes, decided by what the file is:
+
+| Shape | Which files | What is removed |
+|---|---|---|
+| Functions | `17_control_room`, `17_undo`, `18_profile_name`, `18_undo` | The comments BETWEEN the function bodies. Every body is byte for byte what the plain file holds |
+| Checks | `17_verify`, `18_verify` | All of it. Labels become `check 1`, `check 2`, the note column is emptied, and the explanations live in `PHASE-6B-PLAIN.md` |
+
+**The comments inside a function body are never touched**, and that is deliberate rather than
+laziness. They are part of the function's stored source, so changing one changes what the database
+holds, and `17_verify` row 16 reads `PASS ONE` and `PASS TWO` back out of `lms_nightly_prune`.
+Strip those and the row turns NO while the function is perfectly fine.
 
 ## Before you start
 

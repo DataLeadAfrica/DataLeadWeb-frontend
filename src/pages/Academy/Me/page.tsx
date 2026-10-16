@@ -18,6 +18,7 @@ import {
   getSession,
   greeting,
   roleLabel,
+  setMyName,
   signOut,
   type Session,
 } from "../../../lib/academy";
@@ -122,8 +123,31 @@ export default function AcademyMe() {
     navigate(routes.academySignIn, { replace: true });
   }
 
-  const name = session?.fullName ?? "";
+  // The saved name is held here as well as on the session, so the page
+  // shows the new one the moment it is saved rather than waiting for the
+  // next sign in. Seeded from the session once it arrives.
+  const [savedName, setSavedName] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState("");
+  const [nameBusy, setNameBusy] = useState(false);
+  const [nameTrouble, setNameTrouble] = useState("");
+  const [editingName, setEditingName] = useState(false);
+
+  const name = savedName ?? session?.fullName ?? "";
   const firstName = name.split(" ")[0];
+
+  async function saveName(event: React.FormEvent) {
+    event.preventDefault();
+    setNameTrouble("");
+    setNameBusy(true);
+    const r = await setMyName(nameDraft);
+    setNameBusy(false);
+    if (!r.ok) {
+      setNameTrouble(r.message);
+      return;
+    }
+    setSavedName(r.name);
+    setEditingName(false);
+  }
 
   // The one to carry on with: the most recently touched course that is
   // not finished. lms_my_courses already returns them most recent
@@ -262,6 +286,114 @@ export default function AcademyMe() {
         ) : (
           <div className="acad-me__waiting" aria-hidden="true" />
         )}
+
+        {/* ------------------------------------------------- your name
+
+            Shown when there is no name saved, and openable when there
+            is. With nothing saved the greeting above says "My learning"
+            and the account card has an empty line where a name goes, so
+            this is the one thing on the page that needs doing.
+
+            It used to need nothing, because the session invented a name
+            out of the email address: somebody signed up as
+            a.samuel@example.com was greeted as "a.samuel" and told that
+            was their name. A made up name shown as a real one is worse
+            than no name, because there is nothing to tell the person
+            that anything is wrong. */}
+        {ready && session ? (
+          <article className="acad-tile acad-me__name">
+            {name && !editingName ? (
+              <>
+                <p className="acad-tile__label">Your name</p>
+                <p className="acad-me__namenow">{name}</p>
+                <button
+                  type="button"
+                  className="acad-btn acad-btn--ghost acad-btn--auto"
+                  onClick={() => {
+                    setNameDraft(name);
+                    setNameTrouble("");
+                    setEditingName(true);
+                  }}
+                >
+                  Change it
+                </button>
+              </>
+            ) : (
+              <form onSubmit={saveName}>
+                <label className="acad-tile__label" htmlFor="acad-me-name">
+                  {name ? "Your name" : "Add your name"}
+                </label>
+                <p className="acad-me__namewhy">
+                  {name
+                    ? "This is the name on your certificates and the name staff see."
+                    : "Your certificates are made out to this name, so it is worth getting right."}
+                </p>
+                <div className="acad-me__namerow">
+                  <input
+                    id="acad-me-name"
+                    className="acad-me__nameinput"
+                    value={nameDraft}
+                    onChange={(e) => setNameDraft(e.target.value)}
+                    maxLength={80}
+                    autoComplete="name"
+                    placeholder="Your full name"
+                    aria-describedby={nameTrouble ? "acad-me-nametrouble" : undefined}
+                  />
+                  <button type="submit" className="acad-btn acad-btn--auto" disabled={nameBusy}>
+                    {nameBusy ? "Saving" : "Save"}
+                  </button>
+                  {name ? (
+                    <button
+                      type="button"
+                      className="acad-btn acad-btn--ghost acad-btn--auto"
+                      onClick={() => {
+                        setEditingName(false);
+                        setNameTrouble("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  ) : null}
+                </div>
+                {/* The server's own words, not a rewrite of them. It
+                    knows why it refused and this page does not. */}
+                {nameTrouble ? (
+                  <p className="acad-me__nametrouble" id="acad-me-nametrouble" role="alert">
+                    {nameTrouble}
+                  </p>
+                ) : null}
+              </form>
+            )}
+          </article>
+        ) : null}
+
+        {/* --------------------------------------------- the control room
+
+            A facilitator or an administrator signing in lands here, and
+            before this there was no way into the control room except
+            typing /lms/studio into the address bar.
+
+            The role comes from the access sync, which has already run.
+            It is NOT asked for separately: that was tried once and
+            removed, because the two answers could disagree for a moment
+            and the page would show one thing and then swap to the other.
+
+            This is a convenience, not a permission. Every page and every
+            function behind it checks the role again in the database, so
+            a learner who somehow got this button would be refused at the
+            door. */}
+        {ready && (role === "facilitator" || role === "admin") ? (
+          <Link className="acad-tile acad-me__studio" to={routes.studio}>
+            <span className="acad-tile__label">Staff</span>
+            <b>Control room</b>
+            <small>
+              {role === "admin"
+                ? "Courses, learners, certificates, settings and the site's health."
+                : "The courses you built, and how they are doing."}
+            </small>
+            <ArrowIcon />
+          </Link>
+        ) : null}
 
         {/* ------------------------------------------- this week
 
