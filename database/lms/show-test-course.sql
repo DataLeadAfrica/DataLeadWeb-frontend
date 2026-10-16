@@ -1,6 +1,26 @@
 -- =====================================================================
 -- show-test-course.sql
 --
+-- SUPERSEDED. DO NOT RUN THIS.
+--
+-- Dr Ayoola retired it on 15 October 2026. The Phase 4 test course it
+-- puts on the site is out of date: the restructure in file 16 moved and
+-- renamed enough that the course no longer represents what a course is,
+-- so putting it in front of anybody would be showing them something
+-- wrong rather than something unfinished.
+--
+-- WHAT REPLACED IT. The first real course built in the control room is
+-- the live test now. That is a better test than this file ever was,
+-- because it exercises the thing people will actually use: the builder,
+-- the nine publish checks, the lesson checks, the exam and the
+-- certificate programme, in the order a facilitator meets them.
+--
+-- The file is kept rather than deleted so that anybody who finds it
+-- referred to in an older document can see what it did and why it
+-- stopped. Everything below this line is the file as it was.
+--
+-- ---------------------------------------------------------------------
+--
 -- ONCE FILE 17 HAS BEEN RUN, THIS FILE IS REFUSED. Measured, not
 -- guessed: file 17 makes lms_publish_course run the nine publish
 -- checks, and the Phase 4 test course fails three of them.

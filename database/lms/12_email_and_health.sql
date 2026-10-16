@@ -731,9 +731,21 @@ create trigger t_guard_question_not_served before delete on lms_questions
 -- no email is the exact fault this whole file exists to remove. Better a
 -- visible failure the person can retry than a silent one nobody sees.
 -- =====================================================================
+-- 'extensions' IS NOT OPTIONAL HERE. digest() is pgcrypto's, and file 01
+-- creates pgcrypto "with schema extensions", which is where Supabase keeps
+-- it. A security definer function's own search_path overrides the
+-- session's, so with only 'public' this function could not find digest()
+-- and EVERY Academy email that goes through the hook (sign up, reset,
+-- email change) failed on live from the day the hook was switched on,
+-- while every local test passed. Every other function in this file that
+-- uses digest already said 'extensions'. This one did not.
+--
+-- The local harness used to create pgcrypto in public, which made file
+-- 01's "with schema extensions" a no-op and hid this. It now creates it
+-- in extensions, so this mistake fails locally too.
 create or replace function send_email_hook(event jsonb)
 returns jsonb
-language plpgsql security definer set search_path to 'public' as $function$
+language plpgsql security definer set search_path to 'public', 'extensions' as $function$
 declare
   v_email   text;
   v_token   text;

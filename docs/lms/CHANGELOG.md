@@ -14,6 +14,83 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6C, FIRST COMMIT, 15 October 2026. The seven, and two faults found on the way
+
+Laid on `1f41a19`, the merge of `academy-6b`.
+
+Dr Ayoola's list after the control room went live, plus two things I found while building them.
+Both of those were already on live and neither was in the list.
+
+### The one to read first
+
+**A signed in learner could claim somebody else's certificates.** `06_policies.sql` grants
+table-wide `UPDATE` on `lms_profiles` to `authenticated`, and a policy can say which ROW somebody
+may change but not which COLUMNS. Nothing else restricted them, so a learner could set their own
+`participant_id`.
+
+Measured through row level security on a live-shaped build, as a browser acts:
+
+- Pointing it at a record somebody had already linked: refused, but only by the unique index. That
+  is an accident, not a rule.
+- Pointing it at an **unlinked** record: allowed, and the certificate pages then showed them that
+  person's certificates. An unlinked record is the normal case for anybody certified before they
+  made an Academy account.
+
+`05_functions.sql` says in its own comment that "Linking is only ever done on a PROVEN address.
+Doing it on a typed one would let anybody claim somebody else's certificates." The rule was
+written down and never enforced at the privilege level.
+
+New file `18_profile_name.sql` revokes the table-wide grant and gives back `UPDATE (full_name,
+phone)` and nothing else, with `18_verify.sql`, `18_undo.sql` and 16 behaviour checks in
+`tests/file_18_tests.sql`. The test that matters is the one that loops over the real column list
+rather than a list I typed, so the next column somebody adds is refused by default.
+
+The undo for this one refuses unless you say you mean it, because undoing it restores a known
+hole.
+
+### The seven from the list
+
+| | |
+|---|---|
+| The top bar between 761 and 1000 | The labelled search button stayed in the bar with no room for its label, the label wrapped, and the bar's height is the label's height: 161px at 768, 113 at 820, 89 at 900. **The number is 1024, not 1000.** I built 1000 first and 1001 then measured 89px, still wrapped: the label needs 306px on one line and the button only gives it that from 1024 up. The phone's round button now covers everything below that, and `.stu__findlabel` is a backstop that cannot wrap, proven never to be reached at any supported width. |
+| A second fault in the same rule | The old rule hid plain `.stu__find`, which is also the search box on the Courses, Learners and Certificates pages. On a phone an administrator could not filter the learner list or the certificate list. Already true on live, measured on merged main to be sure. The rule is now scoped to `.stu__top`. |
+| The Editor copies | `scripts/lms/make-editor-sql.mjs` generates them, and three tests fail if a copy is stale, if a body differs by one character, or if prose survives outside the bodies. Comments inside `$$` bodies are never touched, because they are part of the stored source and verify row 16 reads `PASS ONE` and `PASS TWO` back out of one. |
+| A way into the control room | A staff member landed on My learning with no link to `/lms/studio`. There is a Control room tile now, drawn from the role the access sync has already returned rather than a second call, which was tried once and removed because the two answers could disagree for a moment. |
+| A person's own name | `lms_set_my_name` plus a field on My learning. The session no longer invents a name out of the email address, so somebody signed up as a.samuel@example.com is no longer greeted as "a.samuel" and told that is their name. A made up name shown as a real one is worse than no name, because nothing tells the person anything is wrong. |
+| `send_email_hook` | `set search_path to 'public', 'extensions'`. Already fixed by hand on live, so this is only for a rebuild. |
+| `show-test-course.sql` | Marked superseded at the top, with what replaced it. |
+
+### The email hook, and what the audit found
+
+The cause was Dr Ayoola's and it was exactly right: `digest()` is pgcrypto's, pgcrypto lives in
+`extensions` on Supabase, and this one function said only `'public'`. Every Academy email through
+the hook had failed since it was switched on.
+
+The local harness created pgcrypto in `public`, which made file 01's `with schema extensions` a
+no-op and hid it. The harness now creates it where Supabase does, and sets the database's
+search_path so that a top level statement still finds `digest()` while a function that forgets
+`'extensions'` does not. That reproduces the live split exactly: the same error, the same line 49,
+the same CONTEXT.
+
+Then the audit. Not just pgcrypto: every routine that exists **only** in the `extensions` schema,
+against every function in `public` whose own search_path cannot see it, across all 18 files. **The
+answer is one.** The other four functions that use `digest` already said `'extensions'`.
+
+New verify row 13 in `12_verify.sql` says the hook can see the schema.
+
+### Two mistakes of mine worth writing down
+
+**The generator turned `do $$` into `do$$`.** A syntax error, from tidying trailing whitespace over
+the whole file: the text before a body can end in the middle of a line, so its last line's trailing
+space is not trailing at all. Every check I had passed. The bodies matched, the comments were gone,
+the file looked right. It failed the moment the generated copy was run, which is exactly why Dr
+Ayoola said to put the generated copies through the database matrix rather than the originals.
+
+**I had told him the two verify files could not drift, and that was not yet true.** The first
+`17_verify_EDITOR.sql` was generated once, by hand, and the test compared only the check NUMBERS,
+which would catch a check being added or removed and not one being changed. Both verify files are
+now rebuilt by the same script and compared whole.
+
 ## PHASE 6B, ROUND 2, 14 October 2026. Big Sam's eight, and a correction about the SQL Editor
 
 Laid on `881d0d9`, replacing the first `academy-6b` package. Nothing from that package had been

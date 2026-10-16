@@ -1,6 +1,33 @@
-create extension if not exists pgcrypto;
+-- PGCRYPTO LIVES IN extensions, EXACTLY AS IT DOES ON SUPABASE.
+--
+-- This line used to be "create extension if not exists pgcrypto",
+-- with no schema, which puts it in public. File 01 says "with schema
+-- extensions", but "if not exists" made that a no-op here, so every
+-- local build had digest() sitting in public where it is always found.
+--
+-- That one word of difference hid a live fault for as long as the email
+-- hook has been switched on: send_email_hook is declared
+-- "set search_path to 'public'", so on Supabase it cannot see digest()
+-- and every Academy email through it failed, while every local test
+-- passed. The schema the extension lives in is now the same here as
+-- there, so a function that forgets 'extensions' fails locally too.
 create schema if not exists auth;
 create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+
+-- AND THE SESSION CAN SEE BOTH SCHEMAS, AS A SUPABASE SQL EDITOR SESSION
+-- CAN. This matters for being faithful rather than merely strict: on
+-- Supabase, digest() called at the top level of the Editor works, and the
+-- same call inside send_email_hook failed, because a function's own
+-- "set search_path" overrides the session's. Setting this on the database
+-- reproduces exactly that split, so a top level harness statement keeps
+-- working while a function that forgets 'extensions' fails here the way
+-- it fails on live.
+do $$ begin
+  execute format('alter database %I set search_path to public, extensions',
+                 current_database());
+end $$;
+set search_path to public, extensions;
 create table if not exists auth.users (
   id uuid primary key default gen_random_uuid(), email text unique,
   encrypted_password text, email_confirmed_at timestamptz,

@@ -148,6 +148,19 @@
   stroke-width: 2;
 }
 
+/* NEVER TWO LINES. The bar's height is this label's height, so one
+   wrapped word becomes a 161px bar. min-width: 0 is the part that is
+   easy to leave out: a flex child will not shrink below its content
+   without it, so overflow and text-overflow would never come into
+   play. */
+.stu__findlabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .stu__find kbd {
   margin-left: auto;
   padding: 2px 7px;
@@ -208,7 +221,6 @@
 @media (max-width: 760px) {
   .stu__me div,
   .stu__brand span,
-  .stu__find,
   .stu__me .stu__chip {
     display: none;
   }
@@ -224,17 +236,56 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  /* The search still has to be reachable, so it becomes an icon in the
-     corner rather than disappearing with the bar it was in. */
+}
+
+/* THE SEARCH SWITCHES AT 1024, AND IT USED TO SWITCH AT 760.
+   
+   Between 761 and 1023 the labelled find button was still in the bar
+   with no room for its label. The label wrapped and took the bar's
+   height with it: 161px at 768, 113 at 820 and 89 at 900, against the
+   60 it is meant to be. iPad portrait is 768 and 820, so this was most
+   tablets held upright.
+   
+   The fix is the phone's round button, brought up the range, rather
+   than one line and an ellipsis. One behaviour instead of three, it is
+   a control the person has already met on their phone, and an ellipsis
+   on a search label tells somebody that something has been cut off
+   without telling them what.
+   
+   1024 IS MEASURED, NOT CHOSEN. Dr Ayoola said below 1000 and I built
+   that first, and 1001 then came out at 89px, still wrapped. The label
+   "Find a course, learner, certificate or page" needs 306px on one
+   line, and the button only gives it that much from 1024 up: at 1001
+   the button is 425px wide and the label gets 262px of it, so it takes
+   two lines. So the number is where the text actually fits rather than
+   a round figure, and .stu__findlabel below is the backstop that stops
+   this coming back if the text ever changes.
+   
+   THE HIDE IS SCOPED TO .stu__top. The old rule said plain .stu__find,
+   and that class is also the search box on the Courses, Learners and
+   Certificates pages. On a phone those were hidden too, so an
+   administrator could not filter the learner list or the certificate
+   list at all. That was already true on live before this change, and an
+   unscoped rule here would have extended it to every tablet.
+   
+   Both rules are stated AFTER the base rules and are stronger than
+   them, which is the lesson from the rail: a media query that merely
+   comes first loses the tie and the fault comes back the next time
+   somebody moves a block.
+   
+   The scanner in tests/control-room.test.mjs measures the bar's height
+   at 768, 820, 900 and 1024, so a regression here shows up as a number
+   rather than needing somebody to notice. */
+@media (max-width: 1023px) {
+  .acad .stu .stu__top .stu__find {
+    display: none;
+  }
   .acad .stu .stu__findsmall {
     display: grid;
   }
 }
 
-/* Above 760 there is a full find button in the bar, so this one is not
-   drawn. Stated after the media query, and stronger, for the same
-   reason as the rail. */
-@media (min-width: 761px) {
+@media (min-width: 1024px) {
   .acad .stu .stu__findsmall {
     display: none;
   }

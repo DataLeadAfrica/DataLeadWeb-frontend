@@ -52,6 +52,7 @@
   grid-template-areas:
     "continue pass"
     "continue week"
+    "name     studio"
     "courses  certs";
 }
 @media (max-width: 920px) {
@@ -60,6 +61,8 @@
     grid-template-areas:
       "continue"
       "pass"
+      "name"
+      "studio"
       "week"
       "courses"
       "certs";
@@ -70,13 +73,16 @@
    none of the empty lists. */
 .acad-bento--new {
   grid-template-areas:
-    "continue pass";
+    "continue pass"
+    "name     studio";
 }
 @media (max-width: 920px) {
   .acad-bento--new {
     grid-template-areas:
       "continue"
-      "pass";
+      "pass"
+      "name"
+      "studio";
   }
 }
 
@@ -346,3 +352,118 @@
 /* The "what to learn next" cards moved to academy.css. Two pages draw
    them now, My learning and the certificate moment, and both show the
    same recommendations from the same function. */
+
+/* --------------------------------------------------------- your name */
+
+/* Two tiles that only sometimes exist: the name, which is absent once a
+   name is saved and not being changed, and the control room, which only
+   staff ever see. Both are given places in the grid above rather than
+   being left to auto placement, which would drop them outside the named
+   areas and move everything else. */
+.acad-me__name {
+  grid-area: name;
+}
+
+.acad-me__namenow {
+  margin: 0 0 14px;
+  font-family: var(--acad-f-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.acad-me__namewhy {
+  margin: 0 0 12px;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+}
+
+.acad-me__namerow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* min-width on the input and wrap on the row, so on a narrow phone the
+   buttons drop below the field instead of squeezing it to nothing. */
+.acad-me__nameinput {
+  flex: 1 1 180px;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface-2);
+  color: var(--acad-text);
+  font: 400 15px/1 var(--acad-f-body);
+}
+
+.acad-me__nameinput:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 2px;
+}
+
+.acad-me__nametrouble {
+  margin: 12px 0 0;
+  color: var(--acad-signal);
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------------------ control room */
+
+/* A link shaped like a tile. Before this a facilitator signing in landed
+   on My learning with no way into the control room but typing the
+   address, which is not a thing to ask of somebody. */
+.acad-me__studio {
+  grid-area: studio;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 14px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.acad-me__studio:hover {
+  border-color: var(--acad-line-strong);
+  transform: translateY(-1px);
+}
+
+.acad-me__studio .acad-tile__label {
+  grid-column: 1;
+  margin: 0;
+}
+
+.acad-me__studio b {
+  grid-column: 1;
+  font-family: var(--acad-f-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.acad-me__studio small {
+  grid-column: 1;
+  color: var(--acad-muted);
+  font-size: 13.5px;
+}
+
+/* The arrow sits beside all three lines rather than after the last one,
+   so it reads as the tile's own affordance. */
+.acad-me__studio svg {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  color: var(--acad-signal);
+}
+
+.acad-me__studio:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 3px;
+}
