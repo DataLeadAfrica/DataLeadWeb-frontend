@@ -76,6 +76,8 @@ export const LOGO_FILES: Record<string, string> = {
 //
 //    "default"  = the Data-Lead Africa bootcamp certificate
 //    "module"   = the same, with the TOOL CERTIFIED badge (weekly tools)
+//    "training" = the same, with the CERTIFICATE OF COMPLETION badge
+//                 (short trainings on the self-service page)
 //    "giz-remote-work" = the GIZ / ZME two day Remote Work Training
 //                        certificate. Its partner logos and its course
 //                        wording are already part of the artwork, so
@@ -93,6 +95,13 @@ export type TextBox = {
   grey?: boolean;
   weight?: number;
   align?: "left" | "center";
+  // Optional. Set lines to 2 to let a long line wrap onto a second line
+  // instead of shrinking to fit one. lineGap is the distance between the two
+  // baselines, as a share of the height. When it wraps, everything printed
+  // below it moves down by the same distance. Only the "training" template
+  // uses this; every other template prints on one line exactly as before.
+  lines?: 1 | 2;
+  lineGap?: number;
 };
 
 export type Template = {
@@ -130,6 +139,26 @@ export const TEMPLATES: Record<string, Template> = {
             font: '"Bebas Neue DLA"', track: 0.02, upper: true },
     course: { x: 0.3315, baseline: 0.551, size: 0.0455, max: 0.59,
               font: '"Antonio DLA"', track: 0 },
+    date: { x: 0.3333, baseline: 0.6, size: 0.03, max: 0.26,
+            font: "Poppins", track: 0.01 },
+    sub: { x: 0.3333, baseline: 0.656, size: 0.0225, max: 0.5,
+           font: "Poppins", track: 0.01, grey: true },
+    certNo: { x: 0.3333, baseline: 0.956, size: 0.0115 },
+  },
+
+  // Short trainings certified through the self-service page (for example
+  // the MoBEP Power BI training at /mobep). The same design as "default",
+  // with the badge reading CERTIFICATE OF COMPLETION and the line under the
+  // name reading "has successfully completed a three-day training on". A
+  // long course title wraps onto two lines. The grey line under the date
+  // comes from the training's Google Sheet.
+  training: {
+    plate: "/assets/certificates/plate-training.jpg",
+    drawPartnerLogos: true,
+    name: { x: 0.331, baseline: 0.4234, size: 0.0665, max: 0.6,
+            font: '"Bebas Neue DLA"', track: 0.02, upper: true },
+    course: { x: 0.3315, baseline: 0.551, size: 0.0455, max: 0.54,
+              font: '"Antonio DLA"', track: 0, lines: 2, lineGap: 0.05 },
     date: { x: 0.3333, baseline: 0.6, size: 0.03, max: 0.26,
             font: "Poppins", track: 0.01 },
     sub: { x: 0.3333, baseline: 0.656, size: 0.0225, max: 0.5,

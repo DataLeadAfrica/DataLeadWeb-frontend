@@ -42,13 +42,17 @@ export function pickTemplate(cert: Certificate): Template {
 
 // Draw one line, shrinking it if it would run past its allowed width, so a
 // long name or a long course title can never overflow the design.
+//
+// A text box with lines: 2 may instead wrap onto a second line, split at the
+// space that makes the two lines most even, and only then shrink. Returns how
+// many lines were drawn, so the caller can move what sits below it.
 function drawFit(
   ctx: CanvasRenderingContext2D,
   text: string,
   cfg: TextBox,
   W: number,
   H: number,
-) {
+): number {
   let px = cfg.size * H;
   const maxW = cfg.max * W;
   const value = cfg.upper ? text.toUpperCase() : text;
@@ -61,8 +65,28 @@ function drawFit(
     if (cfg.track) w += cfg.track * px * (s.length - 1);
     return w;
   };
+
+  // Decide whether to wrap, at full size, before any shrinking.
+  let rows = [value];
+  if (cfg.lines === 2 && measure(value) > maxW && value.includes(" ")) {
+    const words = value.split(" ");
+    let best = rows;
+    let bestW = Infinity;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(" ");
+      const b = words.slice(i).join(" ");
+      const widest = Math.max(measure(a), measure(b));
+      if (widest < bestW) {
+        bestW = widest;
+        best = [a, b];
+      }
+    }
+    rows = best;
+  }
+  const widest = () => Math.max(...rows.map(measure));
+
   let guard = 0;
-  while (measure(value) > maxW && px > 8 && guard < 300) {
+  while (widest() > maxW && px > 8 && guard < 300) {
     px -= 1;
     setFont(px);
     guard += 1;
@@ -70,19 +94,23 @@ function drawFit(
   ctx.fillStyle = cfg.grey ? "#5f5f5f" : "#000000";
   ctx.textBaseline = "alphabetic";
 
-  // "center" means cfg.x is the middle of the line, not its left edge.
-  const startX =
-    cfg.align === "center" ? cfg.x * W - measure(value) / 2 : cfg.x * W;
+  rows.forEach((row, i) => {
+    const baseline = (cfg.baseline + i * (cfg.lineGap || 0)) * H;
+    // "center" means cfg.x is the middle of the line, not its left edge.
+    const startX =
+      cfg.align === "center" ? cfg.x * W - measure(row) / 2 : cfg.x * W;
 
-  if (!cfg.track) {
-    ctx.fillText(value, startX, cfg.baseline * H);
-    return;
-  }
-  let x = startX;
-  for (const ch of value) {
-    ctx.fillText(ch, x, cfg.baseline * H);
-    x += ctx.measureText(ch).width + cfg.track * px;
-  }
+    if (!cfg.track) {
+      ctx.fillText(row, startX, baseline);
+      return;
+    }
+    let x = startX;
+    for (const ch of row) {
+      ctx.fillText(ch, x, baseline);
+      x += ctx.measureText(ch).width + cfg.track * px;
+    }
+  });
+  return rows.length;
 }
 
 // Partner logos sit right aligned and walk leftwards, so a programme with no
@@ -141,19 +169,28 @@ export async function renderCertificate(
   }
 
   if (tpl.name) drawFit(ctx, cert.full_name, tpl.name, W, H);
-  if (tpl.course) drawFit(ctx, certificateTitle(cert), tpl.course, W, H);
+
+  // When the course title wraps onto a second line, the date and the grey
+  // line move down by one line so nothing overlaps. Templates that never
+  // wrap get a shift of zero and print exactly where they always did.
+  let shift = 0;
+  if (tpl.course) {
+    const rows = drawFit(ctx, certificateTitle(cert), tpl.course, W, H);
+    if (rows > 1) shift = (rows - 1) * (tpl.course.lineGap || 0);
+  }
   if (tpl.date) {
     drawFit(
       ctx,
       (tpl.datePrefix || "") + prettyDate(cert.completed_on),
-      tpl.date,
+      { ...tpl.date, baseline: tpl.date.baseline + shift },
       W,
       H,
     );
   }
   if (tpl.sub) {
-    const sub = certificateSubtitle(cert);
-    if (sub) drawFit(ctx, sub, tpl.sub, W, H);
+    const sub =
+      cert.subtitle !== undefined ? cert.subtitle : certificateSubtitle(cert);
+    if (sub) drawFit(ctx, sub, { ...tpl.sub, baseline: tpl.sub.baseline + shift }, W, H);
   }
 
   if (tpl.certNo) {

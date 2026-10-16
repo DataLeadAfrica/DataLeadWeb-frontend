@@ -27,6 +27,9 @@ export type Certificate = {
   duration_text: string | null;
   completed_on: string;
   template_key?: string;
+  // Optional. When present it is printed as the small grey line instead of
+  // the weekly tool wording. Only the self-service training page sets it.
+  subtitle?: string;
 };
 
 export type VerifyResult = {

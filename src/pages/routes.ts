@@ -75,6 +75,9 @@ export const routes = {
   learnerModule: "/my-learning/:slug",
   staffPortal: "/staff/portal",
   certifications: "/certifications",
+  // Self-service certificate for the MoBEP Power BI training (Oct 2026).
+  // Reached by QR code only: not linked from the site, carries noindex.
+  mobepCertificate: "/mobep",
 
   // Data-Lead Academy.
   //

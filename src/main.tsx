@@ -23,6 +23,8 @@ import learningRouter from "./pages/Learning/router";
 import academyRouter from "./pages/Academy/router";
 import studioRouter from "./pages/Academy/Studio/router";
 import Certifications from "./pages/Certifications/page";
+import TrainingCertificate from "./pages/TrainingCertificate/page";
+import { MOBEP_TRAINING } from "./pages/TrainingCertificate/config";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -44,6 +46,10 @@ createRoot(document.getElementById("root")!).render(
         {successRouter()}
         {certificatesRouter()}
         <Route path={routes.certifications} element={<Certifications />} />
+        <Route
+          path={routes.mobepCertificate}
+          element={<TrainingCertificate setup={MOBEP_TRAINING} />}
+        />
         {learningRouter()}
         {academyRouter()}
         {/* The control room. Its routes sit beside the Academy's rather than
