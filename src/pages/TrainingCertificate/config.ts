@@ -29,7 +29,7 @@ export type TrainingSetup = {
 };
 
 export const MOBEP_TRAINING: TrainingSetup = {
-  endpoint: "PASTE_APPS_SCRIPT_EXEC_URL_HERE",
+  endpoint: "https://script.google.com/macros/s/AKfycbz0X4WgVP3ruGSou6leGd4FEtjqxUBrSHtbmR4iQPpFXLJBw4gwTwB3Z_dt67cvsS13Ag/exec",
   slug: "mobep-power-bi-2026",
   fallback: {
     title: "Applying Microsoft Power BI for Equity-Focused Planning and Budgeting",
