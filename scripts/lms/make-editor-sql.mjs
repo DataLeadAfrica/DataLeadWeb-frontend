@@ -31,7 +31,7 @@
 //
 // This is how file 17 actually went live. Big Sam ran a copy made this way
 // and compared every stored function source against a psql build: identical
-// apart from one trailing space. Hence the rule from Dr Ayoola that
+// apart from one trailing space. Hence the rule from the review that
 // anything the run order says to paste gets a generated copy, and hence
 // the test beside this that the bodies still match.
 
@@ -70,6 +70,9 @@ export const EDITOR_FILES = [
   { source: "database/lms/21_execute_privileges.sql", shape: "bodies" },
   { source: "database/lms/21_undo.sql", shape: "bodies" },
   { source: "database/lms/21_verify.sql", shape: "checks" },
+  { source: "database/lms/22_gaps.sql", shape: "bodies" },
+  { source: "database/lms/22_undo.sql", shape: "bodies" },
+  { source: "database/lms/22_verify.sql", shape: "checks" },
 ];
 
 /**
@@ -221,7 +224,7 @@ export function stripComments(sql) {
     // changed by a whitespace rule that had no business touching a body
     // at all, and the comment here used to claim it never did.
     //
-    // Dr Ayoola allowed the body comparison to ignore trailing
+    // The review allowed the body comparison to ignore trailing
     // whitespace at end of line, and Big Sam's hand made copy differed
     // from a psql build by exactly one trailing space, which is very
     // likely this same one. Doing it per piece means the tolerance is
@@ -273,7 +276,7 @@ export function toEditor(sql) {
  * column is emptied, and the comments go. The checks themselves, which
  * are the part that could be wrong, are copied across untouched.
  *
- * GENERATED RATHER THAN TYPED because I told Dr Ayoola the two files
+ * GENERATED RATHER THAN TYPED because I said in a reply that the two files
  * could not drift, and at the time that was only true in the sense that
  * I had generated the first one by hand once. A test asserted the check
  * NUMBERS matched, which would catch a check being added or removed and

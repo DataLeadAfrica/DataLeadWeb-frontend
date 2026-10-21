@@ -309,7 +309,7 @@ on conflict (id) do nothing;
 -- =====================================================================
 -- 7. A COUNTRY IS A REAL COUNTRY (review item 6)
 --
--- Before this, country and state were free text. Dr Ayoola stored
+-- Before this, country and state were free text. The review stored
 -- "<script>" as a country. Both columns now point at a seeded list.
 -- =====================================================================
 do $$
@@ -376,7 +376,7 @@ end $$;
 -- 8. A REFUSED SIGN UP STORES NOTHING, INCLUDING IN THE TOKEN
 --    (review items 2 and 3)
 --
--- The replay Dr Ayoola used: Ghana with a Nigerian postal code, which
+-- The replay the review used: Ghana with a Nigerian postal code, which
 -- breaks lp_post_ck. Nothing may be stored, the answers must come out
 -- of raw_user_meta_data, and the refusal must be written down.
 -- =====================================================================
@@ -566,7 +566,7 @@ end $$;
 -- 12. THE LIVE CHECK PAGE STILL WORKS, AND THE BANK IS STILL SHUT
 --     (review item 1)
 --
--- Dr Ayoola asked for this one by name: "Test the live page's query as
+-- The review asked for this one by name: "Test the live page's query as
 -- a learner after the change." The query below is findCheck's, copied
 -- out of src/pages/Academy/Learn/Check/LessonCheck.tsx:
 --

@@ -135,14 +135,14 @@ function Inner() {
 
       <section style={{ marginTop: 28 }}>
         <div className="stu__panel__h">
-          <h2 className="stu__h2">This week</h2>
+          <h2 className="stu__h2">Recently</h2>
           <span className="stu__label">Counted from the Academy database</span>
         </div>
         <div className="stu__grid stu__g4">
-          <Stat label="New learners" value={data.week.new_learners} />
+          <Stat label="New learners, 7 days" value={data.week.new_learners} />
           <Stat label="Active in the last 7 days" value={data.week.active} />
           <Stat label="Minutes watched, 7 days" value={data.week.minutes} />
-          <Stat label="Certificates this week" value={data.week.certificates} />
+          <Stat label="Certificates this month" value={data.week.certificates} />
         </div>
       </section>
 

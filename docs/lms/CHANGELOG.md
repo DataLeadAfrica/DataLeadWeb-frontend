@@ -14,6 +14,221 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6E, FILE 22 ROUND 2, 21 October 2026. A programme name the certification system owns
+
+Laid on the main 6D merges into. One fault in file 22, and two corrections for 6D that ride along in
+the same zip rather than a round of their own.
+
+### An Academy programme could take a certification programme's slug and code
+
+`lms_create_course` has made the programme slug from the title and checked it against `lms_courses`
+alone **since file 17**. `lms_create_path` inherited the habit in the first version of file 22.
+Neither ever looked at `programmes`, and the certification system's programmes were there first.
+
+The review proved it: a certification programme with slug `digital-marketing-web-design` and code
+`DMWD` was put in `programmes`, then `lms_create_path('Digital Marketing Web Design')` succeeded, and
+`programmes` held two rows sharing that slug.
+
+**It is not cosmetic.** `src/lib/certificateConfig.ts` keys partner logos and certificate templates
+by programme slug. On live it is one of two things: with a unique rule on `programmes.slug` the path
+cannot be created at all and step 3 of file 22 stops the whole file, and without one an Academy path
+certificate quietly borrows a bootcamp's logos. The code matters the same way, because
+`make_certificate_number` is handed the code and the number is printed on the certificate. It is a
+live risk for the path Big Sam most wants, since the backfill gives the Data Analytics path a
+programme with slug `data-analytics` and the Courses page sells a Data Analytics bootcamp.
+
+One helper, `lms_free_programme_identity`, now chooses both, and all three places that make a
+programme use it: `lms_create_course`, `lms_create_path` and the backfill. A slug free in
+`programmes` as well as in the Academy's own table, and a code free in `programmes`, with `-2`, `-3`
+and so on as the slug already did. The code's number is appended inside the twelve characters with
+no dash, because the code goes into `CODE-YEAR-MODULE-RANDOM` and a dash would put a fifth part in a
+number people read by eye.
+
+**Inserts only.** Nothing reads a certification row to change it, rename it or reuse it. Proved
+three ways with a planted certification programme holding BOTH the slug and the code: making a path,
+making a course, and the backfill each get a different slug and a different code, and the planted
+row comes out byte for byte as it went in, still alone on its slug and its code.
+
+An existing path keeps its own address. The backfill moves only the programme, never the path's
+slug, because that slug is a URL a learner may already hold. A new path's slug does avoid
+`programmes`, which is the asymmetry the helper's two callers need: one is naming something new and
+the other must not rename something old.
+
+`22_verify` gains rows 15, 16 and 17. **Row 15 counts rather than asserts**, so a database where two
+programmes already clash gets a NO it can act on instead of an error that hides every other row, and
+a list printed under the table names the value shared and which programmes share it. A NO there does
+not mean the file failed: a clash already present is left exactly as it is. `file_22_tests` is now 44
+checks.
+
+### Two corrections for 6D
+
+**`file_12_tests.sql` still had six bare deletes**, at line 21 and lines 518, 529, 540, 551 and 583,
+and the changelog claimed no test file stops under the guard. It did: six checks failed with
+"DELETE requires a WHERE clause". They are now `where true`, and the file is **52 of 52 with the
+guard loaded and zero guard stops**.
+
+**My scanner should have caught them and reported the repository clean.** It split each file on
+semicolons and asked what each piece STARTED with, which was already the second version of that
+rule. Inside PL/pgSQL a statement can begin after `begin`, `then`, `else` or `loop` with no
+semicolon in front of it, so a piece reading `do $$ declare x int; begin delete from mail_outbox;`
+starts with `begin` and the delete was never examined. The scanner now finds every `delete` or
+`update`, checks that what precedes it is a real statement boundary, and then asks whether the
+statement has a `WHERE`. `for update`, `on update cascade`, `before update on` and `on conflict do
+update` are excluded by that boundary test rather than by a list of excuses. Run against the
+unfixed file it finds exactly the six the review named and nothing else.
+
+**Attribution corrected.** The changelog and the run order gave findings and a decision to Dr Ayoola
+that were not his. The `lms_link_participant` attack, the `setMyName` wording and the bare delete
+scan came from the review, which Big Sam passes on; the sign up enumeration risk was accepted by
+Big Sam. Twenty nine lines corrected across the docs, the SQL comments and the tests: "the review"
+where a finding or an instruction reached me that way, and Big Sam by name where he decided. Three
+references are left because they are his own: he chose the three way split for 6E, he chose how the
+video half would be handled, and he supplied the merged `vercel.json` in Phase 5.
+
+The same pattern sits in files already merged and not in this package: `16_undo.sql`,
+`16_verify.sql`, `ACADEMY-6A-PLAIN.md`, `PHASE-5-ROUND-2-FILES.md`, `show-test-course.sql`,
+`cover-art.test.mjs` and `signup-answers.test.mjs`. They are left alone rather than churned through
+a package, and are listed here so the decision is somebody's rather than nobody's.
+
+## PHASE 6E, FILE 22, 20 October 2026. The seven gaps Big Sam found building a course
+
+Laid on the main that 6D merges into. Phase 6E is split into three so a fault in one part cannot
+hold up the rest: **22** is the seven gaps, **23** is module badges and the path exam end to end,
+**24** is the lesson video player. Dr Ayoola chose the split.
+
+Big Sam settled the learning structure and then found the gaps in it by hand, building his first
+course in a browser against a live-shaped database. He got it live, but only with two hand-run
+stopgaps. Every gap below was real on main.
+
+### The three that needed SQL
+
+**Courses made before file 17 have no exam at all.** The Course exam page took its quiz id from the
+course's exam, found nothing, and sent an empty string, so writing a question answered "invalid
+input syntax for type uuid". Big Sam's Phase 4 test course is one. Every course that is not archived
+now gets a draft exam if it has none, with the settings a new course gets. Archived courses are left
+alone: nobody is going to sit their exam and giving them one would put them back in the way of every
+report that counts drafts. The backfill copies the settings out of `lms_ensure_course_exam` rather
+than calling it, because that function guards itself with `lms_is_staff()` and there is no signed in
+caller in the SQL editor at all. A verify row and a test both check the two still agree, so changing
+the numbers in one place cannot leave the other behind.
+
+**No path could ever issue a certificate.** `lms_create_course` has always inserted a programme and
+pointed the course at it. `lms_create_path` never did, so `lms_claim_path_certificate` answered
+"This path has no programme attached" and refused. New paths now create their programme and every
+existing path without one is given one. The programme is titled with the path's **certificate name**
+and not its name, because the programme title is the line somebody reads on the certificate.
+
+Two programmes can end up sharing a code, because a path and a course may share a slug and the two
+slug columns are in different tables. That was already true between courses and it is harmless:
+`make_certificate_number` ends every number with six random characters and the unique rule is on the
+number.
+
+**The certificate tile counted the wrong column over the wrong window.** It counted `completed_on`
+over a rolling seven days. `completed_on` is the day the **training ended**, often weeks before
+anybody issued the certificate, so the tile was not answering "how many went out recently" and was
+not answering anything else either. It now counts `issued_at` from the first of the current month in
+**Lagos** time.
+
+The time zone is not decoration. The server runs on UTC, an hour behind Abuja, so without it the
+month turns over at one in the morning in Nigeria. A test puts one certificate a second before the
+Lagos boundary and one a second after, and requires exactly the second to be counted.
+
+#### Every tile on the Overview, and what its window really is
+
+The review asked for each one to be stated. **All three of the others are a rolling seven days, not a
+calendar week.** None of them was wrong; they were sitting under a heading that said "This week".
+
+| Tile | Counts | Window |
+|---|---|---|
+| New learners, 7 days | accounts created with the learner role | rolling 7 days |
+| Active in the last 7 days | distinct learners with a watch day | rolling 7 days |
+| Minutes watched, 7 days | watch seconds, totalled and divided | rolling 7 days |
+| Certificates this month | certificates by `issued_at` | calendar month, Lagos |
+
+Each label now says its own window and the heading is "Recently", because one of the four is a
+month. The `Certificates` page tile is now "This month" too, and the returned column was renamed
+`this_week` to `this_month`, which needed the function dropped and remade because a return type
+cannot be changed in place. **Dropping a function throws its grants away and a new one is executable
+by `PUBLIC`**, so they are restated: that is the file 21 lesson arriving one file later, and a
+verify row now watches for it.
+
+### Pasting a sheet without its header row was completely broken
+
+The rule for "is the first line the column names?" was "any cell matches a column name". **A, B, C
+and D are column names**, and the Right column of every question holds A, B, C or D. So the first
+question of any sheet pasted without its header always matched, was eaten as the header, and every
+row after it was read against that question's cells. Three rows pasted came back as "2 rows read",
+both skipped, "No question text". Thirty rows pasted WITH a header had always worked, which is why
+it survived.
+
+The rule now needs the first cell to be the word `Question`, or four or more cells to match a column
+name. A question row can only ever match on its Right cell, which is one; a header row written with
+different wording still matches on A, B, C, D and Right, which is five.
+
+One accepted miss, written down rather than discovered: a question whose entire text is the single
+word "Question" is read as a header. That is a word and not a question.
+
+The decision moved into `sheet-rule.js` as plain JavaScript with a `.d.ts` beside it, the same
+arrangement as `Player/slices.js`, so `tests/paste-sheet.test.mjs` imports it and runs the real
+thing. Seven tests, and **three of them fail against the old rule**, including the one that
+reproduces Big Sam's paste exactly. A test also checks `sheet.ts` has not kept a second copy of the
+rule, because the drifted copy would be the one that runs.
+
+### Archiving a course had no button, and needed two fixes before one was worth adding
+
+`lms_archive_course` has existed since file 17 and the wrapper in `studio.ts` was there all along.
+What was missing was any button, so Big Sam archived a test course by writing SQL by hand. The
+function itself needed:
+
+- **A reason.** It logged that a course was archived and never why.
+- **A refusal for a live course.** It would have archived a published course and a learner part way
+  through would have had it vanish underneath them. Unpublishing is a separate decision with its own
+  blockers, so it now sends you there.
+
+And there was **no way back**: nothing turned an archived course into a draft again, so an archive
+was final in practice even though the row was still there. `lms_restore_course` is the other half,
+and it restores to **draft** rather than to live, because coming back into view is one decision and
+going live is another with the publish checklist between them. Never a delete in either direction:
+somebody may hold a certificate for the course.
+
+The old one argument version is **dropped**, not left beside the new one. `lms_unpublish_course`
+already has two overloads of the same name and the pages would have gone on calling the one that
+asks for nothing. A verify row checks the old signature is gone.
+
+The button is in the builder's publish panel, for administrators, on any course that is not live. An
+archived course shows "Bring it back to draft" instead. The Courses page already had an Archived
+filter and an archived course does reach it, which I checked rather than assumed.
+
+### Already done, and not done
+
+**The Questions page guard already covers the exam.** The review asked for the 6D guard to be
+extended to the no-exam case. It already reads `lessonId ? lesson?.check_id : course.exam?.id`, so a
+course with no exam gives no quiz id, no Write or Paste buttons and the plain message. Nothing to
+change.
+
+**Finding 5 was smaller than it read.** The lib wrapper existed; only the button was missing.
+
+**The video player is file 24, and I cannot finish it here.** YouTube is unreachable from this
+container: `www.youtube.com`, the iframe API and `i.ytimg.com` all fail at the proxy, which allows
+only package registries. So the speed bug cannot be reproduced here and the screenshots cannot be
+taken here. The player will be built to the brief and tested against a fake player for everything
+that does not need YouTube, and the YouTube half comes with a numbered checklist to run on the
+preview. Dr Ayoola chose that.
+
+### Four traps avoided, each by checking rather than reasoning
+
+- `lms_quizzes.course_id` arrives with file 16, so naming it in `22_verify` row 1 raised on a
+  database that had not had file 16 instead of printing a NO. **I wrote the warning about this at
+  the top of that very file and then put a bare reference in its first row.** Fifth time for this
+  trap.
+- `lms_courses.status` is the type `lms_status`, not `lms_course_status`. Guessed, and the file would
+  not load.
+- `record r has no field this_month` killed `file_22_tests` outright on a database without file 22,
+  instead of reporting a failed check. Section 4 reads the result through `execute` as jsonb now, so
+  it reports: 13 of 32 fail without the file.
+- The test for pasting had to be proved to bite. Putting the old rule back makes three of the seven
+  fail.
+
 ## PHASE 6D, 19 October 2026. Sign up stops sending a code, and a course can be published
 
 Laid on `1ff161b`. Two numbered files, and the second of them fixes a fault that made the control
@@ -98,7 +313,7 @@ sentence rather than a constraint violation.
 ### Two corrections of mine
 
 `setMyName` said the name "shows everywhere on the next sign in either way" if the metadata write
-failed. Dr Ayoola caught it: `getSession` reads the metadata and nothing else, so a failed write
+failed. The review caught it: `getSession` reads the metadata and nothing else, so a failed write
 leaves the greeting empty until the name is saved again. It now says "Saved. Your name may not show
 here until you sign in again."
 
@@ -108,7 +323,7 @@ expressed.
 
 ### File 21: who may execute what
 
-Dr Ayoola found three security definer functions open to everybody, and proved the worst of them by
+The review found three security definer functions open to everybody, and proved the worst of them by
 using it. As a plain learner through row level security, `lms_link_participant(auth.uid(),
 'somebody@example.com')` returned true and joined him to that person's unlinked certification
 record. It checks nothing about its caller. `lms_grant_free_courses(p_user)` grants free courses to
@@ -201,7 +416,7 @@ live already is.
 What the guard found once it was actually loaded:
 
 - **Nothing more.** Guard stops across the whole matrix and all twelve test files: zero. The one
-  bare statement in the numbered files was the one Dr Ayoola had already found by hand, and his
+  bare statement in the numbered files was the one the review had already found by hand, and its
   scan and mine agree exactly.
 - 122 bare statements in the test and seed files, every one of them a deliberate "empty this table
   before seeding". They now say `where true`, because with the guard loaded in the harness a bare
@@ -255,7 +470,7 @@ Suggested for 6E, in that order.
 
 File 16 granted `lms_set_lesson_chapters` to `authenticated`. It guards itself with `lms_is_staff()`,
 which asks "are you staff" and never "is this lesson yours", so **any facilitator could rewrite the
-chapter list of any lesson, in anybody's published course**, by calling it directly. Dr Ayoola found
+chapter list of any lesson, in anybody's published course**, by calling it directly. The review found
 this and fixed live by hand.
 
 The grant is now commented out in file 16 rather than deleted, with the reason written where the
@@ -272,7 +487,7 @@ including once with fewer chapters than before, works throughout.
 
 Laid on `1f41a19`, the merge of `academy-6b`.
 
-Dr Ayoola's list after the control room went live, plus two things I found while building them.
+The review's list after the control room went live, plus two things I found while building them.
 Both of those were already on live and neither was in the list.
 
 ### The one to read first
@@ -316,7 +531,7 @@ hole.
 
 ### The email hook, and what the audit found
 
-The cause was Dr Ayoola's and it was exactly right: `digest()` is pgcrypto's, pgcrypto lives in
+The cause came from the review and it was exactly right: `digest()` is pgcrypto's, pgcrypto lives in
 `extensions` on Supabase, and this one function said only `'public'`. Every Academy email through
 the hook had failed since it was switched on.
 
@@ -338,7 +553,7 @@ New verify row 13 in `12_verify.sql` says the hook can see the schema.
 the whole file: the text before a body can end in the middle of a line, so its last line's trailing
 space is not trailing at all. Every check I had passed. The bodies matched, the comments were gone,
 the file looked right. It failed the moment the generated copy was run, which is exactly why Dr
-Ayoola said to put the generated copies through the database matrix rather than the originals.
+The review said to put the generated copies through the database matrix rather than the originals.
 
 **I had told him the two verify files could not drift, and that was not yet true.** The first
 `17_verify_EDITOR.sql` was generated once, by hand, and the test compared only the check NUMBERS,

@@ -7,7 +7,7 @@
 -- live in docs/lms/PHASE-6D-PLAIN.md.
 --
 -- ROWS 1 AND 8 ARE THE ONES THAT MATTER. Row 1 is the three holes Dr
--- Ayoola found. Row 8 is the allow list, and it is the row that will
+-- review found. Row 8 is the allow list, and it is the row that will
 -- still be working a year from now, because it fails on anything new
 -- rather than on a fixed list of old mistakes.
 --

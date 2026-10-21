@@ -5,7 +5,7 @@
 // the component tree in development, which is what the fast refresh
 // rule is warning about, and it is right.
 
-const HEADERS = ["Question", "A", "B", "C", "D", "Right", "Why", "Lesson", "Time"];
+import { HEADERS, hasHeaderRow } from "./sheet-rule";
 
 /**
  * Tab separated text to rows, using the first line as the headings.
@@ -20,15 +20,36 @@ const HEADERS = ["Question", "A", "B", "C", "D", "Right", "Why", "Lesson", "Time
  * does not is data, and the columns are assumed in the order above,
  * because somebody who copied without the header row should not have to
  * go back for it.
+ *
+ * AND "LOOKS LIKE THE HEADINGS" USED TO MEAN "ANY CELL MATCHES ONE",
+ * which broke pasting without a header row completely.
+ *
+ * A, B, C and D are column names. The Right column of every question
+ * holds A, B, C or D. So the first question of any sheet pasted without
+ * its header row matched, was taken as the headings and dropped, and
+ * every other row was then read against ITS cells rather than against
+ * the real column names. Three rows pasted came back as "2 rows read",
+ * both skipped, "No question text." Dr Ayoola found it with a real
+ * sheet.
+ *
+ * The rule now needs one of two things, either of which is nearly
+ * impossible in a row of real questions:
+ *
+ *   the FIRST cell is the word Question, in any case, or
+ *   FOUR OR MORE cells match a column name.
+ *
+ * Four, because a question row can only ever match on its Right cell,
+ * and a header row written with different wording still matches on A, B,
+ * C, D and Right. A question whose text is the single word "Question"
+ * and nothing else would be read as a header, which is a sentence and
+ * not a question, so it is left as the one accepted miss.
  */
 export function readSheet(text: string): Record<string, string>[] {
   const lines = text.replace(/\r/g, "").split("\n").filter((l) => l.trim());
   if (lines.length === 0) return [];
 
   const firstCells = lines[0].split("\t").map((c) => c.trim());
-  const hasHeader = firstCells.some((c) =>
-    HEADERS.some((h) => h.toLowerCase() === c.toLowerCase()),
-  );
+  const hasHeader = hasHeaderRow(firstCells);
   const heads = hasHeader
     ? firstCells.map((c) => HEADERS.find((h) => h.toLowerCase() === c.toLowerCase()) || c)
     : HEADERS;

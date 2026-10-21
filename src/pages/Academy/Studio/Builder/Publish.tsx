@@ -3,7 +3,14 @@ import { useState } from "react";
 import { ArrowIcon, SendIcon } from "../Icons";
 import { Checks, Done, Problem } from "../ui";
 import type { PublishCheck, StudioCourseFull } from "./data";
-import { publishCourse, sendBack, sendForReview, unpublishCourse } from "../../../../lib/studio";
+import {
+  archiveCourse,
+  publishCourse,
+  restoreCourse,
+  sendBack,
+  sendForReview,
+  unpublishCourse,
+} from "../../../../lib/studio";
 
 // The publish panel.
 //
@@ -34,7 +41,7 @@ export default function Publish({ course, isAdmin, onFix, onChanged }: Props) {
   const [problem, setProblem] = useState("");
   const [done, setDone] = useState("");
   const [note, setNote] = useState("");
-  const [asking, setAsking] = useState<"" | "back" | "down">("");
+  const [asking, setAsking] = useState<"" | "back" | "down" | "archive" | "restore">("");
 
   const checks = course.checks || [];
   const passing = checks.filter((c) => c.passes).length;
@@ -75,7 +82,55 @@ export default function Publish({ course, isAdmin, onFix, onChanged }: Props) {
         <Problem>{problem}</Problem>
         <Done>{done}</Done>
 
-        {course.state === "published" ? (
+        {course.state === "archived" ? (
+          /* ARCHIVED, AND THERE IS A WAY BACK. Nothing used to turn an
+             archived course into a draft again, so Big Sam had to
+             archive a test course with SQL and could not have undone it
+             at all. It returns as a DRAFT and not as live, because
+             appearing again is one decision and going live is another,
+             with the whole checklist in between. */
+          isAdmin ? (
+            asking === "restore" ? (
+              <>
+                <label className="stu__field">
+                  <span>Why is it coming back?</span>
+                  <input
+                    className="stu__in"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="We are running it again in the new year"
+                  />
+                  <small>It comes back as a draft, so nothing goes live by accident.</small>
+                </label>
+                <button
+                  type="button"
+                  className="acad-btn"
+                  disabled={busy || !note.trim()}
+                  onClick={() => run(() => restoreCourse(course.id, note))}
+                >
+                  Bring it back to draft
+                </button>
+                <button type="button" className="stu__chip" onClick={() => setAsking("")}>
+                  Leave it archived
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="stu__hint">
+                  This course is archived. It is out of the catalogue and nobody can enrol, but
+                  nothing has been deleted and anybody holding its certificate still has one.
+                </p>
+                <button type="button" className="stu__chip" onClick={() => setAsking("restore")}>
+                  Bring it back to draft
+                </button>
+              </>
+            )
+          ) : (
+            <p className="stu__hint">
+              This course is archived. Ask an administrator if it should come back.
+            </p>
+          )
+        ) : course.state === "published" ? (
           <>
             {isAdmin ? (
               asking === "down" ? (
@@ -133,6 +188,46 @@ export default function Publish({ course, isAdmin, onFix, onChanged }: Props) {
                 do. Each one above has a button that takes you to it.
               </p>
             ) : null}
+
+            {/* ARCHIVING, FOR AN ADMINISTRATOR, ON A COURSE THAT IS NOT
+                LIVE. lms_archive_course has existed since file 17 and
+                nothing ever called it, so the only way to archive
+                anything was to write SQL by hand. A live course is not
+                offered this at all: file 22 refuses it and says to
+                unpublish first, so offering it here would be offering a
+                button that cannot work. */}
+            {asking === "archive" ? (
+              <>
+                <label className="stu__field">
+                  <span>Why is it being archived?</span>
+                  <input
+                    className="stu__in"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="A duplicate of the Stata course"
+                  />
+                  <small>
+                    Archiving hides a course from the catalogue. Nothing is deleted, and anybody
+                    holding its certificate keeps it.
+                  </small>
+                </label>
+                <button
+                  type="button"
+                  className="stu__chip"
+                  disabled={busy || !note.trim()}
+                  onClick={() => run(() => archiveCourse(course.id, note))}
+                >
+                  Archive this course
+                </button>
+                <button type="button" className="stu__chip" onClick={() => setAsking("")}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button type="button" className="stu__chip" onClick={() => setAsking("archive")}>
+                Archive this course
+              </button>
+            )}
 
             {course.state === "review" ? (
               asking === "back" ? (

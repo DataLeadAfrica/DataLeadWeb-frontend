@@ -21,7 +21,7 @@ import { routes } from "../../../routes";
 function Inner() {
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<StudioCertificate[] | null>(null);
-  const [counts, setCounts] = useState({ all_time: 0, this_week: 0, revoked: 0 });
+  const [counts, setCounts] = useState({ all_time: 0, this_month: 0, revoked: 0 });
   const [problem, setProblem] = useState("");
 
   useEffect(() => {
@@ -61,7 +61,7 @@ function Inner() {
 
       <div className="stu__grid stu__g4" style={{ marginBottom: 20 }}>
         <Stat label="All time" value={counts.all_time} />
-        <Stat label="This week" value={counts.this_week} />
+        <Stat label="This month" value={counts.this_month} />
         <Stat label="Revoked" value={counts.revoked} note="Revoking happens in the console" />
         <Stat label="Shown" value={rows.length} />
       </div>

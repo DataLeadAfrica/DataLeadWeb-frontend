@@ -418,7 +418,7 @@ end $$;
 -- ---------------------------------------------------------------------
 -- 9. The backfill mark is not something a visitor can empty
 -- ---------------------------------------------------------------------
--- Dr Ayoola found this by doing it: as anon, he truncated the table.
+-- The review found this by doing it: as anon, it truncated the table.
 -- Supabase's default privileges grant everything on a new public table
 -- to anon and authenticated, TRUNCATE and DELETE included, so creating
 -- the table was not the same as locking it.

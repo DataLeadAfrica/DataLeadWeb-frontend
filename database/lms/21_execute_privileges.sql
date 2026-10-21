@@ -13,7 +13,7 @@
 --
 --   lms_link_participant(p_user, p_email) is security definer, does not
 --   check its caller, and joins an account to a certification record by
---   email. Dr Ayoola called it as a plain learner and was joined to
+--   email. The review called it as a plain learner and was joined to
 --   somebody else's unlinked record.
 --
 --   lms_grant_free_courses(p_user) grants free courses to any user id.

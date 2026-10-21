@@ -165,8 +165,37 @@ export async function unpublishCourse(course: string, reason: string): Promise<A
   return { ok: true, data: got.data?.[0]?.message || "Taken down." };
 }
 
-export function archiveCourse(course: string) {
-  return call<null>("lms_archive_course", { p_course: course });
+/**
+ * Archive a course, with a reason.
+ *
+ * THE REASON IS NOT OPTIONAL, and it is not this file that insists: file
+ * 22 refuses without one, so the log always says why a course went out
+ * of sight. The call used to take the course alone and the database
+ * logged an empty detail.
+ *
+ * It also refuses a live course. Taking it down is a separate decision
+ * with its own blockers, and a learner part way through should not have
+ * a course disappear underneath them.
+ *
+ * NEVER A DELETE, either way round. Somebody may hold a certificate.
+ */
+export async function archiveCourse(course: string, reason: string) {
+  const got = await call<null>("lms_archive_course", {
+    p_course: course,
+    p_reason: reason,
+  });
+  if (!got.ok) return got;
+  return { ok: true as const, data: "Archived." };
+}
+
+/** Bring an archived course back. It returns as a DRAFT, never as live. */
+export async function restoreCourse(course: string, reason: string) {
+  const got = await call<null>("lms_restore_course", {
+    p_course: course,
+    p_reason: reason,
+  });
+  if (!got.ok) return got;
+  return { ok: true as const, data: "Back as a draft." };
 }
 
 export type CourseDetails = {
@@ -461,11 +490,11 @@ export function getCertificates(search: string, limit = 50) {
 }
 
 export async function getCertificateCounts() {
-  const got = await call<{ all_time: number; this_week: number; revoked: number }[]>(
+  const got = await call<{ all_time: number; this_month: number; revoked: number }[]>(
     "lms_studio_certificate_counts",
   );
   if (!got.ok) return got;
-  return { ok: true as const, data: got.data?.[0] || { all_time: 0, this_week: 0, revoked: 0 } };
+  return { ok: true as const, data: got.data?.[0] || { all_time: 0, this_month: 0, revoked: 0 } };
 }
 
 export type StudioPopup = {

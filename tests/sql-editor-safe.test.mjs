@@ -532,7 +532,7 @@ test("no SQL file updates or deletes every row of a table", () => {
   // "on update cascade" and "before update on", which is what sank the
   // first version of this test.
   //
-  // The numbered files are the ones Dr Ayoola asked about and the ones
+  // The numbered files are the ones the review asked about and the ones
   // that matter, since those run on live. The tests and seeds are
   // scanned too: clearing a whole table is their legitimate business, so
   // they hold most of the "where true" in the repository, and with the
@@ -554,22 +554,34 @@ test("no SQL file updates or deletes every row of a table", () => {
       .replace(/^\s*--.*$/gm, "")
       .replace(/'(?:[^']|'')*'/g, (s) => " ".repeat(s.length));
 
-    // A STATEMENT, not the word. The first version matched "update"
-    // anywhere and reported fourteen faults that were all "on update
-    // cascade", "for update" and "before update on", which is every
-    // place the word appears in DDL and none of them a statement.
+    // A STATEMENT BOUNDARY, NOT JUST A SEMICOLON.
     //
-    // Splitting on the semicolons and asking what each piece STARTS
-    // with is both simpler and right, because that is what a statement
-    // is.
-    let at = 0;
-    for (const piece of sql.split(";")) {
-      const stmt = piece.trim();
-      at += piece.length + 1;
-      const m = /^(update|delete\s+from)\s+([a-z_][a-z0-9_.]*)/i.exec(stmt);
-      if (!m) continue;
+    // The first version matched "update" anywhere and reported fourteen
+    // faults that were all "on update cascade", "for update" and "before
+    // update on". So it was changed to split on semicolons and ask what
+    // each piece STARTED with, which was simpler and still wrong.
+    //
+    // Inside PL/pgSQL a statement can begin after begin, then, else or
+    // loop, with no semicolon in front of it. A piece of "do $$ declare
+    // x int; begin delete from mail_outbox;" therefore STARTS with
+    // "begin", so the delete was never looked at. Six of them sat in
+    // file_12_tests.sql and this test called the repository clean while
+    // the guard failed six checks in that file. The review caught it.
+    //
+    // So: find every delete or update, check what comes immediately
+    // before it is a real statement boundary, and then ask whether the
+    // statement has a WHERE. "for update", "on update cascade", "before
+    // update on" and "on conflict do update" are all excluded by the
+    // boundary test rather than by a list of excuses.
+    const BOUNDARY = /(?:^|;|\bbegin\b|\bthen\b|\belse\b|\bloop\b|\$\$|\$[a-z_]+\$)\s*$/i;
+    const TARGET = /\b(delete\s+from|update)\s+([a-z_][a-z0-9_.]*)/gi;
+
+    for (const m of sql.matchAll(TARGET)) {
+      if (!BOUNDARY.test(sql.slice(0, m.index))) continue;
+      const end = sql.indexOf(";", m.index + m[0].length);
+      const stmt = sql.slice(m.index, end === -1 ? sql.length : end);
       if (/\bwhere\b/i.test(stmt)) continue;
-      const line = sql.slice(0, at - piece.length - 1).split("\n").length;
+      const line = sql.slice(0, m.index).split("\n").length;
       bad.push(`${file}:${line} ${m[1].toLowerCase()} ${m[2]} with no WHERE`);
     }
   }

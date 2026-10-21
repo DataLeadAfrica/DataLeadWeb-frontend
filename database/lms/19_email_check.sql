@@ -145,7 +145,7 @@ create table if not exists lms_email_verify_state (
 
 -- AND THE MARK IS LOCKED, BECAUSE IT IS THE WHOLE GUARD.
 --
--- Dr Ayoola found this and proved it: as anon he truncated this table.
+-- The review found this and proved it: as anon it truncated this table.
 -- Supabase sets default privileges that grant everything on a new public
 -- table to anon and authenticated, TRUNCATE and DELETE included, so a
 -- table created here and left alone is wide open. Creating it was not
@@ -739,7 +739,7 @@ end $$;
 -- address is proven. This is for the case that rule cannot cover: the
 -- address on somebody's certificate is not the one they signed up with.
 -- It is rare, and when it happens a person should look at it rather
--- than the system guessing, which is what Dr Ayoola asked for.
+-- than the system guessing, which is what the review asked for.
 --
 -- Administrators only, never facilitators. A facilitator sees no
 -- learner names or email addresses at all, and this is a function for

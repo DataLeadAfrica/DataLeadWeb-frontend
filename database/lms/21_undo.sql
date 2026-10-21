@@ -7,7 +7,7 @@
 --
 --   lms_link_participant, which joins an account to a certification
 --   record by email address and asks nothing about who is calling. This
---   is the one Dr Ayoola used, as a plain learner, to join himself to
+--   is the one the review used, as a plain learner, to join an account to
 --   somebody else's unlinked record.
 --
 --   lms_grant_free_courses, which grants free courses to any account id
