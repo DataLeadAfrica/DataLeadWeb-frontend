@@ -850,3 +850,23 @@ body:has(.acad-stage--focus) .wa-float {
     transition: none;
   }
 }
+
+/* ------------------------------------------- registration complete */
+
+/* The panel sign up ends on, as of Phase 6D. It is the same for an
+   address that was free and one that was already taken, which is the
+   point of it: anything that differed between those two cases would
+   answer, one address at a time, the question of who holds an account
+   here. */
+.acad-done {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+.acad-done__note {
+  margin: 0;
+  color: var(--acad-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}

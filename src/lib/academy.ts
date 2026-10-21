@@ -30,6 +30,16 @@ export type AccessState = {
   bootcamp: boolean;
   changed: boolean;
   message: string;
+  /**
+   * Whether this person has proved their email address.
+   *
+   * It rides on the sync rather than being asked for separately,
+   * because the sync already runs on every Academy page and already
+   * knows: it is the gate it opens. Asking again would be the second
+   * round trip this file records having removed once before, for the
+   * role.
+   */
+  verified: boolean;
 };
 
 export type Session = {
@@ -230,8 +240,22 @@ export async function signUp(
   // form cannot be used as a list of who has an account, and reading any
   // further would undo the protection it is providing.
   //
-  // No message either: the code screen already says where the code went
-  // and the meter beside it already counts down how long it lasts.
+  // THE NEW SESSION IS THROWN AWAY, and that is the Phase 6D half of the
+  // same protection. With Supabase "Confirm email" off, signing up with
+  // a NEW address leaves the browser holding a session, and signing up
+  // with one that is TAKEN leaves it holding nothing. A page that went
+  // somewhere different in those two cases would be a way to ask the
+  // site whether an address has an account, one address at a time.
+  //
+  // So the session goes, both cases end identically, and everybody is
+  // sent to sign in. It costs a signed out moment to a person who just
+  // typed their password, which is a small price for not publishing who
+  // holds an account.
+  //
+  // Done here rather than on the page, so there is one place to forget
+  // it rather than every caller.
+  await call(certDb.auth.signOut());
+
   return { ok: true, message: "" };
 }
 
@@ -491,12 +515,24 @@ export async function setMyName(name: string): Promise<{ ok: boolean; name: stri
 
   const stored = ((saved.data as string | null) ?? typed).trim();
 
-  // If this second write fails the name IS saved, and saying otherwise
-  // would send somebody to type it again. It shows everywhere on the
-  // next sign in either way.
-  await certDb.auth.updateUser({ data: { full_name: stored } });
+  // IF THIS SECOND WRITE FAILS THE NAME IS STILL SAVED, so the caller
+  // is told what did not happen rather than that the save failed.
+  //
+  // What I wrote here first was that it "shows everywhere on the next
+  // sign in either way". That was wrong, and Dr Ayoola caught it:
+  // getSession reads the account metadata and nothing else, so a failed
+  // write here leaves the greeting empty until the name is saved again,
+  // even though lms_profiles holds it and the staff pages and the
+  // control room greeting read it correctly.
+  const meta = await certDb.auth.updateUser({ data: { full_name: stored } });
 
-  return { ok: true, name: stored, message: "" };
+  return {
+    ok: true,
+    name: stored,
+    message: meta.error
+      ? "Saved. Your name may not show here until you sign in again."
+      : "",
+  };
 }
 
 export async function signOut(): Promise<void> {
@@ -525,6 +561,11 @@ export async function syncAccess(): Promise<AccessState | null> {
     bootcamp: Boolean(row.bootcamp),
     changed: Boolean(row.changed),
     message: row.message ?? "",
+    // Absent means NOT proven. A database still on file 18 returns no
+    // such column, and the safe reading of "I do not know" is that
+    // nothing has been proved, which offers the check to somebody who
+    // may not need it rather than withholding it from somebody who does.
+    verified: Boolean(row.verified),
   };
 }
 
@@ -552,4 +593,65 @@ export function greeting(now: Date = new Date()): string {
   if (hour < 12) return "Good morning";
   if (hour < 17) return "Good afternoon";
   return "Good evening";
+}
+
+// ----------------------------------------------- proving an address
+
+/**
+ * Ask for a six digit code, sent to the address on the account.
+ *
+ * WHY THIS EXISTS AT ALL. Sign up stopped sending a code in Phase 6D,
+ * so a typed address proves nothing. Three things hang off proving it:
+ * staff access, which is given by email address; the link to a
+ * certification record, which is matched by email address; and bootcamp
+ * access, which comes through that link. This is how somebody proves
+ * it, on their own time, from My learning.
+ */
+export async function requestEmailCheck(): Promise<{ ok: boolean; message: string }> {
+  if (!certDb) return { ok: false, message: NOT_READY };
+  const r = await certDb.rpc("lms_request_email_check");
+  if (r.error) {
+    return { ok: false, message: r.error.message || "That could not be sent just now." };
+  }
+  const row = (Array.isArray(r.data) ? r.data[0] : r.data) as
+    | { ok?: boolean; message?: string }
+    | null;
+  return { ok: Boolean(row?.ok), message: row?.message ?? "" };
+}
+
+/**
+ * Type the code in. On success the server runs the access sync in the
+ * same call, so whatever the address unlocks is already true by the time
+ * this returns and the page does not need a second round trip to find
+ * out.
+ */
+export async function confirmEmailCheck(
+  code: string,
+): Promise<{ ok: boolean; message: string; access: AccessState | null }> {
+  if (!certDb) return { ok: false, message: NOT_READY, access: null };
+
+  const r = await certDb.rpc("lms_confirm_email_check", { p_code: code.trim() });
+  if (r.error) {
+    return { ok: false, message: r.error.message || CODE_REFUSED, access: null };
+  }
+  const row = (Array.isArray(r.data) ? r.data[0] : r.data) as
+    | { ok?: boolean; message?: string; role?: string; bootcamp?: boolean }
+    | null;
+
+  if (!row?.ok) {
+    return { ok: false, message: row?.message ?? CODE_REFUSED, access: null };
+  }
+
+  return {
+    ok: true,
+    message: row.message ?? "Your email address is confirmed.",
+    // Built from what the server just told us rather than synced again.
+    access: {
+      role: row.role ?? "learner",
+      bootcamp: Boolean(row.bootcamp),
+      changed: true,
+      message: row.message ?? "",
+      verified: true,
+    },
+  };
 }

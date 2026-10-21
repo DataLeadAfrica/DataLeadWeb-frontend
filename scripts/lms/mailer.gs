@@ -6,7 +6,15 @@
  *
  *   certificate_code      the six digit code for the certificate claim
  *                         page and the bootcamp learning portal
- *   academy_signup        confirming a new Data-Lead Academy account
+ *   academy_signup        confirming a new Data-Lead Academy account. NOT
+ *                         sent any more as of Phase 6D: sign up stops
+ *                         emailing a code. The wording is kept because
+ *                         rows with this purpose may still be in the
+ *                         outbox, and because turning Supabase "Confirm
+ *                         email" back on would start it again
+ *   academy_verify        proving an email address from My learning,
+ *                         which is what unlocks certificates, bootcamp
+ *                         access and staff access as of Phase 6D
  *   academy_recovery      resetting a Data-Lead Academy password
  *   academy_signin        signing in with a link rather than a password
  *   academy_email_change  confirming a changed address
@@ -192,6 +200,20 @@ function buildEmail_(code, purpose) {
           "The code expires in 10 minutes. If it runs out, ask for another.",
           "If you did not sign up for Data-Lead Academy, you can ignore this " +
             "message and no account will be created."
+        )
+      );
+
+    case "academy_verify":
+      return withSubject_(
+        "Your Data-Lead Academy confirmation code: " + code,
+        frame_(
+          "Enter this code on My learning to confirm your email address. It " +
+            "opens your certificates, any bootcamp access and staff access if " +
+            "you have been given it.",
+          code,
+          "The code expires in 10 minutes. If it runs out, ask for another.",
+          "If you did not ask for this, you can ignore this message. Nothing " +
+            "changes on your account until the code is entered."
         )
       );
 
@@ -501,6 +523,7 @@ function sendSamplesToMyself() {
   var kinds = [
     "certificate_code",
     "academy_signup",
+    "academy_verify",
     "academy_recovery",
     "academy_signin",
     "academy_email_change",

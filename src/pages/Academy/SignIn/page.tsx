@@ -49,7 +49,18 @@ export default function AcademySignIn() {
   const goTo = from && from.startsWith("/lms") ? from : routes.academyMe;
 
   const [step, setStep] = useState<Step>("password");
-  const [email, setEmail] = useState("");
+
+  // The address comes over from sign up, which now ends by sending
+  // everybody here. Typing it twice in thirty seconds is the kind of
+  // small rudeness that makes a site feel careless.
+  //
+  // Read once, as the starting value, rather than watched: somebody who
+  // then corrects a typo must not have it put back under them on the
+  // next render.
+  const handedOver = (location.state as { email?: string } | null)?.email;
+  const [email, setEmail] = useState(
+    typeof handedOver === "string" ? handedOver : "",
+  );
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
 

@@ -238,6 +238,19 @@ function Inner() {
   const quiz = lessonId ? lesson?.check_id : course.exam?.id;
   const live = questions.filter((q) => q.active);
 
+  // NO QUIZ MEANS NO EDITOR, AND NO PASTE DRAWER EITHER.
+  //
+  // This page used to render the editor with `quiz={quiz || ""}`, and an
+  // empty string is not a uuid. Writing a question answered "invalid
+  // input syntax for type uuid" with nothing on screen to explain it.
+  //
+  // The real fault was behind it: nothing in the control room created a
+  // lesson check, so `quiz` was null for every lesson the builder made.
+  // File 20 fixes that at the source, and this is the guard that means
+  // a null can never again be laundered into an empty string and posted
+  // to the database. If there is no check, the page says so in words.
+  const ready = Boolean(quiz);
+
   return (
     <>
       <Seo title={`Questions | ${course.title}`} noindex />
@@ -262,17 +275,35 @@ function Inner() {
             : `${course.exam?.serve_count ?? 20} questions a try, ${course.exam?.minutes ?? 40} minutes, ${course.exam?.pass_percent ?? 70} per cent to pass, ${course.exam?.tries ?? 2} tries then a day.`
         }
         actions={
-          <>
-            <button type="button" className="stu__chip" onClick={() => setPasting(true)}>
-              Paste from a sheet
-            </button>
-            <button type="button" className="acad-btn" onClick={() => setEditing("new")}>
-              <PlusIcon />
-              Write one
-            </button>
-          </>
+          ready ? (
+            <>
+              <button type="button" className="stu__chip" onClick={() => setPasting(true)}>
+                Paste from a sheet
+              </button>
+              <button type="button" className="acad-btn" onClick={() => setEditing("new")}>
+                <PlusIcon />
+                Write one
+              </button>
+            </>
+          ) : null
         }
       />
+
+      {/* Said plainly rather than with the buttons greyed out, because a
+          disabled button with no reason beside it is the same dead end
+          with better manners. */}
+      {!ready ? (
+        <div className="stu__step is-todo" style={{ marginBottom: 18 }}>
+          <div>
+            <b>This lesson has no check yet</b>
+            <small>
+              {lessonId
+                ? "A check is made with the lesson, so this is a lesson from before that was true. Open the lesson in the builder and save it once, and its check will be there when you come back."
+                : "This course has no exam yet. Open the course in the builder and the exam is made with it."}
+            </small>
+          </div>
+        </div>
+      ) : null}
 
       {!lesson && course.exam ? (
         <div className="stu__step is-todo" style={{ marginBottom: 18 }}>
@@ -298,7 +329,7 @@ function Inner() {
       <Problem>{problem}</Problem>
       <Done>{done}</Done>
 
-      {editing ? (
+      {editing && ready ? (
         <div className="stu__panel" style={{ marginBottom: 18 }}>
           <header>
             <h2>{editing === "new" ? "A new question" : "This question"}</h2>
@@ -307,7 +338,7 @@ function Inner() {
             </button>
           </header>
           <Editor
-            quiz={quiz || ""}
+            quiz={quiz as string}
             question={editing === "new" ? null : editing}
             lessons={lessons.map((l) => ({ id: l.id, title: l.title, chapters: l.chapters }))}
             onDone={() => {

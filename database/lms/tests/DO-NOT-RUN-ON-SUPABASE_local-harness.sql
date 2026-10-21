@@ -15,6 +15,32 @@ create schema if not exists auth;
 create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
 
+-- AND pg-safeupdate IS LOADED, BECAUSE SUPABASE LOADS IT FOR EVERY CALL
+-- THAT ARRIVES THROUGH THE API.
+--
+-- It refuses any UPDATE or DELETE with no WHERE clause, and it does so
+-- inside a security definer function as readily as at the top level. The
+-- message is "DELETE requires a WHERE clause".
+--
+-- This is the same class of difference as the pgcrypto line above, and
+-- it hid the same kind of fault. lms_set_lesson_chapters cleared its
+-- scratch table with a bare delete, so every lesson save on live failed
+-- while every local test passed. Loading it here means a bare statement
+-- fails in this folder the way it fails on live.
+--
+-- "session_preload_libraries" rather than "shared_preload_libraries"
+-- because the latter needs a restart and this does not. If the
+-- extension is not built in this container the statement raises, and a
+-- notice is printed instead of stopping the harness: the tests are all
+-- still worth running without it, they are simply running without the
+-- guard, and the notice says so rather than letting it pass unnoticed.
+do $$ begin
+  execute format('alter database %I set session_preload_libraries = %L',
+                 current_database(), 'safeupdate');
+exception when others then
+  raise notice 'harness: could not set session_preload_libraries (%). The tests will run WITHOUT the bare UPDATE and DELETE guard.', sqlerrm;
+end $$;
+
 -- AND THE SESSION CAN SEE BOTH SCHEMAS, AS A SUPABASE SQL EDITOR SESSION
 -- CAN. This matters for being faithful rather than merely strict: on
 -- Supabase, digest() called at the top level of the Editor works, and the

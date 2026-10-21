@@ -155,7 +155,12 @@ test("it is a course exam, never a quiz", () => {
     // "quiz" survives in variable names that point at lms_quizzes,
     // which is the table's real name. What must not survive is the word
     // shown to a person.
-    const shown = src.match(/>[^<>{]*\bquiz(zes)?\b[^<>{]*</gi) || [];
+    // ; and = excluded as well as the brackets. Without them the match
+    // runs from the ">" of an arrow function, across whole statements,
+    // to the next JSX tag, and reports "const ready = Boolean(quiz)" as
+    // words shown to a person. Real JSX text has no semicolons and no
+    // equals signs in it.
+    const shown = src.match(/>[^<>{;=]*\bquiz(zes)?\b[^<>{;=]*</gi) || [];
     assert.deepEqual(shown, [],
       `${f.replace(ROOT, "")} shows the word quiz to a person: ${shown.join(" | ")}`);
   }
@@ -755,4 +760,109 @@ test("saving a name writes the profile first and the account metadata second", (
   // The server's own refusal is shown, not a rewrite of it.
   assert.match(fn[0], /saved\.error\.message/,
     "setMyName replaces the server's reason for refusing with wording of its own");
+});
+
+test("the Questions page never hands an empty string where a quiz id belongs", () => {
+  // THE FAULT, IN ONE LINE. The page rendered the editor with
+  // `quiz={quiz || ""}`, and `quiz` was null for every lesson the
+  // builder made, because nothing in the control room created a lesson
+  // check. Writing a question answered "invalid input syntax for type
+  // uuid: """ with nothing on screen to explain it.
+  //
+  // File 20 fixes the cause. This is the guard, because a null turned
+  // into an empty string and posted to the database is a mistake worth
+  // making impossible twice over.
+  // code(), because the comment explaining the fix quotes the line that
+  // caused it. Sixth time a scanner of mine has found my own prose
+  // about a bug, and the helper has been at the top of this file since
+  // the second.
+  const raw = read("src/pages/Academy/Studio/Questions/page.tsx");
+  const page = code(raw);
+  assert.ok(!/quiz=\{quiz \|\| ""\}/.test(page),
+    'the Questions page still falls back to an empty string for the quiz id');
+  assert.ok(!/quiz=\{[^}]*\|\| ""\}/.test(page),
+    "something on the Questions page still turns a missing quiz id into an empty string");
+
+  // And neither tool is reachable without one.
+  assert.match(page, /const ready = Boolean\(quiz\)/,
+    "the Questions page does not work out whether it has a quiz id");
+  assert.match(page, /\{editing && ready \?/,
+    "the editor can still open without a quiz id");
+  assert.match(page, /\{pasting && quiz \?/,
+    "the paste drawer can still open without a quiz id");
+  assert.match(page, /actions=\{\s*ready \?/,
+    "the buttons that open those tools are offered without a quiz id");
+
+  // And it says why, rather than showing a dead page.
+  assert.match(page, /This lesson has no check yet/,
+    "a lesson with no check gets no explanation of what to do");
+});
+
+test("a failed metadata write says what did not happen, not that the save failed", () => {
+  // THE COMMENT HERE USED TO BE WRONG, and Dr Ayoola caught it. It said
+  // the name "shows everywhere on the next sign in either way". It does
+  // not: getSession reads the account metadata and nothing else, so a
+  // failed second write leaves the greeting empty until the name is
+  // saved again, even though lms_profiles holds it and the staff pages
+  // read it correctly.
+  //
+  // The name IS saved, so the message says what did not happen rather
+  // than sending somebody to type it all again.
+  const lib = read("src/lib/academy.ts");
+  assert.ok(!/shows everywhere on the\s+\/\/ next sign in either way/.test(lib),
+    "academy.ts still claims the name shows everywhere on the next sign in");
+  assert.match(lib, /Saved\. Your name may not show here until you sign in again\./,
+    "setMyName does not report a failed metadata write in the agreed words");
+
+  // And the message reaches the page rather than being swallowed.
+  const page = read("src/pages/Academy/Me/page.tsx");
+  assert.match(page, /setNameNote\(r\.message\)/,
+    "My learning drops the message setMyName returns");
+  assert.match(page, /\{nameNote \?/, "My learning never renders it");
+});
+
+test("the confirm your address card cannot depend on what is waiting", () => {
+  // A card that appeared, or read differently, only for people with
+  // something behind the address would answer the question of whether
+  // an address is on the staff list or has certificates against it, to
+  // anybody who typed it and signed up.
+  //
+  // So it is driven by one thing: whether the address has been proved.
+  const page = read("src/pages/Academy/Me/page.tsx");
+  const card = /\{ready && session && !verified && !proved \? \([\s\S]*?\n        \) : null\}/.exec(page);
+  assert.ok(card, "the confirm your address card is not rendered on the agreed condition");
+
+  // CONDITIONAL USE, not the word. "bootcamp" appears in the card's own
+  // sentence, which is the agreed wording and not a branch. Looking for
+  // the bare word reported the copy as a leak.
+  for (const leak of [
+    /\brole\s*===/,
+    /\bbootcamp\s*(\?|&&|\|\|)/,
+    /\{\s*bootcamp\s*(\?|&&)/,
+    /\bcerts\s*\./,
+    /\bpicks\s*\./,
+    /\bcourses\s*\./,
+  ]) {
+    assert.ok(!leak.test(card[0]),
+      `the card branches on ${leak}, so it can differ for somebody with something waiting`);
+  }
+
+  assert.match(card[0],
+    /Confirm your email address to unlock bootcamp access, staff access and\s+your certificates\./,
+    "the card does not use the agreed wording");
+});
+
+test("whether an address is proven rides on the sync, not a second call", () => {
+  // The sync already runs on every Academy page and already knows: it
+  // is the gate it opens. academy.ts records removing exactly this kind
+  // of second round trip once before, for the role, because the two
+  // answers could disagree for a moment and the page would swap.
+  assert.match(read("src/lib/academy.ts"), /verified: Boolean\(row\.verified\)/,
+    "the access state does not carry whether the address is proven");
+  assert.match(read("src/pages/Academy/useAccess.ts"), /verified: Boolean\(state\?\.verified\)/,
+    "useAccess does not pass it on");
+
+  const page = code(read("src/pages/Academy/Me/page.tsx"));
+  assert.ok(!/email_verified_at/.test(page),
+    "My learning reads the column directly, which is a second round trip for something the sync returns");
 });

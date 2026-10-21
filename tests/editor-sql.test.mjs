@@ -20,7 +20,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -162,7 +162,15 @@ test("every explanation the Editor copy drops is written down somewhere", () => 
   // EVERY verify file, not just file 17's. Written against the list the
   // generator keeps, so a verify file added later is covered without
   // anybody remembering to come back here.
-  const plain = read("docs/lms/PHASE-6B-PLAIN.md");
+  // EVERY plain English doc, not one named here. The explanations for a
+  // new phase's verify file belong in that phase's doc, and naming
+  // PHASE-6B-PLAIN.md in this test meant file 19's rows had nowhere
+  // valid to live.
+  const plain = readdirSync(join(ROOT, "docs/lms"))
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => read(`docs/lms/${f}`))
+    .join("\n");
+
   for (const file of EDITOR_FILES.filter((f) => f.shape === "checks")) {
     const name = file.source.split("/").pop().replace(".sql", "");
     const checks = [...read(file.source)
@@ -175,13 +183,13 @@ test("every explanation the Editor copy drops is written down somewhere", () => 
     // for each other.
     const heading = `## What each check in ${name}_EDITOR.sql means`;
     const at = plain.indexOf(heading);
-    assert.ok(at > 0, `PHASE-6B-PLAIN.md has no section headed "${heading}"`);
+    assert.ok(at > 0, `no doc in docs/lms has a section headed "${heading}"`);
     const next = plain.indexOf("\n## ", at + 1);
     const section = plain.slice(at, next === -1 ? undefined : next);
 
     const missing = checks.filter((n) => !new RegExp(`^\\| ${n} \\|`, "m").test(section));
     assert.deepEqual(missing, [],
-      `${heading} has no row for these check numbers, so a NO on one of them cannot be looked up `
+      `"${heading}" has no row for these check numbers, so a NO on one of them cannot be looked up `
         + `anywhere: ${missing.join(", ")}`);
   }
 });

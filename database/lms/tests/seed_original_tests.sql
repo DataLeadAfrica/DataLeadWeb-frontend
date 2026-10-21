@@ -13,9 +13,9 @@
 -- ---------------------------------------------------------------- seed
 set role postgres;
 truncate lms_facilitators, lms_entitlements, lms_admin_actions cascade;
-delete from participant_enrolments; delete from certificates; delete from participants; delete from programmes;
-delete from lms_profiles; delete from auth.users;
-delete from lms_quizzes; delete from lms_courses; delete from lms_paths;
+delete from participant_enrolments where true; delete from certificates where true; delete from participants where true; delete from programmes where true;
+delete from lms_profiles where true; delete from auth.users where true;
+delete from lms_quizzes where true; delete from lms_courses where true; delete from lms_paths where true;
 
 create table if not exists t_results (
   n serial primary key, name text, pass boolean, detail text default '');

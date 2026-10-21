@@ -61,7 +61,7 @@ begin
   -- file 10 must have been run: this file calls its tidy function
   if not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                   where n.nspname = 'public' and p.proname = 'lms_tidy_table_privileges') then
-    v_missing := v_missing || 'function lms_tidy_table_privileges() from file 10';
+    v_missing := v_missing || 'function lms_tidy_table_privileges() from file 10'::text;
   end if;
 
   -- the four functions this file replaces must be the shape it expects

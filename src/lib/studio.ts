@@ -625,3 +625,46 @@ export function asWhen(iso: string | null | undefined): string {
   if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
+
+// --------------------------------------- joining a certification record
+
+export type ParticipantHit = {
+  id: string;
+  full_name: string;
+  email: string;
+  linked: boolean;
+};
+
+/**
+ * Look up a certification record by name or address.
+ *
+ * ADMINISTRATORS ONLY, and the database says so as well as this. It
+ * searches the certification register, which is a list of real people
+ * and their email addresses, and a facilitator sees no learner names at
+ * all. Three characters minimum, twenty results: a one letter search
+ * would return most of the register.
+ */
+export function findParticipants(query: string) {
+  return call<ParticipantHit[]>("lms_find_participants", { p_query: query });
+}
+
+/**
+ * Join an Academy account to a certification record by hand.
+ *
+ * The automatic link matches on email address and only once that
+ * address is proven. This is the case that rule cannot cover: the
+ * address on the certificate is not the one they signed up with. Rare,
+ * and when it happens a person looks at it rather than the system
+ * guessing.
+ */
+export function linkCertificationRecord(input: {
+  user: string;
+  participant: string;
+  reason: string;
+}) {
+  return call<{ ok: boolean; message: string }>("lms_link_certification_record", {
+    p_user: input.user,
+    p_participant: input.participant,
+    p_reason: input.reason,
+  });
+}

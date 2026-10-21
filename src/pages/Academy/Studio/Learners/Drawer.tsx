@@ -4,10 +4,13 @@ import { CrossIcon, WarnIcon } from "../Icons";
 import { Done, Problem } from "../ui";
 import {
   asWhen,
+  findParticipants,
   getLearnerRecord,
   giveAccess,
+  linkCertificationRecord,
   removeAccess,
   type LearnerRecord,
+  type ParticipantHit,
   type StudioLearner,
 } from "../../../../lib/studio";
 
@@ -56,6 +59,17 @@ export default function Drawer({ learner, onClose, onChanged }: Props) {
   const [giving, setGiving] = useState(false);
   const [reason, setReason] = useState("");
   const [course, setCourse] = useState("");
+
+  // Joining a certification record by hand. The automatic join matches
+  // on email address and only once that address is proven, so this is
+  // for the one case that cannot cover: the address on the certificate
+  // is not the one they signed up with.
+  const [linking, setLinking] = useState(false);
+  const [hunt, setHunt] = useState("");
+  const [hits, setHits] = useState<ParticipantHit[]>([]);
+  const [picked, setPicked] = useState<ParticipantHit | null>(null);
+  const [linkWhy, setLinkWhy] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
 
   useEffect(() => {
     getLearnerRecord(learner.user_id).then((a) => {
@@ -258,6 +272,144 @@ export default function Drawer({ learner, onClose, onChanged }: Props) {
               Bootcamp access follows the roster and is not given by hand. Removing access revokes
               it rather than deleting it, so nothing a learner has done is lost.
             </p>
+          </section>
+
+          {/* ------------------------------------ certification record
+
+              An account is joined to a certification record by matching
+              the email address, and only once that address has been
+              proven. This is the escape hatch for the case that rule
+              cannot cover, which is that the address on somebody's
+              certificate is not the one they signed up with.
+
+              Rare, and deliberately a person's decision rather than the
+              system's: it hands over somebody's certificates. */}
+          <section className="stu__panel">
+            <header>
+              <h3>Certification record</h3>
+            </header>
+
+            {!linking ? (
+              <div className="stu__chips">
+                <button type="button" className="stu__chip" onClick={() => setLinking(true)}>
+                  Join a certification record
+                </button>
+              </div>
+            ) : (
+              <div className="stu__grid" style={{ gap: 10 }}>
+                <label className="stu__field">
+                  <span>Find it by name or address</span>
+                  <input
+                    className="stu__in"
+                    value={hunt}
+                    onChange={async (e) => {
+                      const v = e.target.value;
+                      setHunt(v);
+                      setPicked(null);
+                      // Three characters, which the database insists on
+                      // too: a one letter search returns most of the
+                      // certification register.
+                      if (v.trim().length < 3) {
+                        setHits([]);
+                        return;
+                      }
+                      const got = await findParticipants(v);
+                      if (got.ok) setHits(got.data);
+                    }}
+                    placeholder="Grace Hopper, or grace@example.com"
+                  />
+                </label>
+
+                {hits.length > 0 && !picked ? (
+                  <div className="stu__grid" style={{ gap: 6 }}>
+                    {hits.map((h) => (
+                      <button
+                        key={h.id}
+                        type="button"
+                        className="stu__chip"
+                        disabled={h.linked}
+                        onClick={() => setPicked(h)}
+                        style={{ justifyContent: "space-between", width: "100%" }}
+                      >
+                        <span>
+                          {h.full_name} &middot; {h.email}
+                        </span>
+                        {/* Said here as well as refused by the database,
+                            so nobody picks one and then finds out. */}
+                        {h.linked ? <small>already joined to an account</small> : null}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+
+                {picked ? (
+                  <>
+                    <div className="stu__bar" style={{ gridTemplateColumns: "150px minmax(0,1fr)" }}>
+                      <span className="stu__label">Joining to</span>
+                      <span style={{ fontSize: 13.5 }}>
+                        {picked.full_name} &middot; {picked.email}
+                      </span>
+                    </div>
+                    <label className="stu__field">
+                      <span>Why</span>
+                      <input
+                        className="stu__in"
+                        value={linkWhy}
+                        onChange={(e) => setLinkWhy(e.target.value)}
+                        placeholder="Certificate is under their old work address"
+                      />
+                      <small>
+                        Not optional. This hands over somebody certificates, so the reason is the
+                        record.
+                      </small>
+                    </label>
+                  </>
+                ) : null}
+
+                <div className="stu__chips">
+                  <button
+                    type="button"
+                    className="acad-btn acad-btn--auto"
+                    disabled={!picked || linkBusy}
+                    onClick={async () => {
+                      if (!picked) return;
+                      setLinkBusy(true);
+                      const got = await linkCertificationRecord({
+                        user: learner.user_id,
+                        participant: picked.id,
+                        reason: linkWhy,
+                      });
+                      setLinkBusy(false);
+                      if (got.ok && got.data.ok) {
+                        setDone(got.data.message);
+                        setLinking(false);
+                        setPicked(null);
+                        setHunt("");
+                        setHits([]);
+                        setLinkWhy("");
+                        onChanged();
+                      } else {
+                        setProblem(got.ok ? got.data.message : got.message);
+                      }
+                    }}
+                  >
+                    {linkBusy ? "Joining" : "Join"}
+                  </button>
+                  <button
+                    type="button"
+                    className="stu__chip"
+                    onClick={() => {
+                      setLinking(false);
+                      setPicked(null);
+                      setHits([]);
+                      setHunt("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </aside>
