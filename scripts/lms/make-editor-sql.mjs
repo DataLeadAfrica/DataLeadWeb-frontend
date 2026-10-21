@@ -73,6 +73,9 @@ export const EDITOR_FILES = [
   { source: "database/lms/22_gaps.sql", shape: "bodies" },
   { source: "database/lms/22_undo.sql", shape: "bodies" },
   { source: "database/lms/22_verify.sql", shape: "checks" },
+  { source: "database/lms/23_certificate_integrity.sql", shape: "bodies" },
+  { source: "database/lms/23_undo.sql", shape: "bodies" },
+  { source: "database/lms/23_verify.sql", shape: "checks" },
 ];
 
 /**

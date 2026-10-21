@@ -13,9 +13,9 @@ the rest:
 ## The structure Big Sam settled on
 
 - After every lesson: a **lesson check**. As now.
-- At the end of every module: a **module badge**. No exam. (File 23.)
+- At the end of every module: a **module badge**. No exam. (File 24.)
 - At the end of every course: the **course exam** and the **course certificate**. As now.
-- At the end of a path: a **path exam** and a **certificate of completion** for the path. (File 23.)
+- At the end of a path: a **path exam** and a **certificate of completion** for the path. (File 24.)
 
 A badge is not a certificate. It has no number, nothing in the certificates table and nothing on
 `/verify`. It is a mark of having finished a module, shown to the learner who earned it.
@@ -145,10 +145,10 @@ A path that already exists keeps its own address. The backfill moves only the **
 the path's slug, because that slug is a URL a learner may already hold.
 
 The other reason paths cannot finish is that nothing in the control room opens the path exam to write questions into.
-That is file 23, and it is a bigger piece of work. File 22 makes the programme right so file 23 has
+That is file 24, and it is a bigger piece of work. File 22 makes the programme right so file 24 has
 something to build on, and so the backfill has already run by the time it matters.
 
-**7. The lesson video.** File 24.
+**7. The lesson video.** File 25.
 
 ## What each check in 22_verify_EDITOR.sql means
 
@@ -175,8 +175,67 @@ a certificate.
 | 16 | And the helper that keeps it that way is in place, and private | One rule rather than three copies of it. It is reached only by the three security definer functions that call it, so nothing signed in needs it, and a new function is executable by `PUBLIC` the moment it exists. |
 | 17 | Making a course asks the helper too, not just making a path | `lms_create_course` has carried this since file 17 and is used far more often than path creation, so fixing only the path would have left the larger half open. |
 
+## What file 23 fixes
+
+Three faults, all about certificates. The first two are live, and they pull in opposite directions:
+one hands a certificate to somebody who did nothing, the other withholds one from somebody who did
+everything.
+
+**A. A learner could mark their own lessons complete.** File 06 put a policy covering updates on the
+progress record so a learner could keep their own place. A policy cannot restrict which columns an
+update touches, so the same permission that let them record where they had got to also let them set
+`completed` and `check_passed` by hand. Watching one second of a lesson is enough to create the row.
+From there the whole of `lms_complete_lesson` could be stepped around: every lesson marked finished,
+no lesson actually watched, no check actually passed. File 23 drops the policy and takes the insert,
+update and delete privileges away, so the progress record is read only to the person it belongs to
+and only the server-side functions write to it.
+
+**B. The exam was never required.** `lms_claim_course_certificate` counted the quizzes a learner had
+passed by reaching them through `lms_modules`, which is where module quizzes used to live. File 16
+abolished module quizzes and moved the exam onto the course. So for every course built since, the
+count was zero, the test read "zero passed is not fewer than zero required", and the claim allowed
+itself through. Taken with fault A, a learner could be issued a real certificate number having never
+opened the exam. Taken on its own it was still wrong in the other direction: the function was not
+checking the exam at all, so once fault A was closed an honest learner who had passed the exam was
+being let through by luck rather than by the check working. File 23 counts the course's own published
+quizzes and the attempts against them.
+
+**C. The certificate title never followed the course title.** The certificate prints the programme
+title. `lms_create_course` copies the course title to the programme row once, when the course is
+made, and nothing updated it afterwards. A course created as `power-bi` and then properly titled
+"Power BI for Analysts" would print "power-bi" on every certificate for ever. Now the programme title
+follows the course title, and a path's programme title follows the path's certificate name, but only
+while no certificate has been issued for that programme. Once one exists the title stays where it is,
+because rewording a certificate somebody is already holding is a decision for a person, not for a
+save button. The builder says so beside the title field, naming the title the issued certificates
+carry.
+
+Three things file 23 deliberately does not do. The programme **slug** never changes, because it is
+part of a certificate's address. Only a programme row an Academy course or path points at is ever
+touched, never one the certification system owns. And nothing already issued is altered, revoked or
+renumbered.
+
+## What each check in 23_verify_EDITOR.sql means
+
+Rows 1 and 2 are the live hole. Row 7 is the one that will still be working in a year: the others
+check a list of known mistakes, that one asks whether anything has drifted by any route.
+
+| # | What it checks | What a NO means |
+|---|---|---|
+| 1 | A learner cannot mark their own lessons complete | **The live hole.** A learner can set `completed` and `check_passed` on their own progress record by hand and award themselves a finished course. Both halves matter: dropping the policy while leaving the privileges in place fixes nothing, because the policy was all that stood in front of them. |
+| 2 | And a certificate is not issued until the exam is passed | **The other half**, and it bit an honest learner too. The claim counted module quizzes, which file 16 abolished, so the count was zero for every modern course and the exam was never required. A NO means somebody who watched every lesson and never opened the exam is handed a certificate. |
+| 3 | The watch record and the attempt log are read only as well | These two were already right and file 23 changes nothing about them today. They are asked about because a fault like row 1 is rarely alone, and because a later hand re-granting the lot would reopen all three at once. The attempt log is the record of what somebody actually scored. |
+| 4 | A certificate title can follow the course, but only before one is issued | The title stopped following at creation, so a course renamed after it was made printed its old working name on every certificate. A NO means either it still does not follow, or it follows past the point where a certificate exists, which would reword a certificate somebody holds. |
+| 5 | And it refuses a programme no Academy course or path points at | The certification system owned `programmes` before the Academy existed. A NO means a bootcamp title could be rewritten by somebody renaming a course. |
+| 6 | Both save functions ask it, and nothing signed in can | A course has a title and a path has a certificate name, and both are printed on a certificate, so fixing one and not the other would leave half the fault. A NO also fires if the helper is reachable by `anon` or `authenticated`: a new function is executable by `PUBLIC` the moment it exists. |
+| 7 | Every course and path without a certificate still matches its own | **The row that keeps working.** A NO is not an emergency and nothing is broken by it: it means something has drifted by a route this file does not cover, and the list printed under the table names each one, what it is called and what its certificate says. Archived courses are left out, and so is anything with a certificate against it, because those are supposed to stay as they are. |
+
 ## What is not in this package
 
-Module badges and the path exam are file 23. The video player is file 24. The browser acceptance
-test that drives the real pages against the real functions is being built alongside file 23, because
-most of what it has to walk through is what file 23 adds.
+Module badges and the path exam are file 24. The video player is file 25. The control room
+ease-of-use pass and the role-aware guide at `/lms/studio/guide` are file 26. The browser acceptance
+test that drives the real pages against the real functions is being built alongside file 24, because
+most of what it has to walk through is what file 24 adds.
+
+File 23 went ahead of the badges because two of its three faults are live now: one lets a learner
+issue themselves a real certificate, and the other stops an honest learner getting one.

@@ -24,7 +24,7 @@ unblocks Big Sam. Each backfilled exam still needs its questions written before 
 published, so expect the publish checklist to say so.
 
 **It gives every path a programme.** Nothing visible changes today, because the path exam still
-cannot be written from the control room. That is file 23. This is what makes file 23 possible.
+cannot be written from the control room. That is file 24. This is what makes file 24 possible.
 
 **It changes two tiles.** "Certificates this week" becomes "Certificates this month", counted by
 when the certificate was issued rather than when the training ended, from the first of the month in
@@ -69,12 +69,12 @@ API.
 
 ## What is still to come
 
-**File 23: module badges and the path exam.** A badge for finishing a module, awarded server side in
+**File 24: module badges and the path exam.** A badge for finishing a module, awarded server side in
 the same transaction as the last requirement. The path exam written from the control room, the
 learner's path page, the path certificate. The browser acceptance test that drives the real pages
 against the real functions is being built with it, because most of what it has to walk through is
-what file 23 adds.
+what file 24 adds.
 
-**File 24: the lesson video player.** Our own control bar, one set of controls, captions that work
+**File 25: the lesson video player.** Our own control bar, one set of controls, captions that work
 with YouTube's own bar switched off. Part of it cannot be finished without a real YouTube video on
 the Vercel preview, so it will arrive with a numbered checklist to run there.
