@@ -49,7 +49,7 @@ test("every Editor copy is exactly what the generator makes today", () => {
 });
 
 test("every function body is byte for byte identical, with nothing forgiven", () => {
-  // Dr Ayoola allowed this comparison to ignore trailing whitespace at
+  // The review allowed this comparison to ignore trailing whitespace at
   // the end of a line, because Big Sam's hand made copy differed from a
   // psql build by one trailing space.
   //

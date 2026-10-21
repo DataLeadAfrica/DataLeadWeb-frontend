@@ -18,7 +18,7 @@ select set_config('request.jwt.claim.sub','',false);
 -- P. PART 0: the sign in deadlock
 -- =====================================================================
 do $$ declare v_codes int; v_mail int; v_ret boolean; begin
-  delete from auth_codes; delete from mail_outbox where to_email like '%gmail.com';
+  delete from auth_codes where true; delete from mail_outbox where to_email like '%gmail.com';
   v_ret := request_certificate_code('newstudent@gmail.com');
   select count(*) into v_codes from auth_codes where email_norm='newstudent@gmail.com';
   select count(*) into v_mail from mail_outbox where to_email='newstudent@gmail.com';
@@ -515,7 +515,7 @@ exception when others then perform t_rec('S1 a sign up confirmation is queued fo
 end $$;
 
 do $$ declare v_out jsonb; v_p text; begin
-  delete from mail_outbox;
+  delete from mail_outbox where true;
   v_out := send_email_hook(jsonb_build_object(
     'user', jsonb_build_object('email','learner@gmail.com'),
     'email_data', jsonb_build_object('token','112233','email_action_type','recovery')));
@@ -526,7 +526,7 @@ exception when others then perform t_rec('S2 a password reset is marked as one, 
 end $$;
 
 do $$ declare v_out jsonb; v_p text; begin
-  delete from mail_outbox;
+  delete from mail_outbox where true;
   v_out := send_email_hook(jsonb_build_object(
     'user', jsonb_build_object('email','learner@gmail.com'),
     'email_data', jsonb_build_object('token','445566','email_action_type','something_new')));
@@ -537,7 +537,7 @@ exception when others then perform t_rec('S3 a kind of email we have not met is 
 end $$;
 
 do $$ declare v_out jsonb; begin
-  delete from mail_outbox;
+  delete from mail_outbox where true;
   v_out := send_email_hook(jsonb_build_object(
     'user', jsonb_build_object('email','learner@gmail.com'),
     'email_data', jsonb_build_object('email_action_type','signup')));
@@ -548,7 +548,7 @@ exception when others then perform t_rec('S4 a hook call with no code fails loud
 end $$;
 
 do $$ declare v_out jsonb; begin
-  delete from mail_outbox; delete from sign_in_attempts where true;
+  delete from mail_outbox where true; delete from sign_in_attempts where true;
   insert into sign_in_attempts (email_hash, ip, outcome, at)
     select md5(g::text), null, 'sent', now() - interval '2 minutes' from generate_series(1,100) g;
   v_out := send_email_hook(jsonb_build_object(
@@ -580,7 +580,7 @@ do $$ declare v_res text; begin
 end $$;
 
 do $$ declare v_n int; v_p text; begin
-  delete from mail_outbox; delete from sign_in_attempts where true;
+  delete from mail_outbox where true; delete from sign_in_attempts where true;
   insert into mail_outbox (to_email, code_plain) values ('old@gmail.com','000111');
   select purpose into v_p from mail_outbox where to_email='old@gmail.com';
   perform t_rec('S8 a row written the old way still counts as a certificate code',

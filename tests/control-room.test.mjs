@@ -633,7 +633,7 @@ test("the top bar's search switches at 1024, scoped to the bar itself", () => {
   // 900, against the 60 it should be. iPad portrait is 768 and 820, so
   // this was most tablets held upright.
   //
-  // 1024 is measured, not chosen. Dr Ayoola said below 1000 and that is
+  // 1024 is measured, not chosen. The review said below 1000 and that is
   // what I built first; 1001 then measured 89px, still wrapped. The label
   // needs 306px on one line and the button only gives it that from 1024.
   const css = read("src/pages/Academy/Studio/control-room.css");
@@ -799,7 +799,7 @@ test("the Questions page never hands an empty string where a quiz id belongs", (
 });
 
 test("a failed metadata write says what did not happen, not that the save failed", () => {
-  // THE COMMENT HERE USED TO BE WRONG, and Dr Ayoola caught it. It said
+  // THE COMMENT HERE USED TO BE WRONG, and the review caught it. It said
   // the name "shows everywhere on the next sign in either way". It does
   // not: getSession reads the account metadata and nothing else, so a
   // failed second write leaves the greeting empty until the name is

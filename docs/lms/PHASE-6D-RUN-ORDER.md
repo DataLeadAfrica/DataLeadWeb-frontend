@@ -57,7 +57,7 @@ is.
 
 Three security definer functions were executable by everybody, signed in or out. The worst,
 `lms_link_participant`, joins an account to somebody's certification record by email address and
-checks nothing about who called it: Dr Ayoola used it as a plain learner and was joined to another
+checks nothing about who called it: the review called it as a plain learner and was joined to another
 person's record. `lms_grant_free_courses` grants free courses to any account id, and
 `lms_storage_report` reads row counts and sizes for a visitor.
 
@@ -100,7 +100,7 @@ them will never find anything again. They are **left in place** deliberately: th
 and if the setting is ever turned back on they start working again. Do not read a zero there as
 good news, because it is no longer news at all.
 
-## The risk Dr Ayoola has accepted, written down
+## The risk Big Sam has accepted, written down
 
 With Confirm email off, Supabase's own sign up API answers an existing address differently from a
 new one, whatever our page shows. Somebody calling that API directly can learn whether an address
