@@ -78,7 +78,7 @@ begin
 
   -- The certification side, which paths now reach through programmes.
   if to_regclass('public.programmes') is null then
-    v_missing := v_missing || 'table programmes (file 13)';
+    v_missing := v_missing || 'table programmes (file 13)'::text;
   end if;
 
   if array_length(v_missing, 1) is not null then
@@ -539,7 +539,20 @@ begin
   -- Parse first. If it raises, nothing below runs and the old chapters
   -- are still there.
   create temporary table if not exists tmp_chapters (start_seconds integer, title text) on commit drop;
-  delete from tmp_chapters;
+  -- "where true", not a bare delete. Supabase loads pg-safeupdate for
+  -- API requests, and it refuses any DELETE or UPDATE with no WHERE
+  -- clause, inside a security definer function as much as anywhere
+  -- else. lms_save_lesson calls this on every save, so a bare delete
+  -- here meant EVERY LESSON SAVE ON LIVE FAILED with "DELETE requires a
+  -- WHERE clause", and the person saw it while editing the summary.
+  --
+  -- I first wrote truncate here, which also satisfies the guard. This
+  -- is the form Big Sam ran on live by hand, and the repository matches
+  -- live rather than the other way round.
+  --
+  -- Changed in place, as file 12's search_path was, so a rebuild from
+  -- the numbered files gives what live already has.
+  delete from tmp_chapters where true;
   insert into tmp_chapters select * from lms_parse_chapters(p_text);
 
   if v_dur is not null and v_dur > 0 then
@@ -558,7 +571,18 @@ begin
 end $$;
 
 revoke all on function lms_set_lesson_chapters(uuid, text) from public, anon, authenticated;
-grant execute on function lms_set_lesson_chapters(uuid, text) to authenticated;
+-- NOT GRANTED TO authenticated, and that is the second half of the
+-- same hand fix.
+--
+-- This function guards itself with lms_is_staff(), which asks "are you
+-- staff" and not "is this yours", so any facilitator could call it
+-- directly and rewrite the chapters of anybody's lesson, in a live
+-- course. Nothing in src/ calls it: only lms_save_lesson does, and that
+-- checks the course first.
+--
+-- So it keeps no grant at all. A function nothing calls from a browser
+-- has no business being reachable from one.
+-- grant execute on function lms_set_lesson_chapters(uuid, text) to authenticated;
 
 do $$ begin raise notice 'Step 4: chapters.'; end $$;
 

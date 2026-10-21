@@ -274,6 +274,22 @@ export function tableish(text) {
   const out = [];
   for (const s of literals(text)) {
     if (s.text.includes("%")) continue;
+
+    // A string that IS a query is not prose about one either. Same
+    // exemption as a LIKE pattern, by a different door.
+    //
+    // 19_verify.sql has to ask about a table that does not exist until
+    // file 19 has run, and the only way is query_to_xml, because
+    // Postgres resolves every relation when it PLANS a statement rather
+    // than when a CASE reaches it. Those strings are real SQL naming
+    // real tables, so an Editor scanning one finds lms_profiles and asks
+    // Postgres about lms_profiles, which exists. The failure this rule
+    // is for is a scanner finding "the" or "a" after from, and that only
+    // happens in a sentence.
+    //
+    // Narrow on purpose: the string has to START with a SQL verb.
+    // "counted from the courses table" does not, and is still caught.
+    if (/^\s*(select|insert|update|delete|with)\b/i.test(s.text)) continue;
     const re = new RegExp(`\\b(${TABLE_WORDS.join("|")})\\s+([A-Za-z_][A-Za-z0-9_]*)`, "gi");
     let m;
     while ((m = re.exec(s.text)) !== null) {
@@ -488,4 +504,145 @@ test("the editor file carries no prose for the Editor to misread", () => {
   const checks = [...editor.matchAll(/^\s*(?:union all )?select \d+,$/gm)].length;
   assert.equal(labels, checks, "not every check in the editor file is labelled \"check N\"");
   assert.equal(notes, checks, "not every check in the editor file has an empty note");
+});
+
+// ---------------------------------------------------------------------
+// No UPDATE or DELETE without a WHERE
+// ---------------------------------------------------------------------
+
+test("no SQL file updates or deletes every row of a table", () => {
+  // THE SECOND HALF OF A PAIR, AND THE PAIR IS NOW COMPLETE. An earlier
+  // version of this comment said pg-safeupdate could not be installed
+  // here, so this static scan was all that was on offer. That is no
+  // longer true and the claim has been removed rather than left to rot:
+  // the extension was built from source against
+  // postgresql-server-dev-16, and the whole matrix and every test file
+  // in this folder now run with it loaded, exactly as Supabase loads it
+  // for requests arriving through the API.
+  //
+  // Both halves are still worth having, because they fail on different
+  // things. safeupdate catches a bare statement when it RUNS, including
+  // one assembled at run time out of a string, and catches nothing in a
+  // code path no test happens to walk. This reads the text instead, so
+  // it covers statements no test reaches and misses anything dynamic.
+  //
+  // ON CONFLICT DO UPDATE is outside the rule by construction rather
+  // than by exemption: such a statement starts with "insert", so the
+  // pattern below never looks at it. The same is true of "for update",
+  // "on update cascade" and "before update on", which is what sank the
+  // first version of this test.
+  //
+  // The numbered files are the ones Dr Ayoola asked about and the ones
+  // that matter, since those run on live. The tests and seeds are
+  // scanned too: clearing a whole table is their legitimate business, so
+  // they hold most of the "where true" in the repository, and with the
+  // guard loaded in the harness a bare one there now stops the matrix
+  // dead. Better to say so here than to discover it mid-run.
+  const dir = (sub) => readdirSync(join(ROOT, "database/lms", sub || "."))
+    .filter((f) => f.endsWith(".sql") && !f.includes("_EDITOR"))
+    .map((f) => (sub ? `${sub}/${f}` : f))
+    .sort();
+  const numbered = dir().filter((f) => /^\d+_/.test(f));
+  const files = [...numbered, ...dir("tests")];
+  assert.ok(numbered.length >= 15, `only found ${numbered.length} numbered SQL files`);
+
+  const bad = [];
+  for (const file of files) {
+    // Comments out, strings blanked: a sentence about deleting things is
+    // not a delete, and the sixth scanner of mine to learn that.
+    const sql = readFileSync(join(ROOT, "database/lms", file), "utf8")
+      .replace(/^\s*--.*$/gm, "")
+      .replace(/'(?:[^']|'')*'/g, (s) => " ".repeat(s.length));
+
+    // A STATEMENT, not the word. The first version matched "update"
+    // anywhere and reported fourteen faults that were all "on update
+    // cascade", "for update" and "before update on", which is every
+    // place the word appears in DDL and none of them a statement.
+    //
+    // Splitting on the semicolons and asking what each piece STARTS
+    // with is both simpler and right, because that is what a statement
+    // is.
+    let at = 0;
+    for (const piece of sql.split(";")) {
+      const stmt = piece.trim();
+      at += piece.length + 1;
+      const m = /^(update|delete\s+from)\s+([a-z_][a-z0-9_.]*)/i.exec(stmt);
+      if (!m) continue;
+      if (/\bwhere\b/i.test(stmt)) continue;
+      const line = sql.slice(0, at - piece.length - 1).split("\n").length;
+      bad.push(`${file}:${line} ${m[1].toLowerCase()} ${m[2]} with no WHERE`);
+    }
+  }
+
+  assert.deepEqual(bad, [],
+    "these touch every row of a table, which is almost never what was meant:\n  " + bad.join("\n  "));
+});
+
+// ---------------------------------------------------------------------
+// The file 21 allow list, which is written down in more than one place
+// ---------------------------------------------------------------------
+
+test("every copy of the file 21 allow list says the same thing", () => {
+  // THE LIST OF lms_ FUNCTIONS A VISITOR MAY EXECUTE is written out four
+  // times: twice in 21_verify.sql, because its second statement is after
+  // a semicolon and so cannot see the first one's CTE, once in
+  // file_21_tests.sql as the assertion, and once more there as the
+  // reverse check that no name on the list is unused. Four copies is
+  // three too many, and the alternative was worse: a list held in a
+  // table would drift from the file that is supposed to govern it, and
+  // the verify file has to stand alone because Big Sam pastes it into
+  // the Supabase editor on its own.
+  //
+  // So the copies are allowed and this test is what stops them drifting.
+  // It finds every array literal that mentions lms_can_edit, which is
+  // the first name on the list in all four, and insists they are
+  // identical as sets.
+  const files = [
+    "database/lms/21_verify.sql",
+    "database/lms/tests/file_21_tests.sql",
+  ];
+
+  const lists = [];
+  for (const f of files) {
+    const sql = readFileSync(join(ROOT, f), "utf8");
+    // array[ ... ] blocks, non greedy to the matching close bracket. The
+    // names are plain quoted identifiers with no commas inside them, so
+    // this does not need the full dollar quoting walk the generator has.
+    for (const m of sql.matchAll(/array\s*\[([^\]]*)\]/gi)) {
+      // The exact quoted name, with no bracket after it. The signature
+      // lists elsewhere in these files hold 'lms_can_edit()' instead,
+      // and matching those collected an array of nothing and reported it
+      // as a list that had lost all 26 names.
+      if (!m[1].includes("'lms_can_edit'")) continue;
+      const names = [...m[1].matchAll(/'([a-z_]+)'/g)].map((x) => x[1]).sort();
+      const line = sql.slice(0, m.index).split("\n").length;
+      lists.push({ where: `${f}:${line}`, names });
+    }
+  }
+
+  assert.ok(lists.length >= 3,
+    `expected the allow list in at least three places, found ${lists.length}`);
+
+  const first = lists[0];
+  assert.ok(first.names.length >= 20,
+    `the allow list at ${first.where} has only ${first.names.length} names, which cannot be right`);
+
+  for (const l of lists.slice(1)) {
+    assert.deepEqual(l.names, first.names,
+      `the allow list at ${l.where} does not match the one at ${first.where}.\n` +
+      `  only in ${first.where}: ${first.names.filter((n) => !l.names.includes(n)).join(", ") || "none"}\n` +
+      `  only in ${l.where}: ${l.names.filter((n) => !first.names.includes(n)).join(", ") || "none"}`);
+  }
+
+  // And the file that does the revoking must not name anything that is
+  // on the allow list, which would be a flat contradiction.
+  const fix = readFileSync(join(ROOT, "database/lms/21_execute_privileges.sql"), "utf8")
+    .replace(/^\s*--.*$/gm, "");
+  const revoked = new Set(
+    [...fix.matchAll(/revoke\s+execute\s+on\s+function\s+([a-z_]+)\s*\(/gi)].map((m) => m[1]),
+  );
+  const contradictions = first.names.filter((n) => revoked.has(n));
+  assert.deepEqual(contradictions, [],
+    "these are on the allow list AND revoked by file 21, which cannot both be intended: " +
+      contradictions.join(", "));
 });

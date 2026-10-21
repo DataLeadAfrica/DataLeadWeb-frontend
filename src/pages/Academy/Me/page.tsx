@@ -15,8 +15,10 @@ import { useAccess } from "../useAccess";
 import { routes } from "../../routes";
 import { getCatalogue, type CourseCard } from "../../../lib/catalogue";
 import {
+  confirmEmailCheck,
   getSession,
   greeting,
+  requestEmailCheck,
   roleLabel,
   setMyName,
   signOut,
@@ -61,7 +63,7 @@ export default function AcademyMe() {
   // either ran here or was handed over by the page that signed the person
   // in. Nothing on this page decides for itself what the account can
   // reach: that is the server's answer, shown as it was given.
-  const { role, bootcamp, notice, dismiss, ready } = useAccess();
+  const { role, bootcamp, notice, dismiss, ready, verified } = useAccess();
 
   const [session, setSession] = useState<Session | null>(null);
   const [busy, setBusy] = useState(false);
@@ -126,14 +128,57 @@ export default function AcademyMe() {
   // The saved name is held here as well as on the session, so the page
   // shows the new one the moment it is saved rather than waiting for the
   // next sign in. Seeded from the session once it arrives.
+  // Proving the email address. `proved` is held here as well as on the
+  // sync so the card goes the moment the code is accepted, rather than
+  // on the next page load.
+  const [proved, setProved] = useState(false);
+  const [checkOpen, setCheckOpen] = useState(false);
+  const [checkCode, setCheckCode] = useState("");
+  const [checkBusy, setCheckBusy] = useState(false);
+  const [checkNote, setCheckNote] = useState("");
+  const [checkTrouble, setCheckTrouble] = useState("");
+
   const [savedName, setSavedName] = useState<string | null>(null);
   const [nameDraft, setNameDraft] = useState("");
   const [nameBusy, setNameBusy] = useState(false);
   const [nameTrouble, setNameTrouble] = useState("");
+  const [nameNote, setNameNote] = useState("");
   const [editingName, setEditingName] = useState(false);
 
   const name = savedName ?? session?.fullName ?? "";
   const firstName = name.split(" ")[0];
+
+  async function askForCode() {
+    setCheckTrouble("");
+    setCheckBusy(true);
+    const r = await requestEmailCheck();
+    setCheckBusy(false);
+    if (!r.ok) {
+      setCheckTrouble(r.message);
+      return;
+    }
+    setCheckNote(r.message);
+    setCheckOpen(true);
+  }
+
+  async function sendCode(event: React.FormEvent) {
+    event.preventDefault();
+    setCheckTrouble("");
+    setCheckBusy(true);
+    const r = await confirmEmailCheck(checkCode);
+    setCheckBusy(false);
+    if (!r.ok) {
+      setCheckTrouble(r.message);
+      setCheckCode("");
+      return;
+    }
+    // The server ran the access sync in the same call, so whatever the
+    // address unlocked is already true. The message is the sync's when
+    // there is news and a plain confirmation when there is not.
+    setProved(true);
+    setCheckOpen(false);
+    setCheckNote(r.message);
+  }
 
   async function saveName(event: React.FormEvent) {
     event.preventDefault();
@@ -147,6 +192,10 @@ export default function AcademyMe() {
     }
     setSavedName(r.name);
     setEditingName(false);
+    // Not an error: the name IS saved. It says what did not happen,
+    // which is that this page may keep showing the old greeting until
+    // the next sign in.
+    setNameNote(r.message);
   }
 
   // The one to carry on with: the most recently touched course that is
@@ -306,6 +355,11 @@ export default function AcademyMe() {
               <>
                 <p className="acad-tile__label">Your name</p>
                 <p className="acad-me__namenow">{name}</p>
+                {nameNote ? (
+                  <p className="acad-me__namewhy" role="status">
+                    {nameNote}
+                  </p>
+                ) : null}
                 <button
                   type="button"
                   className="acad-btn acad-btn--ghost acad-btn--auto"
@@ -364,6 +418,89 @@ export default function AcademyMe() {
                 ) : null}
               </form>
             )}
+          </article>
+        ) : null}
+
+        {/* -------------------------------------- confirm your address
+
+            THE SAME CARD FOR EVERYBODY WHO HAS NOT DONE IT, and that is
+            the whole design of it.
+
+            It would be easy, and wrong, to show this only to people who
+            have something waiting: somebody on the staff list, somebody
+            with certificates under that address, somebody with a
+            bootcamp enrolment. A card that appeared only for them would
+            answer, to anybody who typed an address and signed up, the
+            question of whether that address is known to us. So it reads
+            the same and says the same for an address with records and
+            one with none.
+
+            Sign up no longer sends a code, so this is the only thing
+            that proves an address, and nothing it unlocks is given out
+            until it is done. */}
+        {ready && session && !verified && !proved ? (
+          <article className="acad-tile acad-me__verify">
+            <p className="acad-tile__label">Your email address</p>
+            {!checkOpen ? (
+              <>
+                <p className="acad-me__verifywhy">
+                  Confirm your email address to unlock bootcamp access, staff access and
+                  your certificates.
+                </p>
+                <button
+                  type="button"
+                  className="acad-btn acad-btn--auto"
+                  onClick={askForCode}
+                  disabled={checkBusy}
+                >
+                  {checkBusy ? "Sending" : "Send me a code"}
+                </button>
+              </>
+            ) : (
+              <form onSubmit={sendCode}>
+                <p className="acad-me__verifywhy">{checkNote}</p>
+                <div className="acad-me__namerow">
+                  <input
+                    className="acad-me__nameinput"
+                    value={checkCode}
+                    onChange={(e) => setCheckCode(e.target.value.replace(/\D/g, ""))}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="6 digit code"
+                    aria-label="The six digit code from your email"
+                  />
+                  <button type="submit" className="acad-btn acad-btn--auto" disabled={checkBusy}>
+                    {checkBusy ? "Checking" : "Confirm"}
+                  </button>
+                  <button
+                    type="button"
+                    className="acad-btn acad-btn--ghost acad-btn--auto"
+                    onClick={askForCode}
+                    disabled={checkBusy}
+                  >
+                    Send another
+                  </button>
+                </div>
+                {/* The server's own words. It knows why it refused and
+                    this page does not. */}
+                {checkTrouble ? (
+                  <p className="acad-me__nametrouble" role="alert">
+                    {checkTrouble}
+                  </p>
+                ) : null}
+              </form>
+            )}
+          </article>
+        ) : null}
+
+        {/* And what came of it, once. */}
+        {proved && checkNote ? (
+          <article className="acad-tile acad-me__verify">
+            <p className="acad-msg acad-msg--ok">
+              <TickIcon />
+              <span>{checkNote}</span>
+            </p>
           </article>
         ) : null}
 

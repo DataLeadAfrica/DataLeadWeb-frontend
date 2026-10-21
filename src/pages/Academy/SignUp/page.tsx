@@ -6,27 +6,36 @@ import Seo from "../../../components/Seo/component";
 import AboutYou from "./AboutYou";
 import AcadCard from "../ui/AcadCard";
 import AcadStage from "../ui/AcadStage";
-import CodeStep from "../CodeStep";
 import Field from "../ui/Field";
 import PasswordStrength from "../ui/PasswordStrength";
 import Pitch from "../Pitch";
 import StepRail from "../ui/StepRail";
 import { ArrowIcon, TickIcon, WarnIcon } from "../ui/Icons";
-import { handOver } from "../useAccess";
-import { useCodeTimers } from "../useCodeTimers";
 import { routes } from "../../routes";
 import { clearHidden, firstProblem, toMetadata, type Answers } from "./answers.js";
-import {
-  CODE_LENGTH,
-  confirmSignUp,
-  resendSignUpCode,
-  signUp,
-  syncAccess,
-  type AccessState,
-} from "../../../lib/academy";
+import { signUp } from "../../../lib/academy";
 
-// Create an Academy account. Two steps on one page: the details, then the
-// code that proves the address belongs to the person.
+/** Two steps now, not three. The middle one was the emailed code. */
+const RAIL = ["Details", "Done"];
+
+// Create an Academy account. The details, and then a page saying it is
+// done.
+//
+// NO CODE ANY MORE, as of Phase 6D. Signing up is instant.
+//
+// The code used to do two jobs. One was convenience, and nobody misses
+// it. The other was proof: a typed address proves nothing, and three
+// things hang off proving it, which are staff access, a bootcamp pass
+// and the certificates of somebody already certified under that
+// address. That job has moved to its own check on My learning, which
+// everybody is offered and nobody is forced through.
+//
+// BOTH OUTCOMES LOOK THE SAME HERE, deliberately. With Supabase
+// "Confirm email" off, a new address gets a session and an address that
+// is already taken gets an error. If this page did anything different
+// in the two cases it would answer, one address at a time, the question
+// of who has an account. signUp() throws the session away and reports
+// success either way, and this page shows one panel.
 //
 // Why a code rather than a link: a link opens on whichever device the
 // email was read on, which is often the phone when the person is sat at a
@@ -38,7 +47,7 @@ import {
 // dressed up as a promise. What they can reach is settled by the server
 // after they confirm, and the pass card on My learning says it then.
 
-type Step = "details" | "code";
+type Step = "details" | "done";
 
 export default function AcademySignUp() {
   const navigate = useNavigate();
@@ -57,7 +66,6 @@ export default function AcademySignUp() {
   // about. If the tab is closed the answers are gone, which is the
   // right trade.
   const [a, setA] = useState<Answers>({ goals: [] });
-  const [code, setCode] = useState("");
 
   const fullName = a.full_name || "";
   const email = a.email || "";
@@ -83,19 +91,7 @@ export default function AcademySignUp() {
   // auth helpers know about; this form has twenty more, named by
   // firstProblem in answers.js, and the name is only ever compared.
   const [errorField, setErrorField] = useState<string>("form");
-  const [note, setNote] = useState("");
-  const [accepted, setAccepted] = useState(false);
-  const [access, setAccess] = useState<AccessState | null>(null);
 
-  const timers = useCodeTimers(step === "code");
-
-  // An error stops being true the moment the person edits the box it was
-  // about, so it is cleared then rather than being left on screen to argue
-  // with what they are now typing. A message about the submission as a
-  // whole clears on any change.
-  function edited(field: string) {
-    if (error && (errorField === field || errorField === "form")) setError("");
-  }
 
   function fail(message: string, field: string = "form") {
     setError(message);
@@ -104,7 +100,6 @@ export default function AcademySignUp() {
 
   async function onCreate() {
     setError("");
-    setNote("");
 
     // EVERY FIELD IS CHECKED BEFORE ANYTHING IS SENT, and one message at
     // a time. firstProblem walks the questions in the order they are
@@ -137,50 +132,10 @@ export default function AcademySignUp() {
       fail(r.message, r.field ?? "form");
       return;
     }
-    setNote(r.message);
-    setStep("code");
-    timers.restart();
+    setStep("done");
   }
 
-  async function onConfirm(entered?: string) {
-    // entered is the value the boxes have just finished, which the page's
-    // own code state does not hold yet. See CodeStep's onSubmit.
-    const value = entered ?? code;
-    if (value.length !== CODE_LENGTH) {
-      fail(`Please enter all ${CODE_LENGTH} digits.`, "code");
-      return;
-    }
-    setError("");
-    setBusy(true);
-    const r = await confirmSignUp(email, value);
 
-    if (!r.ok) {
-      setBusy(false);
-      fail(r.message, "code");
-      setCode("");
-      return;
-    }
-
-    // Confirming signs the person in, so their access is worked out now
-    // rather than on the next page load. The answer travels with them to
-    // My learning, because the sync reports a change only once and a
-    // second call there would find nothing left to report.
-    const state = await syncAccess();
-    setAccess(state);
-    setBusy(false);
-    setNote("");
-    setAccepted(true);
-  }
-
-  async function onResend() {
-    setError("");
-    setBusy(true);
-    const r = await resendSignUpCode(email);
-    setBusy(false);
-    setNote(r.ok ? r.message : "");
-    if (!r.ok) fail(r.message, "form");
-    else timers.restart();
-  }
 
   const seo = (
     <Seo
@@ -190,67 +145,39 @@ export default function AcademySignUp() {
     />
   );
 
-  if (step === "code") {
+  if (step === "done") {
     return (
-      <AcadStage width="wide" focus>
+      <AcadStage width="form" focus>
         {seo}
-        <CodeStep
-          email={email}
-          title="Check your inbox"
-          railStep={accepted ? 3 : 2}
-          code={code}
-          onCodeChange={(c) => {
-            setCode(c);
-            edited("code");
-          }}
-          onSubmit={onConfirm}
-          onResend={onResend}
-          timers={timers}
-          busy={busy}
-          accepted={accepted}
-          error={error}
-          note={note}
-          submitLabel="Confirm my email"
-          done={
-            <>
-              <p className="acad-msg acad-msg--ok">
-                <TickIcon />
-                <span>Email confirmed. Welcome to the Academy.</span>
-              </p>
-              <button
-                type="button"
-                className="acad-btn"
-                onClick={() =>
-                  navigate(routes.academyMe, {
-                    replace: true,
-                    state: handOver(access),
-                  })
-                }
-              >
-                Go to My learning
-                <ArrowIcon />
-              </button>
-            </>
-          }
-          footer={
-            <>
-              Wrong address?{" "}
-              <button
-                type="button"
-                className="acad-link"
-                disabled={busy}
-                onClick={() => {
-                  setStep("details");
-                  setCode("");
-                  setError("");
-                  setNote("");
-                }}
-              >
-                Go back and change it
-              </button>
-            </>
-          }
-        />
+        <AcadCard className="acad-done">
+          <StepRail current={2} steps={RAIL} />
+          <p className="acad-msg acad-msg--ok">
+            <TickIcon />
+            <span>Your registration is complete. You can now sign in.</span>
+          </p>
+
+          {/* The one extra line, and the reason both outcomes can share
+              a panel. Somebody whose address was already taken has no
+              new account and no new password, and without this they
+              would try the password they just typed, be refused, and
+              have no idea why. It tells them nothing about anybody
+              else's address, only about their own. */}
+          <p className="acad-done__note">
+            If you have signed up before, your original password still works. Use
+            Forgot your password on the next page if you need it.
+          </p>
+
+          <button
+            type="button"
+            className="acad-btn"
+            onClick={() =>
+              navigate(routes.academySignIn, { state: { email } })
+            }
+          >
+            Sign in
+            <ArrowIcon />
+          </button>
+        </AcadCard>
       </AcadStage>
     );
   }
@@ -276,7 +203,7 @@ export default function AcademySignUp() {
           if (!busy) onCreate();
         }}
       >
-        <StepRail current={1} />
+        <StepRail current={1} steps={RAIL} />
 
         <h2 className="acad-h2">Create your account</h2>
         <p className="acad-sub">About two minutes.</p>

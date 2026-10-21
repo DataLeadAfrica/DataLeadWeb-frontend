@@ -97,7 +97,7 @@ begin
 
   -- digest() and crypt() have to be reachable, or the code minting breaks
   if not exists (select 1 from pg_proc p where p.proname = 'digest') then
-    v_missing := v_missing || 'the pgcrypto extension (digest and crypt)';
+    v_missing := v_missing || 'the pgcrypto extension (digest and crypt)'::text;
   end if;
 
   if array_length(v_missing, 1) is not null then

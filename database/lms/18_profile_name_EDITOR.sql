@@ -13,19 +13,19 @@ do $$
 declare v_missing text[] := '{}';
 begin
   if to_regclass('public.lms_profiles') is null then
-    v_missing := v_missing || 'lms_profiles (file 01)';
+    v_missing := v_missing || 'lms_profiles (file 01)'::text;
   end if;
   if not exists (select 1 from pg_policies
                   where tablename = 'lms_profiles' and policyname = 'p_profiles_self_write') then
-    v_missing := v_missing || 'the profiles self-write policy (file 06)';
+    v_missing := v_missing || 'the profiles self-write policy (file 06)'::text;
   end if;
   if not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                   where n.nspname = 'public' and p.proname = 'lms_my_role') then
-    v_missing := v_missing || 'lms_my_role (file 10)';
+    v_missing := v_missing || 'lms_my_role (file 10)'::text;
   end if;
   if not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                   where n.nspname = 'public' and p.proname = 'lms_studio_overview') then
-    v_missing := v_missing || 'lms_studio_overview (file 17)';
+    v_missing := v_missing || 'lms_studio_overview (file 17)'::text;
   end if;
   if array_length(v_missing, 1) is not null then
     raise exception 'File 18 cannot run yet. Missing: %', array_to_string(v_missing, ', ');

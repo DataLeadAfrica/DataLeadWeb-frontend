@@ -886,8 +886,17 @@ begin
        values (v_learner, 'This Week', 'learner')
   on conflict (id) do update set full_name = excluded.full_name, role = excluded.role;
 
-  -- One learner who never confirmed their email address. Does not count:
-  -- a sign up that was never finished is not a new learner.
+  -- One learner who never confirmed their email address.
+  --
+  -- THIS ONE COUNTED AS OF FILE 19. When this test was written, an
+  -- unconfirmed sign up was not a new learner: it was an address
+  -- somebody typed and the nightly prune might well delete it.
+  --
+  -- File 19 drops the confirmed test, and that is not a loosening.
+  -- Supabase "Confirm email" is off, so email_confirmed_at is set at
+  -- insert for everybody and the test excluded nobody. It only looked
+  -- like a filter. The number this tile means is how many people signed
+  -- up this week, which is what it now counts.
   insert into auth.users (id, email, created_at, email_confirmed_at)
        values (v_unconf, 'never-confirmed@example.com', now(), null);
   insert into lms_profiles (id, full_name, role)
@@ -908,8 +917,24 @@ begin
   perform t17_be(v_admin);
   v_week := (select lms_studio_overview() -> 'week');
 
-  perform t17_say('19a three accounts added, only the confirmed learner of this week counts',
-    ((v_week ->> 'new_learners')::integer - v_before)::text, '1');
+  -- Two of the three once file 19 is in: the learner who signed up this
+  -- week and the one who never confirmed. One before it, when the
+  -- unconfirmed sign up did not count.
+  --
+  -- ASKED OF THE SCHEMA rather than assumed, so this file is right on a
+  -- database at 01 to 18 as well as on one at 01 to 19. The alternative
+  -- is a test that fails on a correct database, which teaches whoever
+  -- runs it to ignore a failure.
+  --
+  -- Either way the month old learner is outside the week and the
+  -- administrators are not learners, which is the part that has not
+  -- changed.
+  perform t17_say('19a three accounts added, the learners of this week count',
+    ((v_week ->> 'new_learners')::integer - v_before)::text,
+    case when exists (select 1 from information_schema.columns
+                       where table_schema = 'public' and table_name = 'lms_profiles'
+                         and column_name = 'email_verified_at')
+         then '2' else '1' end);
 
   -- Said separately, because a count of 1 could also be reached by
   -- counting the administrators and getting it wrong in two directions

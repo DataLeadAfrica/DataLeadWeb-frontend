@@ -16,10 +16,10 @@ set role postgres;
 select set_config('request.jwt.claim.sub','',false);
 \set LEARNERS 20
 
-delete from lms_quiz_attempts; delete from lms_watch_buckets; delete from lms_lesson_progress;
-delete from lms_options; delete from lms_questions; delete from lms_quizzes;
-delete from lms_lessons; delete from lms_modules; delete from lms_entitlements;
-delete from lms_courses; delete from lms_profiles; delete from auth.users;
+delete from lms_quiz_attempts; delete from lms_watch_buckets where true; delete from lms_lesson_progress where true;
+delete from lms_options where true; delete from lms_questions where true; delete from lms_quizzes where true;
+delete from lms_lessons where true; delete from lms_modules where true; delete from lms_entitlements where true;
+delete from lms_courses where true; delete from lms_profiles where true; delete from auth.users where true;
 
 insert into lms_courses (id, slug, title, tool, area, level, summary, status, published_at, price_kobo)
  values ('99999999-0000-0000-0000-000000000001','big','Thirty lesson course','STATA','Stats','Beginner',
@@ -50,7 +50,7 @@ select ('99999999-0000-0000-0003-' || lpad(g::text,12,'0'))::uuid, 'right', true
 insert into lms_options (question_id, label, is_correct, position)
 select ('99999999-0000-0000-0003-' || lpad(g::text,12,'0'))::uuid, 'wrong', false, 2
   from generate_series(1,30) g;
-update lms_quizzes set status='published';
+update lms_quizzes set status='published' where true;
 
 -- one module quiz for the course
 insert into lms_quizzes (id, module_id, title, status, pass_percent, max_attempts)

@@ -26,14 +26,14 @@ drop table if exists t_scratch;
 create table t_scratch (k text primary key, v text);
 grant all on t_scratch to authenticated, anon;
 
-delete from lms_entitlements; delete from lms_admin_actions;
-delete from lms_quiz_attempts; delete from lms_watch_buckets; delete from lms_lesson_progress;
-delete from lms_options; delete from lms_questions; delete from lms_quizzes;
-delete from lms_lessons; delete from lms_modules;
-delete from lms_path_courses; delete from lms_paths; delete from lms_courses;
-delete from participant_enrolments; delete from certificates; delete from participants;
-delete from programmes; delete from lms_profiles; delete from auth.users;
-delete from lms_facilitators;
+delete from lms_entitlements where true; delete from lms_admin_actions where true;
+delete from lms_quiz_attempts where true; delete from lms_watch_buckets where true; delete from lms_lesson_progress where true;
+delete from lms_options where true; delete from lms_questions where true; delete from lms_quizzes where true;
+delete from lms_lessons where true; delete from lms_modules where true;
+delete from lms_path_courses where true; delete from lms_paths where true; delete from lms_courses where true;
+delete from participant_enrolments where true; delete from certificates where true; delete from participants where true;
+delete from programmes where true; delete from lms_profiles where true; delete from auth.users where true;
+delete from lms_facilitators where true;
 
 insert into auth.users (id, email, email_confirmed_at) values
  ('11111111-1111-1111-1111-111111111111','boss@dataleadafrica.com', now()),

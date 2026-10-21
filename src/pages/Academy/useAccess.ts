@@ -42,6 +42,8 @@ export type AccessView = {
   dismiss: () => void;
   /** False until the sync or the handover has answered. */
   ready: boolean;
+  /** True once the person has proved their email address. */
+  verified: boolean;
 };
 
 export function useAccess(): AccessView {
@@ -105,5 +107,6 @@ export function useAccess(): AccessView {
     notice,
     dismiss: () => setNotice(""),
     ready,
+    verified: Boolean(state?.verified),
   };
 }

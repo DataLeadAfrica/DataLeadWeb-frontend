@@ -18,12 +18,12 @@ create or replace function t_rec(p_name text, p_pass boolean, p_detail text defa
 returns void language sql as $$ insert into t_results(name,pass,detail) values(p_name,coalesce(p_pass,false),p_detail) $$;
 grant execute on function t_rec(text,boolean,text) to authenticated, anon;
 
-delete from auth_codes; delete from mail_outbox;
-delete from lms_quiz_attempts; delete from lms_watch_buckets; delete from lms_lesson_progress;
-delete from lms_options; delete from lms_questions; delete from lms_quizzes;
-delete from lms_lessons; delete from lms_modules; delete from lms_entitlements;
-delete from lms_courses; delete from certificates; delete from participant_enrolments;
-delete from participants; delete from programmes; delete from lms_profiles; delete from auth.users;
+delete from auth_codes where true; delete from mail_outbox where true;
+delete from lms_quiz_attempts where true; delete from lms_watch_buckets where true; delete from lms_lesson_progress where true;
+delete from lms_options where true; delete from lms_questions where true; delete from lms_quizzes where true;
+delete from lms_lessons where true; delete from lms_modules where true; delete from lms_entitlements where true;
+delete from lms_courses where true; delete from certificates where true; delete from participant_enrolments where true;
+delete from participants where true; delete from programmes where true; delete from lms_profiles where true; delete from auth.users where true;
 
 insert into programmes (id, slug, title, code)
  values ('b0000000-0000-0000-0000-000000000001','data-analytics','Data Analytics','DA');

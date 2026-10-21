@@ -1,6 +1,13 @@
 import "./StepRail.css";
 
-// Three short bars across the top of the card: Details, Verify, Ready.
+// Short bars across the top of the card, one per step.
+//
+// THREE BY DEFAULT, BUT NOT ALWAYS THREE. Sign up has two as of Phase
+// 6D: it no longer sends a code, so there is nothing to verify between
+// typing the details and being done. The type used to be a tuple of
+// exactly three, which made a two step flow impossible to express and
+// would have left sign up showing a VERIFY bar for a step that no
+// longer exists.
 //
 // People abandon a form they cannot see the end of. The rail says there
 // are three steps and which one they are on, before they have typed
@@ -15,7 +22,7 @@ type Props = {
   /** 1, 2 or 3. */
   current: number;
   /** Defaults to the sign up wording. */
-  steps?: [string, string, string];
+  steps?: string[];
 };
 
 export default function StepRail({

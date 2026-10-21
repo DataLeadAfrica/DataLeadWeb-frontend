@@ -210,7 +210,7 @@ reset role;
 -- allowed to touch the attempt log. Only the function may.
 -- =====================================================================
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 reset role;
 set role anon;
 do $$ declare v jsonb; begin
@@ -265,7 +265,7 @@ end $$;
 -- limit itself becomes the oracle: hitting it proves codes were being sent.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 reset role;
 set role anon;
 do $$ declare v_first jsonb; v_last jsonb; begin
@@ -283,7 +283,7 @@ end $$;
 -- address that never gets a code, which is what stops it leaking.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 reset role;
 set role anon;
 do $$ begin
@@ -306,7 +306,7 @@ reset role;
 -- nearest proxy added and the first is whatever the caller claimed.
 reset role;
 set role postgres;
-delete from sign_in_attempts;
+delete from sign_in_attempts where true;
 reset role;
 set role postgres;
 do $$ declare v_ip text; begin
@@ -321,7 +321,7 @@ end $$;
 -- caller limit, because the entry that counts is the one it cannot choose.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 reset role;
 set role anon;
 do $$ begin
@@ -348,7 +348,7 @@ reset role;
 -- 24 hours.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 -- One short of the DAILY ceiling, spread over the past day rather than
 -- bunched into the last few minutes. Bunched, they trip the hourly
 -- ceiling instead and the test would be probing the wrong limit. That is
@@ -390,7 +390,7 @@ end $$;
 -- whole day's allowance in one go.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 insert into sign_in_attempts (email_hash, ip, outcome, at)
   select md5(g::text), null, 'sent', now() - interval '2 minutes'
     from generate_series(1, (select per_hour from mail_limits where id=1)) g;
@@ -468,7 +468,7 @@ end $$;
 -- A missing or unreadable header must never break sign in.
 reset role;
 set role postgres;
-delete from auth_codes; delete from mail_outbox; delete from sign_in_attempts;
+delete from auth_codes where true; delete from mail_outbox where true; delete from sign_in_attempts where true;
 reset role;
 set role anon;
 do $$ declare v jsonb; begin
@@ -501,7 +501,7 @@ reset role;
 -- S. the Send Email Hook, so Academy email reaches the public at all
 -- =====================================================================
 set role postgres;
-delete from mail_outbox; delete from sign_in_attempts;
+delete from mail_outbox where true; delete from sign_in_attempts where true;
 do $$ declare v_out jsonb; v_row record; begin
   v_out := send_email_hook(jsonb_build_object(
     'user', jsonb_build_object('email','NewLearner@Gmail.com'),
@@ -548,7 +548,7 @@ exception when others then perform t_rec('S4 a hook call with no code fails loud
 end $$;
 
 do $$ declare v_out jsonb; begin
-  delete from mail_outbox; delete from sign_in_attempts;
+  delete from mail_outbox; delete from sign_in_attempts where true;
   insert into sign_in_attempts (email_hash, ip, outcome, at)
     select md5(g::text), null, 'sent', now() - interval '2 minutes' from generate_series(1,100) g;
   v_out := send_email_hook(jsonb_build_object(
@@ -580,7 +580,7 @@ do $$ declare v_res text; begin
 end $$;
 
 do $$ declare v_n int; v_p text; begin
-  delete from mail_outbox; delete from sign_in_attempts;
+  delete from mail_outbox; delete from sign_in_attempts where true;
   insert into mail_outbox (to_email, code_plain) values ('old@gmail.com','000111');
   select purpose into v_p from mail_outbox where to_email='old@gmail.com';
   perform t_rec('S8 a row written the old way still counts as a certificate code',

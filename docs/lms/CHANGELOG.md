@@ -14,6 +14,260 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6D, 19 October 2026. Sign up stops sending a code, and a course can be published
+
+Laid on `1ff161b`. Two numbered files, and the second of them fixes a fault that made the control
+room unable to do the one thing it exists for.
+
+### File 20 first, because it was the more urgent
+
+**Nothing in the control room ever created a lesson check.** Big Sam found it building the first
+real course, and it was mine.
+
+The Questions page takes its quiz id from the lesson's check, which was null for every lesson the
+builder made, so it rendered the editor with an empty string and `lms_save_question` answered
+"invalid input syntax for type uuid". The error was the smaller half: publish check 7 is "every
+video lesson has a lesson check", so **no course built in the control room could be published at
+all**.
+
+My 6B tests missed it because their course came from a fixture that already had checks in it, so
+the path a facilitator walks was never run end to end. `file_20_tests.sql` now walks exactly that
+path: `lms_create_course`, details, a module, a video lesson, a question in its check, the exam,
+thirty exam questions, nine of nine, published. Nothing inserted by hand. That is the test that
+would have caught this on the day.
+
+`lms_save_lesson` makes the check rather than an ensure function the page calls, because check 7 is
+a statement about every video lesson and not about every video lesson somebody has opened. It
+covers a lesson whose type is changed to video later, which a page-side ensure would miss. A lesson
+that stops being a video keeps its check, because somebody may have written questions into it.
+
+Three things found while fixing it, each worth more than the fix:
+
+- `revoke execute ... from authenticated, anon` **did nothing**. A function is executable by
+  `PUBLIC` from the moment it is created, so the grant survived and `has_function_privilege` still
+  said yes. Only naming `public` closed it.
+- A lesson check may set `lesson_id` **only**. The table allows exactly one owner.
+- The exam needs **thirty** questions, not a round ten: it serves 20 with a bank multiple of 1.5,
+  and check 9 reads that off the exam row rather than from a number anybody typed.
+
+### File 19: proof of an address becomes our own
+
+Sign up no longer sends a code. A typed address therefore proves nothing, and **eleven places** in
+files 01 to 18 read `auth.users.email_confirmed_at`, which Supabase sets at insert once "Confirm
+email" is off.
+
+The worst was not the certificate link. `lms_sync_my_access` gates three things behind that one
+timestamp: facilitator access by email address, the participant link, and bootcamp access through
+it. Unchanged, somebody signing up with an appointed facilitator's address would have been handed
+the control room on their first sign in.
+
+Five functions move onto `lms_profiles.email_verified_at`. Six uses are left alone, each with a
+reason in the file. The one worth knowing is `lms_on_email_confirmed`, **left** on Supabase's
+column deliberately: it moves the About you answers out of the account token and grants nothing, so
+moving it would leave the disability answer riding inside every access token until somebody
+happened to type a code, which is the opposite of what the Nigeria Data Protection Act asks.
+
+The backfill is only correct while Confirm email is still on, so the file records the moment of its
+first run and never backfills an account made after it. Proven: three runs, nothing re-backfilled,
+and an account created after the first run stays unproven.
+
+Codes live in a new `lms_email_checks` table rather than `auth_codes`, which belongs to the
+certification system. RLS on, no policy, no grants at all. Bcrypt hash only, ten minutes, three
+requests an hour, five tries, and the fifth wrong try destroys the code there and then rather than
+leaving it to die on the next call.
+
+### What a person sees
+
+Sign up ends on one panel: "Your registration is complete. You can now sign in." It is the same
+panel whether the address was free or already taken, and **no session survives in either case**.
+That is the point of it: with Confirm email off a new address comes back with a session and a taken
+one does not, so a browser still holding one would be the difference a stranger could measure.
+Driven in a real browser, both cases, and they are indistinguishable.
+
+The proof moved to a card on My learning, offered to everybody who has not done it and **identical
+for everybody**. A card that appeared only for people with something waiting would answer, to
+anybody who typed an address, whether it is on the staff list or has certificates against it.
+Checked in a browser with the role, the bootcamp flag and the message all varied: the card does not
+move.
+
+An administrator can also join a certification record by hand, for the one case the email rule
+cannot cover, which is a certificate under somebody's old work address. Administrators only, a
+reason required and logged, and a record already joined to another account is refused with a
+sentence rather than a constraint violation.
+
+### Two corrections of mine
+
+`setMyName` said the name "shows everywhere on the next sign in either way" if the metadata write
+failed. Dr Ayoola caught it: `getSession` reads the metadata and nothing else, so a failed write
+leaves the greeting empty until the name is saved again. It now says "Saved. Your name may not show
+here until you sign in again."
+
+The step rail still showed **DETAILS | VERIFY | READY**. The middle step was the emailed code and
+no longer exists, and the rail's type was a tuple of exactly three, so a two step flow could not be
+expressed.
+
+### File 21: who may execute what
+
+Dr Ayoola found three security definer functions open to everybody, and proved the worst of them by
+using it. As a plain learner through row level security, `lms_link_participant(auth.uid(),
+'somebody@example.com')` returned true and joined him to that person's unlinked certification
+record. It checks nothing about its caller. `lms_grant_free_courses(p_user)` grants free courses to
+any account id. `lms_storage_report()` reads row counts and sizes for a signed out visitor.
+
+The cause is one sentence: **a function in Postgres is executable by `PUBLIC` from the moment it is
+created.** Supabase gives anon and authenticated usage of the public schema, so a fresh build of
+files 01 to 20 left 47 of our own `lms_` functions callable by a visitor. Live has the three shut
+by hand. File 21 makes it permanent, so a rebuild lands where live already is.
+
+Twenty two functions are named, one statement each. Fourteen go to nobody, because nothing in
+`src/`, `api/` or `scripts/` calls them and each is reached either by a security definer function,
+which calls it as its own owner and needs no grant, or by nothing at all. Eight lose `public` and
+`anon` and keep `authenticated`, because a page does call them but never without a session.
+
+**There is no sweep.** Nothing says "revoke from everything except a list". That is the whole design
+of the file, and it is why it took four near misses to write:
+
+- **Five `lms_` functions are named inside 36 row level security policies, across 27 tables.** A
+  policy runs its functions as the querying role. Revoking `lms_is_admin` from `authenticated`
+  alone stopped a learner reading their own profile. `lms_can_edit`, `lms_is_admin`, `lms_is_staff`,
+  `lms_lesson_is_open` and `lms_my_role` are untouched, and `21_verify` row 5 is there to stop a
+  later hand taking them.
+- **The certification system calls functions this repository does not contain.** The staff console,
+  the participant portal and the blog reach `staff_login`, `participant_dashboard`,
+  `module_start_attempt`, `get_readership` and a dozen more as anon, with their own token logins.
+  Most exist only on live, so no local test would notice them breaking. Nothing in file 21 names a
+  function that is not `lms_`.
+- **`lms_faq_is_valid` is used in a CHECK constraint on `lms_courses`.** A constraint is evaluated
+  as the querying role, exactly like a policy, and with the function revoked a facilitator editing
+  their own course was told "permission denied for function lms_faq_is_valid". It takes a jsonb and
+  answers true or false, reaching no data, so shutting it was never worth anything. Left alone.
+- **`lms_my_path` is called by a signed out page.** Reading the code said otherwise. Loading every
+  signed out page in a real browser with the network log open showed `/lms/paths/:slug` calling it
+  with no session. The six functions a visitor really does reach were established that way, not by
+  reading: the landing page, the catalogue, a course page with its buy card on a PAID course, which
+  is the only state in which access is ever asked about, sign in, sign up, a path page and the
+  certificate checker.
+
+Two faults of my own, caught by my own checks rather than by thinking:
+
+- **A `.rpc(` grep missed 59 function names.** `studio.ts` calls the database through its own
+  `call<T>(fn, args)` wrapper, so `lms_add_facilitator`, `lms_remove_facilitator`,
+  `lms_paste_questions` and 56 others were invisible to the first scan. Revoking from that list
+  would have taken the control room down. The scan now looks for any string literal naming an
+  `lms_` function, in any call style.
+- **`lms_sync_my_access` had no grant of its own.** Every role reached it through `PUBLIC`, so
+  revoking `PUBLIC` took it from signed in learners too, and `academy.ts` calls it on every sign
+  in. The revoke alone would have broken the Academy while looking exactly like the seven harmless
+  lines above it. `21_verify` row 4 caught it by asking whether `authenticated` still HAS each of
+  the eight, not only whether anon has lost them. All eight are now granted to `authenticated` by
+  name, so the file no longer depends on which earlier file happened to grant what.
+
+The allow list is written out in `21_execute_privileges.sql`, in `21_verify.sql` row 8 and in
+`file_21_tests.sql`. Row 8 is the one that will still be working in a year: it fails on any `lms_`
+function that is executable by a visitor and not on the list, so something added next year and left
+with its default grant is caught without anybody remembering to add a check. A node test keeps the
+copies of the list identical, and `file_21_tests.sql` also checks the list is not longer than it
+should be, since a name nobody granted would pass row 8 for the wrong reason.
+
+`file_21_tests.sql` runs 21 checks. Section 1 performs the attack and shows it refused. Without
+file 21, ten of the 21 fail and check 1a reports "ALLOWED, and the record was taken".
+
+#### Item 3: every security definer `lms_` function that takes a person
+
+Twelve take an account id or an email address. Eight can be reached by a signed in browser, and
+every one of those asks `lms_is_admin()` before doing anything: `lms_add_facilitator`,
+`lms_give_access`, `lms_learner_record`, `lms_lift_exam_wait`, `lms_link_certification_record`,
+`lms_remove_access`, `lms_remove_facilitator`, `lms_set_staff_role`. `21_verify` row 10 checks all
+eight, and row 9b checks none of them is reachable by a visitor.
+
+The other four check nothing about their caller, which is exactly why no browser may reach them:
+`lms_apply_signup_answers` and `lms_strip_signup_metadata` are reached by the new account trigger,
+`lms_grant_free_courses` and `lms_link_participant` by the access sync, all security definer.
+`21_verify` row 11 checks all four are executable by nobody.
+
+### On pg-safeupdate, which I said I could not run, and then ran
+
+An earlier version of this entry said the extension would not install here, and that the fix was
+`truncate`. Both statements are now wrong, and I have replaced them rather than leaving them to be
+read later as fact. It is built from source against `postgresql-server-dev-16`, the local harness
+loads it the way Supabase loads it for requests arriving through the API, and the whole matrix and
+every test file in `database/lms/tests` now run with it on.
+
+**The fix is `delete from tmp_chapters where true`, not `truncate`.** Both satisfy the guard. Big
+Sam fixed live by hand with `where true`, so the repository matches live rather than the other way
+round, which is the only sane direction for a file whose job is to bring a fresh database to where
+live already is.
+
+What the guard found once it was actually loaded:
+
+- **Nothing more.** Guard stops across the whole matrix and all twelve test files: zero. The one
+  bare statement in the numbered files was the one Dr Ayoola had already found by hand, and his
+  scan and mine agree exactly.
+- 122 bare statements in the test and seed files, every one of them a deliberate "empty this table
+  before seeding". They now say `where true`, because with the guard loaded in the harness a bare
+  one stops the whole run.
+
+Two faults it found indirectly, both mine, neither of them about `WHERE` at all. They surfaced
+because loading the guard meant running the undos and re-running the files afterwards, which
+nothing had done before:
+
+- **The readiness checks printed a Postgres error instead of their own sentence.** `v_missing :=
+  v_missing || 'lms_log_action (file 17)'` looks right and is not: with an untyped literal Postgres
+  prefers `array || array` over `array || element` and tries to read the text as an array, so the
+  friendly "File 19 cannot run yet. Missing: ..." came out as `malformed array literal`. Eighteen
+  of these across files 11, 12, 16, 18, 19 and 20, all now cast `::text`, which is what files 13 to
+  15 were already doing. It fires only when something really is missing, which is why every
+  forward run had passed over it.
+- **`20_verify.sql` errored instead of printing NOs** on a database that had not had file 16 yet,
+  because row 3 names `lms_quizzes.course_id` and Postgres resolves columns when it plans a
+  statement. Same fault as file 18's `has_function_privilege` and file 19's missing table, found
+  the same way, and fixed the same way with `query_to_xml`.
+
+The static scanner stays, now correctly described as the other half of a working pair rather than a
+substitute for a thing I could not do. It reads text, so it covers statements no test reaches; the
+extension watches execution, so it covers statements built at run time. It now scans the tests and
+seeds as well as the numbered files.
+
+### Three things the guard run surfaced that are NOT fixed in this package
+
+Running every test file turned up older breakage that has nothing to do with the guard or with 6D.
+It is written down here rather than fixed, because fixing it would widen a package that is already
+a live change, and none of it affects the site.
+
+- **Four seed files still insert a module quiz**, which file 16 abolished, so they stop with "Module
+  quizzes are no longer part of the Academy" and the question and option rows that follow fail for
+  want of a parent. The product is right and the fixtures are older than the rule. Affects
+  `seed_file_11`, `seed_file_13`, `seed_file_14`, `seed_file_15`, and it is why `file_15_tests`
+  then says "No such attempt".
+- **`file_12_tests`, `original_tests` and `review_tests` print no verdict line at all.** They run
+  clean, but they end without the `ALL PASS` or `N FAILED` summary the later files adopted, so
+  nobody can tell at a glance whether they passed. A test file nobody can read is not much of a
+  test file.
+- **The test files are not isolated from each other.** Seeds do not roll back, so running them all
+  into one database makes `file_16` and `file_20` report a failure each that neither has alone: an
+  earlier seed's unconfirmed accounts get swept by file 16's prune, and the counts no longer match.
+  Both are `ALL PASS` on a database of their own. `file_19` had the same shape of problem through
+  the site-wide mail ceiling and that one IS fixed here, because it was failing on the honest run.
+
+Suggested for 6E, in that order.
+
+### The second half of the chapter fault: who was allowed to call it
+
+File 16 granted `lms_set_lesson_chapters` to `authenticated`. It guards itself with `lms_is_staff()`,
+which asks "are you staff" and never "is this lesson yours", so **any facilitator could rewrite the
+chapter list of any lesson, in anybody's published course**, by calling it directly. Dr Ayoola found
+this and fixed live by hand.
+
+The grant is now commented out in file 16 rather than deleted, with the reason written where the
+next person will look for it, and file 20 revokes it from `public, anon, authenticated` so a
+database already carrying the grant loses it. `public` is named because a function is executable by
+`PUBLIC` from the moment it exists, which is the same trap recorded under file 20 above.
+
+`19_verify.sql` row 18 asks the question. It reports NO with the grant restored and yes without, so
+it is a row that can actually fail. Nothing is lost by closing it: `lms_save_lesson` is security
+definer and reaches the function as its owner, and a facilitator saving a lesson three times over,
+including once with fewer chapters than before, works throughout.
+
 ## PHASE 6C, FIRST COMMIT, 15 October 2026. The seven, and two faults found on the way
 
 Laid on `1f41a19`, the merge of `academy-6b`.

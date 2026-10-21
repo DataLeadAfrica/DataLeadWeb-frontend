@@ -61,6 +61,15 @@ export const EDITOR_FILES = [
   { source: "database/lms/18_profile_name.sql", shape: "bodies" },
   { source: "database/lms/18_undo.sql", shape: "bodies" },
   { source: "database/lms/18_verify.sql", shape: "checks" },
+  { source: "database/lms/19_email_check.sql", shape: "bodies" },
+  { source: "database/lms/19_undo.sql", shape: "bodies" },
+  { source: "database/lms/19_verify.sql", shape: "checks" },
+  { source: "database/lms/20_lesson_checks.sql", shape: "bodies" },
+  { source: "database/lms/20_undo.sql", shape: "bodies" },
+  { source: "database/lms/20_verify.sql", shape: "checks" },
+  { source: "database/lms/21_execute_privileges.sql", shape: "bodies" },
+  { source: "database/lms/21_undo.sql", shape: "bodies" },
+  { source: "database/lms/21_verify.sql", shape: "checks" },
 ];
 
 /**
@@ -283,10 +292,27 @@ export function toChecksEditor(sql) {
   // looked plausible and would have failed in the Editor on line one.
   let text = stripComments(sql).replace(/^\n+/, "");
 
-  text = text.replace(
-    /with checks as \(/,
-    "with checks (n, checking, answer, note) as (",
-  );
+  // THE CHECKS CTE NEED NOT BE THE FIRST ONE.
+  //
+  // This matched only the literal "with checks as (" until file 21,
+  // which puts its allow list and three signature lists in CTEs of
+  // their own ahead of the checks. The rewrite then did nothing, so the
+  // generated copy had a checks CTE with no column names while its
+  // final select still asked for n, checking, answer and note, and the
+  // Editor answered "column n does not exist".
+  //
+  // So both shapes are handled: "with checks as (" when it leads, and a
+  // bare "checks as (" at the start of a line when other CTEs come
+  // first. Anchored to the line start and to the name "checks" exactly,
+  // so a CTE called something else is left alone.
+  const cols = "checks (n, checking, answer, note) as (";
+  if (/with\s+checks as \(/.test(text)) {
+    text = text.replace(/with\s+checks as \(/, "with " + cols);
+  } else if (/\nchecks as \(/.test(text)) {
+    text = text.replace(/\nchecks as \(/, "\n" + cols);
+  } else {
+    throw new Error("cannot find the checks CTE to name its columns");
+  }
 
   // Where each check starts, and therefore where each one ends.
   const starts = [...text.matchAll(/(?:^|\n)(\s*)(?:union all )?select (\d+)(?: as n)?,/g)]

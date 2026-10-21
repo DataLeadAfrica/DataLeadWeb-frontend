@@ -135,7 +135,7 @@ begin
         r.country, r.age_band, r.gender, r.education_level, r.occupation, r.disability, r.goals,
         r.state, r.region, r.city, r.postal_code, r.qualification, r.course_of_study, r.trade,
         r.job_title, r.business, r.study_level, r.school, r.sector, r.disability_detail, now());
-      delete from lms_learner_profiles;          -- one at a time, user_id is the key
+      delete from lms_learner_profiles where true;          -- one at a time, user_id is the key
       if r.should_pass then v_ok := v_ok + 1; else v_bad := v_bad + 1; end if;
     exception when others then
       if r.should_pass then v_bad := v_bad + 1; else v_ok := v_ok + 1; end if;

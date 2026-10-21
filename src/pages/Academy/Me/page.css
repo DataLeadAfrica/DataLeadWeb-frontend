@@ -52,6 +52,7 @@
   grid-template-areas:
     "continue pass"
     "continue week"
+    "verify   verify"
     "name     studio"
     "courses  certs";
 }
@@ -61,6 +62,7 @@
     grid-template-areas:
       "continue"
       "pass"
+      "verify"
       "name"
       "studio"
       "week"
@@ -74,6 +76,7 @@
 .acad-bento--new {
   grid-template-areas:
     "continue pass"
+    "verify   verify"
     "name     studio";
 }
 @media (max-width: 920px) {
@@ -81,6 +84,7 @@
     grid-template-areas:
       "continue"
       "pass"
+      "verify"
       "name"
       "studio";
   }
@@ -466,4 +470,25 @@
 .acad-me__studio:focus-visible {
   outline: 2px solid var(--acad-signal);
   outline-offset: 3px;
+}
+
+
+/* ------------------------------------------ confirm your address */
+
+/* Full width, above the name and the control room, because until it is
+   done nothing the address unlocks is given out. It is the one thing on
+   this page that is worth doing before anything else.
+
+   The same card for everybody who has not done it. One that appeared
+   only for people with something waiting would tell a stranger that the
+   address is on the staff list or has certificates against it. */
+.acad-me__verify {
+  grid-area: verify;
+}
+
+.acad-me__verifywhy {
+  margin: 0 0 14px;
+  color: var(--acad-muted);
+  font-size: 14px;
+  line-height: 1.55;
 }
