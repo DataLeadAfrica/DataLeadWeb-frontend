@@ -61,6 +61,50 @@ export function PlayIcon({ className }: IconProps) {
   );
 }
 
+/* The player's own controls, drawn here because file 25 switches
+   YouTube's bar off and every glyph it used to supply has to come from
+   somewhere. All four are plain geometry: a pair of bars, a cone and an
+   arc, a framed rectangle, four corner brackets. */
+
+export function PauseIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path d="M10 9v6M14 9v6" />
+    </svg>
+  );
+}
+
+export function SoundIcon({ className, muted }: IconProps & { muted?: boolean }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" />
+      {muted ? (
+        <path d="M16 9.5l4.5 5M20.5 9.5l-4.5 5" />
+      ) : (
+        <path d="M16 9.5a4 4 0 0 1 0 5" />
+      )}
+    </svg>
+  );
+}
+
+export function CaptionsIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path d="M8 10.5h3M8 13.5h5M15 10.5h1M15 13.5h1" />
+    </svg>
+  );
+}
+
+export function ExpandIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+    </svg>
+  );
+}
+
 export function SealIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
