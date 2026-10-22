@@ -707,11 +707,13 @@ export default function AcademyLesson() {
                   ),
                 )}
               </select>
-              <span>
-                {open
-                  ? "Any speed, now you have watched it through."
-                  : "Up to 1.5x counts on your first watch. Faster than that and the recording cannot keep up."}
-              </span>
+              {/* THE FIRST WATCH NOTE IS GONE. The cap itself is not:
+                  the list above still offers nothing above 1.5x until
+                  the lesson is open, so the rule is still enforced, it
+                  is just no longer explained here. The sentence for a
+                  lesson already watched through stays, because that one
+                  tells somebody something has changed in their favour. */}
+              {open ? <span>Any speed, now you have watched it through.</span> : null}
               <span className="acad-speed__time acad-mono">
                 {clock(position)} / {clock(duration)}
               </span>

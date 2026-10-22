@@ -90,9 +90,14 @@ export default function WatchTape({
       {!compact && title ? (
         <div className="acad-tape__top">
           <b>{title}</b>
-          <span className="acad-mono">
-            {timed ? `${covered} of ${buckets} cells` : "Length not set"}
-          </span>
+          {/* THE CELL COUNT IS GONE. "12 of 62 cells" counted the
+              player's own buckets, which is an implementation detail
+              nobody outside this file has a use for, and the tape
+              underneath already shows the same thing as a picture.
+              "Length not set" stays: that one is a real warning, not a
+              count, and it is how staff see a video lesson whose
+              duration was never recorded. */}
+          {timed ? null : <span className="acad-mono">Length not set</span>}
         </div>
       ) : null}
 
