@@ -296,12 +296,18 @@ export function getLearners(args: {
   filter?: string;
   access?: string | null;
   limit?: number;
+  course?: string | null;
 }) {
   return call<StudioLearner[]>("lms_staff_learners", {
     p_search: args.search ?? "",
     p_filter: args.filter ?? "all",
     p_access: args.access ?? null,
     p_limit: args.limit ?? 100,
+    // ONE COURSE, asked by access rather than by progress, so that this
+    // list and the number beside the course on the Courses table are
+    // answering the same question. Both count active entitlements held
+    // by somebody whose role is learner.
+    p_course: args.course || null,
   });
 }
 

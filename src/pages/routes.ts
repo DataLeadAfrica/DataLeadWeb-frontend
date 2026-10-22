@@ -110,6 +110,10 @@ export const routes = {
   academyQuiz: "/lms/learn/:slug/quiz/:quizId",
   academyComplete: "/lms/learn/:slug/complete",
   academyExam: "/lms/learn/:slug/exam",
+  // The path exam. A sibling of academyExam rather than a reuse of
+  // it: that one takes a COURSE slug, and a path slug handed to it
+  // finds nothing, which is exactly the fault this route fixes.
+  academyPathExam: "/lms/paths/:slug/exam",
 
   // The control room, Phase 6B. Everything under /lms/studio is staff
   // only: RequireStaff asks the database for the role on every one, and
@@ -118,6 +122,10 @@ export const routes = {
   studioCourses: "/lms/studio/courses",
   studioBuilder: "/lms/studio/courses/:id",
   studioQuestions: "/lms/studio/courses/:id/questions",
+  // The path exam's questions. The screen is the same one, and until
+  // this existed a path exam had no address to write it at, which is
+  // why no path could ever be published.
+  studioPathQuestions: "/lms/studio/paths/:id/questions",
   studioPaths: "/lms/studio/paths",
   studioAreas: "/lms/studio/areas",
   studioLearners: "/lms/studio/learners",

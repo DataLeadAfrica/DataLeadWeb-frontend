@@ -86,6 +86,7 @@ export const NOT_IN_SITEMAP = {
   studioCourses: "staff only",
   studioBuilder: "staff only, and carries an :id",
   studioQuestions: "staff only, and carries an :id",
+  studioPathQuestions: "administrators only, and carries an :id",
   studioPaths: "staff only",
   studioAreas: "staff only",
   studioLearners: "staff only, administrators",
@@ -124,6 +125,7 @@ export const NOT_IN_SITEMAP = {
   academyQuiz: "behind a sign in, and carries noindex",
   academyComplete: "behind a sign in, and carries noindex",
   academyExam: "behind a sign in, and carries noindex",
+  academyPathExam: "behind a sign in, and carries noindex",
 
   // The end of a payment or a form. Landing on one from a search result
   // would be meaningless.

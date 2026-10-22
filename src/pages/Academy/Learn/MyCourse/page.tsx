@@ -9,7 +9,7 @@ import AcadStage from "../../ui/AcadStage";
 import Breadcrumb from "../../ui/Breadcrumb";
 import ProgressRing from "../../ui/ProgressRing";
 import EmptyState from "../../ui/EmptyState";
-import { ArrowIcon, LockIcon, TickIcon } from "../../ui/Icons";
+import { ArrowIcon, LockIcon, SealIcon, TickIcon } from "../../ui/Icons";
 import { routes } from "../../../routes";
 import {
   clock,
@@ -369,6 +369,12 @@ function ModuleCard({ slug, module: m }: { slug: string; module: LearnModule }) 
         <h2 className="acad-h3">
           Module {m.position} &middot; {m.title}
         </h2>
+        {m.badge_awarded_at ? (
+          <span className="acad-modcard__badge">
+            <SealIcon />
+            Module badge
+          </span>
+        ) : null}
         <small className="acad-mono">
           {m.lessons_done} of {plural(m.lesson_count, "lesson")}
           {m.seconds > 0 ? ` · ${Math.round(m.seconds / 60)}m` : ""}

@@ -50,6 +50,16 @@ export type LearnModule = {
   lesson_count: number;
   lessons_done: number;
   lessons: LearnLesson[];
+  /**
+   * When the module badge was awarded, or null if it has not been.
+   *
+   * NOT the same question as lessons_done === lesson_count. A badge once
+   * earned stays earned, so a module that gains a lesson after somebody
+   * finished it shows 2 of 3 done and still carries its badge. Read this
+   * field rather than comparing the counts, or the page will quietly take
+   * a badge back that the database still holds.
+   */
+  badge_awarded_at: string | null;
   quiz: LearnModuleQuiz | null;
 };
 

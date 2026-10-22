@@ -156,6 +156,20 @@ export type StudioQuestion = {
   chapter_start: number | null;
 };
 
+/**
+ * A path, shaped like a course on purpose.
+ *
+ * The questions screen already knows how to draw a title, an exam's
+ * settings and a bank count against what it needs, so lms_studio_path
+ * returns those under the same names and one screen serves both. The
+ * modules list comes back empty: a path exam question is not tagged to
+ * a lesson, because the courses underneath the path have their own
+ * exams for that.
+ */
+export function getStudioPath(path: string) {
+  return call<StudioCourseFull>("lms_studio_path", { p_path: path });
+}
+
 export function getQuestions(quiz: string) {
   return call<StudioQuestion[]>("lms_studio_questions", { p_quiz: quiz });
 }
