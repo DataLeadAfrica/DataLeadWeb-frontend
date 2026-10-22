@@ -238,7 +238,7 @@ export default function AcademyPath() {
         {path.exam && path.exam.state === "open" ? (
           <Link
             className="acad-btn acad-btn--auto"
-            to={routes.academyPath.replace(":slug", path.slug)}
+            to={routes.academyPathExam.replace(":slug", path.slug)}
           >
             Start the exam
             <ArrowIcon />

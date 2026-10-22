@@ -6,9 +6,15 @@ the rest:
 
 | File | What it is | State |
 |---|---|---|
-| **22** | The seven gaps. All small, all real, all found by building a course. | This package |
-| 23 | Module badges, and the path exam end to end. | Next |
-| 24 | The lesson video player. | After that |
+| 22 | The seven gaps. All small, all real, all found by building a course. | Merged |
+| 23 | Three certificate faults, two of them live. | Merged |
+| **24** | Module badges, the path exam end to end, and two control room counts. | This package |
+| 25 | The lesson video player. | Next |
+| 26 | The control room made easy, and a guide for every role. | After that |
+
+File 23 was not in the original plan. It went ahead of the badges because two of its three faults were
+live: one let a learner issue themselves a real certificate, and the other stopped an honest learner
+getting one. The badges wait on it, because a badge is earned from the very flag file 23 protects.
 
 ## The structure Big Sam settled on
 
@@ -230,12 +236,59 @@ check a list of known mistakes, that one asks whether anything has drifted by an
 | 6 | Both save functions ask it, and nothing signed in can | A course has a title and a path has a certificate name, and both are printed on a certificate, so fixing one and not the other would leave half the fault. A NO also fires if the helper is reachable by `anon` or `authenticated`: a new function is executable by `PUBLIC` the moment it exists. |
 | 7 | Every course and path without a certificate still matches its own | **The row that keeps working.** A NO is not an emergency and nothing is broken by it: it means something has drifted by a route this file does not cover, and the list printed under the table names each one, what it is called and what its certificate says. Archived courses are left out, and so is anything with a certificate against it, because those are supposed to stay as they are. |
 
+## What file 24 adds
+
+**Module badges.** A mark of having finished a module, shown to the learner who earned it. It is not
+a certificate: no number, no row in the certificate register, nothing on `/verify`, nothing a
+programme points at. Every lesson in the module completed earns one, and because `lms_complete_lesson`
+already refuses a lesson whose check has not been passed, "every lesson completed" carries the checks
+with it. There is no module exam and there will not be one.
+
+The award sits on the progress record rather than inside `lms_complete_lesson`, so it happens in the
+same transaction as the last requirement and happens whichever function wrote the row. A later file
+that completes a lesson some other way cannot forget to award the badge.
+
+**A badge once earned stays earned.** Nothing takes one back. A module that gains a lesson after
+somebody finished it shows "2 of 3 lessons" with the badge still there, which is why the page reads
+the awarded date rather than comparing the two counts. Worked out by comparing them, the badge would
+quietly come off somebody who had done nothing wrong.
+
+**The path exam, both missing links.** The server side of it has worked since file 16 and the docs
+did not credit it: writing a question, reading the bank, retiring one, the learner's path page and
+the claim all accept a path owned exam already. What was missing was two links in the browser.
+Administrators now get a "Write the path exam" button on the Paths screen, and a learner's "Start the
+exam" goes to the exam rather than back to the page it is on, which is where it went before. One new
+function, `lms_studio_path`, is only a lookup: it tells the browser which exam a path has, so there
+is an id to hand to the functions that were already willing to take one.
+
+**Two control room counts.** The Overview and the Courses table counted every active entitlement as a
+learner, which includes a facilitator who gave themselves access to look at their own course. On a
+database whose only two accounts are administrators that reported two learners on a course with an
+empty learner list beside it. They now count learners. The Learners tab also gains a course dropdown,
+so the number beside a course and the list of who is on it can be checked against each other, which
+is the thing nobody could do before.
+
+## What each check in 24_verify_EDITOR.sql means
+
+Rows 1 to 3 are about keeping a badge honest. Row 8 is the one that will still be working in a year.
+
+| # | What it checks | What a NO means |
+|---|---|---|
+| 1 | A learner cannot award themselves a badge | The file 23 lesson applied before the fault rather than after it. Row level security is on, a learner may read their own badges and nothing more, and there is no write policy of any kind, because file 23 proved that a write policy on somebody's own row is a write policy on every column of it. A NO means a learner can mark a module finished without doing it. |
+| 2 | And a badge is awarded in the same breath as the last lesson | The award is a trigger on the progress record, so it lands in the same transaction as the last requirement whichever function wrote the row. A NO means somebody can finish every lesson of a module and be given nothing, which is the complaint that is hard to answer later because the work is already done. |
+| 3 | A badge is not a certificate, and cannot quietly become one | Asked twice over: the record carries no certificate shaped column, and the thing that awards a badge never mentions the certificate register. A NO is worth stopping for, because a mark of having finished a module quietly becoming a credential somebody can show an employer is a bigger decision than any file should make on its own. |
+| 4 | The learner sees it on the module, and keeps it | `lms_my_course` returns the awarded date. A NO means either the badge never reaches the page, or it is being worked out by comparing lesson counts, which takes it back off somebody when a lesson is added later. |
+| 5 | The Overview counts learners, not everybody holding a course | The figure counted staff access too. The same fault was fixed once before in this very function, for the new learners figure, and the note above that one records it. |
+| 6 | The learner list can be narrowed to one course, and stays private | Both halves are asked. Adding the parameter meant dropping and remaking the function, a drop takes the grants with it, and a new function is executable by `PUBLIC` the moment it exists. That is the file 21 lesson, and file 22 had to learn it again. |
+| 7 | The control room can reach a path exam to write it | A NO means paths still cannot be published, because there is no way for the browser to learn which exam a path has and so no id to hand the functions that write one. |
+| 8 | Everybody who has finished a module holds its badge | **The row that keeps working.** It asks whether anybody has finished every lesson of a module and been given nothing, by any route. A NO is not an emergency: the people named under the table are owed a badge, and running file 24 again awards every one of them, because its backfill asks this same question. |
+
 ## What is not in this package
 
-Module badges and the path exam are file 24. The video player is file 25. The control room
-ease-of-use pass and the role-aware guide at `/lms/studio/guide` are file 26. The browser acceptance
-test that drives the real pages against the real functions is being built alongside file 24, because
-most of what it has to walk through is what file 24 adds.
+The video player is file 25. The control room ease-of-use pass and the role-aware guide at
+`/lms/studio/guide` are file 26.
 
-File 23 went ahead of the badges because two of its three faults are live now: one lets a learner
-issue themselves a real certificate, and the other stops an honest learner getting one.
+**The browser acceptance test is not in this package.** It was to be built alongside the badges, and
+it is still worth building, but what file 24 turned out to need was two links and a lookup rather
+than a new learner journey, so there was less for it to walk through than expected. It belongs with
+file 26, where the whole control room is being gone over anyway.

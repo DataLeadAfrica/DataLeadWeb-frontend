@@ -8,7 +8,9 @@ import { Head, Problem, Stat, Waiting } from "../ui";
 import {
   asWhen,
   getLearners,
+  getOverview,
   logExport,
+  type StudioCourse,
   type StudioLearner,
 } from "../../../../lib/studio";
 
@@ -60,16 +62,32 @@ function Inner() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
   const [access, setAccess] = useState("");
+  const [course, setCourse] = useState("");
+  const [courses, setCourses] = useState<StudioCourse[]>([]);
   const [open, setOpen] = useState<StudioLearner | null>(null);
 
   const load = useCallback(() => {
-    getLearners({ search: q, filter, access: access || null }).then((a) => {
+    getLearners({
+      search: q,
+      filter,
+      access: access || null,
+      course: course || null,
+    }).then((a) => {
       if (a.ok) {
         setRows(a.data);
         setProblem("");
       } else setProblem(a.message);
     });
-  }, [q, filter, access]);
+  }, [q, filter, access, course]);
+
+  // The course list for the dropdown, fetched once. It comes from the
+  // same call the Courses table uses, so the names in this dropdown and
+  // the learner numbers on that table are read from one answer.
+  useEffect(() => {
+    getOverview().then((a) => {
+      if (a.ok) setCourses(a.data.courses);
+    });
+  }, []);
 
   // A pause before asking, so typing a name is one request rather than
   // one per letter.
@@ -186,11 +204,36 @@ function Inner() {
                 </option>
               ))}
             </select>
+            <select
+              className="stu__in"
+              style={{ width: "auto" }}
+              value={course}
+              aria-label="Course"
+              onChange={(e) => setCourse(e.target.value)}
+            >
+              <option value="">Any course</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
           </div>
         </header>
 
         {rows.length === 0 ? (
-          <div className="stu__empty">Nobody matches that.</div>
+          // THE EMPTY STATE ANSWERS THE QUESTION IT RAISES. An empty
+          // list beside a course counted as having learners sent
+          // somebody looking for a fault that was not there: the count
+          // was counting staff access and this list never did. It says
+          // so here rather than leaving the next person to find out.
+          <div className="stu__empty">
+            {course
+              ? "No learner holds that course. Staff who gave themselves access to look at it are not learners and are not counted."
+              : q || filter !== "all" || access
+                ? "Nobody matches that."
+                : "No learner accounts yet. Staff accounts are not listed here."}
+          </div>
         ) : (
           <>
             <div className="stu__scroll">

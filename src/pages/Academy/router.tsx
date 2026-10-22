@@ -134,6 +134,15 @@ export default function academyRouter() {
       )}
     />,
     <Route
+      key="lms-path-exam"
+      path={routes.academyPathExam}
+      element={page(
+        <RequireAccount>
+          <AcademyExam kind="path" />
+        </RequireAccount>,
+      )}
+    />,
+    <Route
       key="lms-quiz"
       path={routes.academyQuiz}
       element={page(

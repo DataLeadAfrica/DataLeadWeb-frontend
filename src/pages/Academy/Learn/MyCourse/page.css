@@ -73,6 +73,32 @@
 .acad-modcard__head h2 {
   margin: 0;
   font-size: 18px;
+  flex: 1 1 auto;
+}
+
+/* The module badge.
+
+   EARNED, NOT A STATUS. It appears when the badge is held and never
+   comes back off, which is why the page reads the awarded date rather
+   than comparing the lesson counts sitting next to it: a module that
+   gains a lesson later reads "2 of 3 lessons" with the badge still
+   showing, and that is correct. */
+.acad-modcard__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 10px/1 var(--acad-f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+  white-space: nowrap;
+}
+.acad-modcard__badge svg {
+  width: 13px;
+  height: 13px;
 }
 
 .acad-modbar {

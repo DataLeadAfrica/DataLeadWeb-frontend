@@ -19,9 +19,19 @@ import {
   type MyCourse,
   type StartedExam,
 } from "../../../../lib/learn";
-import { asClock } from "../../../../lib/catalogue";
+import { asClock, getMyPath } from "../../../../lib/catalogue";
 import { routes } from "../../../routes";
 
+// The exam at the end, for a course AND for a path.
+//
+// ONE PAGE, TWO SUBJECTS. A path exam is sat exactly as a course exam
+// is: lms_exam_status says where somebody is, lms_start_exam serves the
+// questions, lms_submit_quiz marks them. The only differences are where
+// the exam's state is read from and the handful of words that say
+// "course" or "path", so the page takes a kind rather than being
+// written twice. Written twice, the second copy is the one that misses
+// the next fix.
+//
 // The course exam.
 //
 // THREE SCREENS IN ONE PAGE, and which one shows is decided by the
@@ -51,8 +61,13 @@ import { routes } from "../../../routes";
 
 type Phase = "rules" | "sitting" | "result";
 
-export default function AcademyExam() {
+export default function AcademyExam({
+  kind = "course",
+}: {
+  kind?: "course" | "path";
+}) {
   const { slug = "" } = useParams();
+  const isPath = kind === "path";
 
   const [course, setCourse] = useState<MyCourse | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -80,9 +95,16 @@ export default function AcademyExam() {
 
   const load = useCallback(() => {
     let alive = true;
-    getMyCourse(slug).then((c) => {
+    // Both loaders hand back the same two things the page needs: a
+    // title to show and an exam state to act on.
+    const asking = isPath
+      ? getMyPath(slug).then((p) =>
+          p ? ({ title: p.name, exam: p.exam } as MyCourse) : null,
+        )
+      : getMyCourse(slug).then((c) => (c && c !== "missing" ? c : null));
+
+    asking.then((got) => {
       if (!alive) return;
-      const got = c && c !== "missing" ? c : null;
       setCourse(got);
       setExam(got?.exam || null);
       setLoaded(true);
@@ -95,7 +117,7 @@ export default function AcademyExam() {
     return () => {
       alive = false;
     };
-  }, [slug]);
+  }, [slug, isPath]);
 
   useEffect(load, [load]);
 
@@ -134,11 +156,16 @@ export default function AcademyExam() {
     load();
   }
 
-  const title = course?.title || "Course exam";
+  const title = course?.title || (isPath ? "Path exam" : "Course exam");
+  const backTo = isPath
+    ? routes.academyPath.replace(":slug", slug)
+    : routes.academyLearn.replace(":slug", slug);
+  const backWord = isPath ? "Back to the path" : "Back to the course";
+  const examWord = isPath ? "Path exam" : "Course exam";
   const crumbs = (
     <Breadcrumb
       items={[
-        { label: title, to: routes.academyLearn.replace(":slug", slug) },
+        { label: title, to: backTo },
         { label: "Course exam" },
       ]}
     />
@@ -147,7 +174,7 @@ export default function AcademyExam() {
   if (!loaded) {
     return (
       <AcadStage width="wide">
-        <Seo title="Course exam | Data-Lead Academy" noindex />
+        <Seo title={`${examWord} | Data-Lead Academy`} noindex />
         <div className="acad-skeleton acad-exam__waiting" aria-hidden="true" />
       </AcadStage>
     );
@@ -156,16 +183,18 @@ export default function AcademyExam() {
   if (!course || !exam) {
     return (
       <AcadStage width="wide">
-        <Seo title="Course exam | Data-Lead Academy" noindex />
+        <Seo title={`${examWord} | Data-Lead Academy`} noindex />
         {crumbs}
         <h1 className="acad-h1">No exam yet</h1>
         <p className="acad-sub">
-          This course does not have its exam yet. Carry on with the lessons and
+          {isPath
+            ? "This path does not have its exam yet. Carry on with the courses and"
+            : "This course does not have its exam yet. Carry on with the lessons and"}
           it will be here when it is ready.
         </p>
         <p>
-          <Link className="acad-link" to={routes.academyLearn.replace(":slug", slug)}>
-            Back to the course
+          <Link className="acad-link" to={backTo}>
+            {backWord}
           </Link>
         </p>
       </AcadStage>
@@ -268,8 +297,8 @@ export default function AcademyExam() {
               <ArrowIcon />
             </button>
           ) : null}
-          <Link className="acad-link" to={routes.academyLearn.replace(":slug", slug)}>
-            Back to the course
+          <Link className="acad-link" to={backTo}>
+            {backWord}
           </Link>
         </p>
       </AcadStage>
@@ -283,7 +312,7 @@ export default function AcademyExam() {
 
     return (
       <AcadStage width="wide" focus>
-        <Seo title={`Course exam | ${title}`} noindex />
+        <Seo title={`${examWord} | ${title}`} noindex />
         <div className="acad-exam__bar">
           <span>
             <b>{answered}</b> of {sitting.questions.length} answered
@@ -342,7 +371,7 @@ export default function AcademyExam() {
   // --------------------------------------------------------- the rules
   return (
     <AcadStage width="wide">
-      <Seo title={`Course exam | ${title}`} noindex />
+      <Seo title={`${examWord} | ${title}`} noindex />
       {crumbs}
 
       <div className="acad-exam__top">
@@ -350,7 +379,8 @@ export default function AcademyExam() {
           <p className="acad-band__eyebrow">Course exam</p>
           <h1 className="acad-h1">{title}</h1>
           <p className="acad-sub">
-            {exam.question_count} questions from across the whole course. Pass it
+            {exam.question_count} questions from across the whole{" "}
+            {isPath ? "path" : "course"}. Pass it
             and you earn your certificate in {title}. Answers save as you go.
           </p>
 
@@ -408,7 +438,7 @@ export default function AcademyExam() {
 
       <section className="acad-notes">
         <article>
-          <h3>One exam per course</h3>
+          <h3>One exam per {isPath ? "path" : "course"}</h3>
           <p>
             No quiz after every module: lesson checks keep you on track, and one
             exam at the end earns the certificate for that tool or skill.

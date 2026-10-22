@@ -14,6 +14,89 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6E, FILE 24, 22 October 2026. Module badges, the path exam, and two counts
+
+Laid on main after file 23 merged. Nothing in here is a hole: it is a new thing for learners, two
+links that were missing, and two numbers that were counting the wrong people.
+
+### Module badges
+
+A mark of having finished a module, shown to the learner who earned it. Not a certificate: no number,
+no row in the certificate register, nothing on `/verify`, nothing a programme points at. Every lesson
+in the module completed earns one, and since `lms_complete_lesson` already refuses a lesson whose
+check has not been passed, "every lesson completed" carries the checks with it.
+
+**The award is a trigger on the progress record, not a line in `lms_complete_lesson`.** It has to
+land in the same transaction as the last requirement, so that nobody is left having finished a module
+with no badge because something failed in between, and putting it on the record means it happens
+whichever function wrote the row. The cost is that the award is not visible by reading
+`lms_complete_lesson` alone, which the file's header says in as many words.
+
+**A badge once earned stays earned.** A module that gains a lesson afterwards reads "2 of 3 lessons"
+with the badge still showing. The page reads the awarded date rather than comparing the counts, and
+section 3 of the test file exists to rule out the obvious implementation: comparing lessons done
+against lessons passes every other check in the file and fails that one.
+
+The backfill dates each badge to the last lesson the person actually finished, not to the day the
+file is run.
+
+### The path exam, both missing links
+
+**The server side has worked since file 16 and the docs did not credit it.** `lms_studio_questions`,
+`lms_save_question`, `lms_paste_questions` and `lms_retire_question` all accept a path owned exam,
+each guarded to administrators, and `lms_my_path` already returns the exam's state. What was missing
+was two links in the browser.
+
+1. **No way to write a path exam.** The questions screen is `/lms/studio/courses/:id/questions`,
+   keyed by a course id, so a path's exam had no address. That is the one the docs already named, and
+   it is why the Paths screen's sentence about going live once the exam holds 60 questions named a
+   condition nobody could meet.
+2. **No way to sit one.** The "Start the exam" button on a path page linked to `routes.academyPath`,
+   the page it was already on, and the only exam route loads a **course** through `getMyCourse(slug)`.
+   That one was not on anybody's list.
+
+One new function, `lms_studio_path`, which is a lookup rather than a capability: it tells the browser
+which exam a path has, so there is an id to hand the functions that were already willing to take one.
+It returns a path shaped like a course on purpose, so the existing questions screen serves both. The
+same approach lets the exam page sit a path exam with the machinery that already sits a course one. A
+screen written twice is the one that misses the next fix.
+
+### Two control room counts
+
+The Overview and the Courses table counted every active entitlement as a learner. Dr Ayoola found
+this the ordinary way: Power BI showed 2 learners and the Learners tab beside it was empty. The two
+were answering different questions, and the tab was the one telling the truth. The only two accounts
+on the Academy are both administrators, and both hold free access to that course.
+
+The figure now counts learners. The same fault was fixed once before in this very function, for the
+new learners figure, and the note above that one records it.
+
+The Learners tab also gains a course dropdown, which adds a parameter to `lms_staff_learners`,
+which meant dropping and remaking it, which meant restating its grants. That is the file 21 lesson
+arriving for the third time.
+
+Its empty state now answers the question it raised: with a course chosen it says no learner holds
+that course and that staff access is not counted, and with nothing chosen and no learners at all it
+says so plainly rather than "Nobody matches that."
+
+### What was tested
+
+`file_24_tests.sql`, 24 checks, all pass, and **12 of the 24 fail without the file**. `24_verify.sql`
+prints 8 rows, runs cleanly before file 24 as well as after, against a 01-15 database and a 01-23 one.
+Row 8 asks whether anybody who finished a module is missing its badge, proved by taking a badge away
+and reading the learner's name back out of the list under the table, then repairing it by running the
+file again.
+
+The undo refuses unless forced, keeps every badge and the read only state, and the round trip was
+proved both ways. Full matrix, every file and every EDITOR copy, run twice for idempotency, with
+pg-safeupdate loaded the way Supabase loads it. `npm test` 306 pass, build clean, lint unchanged.
+
+Two of our own rules caught things on the way in again. The Editor safety test found a semicolon in a
+comment in the undo, which is where file 23's undo had already learned to keep the force line out of.
+The sitemap test refused the package until both new routes were declared as deliberately left out.
+
+---
+
 ## PHASE 6E, FILE 23, 21 October 2026. A learner could issue themselves a certificate
 
 Laid on main at `48f6f70`, after PR #68 and #69 merged. Three faults, all about certificates, all

@@ -10,6 +10,7 @@ import {
   asClock,
   getQuestions,
   getStudioCourse,
+  getStudioPath,
   type StudioCourseFull,
   type StudioQuestion,
 } from "../Builder/data";
@@ -196,8 +197,9 @@ function Editor({
   );
 }
 
-function Inner() {
+function Inner({ kind }: { kind: "course" | "path" }) {
   const { id = "" } = useParams();
+  const isPath = kind === "path";
   const [params] = useSearchParams();
   const lessonId = params.get("lesson");
 
@@ -209,7 +211,7 @@ function Inner() {
   const [pasting, setPasting] = useState(false);
 
   const load = useCallback(async () => {
-    const c = await getStudioCourse(id);
+    const c = isPath ? await getStudioPath(id) : await getStudioCourse(id);
     if (!c.ok) {
       setProblem(c.message);
       return;
@@ -224,7 +226,7 @@ function Inner() {
     const q = await getQuestions(quiz);
     if (q.ok) setQuestions(q.data);
     else setProblem(q.message);
-  }, [id, lessonId]);
+  }, [id, lessonId, isPath]);
 
   useEffect(() => {
     load();
@@ -256,11 +258,17 @@ function Inner() {
       <Seo title={`Questions | ${course.title}`} noindex />
 
       <p className="stu__hint" style={{ marginBottom: 10 }}>
-        <Link to={routes.studioCourses} style={{ color: "inherit" }}>
+        <Link
+          to={isPath ? routes.studioPaths : routes.studioCourses}
+          style={{ color: "inherit" }}
+        >
           Courses
         </Link>{" "}
         /{" "}
-        <Link to={routes.studioBuilder.replace(":id", id)} style={{ color: "inherit" }}>
+        <Link
+          to={isPath ? routes.studioPaths : routes.studioBuilder.replace(":id", id)}
+          style={{ color: "inherit" }}
+        >
           {course.title}
         </Link>{" "}
         / {lesson ? `${lesson.title} check` : "Course exam"}
@@ -437,6 +445,10 @@ function Inner() {
   );
 }
 
-export default function StudioQuestionsPage() {
-  return <RequireStaff>{() => <Inner />}</RequireStaff>;
+export default function StudioQuestionsPage({
+  kind = "course",
+}: {
+  kind?: "course" | "path";
+}) {
+  return <RequireStaff>{() => <Inner kind={kind} />}</RequireStaff>;
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router";
 
 import RequireStaff from "../RequireStaff";
 import Seo from "../../../../components/Seo/component";
@@ -6,6 +7,7 @@ import { ArrowIcon, PlusIcon, WarnIcon } from "../Icons";
 import { Done, Head, Problem, Waiting } from "../ui";
 import { certDb } from "../../../../lib/certificates";
 import { createPath, getOverview, setPathCourses, type StudioCourse } from "../../../../lib/studio";
+import { routes } from "../../../routes";
 
 // Learning paths.
 //
@@ -221,16 +223,32 @@ function Inner({ isAdmin }: { isAdmin: boolean }) {
                   a course in another path has it here too.
                 </p>
 
-                <a
-                  className="stu__chip"
-                  style={{ marginTop: 10 }}
-                  href={`/lms/paths/${p.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  See it as a learner
-                  <ArrowIcon />
-                </a>
+                <div className="stu__chips" style={{ marginTop: 10 }}>
+                  {/* THE WAY INTO THE PATH EXAM. Until this link
+                      existed the exam had no address at all, so the
+                      sentence above about holding 60 questions named a
+                      condition nobody could meet. Administrators only,
+                      which is what lms_studio_questions enforces
+                      underneath whatever this page shows. */}
+                  {isAdmin ? (
+                    <Link
+                      className="stu__chip"
+                      to={routes.studioPathQuestions.replace(":id", p.id)}
+                    >
+                      Write the path exam
+                      <ArrowIcon />
+                    </Link>
+                  ) : null}
+                  <a
+                    className="stu__chip"
+                    href={`/lms/paths/${p.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    See it as a learner
+                    <ArrowIcon />
+                  </a>
+                </div>
               </section>
             );
           })

@@ -45,6 +45,11 @@ export default function studioRouter() {
     // The more specific address first: /courses/:id/questions must not
     // be swallowed by /courses/:id.
     <Route key="stu-q" path={routes.studioQuestions} element={page(<Questions />)} />,
+    <Route
+      key="stu-pq"
+      path={routes.studioPathQuestions}
+      element={page(<Questions kind="path" />)}
+    />,
     <Route key="stu-b" path={routes.studioBuilder} element={page(<Builder />)} />,
     <Route key="stu-p" path={routes.studioPaths} element={page(<Paths />)} />,
     <Route key="stu-a" path={routes.studioAreas} element={page(<Areas />)} />,

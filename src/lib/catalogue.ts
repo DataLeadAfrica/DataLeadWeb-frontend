@@ -1,4 +1,5 @@
 import { certDb } from "./certificates";
+import type { ExamState } from "./learn";
 
 // Everything the three public Academy pages ask of Supabase.
 //
@@ -288,19 +289,17 @@ export type PathCourseState = {
   also_in: string | null;
 };
 
-export type PathExam = {
-  state: string;
-  tries_allowed?: number;
-  tries_used?: number;
-  tries_left?: number;
-  lessons_done?: number;
-  lessons_total?: number;
-  pass_mark?: number;
-  question_count?: number;
-  minutes?: number;
-  reopens_at?: string | null;
-  best_percent?: number | null;
-} | null;
+/**
+ * A path's exam, which is the SAME shape a course exam is.
+ *
+ * lms_my_path fills it with to_jsonb(lms_exam_status(...)), the very
+ * function the course page reads, so every field is present and the
+ * optional markers this type used to carry were describing the type
+ * rather than the data. Saying so lets the exam page sit a path exam
+ * with the machinery that already sits a course one, instead of a
+ * second copy of it.
+ */
+export type PathExam = ExamState | null;
 
 export type MyPath = {
   slug: string;
