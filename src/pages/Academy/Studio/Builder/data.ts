@@ -52,6 +52,17 @@ export type StudioCourseFull = {
   prerequisites: string[];
   faq: { q: string; a: string }[];
   programme_id: string | null;
+  /**
+   * What certificates for this course actually say, and how many are out.
+   *
+   * The programme title is the line printed on a certificate, and it
+   * stops following the course title the moment the first certificate is
+   * issued. The Details page needs both of these to say so, because a
+   * course renamed after certificates exist is a real situation and the
+   * only wrong thing to do is let somebody discover it later.
+   */
+  certificate_title: string | null;
+  certificates_issued: number;
   review_note: string;
   sent_for_review_at: string | null;
   sent_by: string | null;

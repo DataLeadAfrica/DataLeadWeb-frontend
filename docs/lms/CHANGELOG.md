@@ -14,6 +14,85 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6E, FILE 23, 21 October 2026. A learner could issue themselves a certificate
+
+Laid on main at `48f6f70`, after PR #68 and #69 merged. Three faults, all about certificates, all
+live. Two of them compose into one: on a database built from files 01 to 22 a learner who watched one
+second of each lesson and ran one statement was issued a real certificate number, having never
+opened the exam.
+
+**Run the SQL before merging the branch.** This one is a live hole rather than a missing feature.
+
+### Fault A: a learner could mark their own lessons complete
+
+File 06 created `p_prog_self_write`, a policy covering updates on `lms_lesson_progress` scoped to
+`user_id = auth.uid()` and nothing else. A policy cannot restrict which columns an update touches, so
+the permission that let a learner keep their own place also let them set `completed` and
+`check_passed`. Everything `lms_complete_lesson` enforces, the coverage percentage and the lesson
+check, could be stepped around.
+
+**Nothing needed that policy.** Every write to the table already goes through a security definer
+function: `lms_record_watch`, `lms_complete_lesson`, `lms_submit_quiz`. Nothing in `src/` or `api/`
+writes it directly, which was checked rather than assumed. The policy is dropped and the insert,
+update and delete privileges are revoked from `anon` and `authenticated`. The watch record and the
+attempt log are revoked in the same step: they were already right, and a fault like this one is
+rarely alone.
+
+### Fault B: a course certificate did not require the course exam
+
+`lms_claim_course_certificate` counted the quizzes a learner had passed by joining through
+`lms_modules`, which is where module quizzes lived. File 16 abolished module quizzes and moved the
+exam onto the course. So for every course built since, the count was zero, the test read
+"zero is not fewer than zero", and the exam was never required.
+
+It cut both ways. With fault A it handed out certificates nobody had earned. On its own it meant an
+honest learner who had passed the exam was let through by the check not working rather than by
+passing. It now counts the course's own published quizzes and the passed attempts against them.
+
+**The regression check is the part worth keeping.** Requiring the exam without it would have made
+every course certificate unobtainable. Section 3 of the test file walks an honest learner all the way
+through and asserts the certificate is issued.
+
+### Fault C: the certificate title never followed the course title
+
+The certificate prints the programme title. `lms_create_course` copies the course title to the
+programme row once, at creation, and nothing updated it afterwards, so a course created as
+`power-bi` and then properly titled would print `power-bi` for ever.
+
+A new helper, `lms_programme_title_follows`, is called by `lms_set_course_details` and
+`lms_set_path_details`. It updates the programme title to match the course title, or the path's
+certificate name, and refuses in three cases: a programme no Academy course or path points at, a
+blank title, and **any programme that already has a certificate against it, live or revoked**.
+Rewording a certificate somebody is holding is a decision for a person. The builder now says so
+beside the title field, naming the title the issued certificates carry, which needed two new fields
+from `lms_studio_course`.
+
+The programme **slug** never changes. `src/lib/certificateConfig.ts` keys logos and templates by it
+and it is part of a certificate's address.
+
+### What was tested
+
+`file_23_tests.sql`, 30 checks in seven sections. All pass with file 23; **18 of the 30 fail without
+it**, including the attack issuing a certificate. `23_verify.sql` prints 7 rows, runs cleanly before
+file 23 as well as after, and was run against a database at 01 to 15, one at 01 to 22 and one at
+01 to 23. Row 7 asks whether anything has drifted by any route rather than checking a list of known
+mistakes, and was proved by planting drift on both a course and a path and reading both back in the
+list underneath.
+
+The undo refuses unless forced, because undoing this reopens the hole. The round trip was proved both
+ways: forced, the attack issues a certificate number again; re-applied, it is shut. The undo keeps
+every certificate, any title that has already followed, and the read only state of the watch record
+and the attempt log.
+
+Two rules of our own caught things on the way in. The Editor-safety test found that the new verify
+file had table-shaped phrases inside its explanation strings, which is the thing the 16_verify
+failure in the Supabase editor differed by, and its inner query was built from fragments that did not
+start with a SQL verb. Both were reworded. The docs-coverage test refused the package until every one
+of the 7 rows had a row in the plain English table, which is the only place a NO can be looked up
+once the Editor copy empties the note column.
+
+---
+
 ## PHASE 6E, FILE 22 ROUND 2, 21 October 2026. A programme name the certification system owns
 
 Laid on the main 6D merges into. One fault in file 22, and two corrections for 6D that ride along in

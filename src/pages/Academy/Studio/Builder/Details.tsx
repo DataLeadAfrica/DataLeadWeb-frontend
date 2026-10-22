@@ -107,6 +107,24 @@ export default function Details({ course, isAdmin, onSaved }: Props) {
             <label className="stu__field">
               <span>Course title</span>
               <input className="stu__in" value={title} onChange={(e) => setTitle(e.target.value)} />
+              {/* WHAT IS ALREADY PRINTED, SAID BEFORE IT MATTERS.
+                  The certificate shows the programme title, which follows
+                  this field until the first certificate is issued and then
+                  stays where it is. Rewording certificates somebody already
+                  holds is a decision for a person, so the page says what
+                  will happen rather than letting it be found out later. */}
+              {course.certificates_issued > 0 && course.certificate_title ? (
+                <small>
+                  Certificates already issued say{" "}
+                  <strong>{course.certificate_title}</strong>. Changing the course title
+                  here will not change them.
+                </small>
+              ) : (
+                <small>
+                  This is also the title printed on the certificate, until the first one
+                  is issued.
+                </small>
+              )}
             </label>
             <label className="stu__field">
               <span>Short description</span>
