@@ -447,12 +447,21 @@ body.sv-open{overflow:hidden}
 .lvp.is-back .lvp-bar{background:var(--green-bg)}
 .lvp.is-back .lvp-bar i{background:var(--green)}
 .lvp.is-back .lvp-back b{color:var(--green)}
+.lvp.kind-bereavement .lvp-bar{background:var(--line)}
+.lvp.kind-bereavement .lvp-bar i{background:#8b8792}
+.lvp.kind-bereavement .lvp-back b{color:#3e3c44}
 .lvp.is-big{padding:20px 22px}
 .lvp.is-big .lvp-h{font-size:18px}
 .lvp.is-big .lvp-back b{font-size:18px}
 .lvp.is-big .lvp-bar{height:12px}
 .lvp-wrap{margin-bottom:14px}
 .lvp-wrap .lvp-title{font-size:13px;font-weight:600;margin:0 0 8px}
+.lvp-msg{margin-top:12px;padding:10px 13px;border-radius:10px;font-size:13px;line-height:1.5;border-left:3px solid #f9a971;background:#fff7f0;color:#4a3a2c}
+.lvp-msg.tone-care{background:var(--green-bg);border-left-color:var(--green);color:#1f4d3a}
+.lvp-msg.tone-sorrow{background:#f4f3f6;border-left-color:#8b8792;color:#3e3c44}
+.lvp-msg.tone-joy{background:#fff2e8;border-left-color:#f56e0f;color:#5a3417}
+.lvp-msg.tone-plain{background:#f7f7f9;border-left-color:#c9c6cf;color:#3e3c44}
+.lvp.is-big .lvp-msg{font-size:14px}
 @media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
 </style>
 </head>
@@ -3431,6 +3440,81 @@ function lvpD(s, withYear){
 function lvpGap(from, to){ return Math.round((new Date(to + "T00:00:00") - new Date(from + "T00:00:00")) / 864e5); }
 const lvpPl = (n, w) => n + " " + w + (Number(n) === 1 ? "" : "s");
 
+// ---- the words. Warm, plain HR, and right for the kind of leave. ----
+// "me": written to the person. "them": a note for their manager and Admin.
+// tone picks the colour of the note: care (sick, health), sorrow
+// (bereavement, kept quiet and grey), joy (a new child), rest, plain.
+const LVP_MSG = {
+  annual: { tone:"rest",
+    me:   { upcoming:"Your leave is booked. Hand over anything urgent before you go, then switch off and enjoy it.",
+            on_leave:"Enjoy your well-deserved break. Rest, recharge, and leave the work to us until you are back.",
+            back:"Welcome back! We hope you had a restful break." },
+    them: { upcoming:"Leave booked. Agree a handover before they go.",
+            on_leave:"On a well-earned break. Please keep work contact to emergencies only.",
+            back:"Back from annual leave. A quick catch-up will help them pick things up again." } },
+  sick: { tone:"care",
+    me:   { upcoming:"Your sick leave is recorded. Please look after yourself.",
+            on_leave:"We are sorry you are unwell and wish you a quick recovery. Rest well; there is no need to check in on work.",
+            back:"Welcome back. We are glad you are feeling better. Take it gently as you settle back in." },
+    them: { upcoming:"Sick leave recorded.",
+            on_leave:"Off sick. Do wish them a quick recovery, and please do not contact them about work while they rest.",
+            back:"Back from sick leave. A short, friendly check-in on their first day shows you care." } },
+  bereavement: { tone:"sorrow",
+    me:   { upcoming:"We are so sorry for your loss. Your leave is in place; please take the time you need.",
+            on_leave:"We are deeply sorry for your loss. Please take this time to be with your family. Your work is covered, and you are in our thoughts.",
+            back:"Welcome back. Our thoughts remain with you and your family. If you need more time or support, please speak to your line manager." },
+    them: { upcoming:"Bereavement leave in place. Please offer your condolences.",
+            on_leave:"On bereavement leave. Please offer your condolences, and do not contact them about work unless it is essential.",
+            back:"Back after a bereavement. A private, kind word and a gentle first few days will mean a great deal." } },
+  maternity: { tone:"joy",
+    me:   { upcoming:"Wishing you a safe and healthy delivery. Please hand over your work before you go.",
+            on_leave:"Congratulations on your new arrival! Rest, recover and enjoy these precious weeks with your baby. We look forward to welcoming you back.",
+            back:"Welcome back, and congratulations again on your little one! Let your line manager know if you need any support as you settle in." },
+    them: { upcoming:"Maternity leave starts soon. Agree a handover, and wish her a safe delivery.",
+            on_leave:"On maternity leave. Congratulations to the family! Please keep work contact to the minimum.",
+            back:"Back from maternity leave. Plan a return-to-work chat and be flexible as she settles in." } },
+  paternity: { tone:"joy",
+    me:   { upcoming:"Congratulations on the baby on the way! Your leave is booked.",
+            on_leave:"Congratulations on your new arrival! Enjoy this special time with your family.",
+            back:"Welcome back, and congratulations again to you and your family!" },
+    them: { upcoming:"Paternity leave booked. Agree a handover before he goes.",
+            on_leave:"On paternity leave. Congratulations to the family! Please keep work contact to the minimum.",
+            back:"Back from paternity leave. Do pass on your congratulations." } },
+  adoption: { tone:"joy",
+    me:   { upcoming:"Congratulations on the child joining your family! Your leave is booked.",
+            on_leave:"Congratulations on welcoming your child home! Enjoy this special time together as a family.",
+            back:"Welcome back, and congratulations again on your growing family!" },
+    them: { upcoming:"Adoption leave booked. Agree a handover before they go.",
+            on_leave:"On adoption leave. Congratulations to the family! Please keep work contact to the minimum.",
+            back:"Back from adoption leave. Plan a return-to-work chat and be flexible as they settle in." } },
+  disability: { tone:"care",
+    me:   { upcoming:"Your leave is in place. Your health comes first.",
+            on_leave:"Your health comes first. Take the time you need to recover; we are here to support you.",
+            back:"Welcome back. We are glad to have you with us again. Please tell your line manager about any support that would help." },
+    them: { upcoming:"Disability leave in place.",
+            on_leave:"On disability leave. Their health comes first; please keep work contact to the minimum.",
+            back:"Back from disability leave. Ask what support or adjustments would help them settle in." } },
+  unpaid: { tone:"plain",
+    me:   { upcoming:"Your unpaid leave is approved. We hope it goes well.",
+            on_leave:"We hope your time away goes well, and we look forward to having you back.",
+            back:"Welcome back. We hope everything went well." },
+    them: { upcoming:"Unpaid leave approved. Agree a handover before they go.",
+            on_leave:"On approved unpaid leave.",
+            back:"Back from unpaid leave. A quick catch-up will help." } },
+  administrative: { tone:"plain",
+    me:   { upcoming:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
+            on_leave:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
+            back:"Welcome back." },
+    them: { upcoming:"Administrative leave. Please keep this confidential and direct any questions to the CEO.",
+            on_leave:"Administrative leave. Please keep this confidential and direct any questions to the CEO.",
+            back:"Back from administrative leave. Please keep this confidential." } }
+};
+function lvpMsg(kind, phase, self){
+  const m = LVP_MSG[kind]; if(!m) return "";
+  return (m[self ? "me" : "them"] || {})[phase] || "";
+}
+function lvpTone(kind){ return (LVP_MSG[kind] || {}).tone || "plain"; }
+
 async function lvpLoad(staffId){
   const { data, error } = await db.rpc("leave_progress", staffId ? { p_staff: staffId } : {});
   if(error){ console.warn("leave_progress:", error.message); return null; }
@@ -3464,21 +3548,24 @@ function lvpCard(r, opts){
             (back > 0 ? ' · ' + (back === 1 ? "back tomorrow" : "back in " + lvpPl(back, "day")) : "");
   } else {
     const due = r.resume_on > today;
-    head = opts.self ? (due ? "Your leave has ended" : "Welcome back") : who;
+    head = opts.self ? (due ? "Your " + esc((r.label || "leave").toLowerCase()) + " has ended"
+                            : "Back from " + esc((r.label || "leave").toLowerCase())) : who;
     backK = due ? "Back on" : "Back since"; backV = lvpD(r.resume_on);
     nums = '<span><b>' + total + '</b> working ' + (total === 1 ? "day" : "days") + ' taken</span><span>Finished</span>';
     dates = lvpD(r.starts_on) + ' to ' + lvpD(r.ends_on, true);
   }
 
+  const note = lvpMsg(r.kind, r.phase, !!opts.self);
   const sub = opts.name && r.department ? '<small>' + esc(r.department) + '</small>' : "";
-  return '<div class="lvp is-' + esc(r.phase) + (opts.big ? " is-big" : "") + '">' +
+  return '<div class="lvp is-' + esc(r.phase) + ' kind-' + esc(r.kind) + (opts.big ? " is-big" : "") + '">' +
     '<div class="lvp-top"><div><div class="lvp-k">' + kind + '</div><div class="lvp-h">' + head + sub + '</div></div>' +
     '<div class="lvp-back"><span>' + backK + '</span><b>' + backV + '</b></div></div>' +
     '<div class="lvp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + (r.phase === "upcoming" ? 0 : used) +
       '" aria-label="' + esc((r.label || "Leave") + ": " + used + " of " + total + " working days taken") + '">' +
       '<i style="width:' + (r.phase === "upcoming" ? 0 : r.phase === "back" ? 100 : pct) + '%"></i></div>' +
     '<div class="lvp-nums">' + nums + '</div>' +
-    '<div class="lvp-dates">' + dates + '</div></div>';
+    '<div class="lvp-dates">' + dates + '</div>' +
+    (note ? '<div class="lvp-msg tone-' + lvpTone(r.kind) + '">' + esc(note) + '</div>' : "") + '</div>';
 }
 
 // your own: leave now or booked, and a just-ended one until the day you are back
