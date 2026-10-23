@@ -417,14 +417,14 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .lvp-nums{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;margin-top:8px}
 .lvp-nums b{font-size:14px}
 .lvp-dates{font-size:12px;color:var(--muted);margin-top:4px}
-.lvp.upcoming .lvp-bar{background:var(--line)}
-.lvp.back .lvp-bar{background:var(--green-bg)}
-.lvp.back .lvp-bar i{background:var(--green)}
-.lvp.back .lvp-back b{color:var(--green)}
-.lvp.big{padding:20px 22px}
-.lvp.big .lvp-h{font-size:18px}
-.lvp.big .lvp-back b{font-size:18px}
-.lvp.big .lvp-bar{height:12px}
+.lvp.is-upcoming .lvp-bar{background:var(--line)}
+.lvp.is-back .lvp-bar{background:var(--green-bg)}
+.lvp.is-back .lvp-bar i{background:var(--green)}
+.lvp.is-back .lvp-back b{color:var(--green)}
+.lvp.is-big{padding:20px 22px}
+.lvp.is-big .lvp-h{font-size:18px}
+.lvp.is-big .lvp-back b{font-size:18px}
+.lvp.is-big .lvp-bar{height:12px}
 .lvp-wrap{margin-bottom:14px}
 .lvp-wrap .lvp-title{font-size:13px;font-weight:600;margin:0 0 8px}
 @media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
@@ -3155,7 +3155,7 @@ function lvpCard(r, opts){
   }
 
   const sub = opts.name && r.department ? '<small>' + esc(r.department) + '</small>' : "";
-  return '<div class="lvp ' + esc(r.phase) + (opts.big ? " big" : "") + '">' +
+  return '<div class="lvp is-' + esc(r.phase) + (opts.big ? " is-big" : "") + '">' +
     '<div class="lvp-top"><div><div class="lvp-k">' + kind + '</div><div class="lvp-h">' + head + sub + '</div></div>' +
     '<div class="lvp-back"><span>' + backK + '</span><b>' + backV + '</b></div></div>' +
     '<div class="lvp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + (r.phase === "upcoming" ? 0 : used) +
