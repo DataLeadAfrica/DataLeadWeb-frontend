@@ -427,6 +427,33 @@ body.sv-open{overflow:hidden}
 .ap-day input{width:auto;margin:0}
 .ap-day:has(input:checked){border-color:var(--orange);background:#fff4ec}
 .ap-sum{font-size:13px;margin:12px 0}
+/* ---------- leave progress bar ---------- */
+.lvp-list{display:grid;gap:12px}
+.lvp-list.two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.lvp{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.lvp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.lvp-k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.lvp-h{font-size:15px;font-weight:600;margin-top:2px;line-height:1.3}
+.lvp-h small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.lvp-back{text-align:right;flex-shrink:0}
+.lvp-back span{display:block;font-size:11px;color:var(--muted)}
+.lvp-back b{display:block;font-size:15px;color:#f56e0f;white-space:nowrap}
+.lvp-bar{height:10px;border-radius:99px;background:#fde9da;overflow:hidden}
+.lvp-bar i{display:block;height:100%;border-radius:99px;background:#f56e0f;transition:width .5s ease}
+.lvp-nums{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;margin-top:8px}
+.lvp-nums b{font-size:14px}
+.lvp-dates{font-size:12px;color:var(--muted);margin-top:4px}
+.lvp.upcoming .lvp-bar{background:var(--line)}
+.lvp.back .lvp-bar{background:var(--green-bg)}
+.lvp.back .lvp-bar i{background:var(--green)}
+.lvp.back .lvp-back b{color:var(--green)}
+.lvp.big{padding:20px 22px}
+.lvp.big .lvp-h{font-size:18px}
+.lvp.big .lvp-back b{font-size:18px}
+.lvp.big .lvp-bar{height:12px}
+.lvp-wrap{margin-bottom:14px}
+.lvp-wrap .lvp-title{font-size:13px;font-weight:600;margin:0 0 8px}
+@media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
 </style>
 </head>
 <body>
@@ -587,6 +614,7 @@ body.sv-open{overflow:hidden}
 
     <div id="ad-money"></div>
     <div id="ad-loans"></div>
+    <div id="ad-leave"></div>
 
     <div class="section-label">Where to</div>
     <div class="doors" id="doors"></div>
@@ -623,6 +651,7 @@ body.sv-open{overflow:hidden}
 
     <div id="p-alert"></div>
     <div class="glance" id="p-glance"></div>
+    <div id="p-leave"></div>
 
     <div class="panel">
       <div class="panel-head">
@@ -1792,6 +1821,7 @@ function go(v){
 // ============================================================
 async function loadHub(){
   adMoney();   // the money, from the Finance ledger
+  adLeave();   // who is on leave, and when they are back
   const { data, error } = await db.from("firm_at_a_glance").select("*").maybeSingle();
   if(oops("The firm", error)) return;
   const f = data || {};
@@ -2623,7 +2653,7 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pApprove(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id) ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pApprove(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id), pLeave(id) ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
   $("promo").classList.add("hidden"); $("stat").classList.add("hidden"); $("typ").classList.add("hidden");
@@ -3382,6 +3412,100 @@ async function adMoney(){
       (!late.length && !(nr.data || []).length && g.still < 1 ? '<p class="hint">Nothing needs attention.</p>' : '') + '</div></div>';
 }
 
+
+// ============================================================
+// LEAVE PROGRESS
+// One bar per approved leave: working days taken, working days left,
+// and the day they are due back. The database works the numbers out
+// (weekends and public holidays are not leave days) and decides who
+// may see whose: yourself, the people who report to you, and for the
+// CEO and COO, everyone.
+// ============================================================
+const LVP_DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const LVP_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function lvpD(s, withYear){
+  if(!s) return "—";
+  const d = new Date(s + "T00:00:00");
+  return LVP_DOW[d.getDay()] + " " + d.getDate() + " " + LVP_MON[d.getMonth()] + (withYear ? " " + d.getFullYear() : "");
+}
+function lvpGap(from, to){ return Math.round((new Date(to + "T00:00:00") - new Date(from + "T00:00:00")) / 864e5); }
+const lvpPl = (n, w) => n + " " + w + (Number(n) === 1 ? "" : "s");
+
+async function lvpLoad(staffId){
+  const { data, error } = await db.rpc("leave_progress", staffId ? { p_staff: staffId } : {});
+  if(error){ console.warn("leave_progress:", error.message); return null; }
+  return data || [];
+}
+
+// opts.self: written to the person themselves. opts.name: show whose it is.
+function lvpCard(r, opts){
+  opts = opts || {};
+  const total = Number(r.total_days || 0), used = Number(r.days_used || 0), left = Number(r.days_left || 0);
+  const pct = total > 0 ? Math.min(100, Math.round(used / total * 100)) : 0;
+  const today = r.today, who = esc(r.staff_name || "");
+  const pay = Number(r.pay_rate) === 0.5 ? " · half pay" : Number(r.pay_rate) === 0 ? " · unpaid" : "";
+  const kind = esc(r.label || "Leave") + pay;
+  let head, backK, backV, nums, dates;
+
+  if(r.phase === "upcoming"){
+    const inDays = lvpGap(today, r.starts_on);
+    head = opts.self ? "Your " + esc((r.label || "leave").toLowerCase()) + " is booked" : who;
+    backK = "Starts"; backV = lvpD(r.starts_on);
+    nums = '<span>Starts ' + (inDays === 1 ? "tomorrow" : "in " + lvpPl(inDays, "day")) + '</span>' +
+           '<span><b>' + total + '</b> working ' + (total === 1 ? "day" : "days") + '</span>';
+    dates = 'Last day ' + lvpD(r.ends_on, true) + ' · back on ' + lvpD(r.resume_on, true);
+  } else if(r.phase === "on_leave"){
+    const back = lvpGap(today, r.resume_on);
+    head = opts.self ? "You are on " + esc((r.label || "leave").toLowerCase()) : who;
+    backK = "Back on"; backV = lvpD(r.resume_on);
+    nums = '<span><b>' + used + '</b> of ' + total + ' working ' + (total === 1 ? "day" : "days") + ' taken</span>' +
+           '<span><b>' + left + '</b> working ' + (left === 1 ? "day" : "days") + ' left</span>';
+    dates = 'Started ' + lvpD(r.starts_on) + ' · last day ' + lvpD(r.ends_on, true) +
+            (back > 0 ? ' · ' + (back === 1 ? "back tomorrow" : "back in " + lvpPl(back, "day")) : "");
+  } else {
+    const due = r.resume_on > today;
+    head = opts.self ? (due ? "Your leave has ended" : "Welcome back") : who;
+    backK = due ? "Back on" : "Back since"; backV = lvpD(r.resume_on);
+    nums = '<span><b>' + total + '</b> working ' + (total === 1 ? "day" : "days") + ' taken</span><span>Finished</span>';
+    dates = lvpD(r.starts_on) + ' to ' + lvpD(r.ends_on, true);
+  }
+
+  const sub = opts.name && r.department ? '<small>' + esc(r.department) + '</small>' : "";
+  return '<div class="lvp ' + esc(r.phase) + (opts.big ? " big" : "") + '">' +
+    '<div class="lvp-top"><div><div class="lvp-k">' + kind + '</div><div class="lvp-h">' + head + sub + '</div></div>' +
+    '<div class="lvp-back"><span>' + backK + '</span><b>' + backV + '</b></div></div>' +
+    '<div class="lvp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + (r.phase === "upcoming" ? 0 : used) +
+      '" aria-label="' + esc((r.label || "Leave") + ": " + used + " of " + total + " working days taken") + '">' +
+      '<i style="width:' + (r.phase === "upcoming" ? 0 : r.phase === "back" ? 100 : pct) + '%"></i></div>' +
+    '<div class="lvp-nums">' + nums + '</div>' +
+    '<div class="lvp-dates">' + dates + '</div></div>';
+}
+
+// your own: leave now or booked, and a just-ended one until the day you are back
+function lvpMine(rows){
+  return (rows || []).filter(r => r.is_me && (r.phase !== "back" || r.resume_on >= r.today));
+}
+
+// Admin home: everyone away now, booked in the next 60 days, or back this week
+async function adLeave(){
+  const box = $("ad-leave"); if(!box) return;
+  const rows = await lvpLoad();
+  if(!rows){ box.innerHTML = ""; return; }
+  const now = rows.filter(r => r.phase === "on_leave").length, soon = rows.filter(r => r.phase === "upcoming").length;
+  box.innerHTML = '<div class="panel"><h3>On leave</h3><div class="ps">' +
+    (rows.length ? (now === 1 ? "1 person" : now + " people") + " away now" + (soon ? ", " + soon + " booked in the next 60 days" : "") +
+       ". Working days only: weekends and public holidays are not counted."
+     : "Nobody is on leave, and nobody has leave booked in the next 60 days.") + '</div>' +
+    (rows.length ? '<div class="lvp-list two">' + rows.map(r => lvpCard(r, { name:true })).join("") + '</div>' : "") + '</div>';
+}
+// one person's page: their leave, if any is current or close
+async function pLeave(id){
+  const box = $("p-leave"); if(!box) return;
+  box.innerHTML = "";
+  const rows = await lvpLoad(id);
+  if(!rows || !rows.length || !P || P.id !== id) return;
+  box.innerHTML = '<div class="lvp-wrap"><div class="lvp-list">' + rows.map(r => lvpCard(r, {})).join("") + '</div></div>';
+}
 
 // staff loans waiting for the CEO or COO, on the Admin home
 window.adLoanDecide = adLoanDecide;
