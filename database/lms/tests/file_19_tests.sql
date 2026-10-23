@@ -434,10 +434,20 @@ end $$;
 -- counted after each one as the owner, which is the only thing that
 -- proves nothing actually went.
 do $$
-declare v_before integer; v_after integer;
+declare v_before integer; v_after integer; v_mark timestamptz;
 begin
   select count(*) into v_before from lms_email_verify_state;
   perform t19_say('9a there is a mark to protect', v_before::text, '1');
+
+  -- KEPT FOR 9h, which asks whether any of section 9 MOVED the mark.
+  -- It used to ask whether the mark was less than an hour old, which is
+  -- a different question with the same answer only on a database built
+  -- in the last hour. It failed on one built two and a half hours
+  -- earlier, with and without any change, which is the worst kind of
+  -- test: one that goes red for a reason that has nothing to do with
+  -- what it is checking.
+  select max(first_run_at) into v_mark from lms_email_verify_state;
+  perform set_config('t19.mark_before', coalesce(v_mark::text, ''), true);
 end $$;
 
 do $$ begin
@@ -504,9 +514,12 @@ begin
   perform t19_be(null);
   select count(*), max(first_run_at) into v_after, v_mark from lms_email_verify_state;
   perform t19_say('9g the mark survived all of that', v_after::text, '1');
+  -- Compared with what it was before the section, not with the clock.
   perform t19_say('9h and was not moved',
-    case when v_mark > now() - interval '1 hour' then 'still recent' else 'MOVED' end,
-    'still recent');
+    case when coalesce(v_mark::text, '')
+            is not distinct from coalesce(current_setting('t19.mark_before', true), '')
+         then 'where it was' else 'MOVED' end,
+    'where it was');
 end $$;
 
 -- The table is shut the way the codes table is shut: row level security
