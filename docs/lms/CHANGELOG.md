@@ -14,6 +14,89 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6F, FILE 26, 23 October 2026. A facilitator could edit courses that were not theirs
+
+Laid on main. The review asked what two lines of file 23 did, and checking that turned up a second
+hole of the same shape one level up.
+
+**Note on ordering.** This was written on top of main while file 25, the video player, was still an
+open pull request. Both touch this changelog, so whichever merges second will want its entry moved
+above the other. Nothing else in the two packages overlaps.
+
+### The fault
+
+The rule about who may change a course lives in the functions, and the table policies went around it.
+`lms_can_edit()` asks only whether you are staff. `lms_may_edit_course()` asks whether the course is
+yours. Six tables carried a write policy using the first, and eight more used `lms_is_staff()`, which
+is the same question by another name.
+
+**Measured, not feared.** As a facilitator owning no course, through row level security, on a
+database built from 01 to 24: the title of a lesson in somebody else's live course was changed, a
+bare delete across the chapters record removed every chapter of every course, and another course's
+answer key was readable with `is_correct` on it. Some guards held, but a draft course belonging to
+somebody else had none, and nor did the chapters.
+
+Learners were never the problem. A learner and a visitor read 0 questions and 0 options before this
+file and after it.
+
+### Why the revoke is safe, which was checked rather than assumed
+
+The lesson of file 21 is that a sweep built on a guess breaks the site twice over.
+
+Every `.from("...")` in the source was read with the method chained onto it rather than matched
+against one grep pattern. Nine direct writes exist in the whole site and all nine are to `posts`,
+`post_events` and the blog's `profiles`. There is no `.from()` with a computed name and no raw fetch
+at the REST surface, so there is no path a scan of literal names could have missed. Thirty two
+functions write the fourteen tables and all thirty two are security definer, so none of them notices
+this file.
+
+### The trap it had to avoid
+
+Two of the dropped policies were `ALL` policies, and an `ALL` policy is also a read. `lms_options`
+and `lms_popups` had no SELECT policy of their own, so dropping the write alone would have taken the
+questions screen and the popups screen down for everybody including administrators. Both are put
+back, and the answer key comes back narrower than it was, through a new `lms_may_edit_quiz` helper.
+
+That helper is granted to `authenticated`, because a helper used inside a policy is run by whoever is
+querying. That is the file 21 lesson about a function inside a CHECK constraint arriving in a new
+shape, and row 5 of the verify exists to catch it.
+
+### Left alone on purpose
+
+`lms_profiles` keeps its self write, limited by column grants, and a learner still cannot set
+`email_verified_at`. `lms_popup_seen` keeps its own row insert. The tables whose only write policy is
+`lms_is_admin()` are a separate question: rather than decide it quietly, all eight exceptions print
+in the verify file's allow list with a reason beside each, every run.
+
+### The wider picture, which is worth a decision
+
+28 `lms_` tables grant insert, update or delete to `authenticated`. Fourteen are fixed here. Eight
+are in the allow list. The remaining six carry the grant but no write policy at all, so row level
+security refuses the write today and they are one added policy away from not. They are named in row
+8's listing rather than hidden.
+
+### Two other things in this package
+
+**File 23 already closed the learner half**, and it is already live. The hand fix on live also
+revoked from `public` where file 23 revoked only `anon` and `authenticated`. On a database built the
+way ours is, `public` holds nothing on that record, so the two are equivalent. Row 2 asks about all
+three regardless.
+
+**`file_19_tests` check 9h failed for the wrong reason.** It asked whether the backfill mark was less
+than an hour old, which is only the same question as "was it moved" on a database built in the last
+hour. It failed on one built two and a half hours earlier, with and without any change. It now
+captures the mark before the section and compares the two.
+
+### What was tested
+
+`file_26_tests.sql`, 24 checks, all pass, and **12 of the 24 fail without the file**. `26_verify.sql`
+prints 8 rows and runs cleanly before as well as after, on a 01-15 database and a 01-24 one. Row 8
+was proved by granting insert and adding a policy back on one record: it said NO and named it, then
+cleared. The undo refuses unless forced, and forced it genuinely reopens the hole, which was proved
+by running the attack again and getting ALLOWED.
+
+---
+
 ## PHASE 6E, FILE 24, 22 October 2026. Module badges, the path exam, and two counts
 
 Laid on main after file 23 merged. Nothing in here is a hole: it is a new thing for learners, two
