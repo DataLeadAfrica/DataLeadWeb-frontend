@@ -61,19 +61,28 @@ That helper is granted to `authenticated`, because a helper used inside a policy
 querying. That is the file 21 lesson about a function inside a CHECK constraint arriving in a new
 shape, and row 5 of the verify exists to catch it.
 
-### Left alone on purpose
+### What the allow list turned up when it was questioned
 
-`lms_profiles` keeps its self write, limited by column grants, and a learner still cannot set
-`email_verified_at`. `lms_popup_seen` keeps its own row insert. The tables whose only write policy is
-`lms_is_admin()` are a separate question: rather than decide it quietly, all eight exceptions print
-in the verify file's allow list with a reason beside each, every run.
+The first version of this file fixed fourteen tables and listed eight more as "administrator only, a
+separate question". Asked why, two of those eight were not a separate question at all.
 
-### The wider picture, which is worth a decision
+**`lms_learner_profiles` was a data protection hole.** Only an administrator may read
+`disability_detail`, one learner at a time through `lms_learner_record`, and every read is logged.
+Measured: an administrator read **every row at once, directly, with nothing logged**. The first
+clause held and the other two did not, and under the Nigeria Data Protection Act 2023 those two are
+the clauses that matter. That record now has no policy and no grant to anybody signed in, so the
+logged route is the only way in. Nothing else reads it as the caller: no policy references it, no
+security invoker function reads it, no view is built on it, all three checked.
 
-28 `lms_` tables grant insert, update or delete to `authenticated`. Fourteen are fixed here. Eight
-are in the allow list. The remaining six carry the grant but no write policy at all, so row level
-security refuses the write today and they are one added policy away from not. They are named in row
-8's listing rather than hidden.
+**`lms_entitlements` contradicted a rule we set.** Writes to entitlements are server side only, and
+an administrator could grant course access directly from the browser.
+
+The other four, `lms_facilitators`, `lms_path_courses`, `lms_paths` and `lms_settings`, are the same
+shape and lower stakes. All six are closed. Fifteen functions write them and all fifteen are security
+definer.
+
+**The allow list is now two entries**, `lms_profiles` and `lms_popup_seen`, both a person's own row,
+and both printed with their reason every run.
 
 ### Two other things in this package
 
@@ -89,8 +98,8 @@ captures the mark before the section and compares the two.
 
 ### What was tested
 
-`file_26_tests.sql`, 24 checks, all pass, and **12 of the 24 fail without the file**. `26_verify.sql`
-prints 8 rows and runs cleanly before as well as after, on a 01-15 database and a 01-24 one. Row 8
+`file_26_tests.sql`, 33 checks, all pass, and **18 of the 33 fail without the file**. `26_verify.sql`
+prints 9 rows and runs cleanly before as well as after, on a 01-15 database and a 01-24 one. Row 8
 was proved by granting insert and adding a policy back on one record: it said NO and named it, then
 cleared. The undo refuses unless forced, and forced it genuinely reopens the hole, which was proved
 by running the attack again and getting ALLOWED.

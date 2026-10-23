@@ -34,14 +34,8 @@ scope(t) as (values
 -- a list of exceptions nobody wrote a reason for becomes a list nobody
 -- dares change.
 allowed(t, why) as (values
-  ('lms_profiles',        'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
-  ('lms_popup_seen',      'a learner noting they have seen a popup. Their own row, and harmless.'),
-  ('lms_entitlements',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_facilitators',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_learner_profiles','administrator only, which is a separate question and not this file''s.'),
-  ('lms_path_courses',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_paths',           'administrator only, which is a separate question and not this file''s.'),
-  ('lms_settings',        'administrator only, which is a separate question and not this file''s.')),
+  ('lms_profiles',   'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
+  ('lms_popup_seen', 'a learner noting they have seen a popup. Their own row, and harmless.')),
 
 checks as (
 
@@ -145,6 +139,24 @@ checks as (
               and p.polcmd <> 'r')
     ) = 0 then 'yes' else 'NO' end,
     'THE ROW THAT KEEPS WORKING. The others check a list of known mistakes. This one asks the general question, so a record added later with the default grants AND a policy that permits a write is caught without anybody remembering to come back here. It asks for BOTH together, because a grant with no policy is refused by row level security anyway and a policy with no grant is refused by the privilege, and reporting either on its own would cry wolf until nobody read the row. The allow list and the reason for each entry are printed underneath.'
+
+  union all select 9,
+    'THE SENSITIVE LEARNER RECORD HAS ONLY THE LOGGED WAY IN',
+    case when to_regclass('public.lms_learner_profiles') is null then 'NO'
+         when exists (
+           select 1 from information_schema.role_table_grants g
+            where g.table_schema = 'public' and g.table_name = 'lms_learner_profiles'
+              and g.grantee in ('anon', 'authenticated', 'PUBLIC')) then 'NO'
+         when exists (
+           select 1 from pg_policy p
+            where p.polrelid = to_regclass('public.lms_learner_profiles')) then 'NO'
+         when to_regprocedure('public.lms_learner_record(uuid)') is null then 'NO'
+         when (select regexp_replace(pg_get_functiondef(pr.oid), '--[^' || chr(10) || ']*', '', 'g')
+                 from pg_proc pr join pg_namespace ns on ns.oid = pr.pronamespace
+                where ns.nspname = 'public' and pr.proname = 'lms_learner_record')
+              not like '%lms_admin_actions%' then 'NO'
+         else 'yes' end,
+    'THE ROW WITH LEGAL WEIGHT. Disability detail is sensitive personal data under the Nigeria Data Protection Act 2023, and the rule is that only an administrator reads it, one learner at a time, and that every read is written to the log. Measured before this file: an administrator read EVERY row at once, directly, with nothing logged. The first clause held and the other two did not. This row asks all of it at once: no grant to anybody signed in, no policy of any kind, and the one function that may read it still writing the log. A NO means the sensitive field can be read in bulk by a route that leaves no trace of who looked.'
 )
 select n as "#", checking as "what was checked", answer as "answer",
        what_it_means as "what it means if the answer is not yes"
@@ -157,14 +169,8 @@ select n as "#", checking as "what was checked", answer as "answer",
 -- of this file named the list once at the top and the two statements
 -- underneath could not see it.
 with allowed(t, why) as (values
-  ('lms_profiles',        'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
-  ('lms_popup_seen',      'a learner noting they have seen a popup. Their own row, and harmless.'),
-  ('lms_entitlements',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_facilitators',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_learner_profiles','administrator only, which is a separate question and not this file''s.'),
-  ('lms_path_courses',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_paths',           'administrator only, which is a separate question and not this file''s.'),
-  ('lms_settings',        'administrator only, which is a separate question and not this file''s.'))
+  ('lms_profiles',   'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
+  ('lms_popup_seen', 'a learner noting they have seen a popup. Their own row, and harmless.'))
 select g.table_name as "record", g.grantee as "held by",
        string_agg(g.privilege_type, ', ' order by g.privilege_type) as "can"
   from information_schema.role_table_grants g
@@ -181,13 +187,7 @@ select g.table_name as "record", g.grantee as "held by",
 -- AND THE ALLOW LIST ITSELF, printed every time rather than kept in a
 -- comment, so that the exceptions are read as often as the rule.
 with allowed(t, why) as (values
-  ('lms_profiles',        'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
-  ('lms_popup_seen',      'a learner noting they have seen a popup. Their own row, and harmless.'),
-  ('lms_entitlements',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_facilitators',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_learner_profiles','administrator only, which is a separate question and not this file''s.'),
-  ('lms_path_courses',    'administrator only, which is a separate question and not this file''s.'),
-  ('lms_paths',           'administrator only, which is a separate question and not this file''s.'),
-  ('lms_settings',        'administrator only, which is a separate question and not this file''s.'))
+  ('lms_profiles',   'a person''s own row, limited by column grants. A learner cannot set email_verified_at, which was checked.'),
+  ('lms_popup_seen', 'a learner noting they have seen a popup. Their own row, and harmless.'))
 select a.t as "left alone on purpose", a.why as "why"
   from allowed a order by 1;

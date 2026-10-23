@@ -61,15 +61,35 @@ administrators included. Both are put back, and the answer key comes back narrow
 Every other table in the list has a SELECT policy that names `lms_is_staff()` itself, so staff keep
 their reads without anything being done.
 
-## What is deliberately left alone
+## What was found when the allow list was questioned
+
+The first version of this file fixed fourteen tables and listed eight more as "administrator only,
+a separate question". Asked why, two of those eight turned out not to be a separate question at all.
+
+**`lms_learner_profiles` was a data protection hole.** The rule is that only an administrator reads
+`disability_detail`, **one learner at a time** through `lms_learner_record`, and that **every read is
+logged** in `lms_admin_actions`. Measured: an administrator read every row at once, directly,
+`disability_detail` included, with nothing logged. The first clause held and the other two did not.
+Under the Nigeria Data Protection Act 2023 those two are the clauses that matter.
+
+That record now has no policy at all and no grant to anybody signed in. `lms_learner_record` and
+`lms_my_profile` are security definer and read it as the owner, so the logged route is not merely the
+sensible way in, it is the only one. Nothing else reads it as the person asking: no policy references
+it, no security invoker function reads it, and no view is built on it, all three checked rather than
+assumed.
+
+**`lms_entitlements` contradicted a rule we set.** Writes to entitlements are server side only, and
+an administrator could grant a learner course access directly from the browser.
+
+The other four, `lms_facilitators`, `lms_path_courses`, `lms_paths` and `lms_settings`, are the same
+shape and lower stakes: writing them directly skips the function that records who did it. All six are
+closed, and fifteen functions write them, all fifteen security definer.
+
+## What is still deliberately left alone
 
 `lms_profiles` keeps its self write, which is limited by column grants, and a learner still cannot
-set `email_verified_at`. `lms_popup_seen` keeps its own row insert, which is harmless. Both were
-asked about and both are untouched.
-
-The tables whose only write policy is `lms_is_admin()` are also left alone. That is a separate
-question, and rather than decide it quietly, every one of them is printed in the verify file's allow
-list with the reason beside it, every time it runs.
+set `email_verified_at`. `lms_popup_seen` keeps its own row insert, which is harmless. Those two are
+the whole allow list now, and the verify prints both with their reason every run.
 
 ## What each check in 26_verify_EDITOR.sql means
 
@@ -85,6 +105,7 @@ Rows 1 to 3 are the hole. Row 8 is the one that will still be working in a year.
 | 6 | The two reads that rode on a write policy are back | The trap above. A NO means the questions screen or the popups screen is down for everybody, administrators included. |
 | 7 | A learner and a visitor are exactly where they were | Learners were never the problem and this file must not make them one. A NO means a policy here has been widened to everybody, which would hand the answers to the people sitting the exam. |
 | 8 | No lms record lets a signed in person write it directly | **The row that keeps working.** It asks the general question, so a record added later with the default grants **and** a policy permitting a write is caught without anybody adding a row here. It asks for both together, because a grant with no policy is refused by row level security anyway and a policy with no grant is refused by the privilege, and reporting either alone would cry wolf until nobody read the row. The allow list, with a reason for each entry, prints underneath every run. |
+| 9 | The sensitive learner record has only the logged way in | **The row with legal weight.** It asks all three parts at once: no grant to anybody signed in, no policy of any kind, and `lms_learner_record` still writing the log. A NO means `disability_detail` can be read in bulk by a route that leaves no trace of who looked. |
 
 ## Two other things in this package
 

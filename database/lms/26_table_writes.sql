@@ -231,6 +231,61 @@ create policy p_pop_staff_read on lms_popups
   using (lms_is_staff());
 
 -- -------------------------------------------------------------- step 5
+-- The six that answer only to lms_is_admin().
+--
+-- ADDED AFTER THE FIRST VERSION, because the allow list in the verify
+-- file called these "a separate question" and two of them were not.
+--
+-- lms_learner_profiles WAS A DATA PROTECTION HOLE. The rule is that
+-- only administrators read disability_detail, ONE LEARNER AT A TIME
+-- through lms_learner_record, and that every read is logged in
+-- lms_admin_actions. Measured: an administrator read EVERY row at once,
+-- directly, disability_detail included, with nothing logged. The first
+-- clause held and the other two did not. Under the Nigeria Data
+-- Protection Act 2023 those two are the clauses that matter.
+--
+-- lms_entitlements CONTRADICTED A RULE WE SET. Writes to entitlements
+-- are server side only, and an administrator granted a learner course
+-- access directly from the browser.
+--
+-- The other four are the same shape and lower stakes: writing them
+-- directly skips the function that records who did it.
+--
+-- SAFE FOR THE SAME REASONS. Fifteen functions write these six and all
+-- fifteen are security definer. The site reads lms_paths,
+-- lms_path_courses and lms_settings directly and writes none of them,
+-- and all three keep a SELECT policy of their own.
+--
+-- THE READ TRAP, AGAIN, ON TWO OF THEM. lms_facilitators and
+-- lms_learner_profiles have no SELECT policy of their own, so dropping
+-- the ALL policy takes the direct read with it. For lms_facilitators
+-- that is simply correct: nothing reads it directly, the Staff screen
+-- goes through a function. For lms_learner_profiles it is the point of
+-- the exercise, and the grant is taken away as well so that the logged
+-- route is not merely the sensible way in but the only one.
+drop policy if exists p_ent_admin      on lms_entitlements;
+drop policy if exists p_fac_admin      on lms_facilitators;
+drop policy if exists p_lp_admin_only  on lms_learner_profiles;
+drop policy if exists p_pathc_admin    on lms_path_courses;
+drop policy if exists p_paths_admin    on lms_paths;
+drop policy if exists p_settings_admin on lms_settings;
+
+revoke insert, update, delete on lms_entitlements     from public, anon, authenticated;
+revoke insert, update, delete on lms_facilitators     from public, anon, authenticated;
+revoke insert, update, delete on lms_learner_profiles from public, anon, authenticated;
+revoke insert, update, delete on lms_path_courses     from public, anon, authenticated;
+revoke insert, update, delete on lms_paths            from public, anon, authenticated;
+revoke insert, update, delete on lms_settings         from public, anon, authenticated;
+
+-- THE SENSITIVE ONE, SHUT COMPLETELY. Nothing reads this record as the
+-- person asking: no policy references it, no security invoker function
+-- reads it, and no view is built on it, all three of which were checked
+-- rather than assumed. lms_learner_record and lms_my_profile are
+-- security definer and read it as the owner, so they are untouched, and
+-- lms_learner_record is the one that writes the log.
+revoke select on lms_learner_profiles from public, anon, authenticated;
+
+-- -------------------------------------------------------------- step 6
 -- What changed.
 do $$
 declare v_pol integer; v_grant integer;
@@ -264,6 +319,9 @@ begin
   raise notice '  A facilitator reads the answer key only for courses';
   raise notice '  they may edit. Administrators still read every one.';
   raise notice '  Learners and visitors are exactly where they were: 0.';
-  raise notice '  Run 26_verify_EDITOR.sql next. Eight rows, all yes.';
+  raise notice '  The learner record with the sensitive field is now';
+  raise notice '  reachable ONLY through lms_learner_record, which logs';
+  raise notice '  every read, one learner at a time.';
+  raise notice '  Run 26_verify_EDITOR.sql next. Nine rows, all yes.';
   raise notice '--------------------------------------------------------';
 end $$;

@@ -97,6 +97,22 @@ create policy p_pop_staff_read on lms_popups
   for select to authenticated
   using (lms_is_staff());
 
+drop policy if exists p_ent_admin      on lms_entitlements;
+drop policy if exists p_fac_admin      on lms_facilitators;
+drop policy if exists p_lp_admin_only  on lms_learner_profiles;
+drop policy if exists p_pathc_admin    on lms_path_courses;
+drop policy if exists p_paths_admin    on lms_paths;
+drop policy if exists p_settings_admin on lms_settings;
+
+revoke insert, update, delete on lms_entitlements     from public, anon, authenticated;
+revoke insert, update, delete on lms_facilitators     from public, anon, authenticated;
+revoke insert, update, delete on lms_learner_profiles from public, anon, authenticated;
+revoke insert, update, delete on lms_path_courses     from public, anon, authenticated;
+revoke insert, update, delete on lms_paths            from public, anon, authenticated;
+revoke insert, update, delete on lms_settings         from public, anon, authenticated;
+
+revoke select on lms_learner_profiles from public, anon, authenticated;
+
 do $$
 declare v_pol integer; v_grant integer;
 begin
@@ -129,6 +145,9 @@ begin
   raise notice '  A facilitator reads the answer key only for courses';
   raise notice '  they may edit. Administrators still read every one.';
   raise notice '  Learners and visitors are exactly where they were: 0.';
-  raise notice '  Run 26_verify_EDITOR.sql next. Eight rows, all yes.';
+  raise notice '  The learner record with the sensitive field is now';
+  raise notice '  reachable ONLY through lms_learner_record, which logs';
+  raise notice '  every read, one learner at a time.';
+  raise notice '  Run 26_verify_EDITOR.sql next. Nine rows, all yes.';
   raise notice '--------------------------------------------------------';
 end $$;

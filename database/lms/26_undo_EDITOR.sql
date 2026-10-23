@@ -13,6 +13,7 @@ begin
     raise exception
       'This undo puts back a hole that was measured, not feared: a facilitator who owns no '
       'course could change a lesson in somebody else''s live course, empty every chapter of '
+      
       'every course in one statement, and read another course''s answer key. If you mean it, '
       'paste this line at the top of this file and run the whole thing in one go, ending that '
       'line with a semicolon: '
@@ -40,6 +41,14 @@ grant insert, update, delete on lms_course_next      to authenticated;
 grant insert, update, delete on lms_countries        to authenticated;
 grant insert, update, delete on lms_ng_states        to authenticated;
 grant insert, update, delete on lms_popups           to authenticated;
+grant insert, update, delete on lms_entitlements     to authenticated;
+grant insert, update, delete on lms_facilitators     to authenticated;
+grant insert, update, delete on lms_learner_profiles to authenticated;
+grant insert, update, delete on lms_path_courses     to authenticated;
+grant insert, update, delete on lms_paths            to authenticated;
+grant insert, update, delete on lms_settings         to authenticated;
+
+grant select on lms_learner_profiles to authenticated;
 
 drop policy if exists p_lms_area_tools_write on lms_area_tools;
 create policy p_lms_area_tools_write on lms_area_tools
@@ -77,6 +86,24 @@ create policy p_courses_edit on lms_courses
   using (lms_can_edit())
   with check (lms_can_edit());
 
+drop policy if exists p_ent_admin on lms_entitlements;
+create policy p_ent_admin on lms_entitlements
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
+
+drop policy if exists p_fac_admin on lms_facilitators;
+create policy p_fac_admin on lms_facilitators
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
+
+drop policy if exists p_lp_admin_only on lms_learner_profiles;
+create policy p_lp_admin_only on lms_learner_profiles
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
+
 drop policy if exists p_lms_lesson_chapters_write on lms_lesson_chapters;
 create policy p_lms_lesson_chapters_write on lms_lesson_chapters
   for all to authenticated
@@ -107,6 +134,18 @@ create policy p_opt_staff_only on lms_options
   using (lms_can_edit())
   with check (lms_can_edit());
 
+drop policy if exists p_pathc_admin on lms_path_courses;
+create policy p_pathc_admin on lms_path_courses
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
+
+drop policy if exists p_paths_admin on lms_paths;
+create policy p_paths_admin on lms_paths
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
+
 drop policy if exists p_pop_staff on lms_popups;
 create policy p_pop_staff on lms_popups
   for all to authenticated
@@ -129,6 +168,12 @@ create policy p_quiz_edit on lms_quizzes
   for all to authenticated
   using (lms_can_edit())
   with check (lms_can_edit());
+
+drop policy if exists p_settings_admin on lms_settings;
+create policy p_settings_admin on lms_settings
+  for all to authenticated
+  using (lms_is_admin())
+  with check (lms_is_admin());
 
 do $$ begin
   raise notice '--------------------------------------------------------';

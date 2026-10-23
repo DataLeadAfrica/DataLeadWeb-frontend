@@ -292,6 +292,105 @@ begin
   perform t26_say('7b and no write grant either', v_grant::text, '0');
 end $$;
 
+-- ---------------------------------------------------------------------
+-- 8. The six that answer only to lms_is_admin()
+--
+-- 8a TO 8c CARRY LEGAL WEIGHT. Disability detail is sensitive personal
+-- data under the Nigeria Data Protection Act 2023. The rule is one
+-- learner at a time, through lms_learner_record, and every read logged.
+-- Before file 26 an administrator read every row at once, directly,
+-- with nothing logged.
+-- ---------------------------------------------------------------------
+insert into lms_learner_profiles
+  (user_id, country, age_band, gender, education_level, occupation,
+   disability, disability_detail, goals, consented_at)
+values ('26a10000-0000-0000-0000-0000000000a1','Ghana','25','Prefer not to say','secondary','none',
+        'yes','T26 SENSITIVE', ARRAY['job'], now());
+
+do $$
+declare v_read text; v_grant text; v_pol text;
+begin
+  perform t26_be('26d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  begin
+    perform count(*) from lms_learner_profiles;
+    v_read := 'ALLOWED';
+  exception when others then v_read := 'refused';
+  end;
+  reset role;
+  perform t26_say('8a an administrator cannot read the sensitive record directly', v_read, 'refused');
+
+  select coalesce(string_agg(privilege_type, ','), 'none') into v_grant
+    from information_schema.role_table_grants
+   where table_schema = 'public' and table_name = 'lms_learner_profiles'
+     and grantee in ('anon', 'authenticated', 'PUBLIC');
+  perform t26_say('8b and holds no grant on it at all', v_grant, 'none');
+
+  select coalesce(count(*)::text, '0') into v_pol from pg_policy
+   where polrelid = to_regclass('public.lms_learner_profiles');
+  perform t26_say('8c nor is there any policy left to reach it by', v_pol, '0');
+end $$;
+
+do $$
+declare v_got boolean; v_before integer; v_after integer;
+begin
+  select count(*) into v_before from lms_admin_actions;
+  perform t26_be('26d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  select (to_jsonb(x) is not null) into v_got
+    from lms_learner_record('26a10000-0000-0000-0000-0000000000a1') x;
+  reset role;
+  select count(*) into v_after from lms_admin_actions;
+  perform t26_say('8d the logged route still returns the record', coalesce(v_got, false)::text, 'true');
+  perform t26_say('8e and writes a line saying who looked', (v_after - v_before)::text, '1');
+end $$;
+
+do $$
+declare v_said text;
+begin
+  perform t26_be('26d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  begin
+    insert into lms_entitlements (user_id, course_id, source, status)
+    values ('26a10000-0000-0000-0000-0000000000a1','26c10000-0000-0000-0000-0000000000c1','manual','active');
+    v_said := 'ALLOWED';
+  exception when others then v_said := 'refused';
+  end;
+  reset role;
+  perform t26_say('8f nor can an administrator grant access by hand, which is server side only',
+    v_said, 'refused');
+end $$;
+
+do $$
+declare v_pol integer; v_grant integer; v_reads integer;
+begin
+  select count(*) into v_pol
+    from pg_policy p join pg_class c on c.oid = p.polrelid
+    join pg_namespace n on n.oid = c.relnamespace
+   where n.nspname = 'public' and p.polcmd <> 'r'
+     and c.relname in ('lms_entitlements','lms_facilitators','lms_learner_profiles',
+                       'lms_path_courses','lms_paths','lms_settings');
+  select count(*) into v_grant
+    from information_schema.role_table_grants
+   where table_schema = 'public'
+     and table_name in ('lms_entitlements','lms_facilitators','lms_learner_profiles',
+                        'lms_path_courses','lms_paths','lms_settings')
+     and grantee in ('anon','authenticated','PUBLIC')
+     and privilege_type in ('INSERT','UPDATE','DELETE');
+  perform t26_say('8g no write policy is left on those six', v_pol::text, '0');
+  perform t26_say('8h and no write grant either', v_grant::text, '0');
+
+  -- THE THREE THE SITE READS DIRECTLY must still be readable, or the
+  -- Paths screen and the settings go dark.
+  perform t26_be('26d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  select (select count(*) from lms_paths) + (select count(*) from lms_path_courses)
+       + (select count(*) from lms_settings) into v_reads;
+  reset role;
+  perform t26_say('8i while the three the site reads directly still read',
+    (v_reads >= 0)::text, 'true');
+end $$;
+
 -- ------------------------------------------------------------- results
 \pset tuples_only off
 \pset format aligned
