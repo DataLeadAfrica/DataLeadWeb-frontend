@@ -437,6 +437,24 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .lvp-msg.tone-plain{background:#f7f7f9;border-left-color:#c9c6cf;color:#3e3c44}
 .lvp.is-big .lvp-msg{font-size:14px}
 @media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
+/* ---------- month end: plan the last 3 working days ---------- */
+.mp{border-color:var(--clr-orange-medium)}
+.mp .eyebrow{margin-bottom:4px}
+.mp-row{display:grid;grid-template-columns:150px 110px 1fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.mp-row:first-of-type{border-top:none}
+.mp-tick{display:flex;gap:9px;align-items:center;margin:0;color:var(--clr-gray);font-size:14px;cursor:pointer;padding-top:8px}
+.mp-tick input{width:18px;height:18px;accent-color:var(--clr-orange);flex:none}
+.mp-tick small{display:block;font-size:11.5px;color:var(--faint)}
+.mp-hrs{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.mp-hrs input{width:64px;padding:8px 9px}
+.mp-row textarea{min-height:58px}
+.mp-row.off .mp-hrs,.mp-row.off textarea{opacity:.4}
+.mp-off{grid-column:1/-1;font-size:12px;color:var(--clay);margin-top:-4px}
+.mp-tools{margin:4px 0 12px}
+.mp-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.mp-act button{flex:1 1 200px}
+.mp-done{display:inline-block;font-size:12px;color:var(--green);background:var(--green-bg);border-radius:99px;padding:2px 10px;margin-left:6px;vertical-align:middle}
+@media (max-width:620px){ .mp-row{grid-template-columns:1fr 110px} .mp-row textarea{grid-column:1/-1} .mp-tick{padding-top:4px} }
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -540,6 +558,8 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 
     <div class="now" id="now"></div>
 
+    <div id="me-plan"></div>
+
     <div id="lvp-home"></div>
 
     <button class="waiting hidden" id="waiting" onclick="go('approvals')"></button>
@@ -636,7 +656,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <div class="card">
       <label style="display:flex;gap:10px;align-items:flex-start;margin:0;color:var(--clr-gray);font-size:14px">
         <input type="checkbox" id="ts-certify" style="width:auto;margin-top:4px">
-        <span>I certify that this is a true record of the days and hours I worked.</span>
+        <span id="ts-cert-text">I certify that this is a true record of the days and hours I worked.</span>
       </label>
       <div id="ts-msg"></div>
       <button class="btn-primary" style="width:100%;margin-top:14px" id="ts-btn" onclick="submitTimesheet()">Sign and send to my line manager</button>
@@ -1812,6 +1832,11 @@ async function loadTimesheet(){
     buildStrip();
     await refreshHours();
     renderNow();
+    renderPlanCard();
+    const planned = Object.values(DAYS).some(r => r.provisional);
+    $("ts-cert-text").textContent = planned
+      ? "I certify that this is a true record of the days and hours I worked, including the days I have planned ahead, which I will work as described. If my plans change, I will tell my line manager."
+      : "I certify that this is a true record of the days and hours I worked.";
   } catch(e){
     // never fail silently: say what broke and where
     $("ts-locked").innerHTML =
@@ -2052,6 +2077,7 @@ function dayState(iso){
   if(!WINDOW) return "open";                       // rule unknown, do not block anyone
   if(iso > WINDOW.today){
     if(iso > WINDOW.month_end) return "future";
+    if(Array.isArray(WINDOW.plan_days) && !WINDOW.plan_days.includes(iso)) return "future";
     return WINDOW.today >= WINDOW.window_opens ? "plan" : "future";
   }
   if(iso === WINDOW.today) return "open";
@@ -2915,6 +2941,12 @@ function renderNow(){
              (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
              " Say what you worked on and it takes half a minute.",
            cta:"Log today", act:"today" };
+  } else if(planNeeded()){
+    const pi = planInfo();
+    st = { ey:"Month end", h:"Plan your last " + (pi.days.length === 1 ? "day" : pi.days.length + " days") + " of " + monthName,
+           p:"Payroll closes before the month does. Say what you plan to do on " + pi.days.map(planDay).join(", ") +
+             ", and you can sign " + monthName + " off today.",
+           cta:"Plan them", act:"plan" };
   } else if(MONTH_GAP > 0 && dom >= 24){
     st = { ey:monthName + " closes soon", h:MONTH_GAP + " day" + (MONTH_GAP>1?"s":"") + " still unlogged",
            p:"A day with nothing against it is unpaid. Fill the sand-coloured shells before the month ends.",
@@ -2939,12 +2971,98 @@ function renderNow(){
   if(g) g.onclick = () => {
     if(st.go) go(st.go);
     else if(st.act === "today") openDay(todayISO);
+    else if(st.act === "plan"){
+      const c = $("mp-card");
+      if(c){ c.scrollIntoView({behavior:"smooth", block:"start"}); const t = c.querySelector("textarea:not([disabled])"); if(t) setTimeout(() => t.focus(), 400); }
+    }
     else if(st.act === "first-gap"){
       const first = document.querySelector(".shell:not(.on):not(.half):not(.hol)");
       if(first){ first.scrollIntoView({behavior:"smooth", block:"center"}); first.click(); }
     }
   };
 }
+
+// ============================================================
+// MONTH END: PLAN THE LAST 3 WORKING DAYS, THEN SIGN OFF
+// Payroll closes before the month does. From the working day before
+// the last three, those three can be filled in ahead with what the
+// person plans to do, and the month signed off. The database decides
+// which days and when (plan_ahead_window); this only lays them out.
+// ============================================================
+const PD_DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], PD_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function planDay(iso){ const d = new Date(iso + "T00:00:00"); return PD_DOW[d.getDay()] + " " + d.getDate() + " " + PD_MON[d.getMonth()]; }
+function planInfo(){
+  if(!WINDOW || !Array.isArray(WINDOW.plan_days) || !WINDOW.plan_days.length) return null;
+  const ym = TS_YEAR + "-" + String(TS_MONTH).padStart(2, "0");
+  if(WINDOW.today.slice(0, 7) !== ym) return null;                       // only for this month
+  if(WINDOW.today < WINDOW.window_opens) return null;                    // not open yet
+  if(["submitted","manager_approved","director_approved"].includes(SUB_STATUS)) return null;
+  const days = WINDOW.plan_days.filter(iso => iso >= WINDOW.today && !LEAVE[iso] && !HOLIDAYS[iso]);
+  return days.length ? { days } : null;
+}
+function planNeeded(){ const pi = planInfo(); return !!pi && pi.days.some(iso => !DAYS[iso]); }
+
+function renderPlanCard(){
+  const box = $("me-plan"); if(!box) return;
+  const pi = planInfo();
+  if(!pi){ box.innerHTML = ""; return; }
+  const month = MONTHS[TS_MONTH - 1], done = pi.days.every(iso => DAYS[iso]);
+  const rows = pi.days.map((iso, i) => {
+    const dt = new Date(iso + "T00:00:00"), rec = DAYS[iso], today = iso === WINDOW.today;
+    return '<div class="mp-row" id="mp-row-' + i + '" data-iso="' + iso + '">' +
+      '<label class="mp-tick"><input type="checkbox" id="mp-on-' + i + '" checked onchange="mpTick(' + i + ')">' +
+        '<span><b>' + planDay(iso) + '</b><small>' + (today ? "Today" : rec ? "Planned" : "Not planned yet") + '</small></span></label>' +
+      '<div class="mp-hrs"><input type="number" id="mp-h-' + i + '" min="0.5" max="24" step="0.5" value="' + (rec ? Number(rec.hours) : standardFor(dt)) +
+        '" aria-label="Hours on ' + planDay(iso) + '"><span>hours</span></div>' +
+      '<textarea id="mp-a-' + i + '" rows="2" placeholder="' + (today ? "What you are doing today" : "What you plan to do") + '" aria-label="' +
+        (today ? "What you are doing today" : "What you plan to do on " + planDay(iso)) + '">' + esc(rec ? (rec.activity || "") : "") + '</textarea>' +
+      '<div class="mp-off hidden" id="mp-off-' + i + '">Not ticked: this day will not be paid unless you log it later or take leave for it.</div>' +
+    '</div>';
+  }).join("");
+  box.innerHTML = '<div class="card mp" id="mp-card">' +
+    '<div class="eyebrow">Month end</div>' +
+    '<h3>' + (done ? "Your last days of " + esc(month) + " are planned" + '<span class="mp-done">✓ ready to sign off</span>'
+                   : "Plan your last " + (pi.days.length === 1 ? "day" : pi.days.length + " days") + " of " + esc(month)) + '</h3>' +
+    '<p class="cardsub">Payroll closes before the month does. Tick the days you will work, say what you plan to do, and you can sign ' +
+      esc(month) + ' off now. Your manager will see these days marked as planned. If your plans change, tell them.</p>' +
+    rows +
+    (pi.days.length > 1 ? '<div class="mp-tools"><button class="rowbtn" style="padding:5px 11px;font-size:12px" onclick="mpCopy()">Use the first plan for every day</button></div>' : "") +
+    '<div id="mp-msg"></div>' +
+    '<div class="mp-act"><button id="mp-save" onclick="mpSave(false)">' + (done ? "Save changes" : "Save my plan") + '</button>' +
+      '<button class="btn-primary" id="mp-sign" onclick="mpSave(true)">Save and sign off ' + esc(month) + ' →</button></div>' +
+  '</div>';
+}
+function mpTick(i){
+  const on = $("mp-on-" + i).checked;
+  $("mp-row-" + i).classList.toggle("off", !on);
+  $("mp-h-" + i).disabled = !on; $("mp-a-" + i).disabled = !on;
+  $("mp-off-" + i).classList.toggle("hidden", on);
+}
+function mpCopy(){
+  const first = ($("mp-a-0") || {}).value || "";
+  if(!first.trim()){ msg("mp-msg", "err", "Write the first one", "Say what you plan to do on the first day, then copy it."); return; }
+  document.querySelectorAll("#mp-card textarea").forEach((t, i) => { if(i > 0 && !t.disabled) t.value = first; });
+}
+async function mpSave(andSign){
+  const pi = planInfo(); if(!pi) return;
+  const items = [];
+  for(let i = 0; i < pi.days.length; i++){
+    const iso = pi.days[i], on = $("mp-on-" + i).checked;
+    const hours = parseFloat($("mp-h-" + i).value), act = $("mp-a-" + i).value.trim();
+    if(on && !(hours > 0 && hours <= 24)){ msg("mp-msg", "err", "Check the hours", "The hours for " + planDay(iso) + " must be between 0.5 and 24."); return; }
+    if(on && !act){ msg("mp-msg", "err", "Say what you plan to do", "Write a line for " + planDay(iso) + ", or untick it if you will not be working."); $("mp-a-" + i).focus(); return; }
+    items.push({ date: iso, on, hours: on ? hours : null, activity: on ? act : null });
+  }
+  const bid = andSign ? "mp-sign" : "mp-save", blab = $(bid).textContent;
+  btn(bid, true, "Saving");
+  const { error } = await db.rpc("plan_month_end", { p_items: items });
+  btn(bid, false, esc(blab));
+  if(error){ msg("mp-msg", "err", "Not saved", error.message); return; }
+  toast("Your plan is saved.");
+  await loadTimesheet();
+  if(andSign) go("timesheet");
+}
+window.mpTick = mpTick; window.mpCopy = mpCopy; window.mpSave = mpSave;
 
 // ---- payday takes the card over, once a month ----
 async function checkPayday(){
