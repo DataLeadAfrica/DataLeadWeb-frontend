@@ -438,6 +438,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .lvp.is-big .lvp-msg{font-size:14px}
 @media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
 </style>
+<script src="/cowrie-shell/notice.js" defer></script>
 </head>
 <body>
 
@@ -925,6 +926,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
         <select id="lv-kind" onchange="lvKind()"></select>
         <p class="hint" id="lv-note"></p>
       </div>
+      <div id="lv-sick"></div>
 
       <div class="grid2">
         <div class="fld"><label>From</label><input type="date" id="lv-from" onchange="lvFrom()"></div>
@@ -3333,6 +3335,7 @@ function lvKind(){
       : "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over===1?"":"s") + ".";
   }
   $("lv-reason-lab").textContent = k === "sick" ? "What is wrong (optional)" : "Reason";
+  lvSickCheck();
   $("lv-btn").textContent = b.needs_senior
     ? "Send to my line manager" : "Send to my line manager";
   // changing the kind changes the entitlement, so suggest afresh
@@ -3360,7 +3363,41 @@ let LV_AUTOFILLED = null;    // the date we suggested, so we can tell if it was 
 
 async function lvFrom(){
   await autofillLeaveEnd();
+  await lvSickCheck();
   await lvCount();
+}
+
+// ---- sick leave again in the same month: a doctor's report is needed (Handbook 8.4) ----
+let SICK_PRIOR = [];
+const LV_DOW3 = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], LV_MON3 = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const lvDay = d => { const x = new Date(d + "T00:00:00"); return LV_DOW3[x.getDay()] + " " + x.getDate() + " " + LV_MON3[x.getMonth()]; };
+async function lvSickCheck(){
+  const box = $("lv-sick"); if(!box) return;
+  SICK_PRIOR = [];
+  if($("lv-kind").value !== "sick"){ box.innerHTML = ""; return; }
+  const on = val("lv-from") || isoOf(new Date());
+  const { data, error } = await db.rpc("my_sick_this_month", { p_on: on });
+  if(error){ console.warn("my_sick_this_month:", error.message); box.innerHTML = ""; return; }
+  SICK_PRIOR = data || [];
+  const month = MONTHS[new Date(on + "T00:00:00").getMonth()];
+  if(!SICK_PRIOR.length){
+    box.innerHTML = "";
+    const b = BAL.find(x => x.kind === "sick");
+    if(b && b.needs_evidence_over !== null && b.needs_evidence_over !== undefined){
+      $("lv-evi-lab").textContent = b.evidence_label || "Evidence";
+      $("lv-evi-hint").textContent = "Only needed if it is more than " + b.needs_evidence_over + " day" + (b.needs_evidence_over === 1 ? "" : "s") + ".";
+    }
+    return;
+  }
+  const when = SICK_PRIOR.map(r => lvDay(r.starts_on) + (r.ends_on !== r.starts_on ? " to " + lvDay(r.ends_on) : "") +
+    (r.state === "approved" ? "" : " (awaiting approval)")).join(", ");
+  box.innerHTML = '<div class="alert warn" style="margin-top:0"><b>You have already taken sick leave in ' + esc(month) + '</b>' +
+    'On ' + esc(when) + '. We hope you are feeling better. Under the Employee Handbook (8.4), a second sick leave in the same month ' +
+    'needs a certificate from a registered doctor. Please attach it below; without it, the request cannot be sent.</div>';
+  // the evidence box is required this time, whatever the length
+  $("lv-evi-row").classList.remove("hidden");
+  $("lv-evi-lab").textContent = "A certificate from a registered doctor";
+  $("lv-evi-hint").textContent = "Required: this is your second sick leave in " + month + ".";
 }
 
 function lvTo(){
@@ -3411,7 +3448,9 @@ async function lvCount(){
   if(b && b.pay_rate < 1) bits.push(b.pay_rate === 0
     ? "Unpaid."
     : "Paid at " + Math.round(b.pay_rate*100) + "% (Employee Handbook)." );
-  if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
+  const repeatSick = k === "sick" && SICK_PRIOR.length > 0;
+  if(repeatSick) bits.push("Needs a certificate from a registered doctor, because it is your second sick leave this month.");
+  else if(b && b.needs_evidence_over !== null && days > b.needs_evidence_over)
     bits.push("Needs " + (b.evidence_label||"evidence").toLowerCase() + ".");
   if(b && b.needs_senior) bits.push("Goes to your manager, then the COO or the CEO.");
   else if(b) bits.push("Your manager decides. It stops there.");
@@ -3428,7 +3467,7 @@ async function lvCount(){
       '</div>';
   }
 
-  box.className = "alert " + (left !== null && left - days < 0 ? "warn" : "info");
+  box.className = "alert " + ((left !== null && left - days < 0) || repeatSick ? "warn" : "info");
   box.innerHTML = msg + bits.join(" ") + changed;
 }
 
@@ -3436,6 +3475,14 @@ async function askLeave(){
   const k = $("lv-kind").value, f = val("lv-from"), t = val("lv-to");
   if(!k){ msg("lv-msg","err","Pick the kind","Which sort of leave is this?"); return; }
   if(!f || !t){ msg("lv-msg","err","Pick the dates","From and to."); return; }
+  if(k === "sick"){
+    await lvSickCheck();
+    if(SICK_PRIOR.length && !$("lv-evi").files[0]){
+      msg("lv-msg","err","Attach your doctor's report",
+          "This is your second sick leave this month, so a certificate from a registered doctor is needed (Employee Handbook 8.4).");
+      return;
+    }
+  }
 
   btn("lv-btn", true, "Sending");
 
@@ -3526,10 +3573,19 @@ async function loadLeaveQueue(){
     const evi = l.needs_evidence_over !== null && l.days > l.needs_evidence_over
       ? (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">evidence attached</span>'
                         : ' \u00b7 <span style="color:var(--red)">no evidence</span>') : "";
+    let often = "", repeat = false;
+    if(l.kind === "sick"){
+      const same = Number(l.sick_same_month || 0), last90 = Number(l.sick_last_90_days || 0);
+      const ord = n => n + (n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : n % 10 === 1 && n % 100 !== 11 ? "st" : "th");
+      repeat = same > 0;
+      if(same > 0) often += ' \u00b7 <span style="color:var(--red)">' + ord(same + 1) + ' sick leave this month</span>' +
+        (l.has_evidence ? ' \u00b7 <span style="color:var(--green)">doctor\u2019s report attached</span>' : "");
+      if(last90 >= 2) often += ' \u00b7 <span style="color:var(--amber)">' + last90 + ' other sick leaves in the last 3 months</span>';
+    }
     return '<div class="qrow"><span class="dot todo"></span>' +
       '<span class="t"><b>' + esc(l.staff) + ' \u00b7 ' + esc(l.label) + '</b>' +
       '<span>' + l.days + ' day' + (Number(l.days)===1?"":"s") + ' \u00b7 ' +
-      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + evi + '</span>' +
+      fmtRange(l.starts_on, l.ends_on) + ' \u00b7 ' + stage + pot + (repeat ? "" : evi) + often + '</span>' +
       (l.reason ? '<span style="font-style:italic">\u201c' + esc(l.reason) + '\u201d</span>' : "") +
       '</span>' +
       '<button onclick="decideLeave(' + l.id + ', false)">Decline</button>' +
