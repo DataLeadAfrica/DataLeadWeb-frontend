@@ -22,6 +22,7 @@ import {
   type LandingArea,
   type LandingPath,
 } from "../../../lib/catalogue";
+import { getSession } from "../../../lib/academy";
 import { ACADEMY_PUBLIC, SITE_ORIGIN } from "../../../lib/site";
 import { landingWords } from "../../../lib/courseSeo";
 import Popup from "../ui/Popup";
@@ -152,6 +153,23 @@ export default function AcademyLanding() {
     };
   }, []);
 
+  // SIGNED OUT UNTIL WE KNOW OTHERWISE. Reading the session is a local
+  // lookup of a few milliseconds, and most people arriving here are not
+  // signed in, so starting from the signed out buttons means the row is
+  // never empty and almost never changes. Starting from "unknown" and
+  // rendering nothing would leave a hole in the hero while it settled.
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getSession().then((s) => {
+      if (alive) setSignedIn(s.signedIn);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const list = courses || [];
   const head = headlineParts(words.headline);
 
@@ -210,12 +228,36 @@ export default function AcademyLanding() {
               Browse courses
               <ArrowIcon />
             </Link>
-            <Link
-              className="acad-btn acad-btn--ghost acad-btn--auto"
-              to={routes.academySignUp}
-            >
-              Create a free account
-            </Link>
+            {/* THERE WAS NO WAY TO SIGN IN FROM THIS PAGE. Somebody
+                who already had an account had to know to type
+                /lms/sign-in, because the only links to it were from the
+                sign up page, the password reset page, and the redirects
+                that fire when you try to open something private. For a
+                returning learner this was the first page they saw and it
+                offered them nothing but a second account. */}
+            {signedIn ? (
+              <Link
+                className="acad-btn acad-btn--ghost acad-btn--auto"
+                to={routes.academyMe}
+              >
+                Continue learning
+              </Link>
+            ) : (
+              <>
+                <Link
+                  className="acad-btn acad-btn--ghost acad-btn--auto"
+                  to={routes.academySignUp}
+                >
+                  Create a free account
+                </Link>
+                <Link
+                  className="acad-btn acad-btn--ghost acad-btn--auto"
+                  to={routes.academySignIn}
+                >
+                  Sign in
+                </Link>
+              </>
+            )}
           </div>
 
           <p className="acad-hero__proof">
