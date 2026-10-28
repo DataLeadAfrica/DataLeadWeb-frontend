@@ -9,6 +9,7 @@ import AcadStage from "../../ui/AcadStage";
 import Breadcrumb from "../../ui/Breadcrumb";
 import EmptyState from "../../ui/EmptyState";
 import Chapters from "./Chapters";
+import Controls from "./Controls";
 import WatchTape from "../../ui/WatchTape";
 import LessonCheck from "../Check/LessonCheck";
 import { ArrowIcon, InfoIcon, LockIcon, TickIcon, WarnIcon } from "../../ui/Icons";
@@ -24,6 +25,7 @@ import {
   type MyCourse,
   type OpenLesson,
 } from "../../../../lib/learn";
+import { clampVolume } from "./controls.js";
 import { useWatchQueue } from "./useWatchQueue";
 import {
   loadYouTube,
@@ -70,6 +72,13 @@ import {
 
 const TICK_MS = 1000;
 
+// THE CAPTION MODULE HAS TWO NAMES, and which one answers depends on
+// the video rather than on anything we control, so both are tried and
+// silence is taken to mean this video has no captions. Neither name is
+// documented by Google any more, which is reason enough never to let a
+// failure here reach somebody's screen as an error.
+const CC_MODULES = ["captions", "cc"];
+
 export default function AcademyLesson() {
   const params = useParams();
   const navigate = useNavigate();
@@ -104,7 +113,22 @@ export default function AcademyLesson() {
   const [finishing, setFinishing] = useState(false);
   const [finishNote, setFinishNote] = useState("");
 
+  // The controls YouTube's own bar used to provide. Volume is the
+  // player's own, not the device's, so muting here leaves whatever else
+  // the person is listening to alone.
+  const [volume, setVolume] = useState(100);
+  const [muted, setMuted] = useState(false);
+  // null means "not known yet". The player cannot say whether a video
+  // has a caption track until its caption module has loaded, and a
+  // button that disappears and comes back is worse than one that is
+  // offered and turns out to do nothing.
+  const [captionsAvailable, setCaptionsAvailable] = useState<boolean | null>(null);
+  const [captionsOn, setCaptionsOn] = useState(false);
+
   const mount = useRef<HTMLDivElement | null>(null);
+  // The thing that goes full screen: the video AND the bar under it, so
+  // that going full screen does not take the controls away.
+  const shell = useRef<HTMLDivElement | null>(null);
   const player = useRef<YTPlayer | null>(null);
   const furthest = useRef(0);
   // Where the playhead was at the previous tick, so the one after it
@@ -229,6 +253,27 @@ export default function AcademyLesson() {
             rel: 0,
             modestbranding: 1,
             playsinline: 1,
+            // FILE 25. YouTube'S OWN BAR IS OFF, and with it the share
+            // button and the copy link that sat on it. A learning page
+            // should not hand somebody the video's address.
+            //
+            // THIS DOES NOT MAKE THE VIDEO UNDOWNLOADABLE. The video id
+            // is in this page's source and in its network traffic
+            // whatever the player looks like. Taking the button away
+            // stops the link being offered. Anybody who goes looking
+            // will still find it, and the only real answer to that is
+            // to stop hosting the videos on YouTube.
+            controls: 0,
+            // No keyboard shortcuts of theirs either: ours are the only
+            // ones, so a key cannot do two different things.
+            disablekb: 1,
+            // No annotations or cards, which are links out by another
+            // name.
+            iv_load_policy: 3,
+            // Their full screen button would be on their bar, which is
+            // gone. Ours goes full screen on the shell instead, so the
+            // controls come with it.
+            fs: 0,
             start: Math.max(0, Math.floor(startAt.current || 0)),
           },
           events: {
@@ -452,6 +497,95 @@ export default function AcademyLesson() {
   }, [lessonId, slug, nextLesson, moduleQuiz, navigate]);
 
   // ------------------------------------------------------------ states
+  // ------------------------------------------------------- the controls
+  //
+  // Each one is wrapped, because every call here can arrive before the
+  // player is ready or after it has been destroyed by a lesson change,
+  // and neither is worth an error on somebody's screen.
+
+  function togglePlay() {
+    try {
+      if (!player.current) return;
+      if (playing) player.current.pauseVideo();
+      else player.current.playVideo();
+    } catch {
+      // the player is not ready yet
+    }
+  }
+
+  function seekTo(seconds: number) {
+    try {
+      if (!player.current) return;
+      player.current.seekTo(seconds, true);
+      setPosition(seconds);
+    } catch {
+      // the player is not ready yet
+    }
+  }
+
+  function changeVolume(value: number) {
+    const v = clampVolume(value);
+    setVolume(v);
+    try {
+      if (!player.current) return;
+      player.current.setVolume(v);
+      // Dragging the slider up off zero is how most people unmute, so
+      // it is taken as meaning that rather than leaving them wondering
+      // why nothing came back.
+      if (v > 0 && muted) {
+        player.current.unMute();
+        setMuted(false);
+      }
+    } catch {
+      // the player is not ready yet
+    }
+  }
+
+  function toggleMute() {
+    const next = !muted;
+    setMuted(next);
+    try {
+      if (!player.current) return;
+      if (next) player.current.mute();
+      else player.current.unMute();
+    } catch {
+      // the player is not ready yet
+    }
+  }
+
+  function toggleCaptions() {
+    const next = !captionsOn;
+    setCaptionsOn(next);
+    let worked = false;
+    for (const mod of CC_MODULES) {
+      try {
+        if (next) {
+          player.current?.loadModule(mod);
+          player.current?.setOption(mod, "track", { languageCode: "en" });
+        } else {
+          player.current?.setOption(mod, "track", {});
+        }
+        worked = true;
+      } catch {
+        // this player does not answer to that module name
+      }
+    }
+    // Asked only once the learner has pressed it, because that is the
+    // first moment the answer is both knowable and worth knowing.
+    if (!worked) setCaptionsAvailable(false);
+  }
+
+  function goFullscreen() {
+    try {
+      const el = shell.current;
+      if (!el) return;
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else void el.requestFullscreen();
+    } catch {
+      // the browser said no, which is its right
+    }
+  }
+
   if (!loaded) {
     return (
       <AcadStage width="wide" focus>
@@ -552,7 +686,60 @@ export default function AcademyLesson() {
               </div>
             </div>
           ) : (
-            <div className="acad-player__frame" ref={mount} />
+            <div className="acad-player__shell" ref={shell}>
+              <div className="acad-player__stage">
+                <div className="acad-player__frame" ref={mount} />
+                {/* THE SHIELD. With their bar off, YouTube still puts
+                    the video's title and a share button over the top on
+                    hover, and still offers "Copy video URL" on a right
+                    click. This covers both. It is also where a click on
+                    the picture is caught, which is what a click on a
+                    video is expected to do.
+
+                    A SIBLING, NOT A CHILD of the frame: the frame's
+                    children belong to the YouTube API, which replaces
+                    them wholesale when a lesson changes.
+
+                    Hidden from screen readers and from the tab order,
+                    because the bar underneath has a real play button
+                    that says what it does. */}
+                <div
+                  className="acad-player__shield"
+                  aria-hidden="true"
+                  onClick={togglePlay}
+                  onContextMenu={(e) => e.preventDefault()}
+                />
+              </div>
+
+              <Controls
+                playing={playing}
+                onPlayPause={togglePlay}
+                position={position}
+                duration={duration}
+                onSeek={seekTo}
+                volume={volume}
+                muted={muted}
+                onVolume={changeVolume}
+                onMute={toggleMute}
+                captionsAvailable={captionsAvailable}
+                captionsOn={captionsOn}
+                onCaptions={toggleCaptions}
+                rate={rate}
+                rateOptions={
+                  open ? [0.75, 1, 1.25, 1.5, 1.75, 2] : [0.75, 1, 1.25, MAX_RATE_FIRST_WATCH]
+                }
+                onRate={(want) => {
+                  const capped = cappedRate(want, open);
+                  setRate(capped);
+                  try {
+                    if (player.current) player.current.setPlaybackRate(capped);
+                  } catch {
+                    // the player is not ready yet
+                  }
+                }}
+                onFullscreen={goFullscreen}
+              />
+            </div>
           )}
 
           {/* ------------------------------------------------- the tape */}
@@ -678,46 +865,13 @@ export default function AcademyLesson() {
             )}
           </div>
 
-          {/* ------------------------------------------------- the speed */}
-          {problem ? null : (
-            <div className="acad-speed">
-              <label htmlFor="acad-speed-pick">Speed</label>
-              <select
-                id="acad-speed-pick"
-                value={String(rate)}
-                onChange={(e) => {
-                  const want = Number(e.target.value) || 1;
-                  const capped = cappedRate(want, open);
-                  setRate(capped);
-                  try {
-                    if (player.current) player.current.setPlaybackRate(capped);
-                  } catch {
-                    // the player is not ready yet
-                  }
-                }}
-              >
-                {(open
-                  ? [0.75, 1, 1.25, 1.5, 1.75, 2]
-                  : [0.75, 1, 1.25, MAX_RATE_FIRST_WATCH]
-                ).map(
-                  (r) => (
-                    <option key={r} value={String(r)}>
-                      {r}x
-                    </option>
-                  ),
-                )}
-              </select>
-              {/* THE FIRST WATCH NOTE IS GONE. The cap itself is not:
-                  the list above still offers nothing above 1.5x until
-                  the lesson is open, so the rule is still enforced, it
-                  is just no longer explained here. The sentence for a
-                  lesson already watched through stays, because that one
-                  tells somebody something has changed in their favour. */}
-              {open ? <span>Any speed, now you have watched it through.</span> : null}
-              <span className="acad-speed__time acad-mono">
-                {clock(position)} / {clock(duration)}
-              </span>
-            </div>
+          {/* THE SPEED ROW HAS GONE INTO THE BAR. It was the only
+              control of ours, sitting under a YouTube bar that had all
+              the others, which is the two sets of controls this package
+              was for. The cap on a first watch is unchanged: the bar is
+              handed a list of speeds that is already capped. */}
+          {problem || !open ? null : (
+            <p className="acad-note">Any speed, now you have watched it through.</p>
           )}
 
           {/* ----------------------------------------------- the chapters */}

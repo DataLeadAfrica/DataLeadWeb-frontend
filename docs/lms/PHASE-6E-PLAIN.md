@@ -8,8 +8,8 @@ the rest:
 |---|---|---|
 | 22 | The seven gaps. All small, all real, all found by building a course. | Merged |
 | 23 | Three certificate faults, two of them live. | Merged |
-| **24** | Module badges, the path exam end to end, and two control room counts. | This package |
-| 25 | The lesson video player. | Next |
+| 24 | Module badges, the path exam end to end, and two control room counts. | Merged |
+| **25** | The lesson video player, with YouTube's own bar switched off. | This package |
 | 26 | The control room made easy, and a guide for every role. | After that |
 
 File 23 was not in the original plan. It went ahead of the badges because two of its three faults were
@@ -283,10 +283,41 @@ Rows 1 to 3 are about keeping a badge honest. Row 8 is the one that will still b
 | 7 | The control room can reach a path exam to write it | A NO means paths still cannot be published, because there is no way for the browser to learn which exam a path has and so no id to hand the functions that write one. |
 | 8 | Everybody who has finished a module holds its badge | **The row that keeps working.** It asks whether anybody has finished every lesson of a module and been given nothing, by any route. A NO is not an emergency: the people named under the table are owed a badge, and running file 24 again awards every one of them, because its backfill asks this same question. |
 
+## What file 25 changes
+
+**Nothing in Supabase.** File 25 is front end only: no numbered SQL file, no verify, no undo. There
+is a checklist to run on the preview instead, in `PHASE-6E-FILE-25-PREVIEW-CHECKS.md`, because
+YouTube cannot be reached from the machine this is built on.
+
+**YouTube's own control bar is switched off**, and with it the share button, the copy link, the title
+that linked out to youtube.com, and the right click "Copy video URL". A transparent shield over the
+picture catches the click as play or pause and blocks the context menu, which is what removes the
+last two.
+
+**This does not make the videos undownloadable**, and the code says so in three places so that nobody
+reads it later and concludes otherwise. The video's address is in the page source and in the network
+traffic whatever the player looks like. What changes is that a learner is no longer handed it. The
+only real answer to downloading is to stop hosting the videos on YouTube, which is a separate
+decision with a running cost.
+
+**One set of controls, ours.** A learner used to have our speed box under a YouTube bar that had
+everything else. There is now a single bar: play and pause, a scrub bar, the clock, volume with mute,
+captions, speed and full screen. Full screen is taken on a shell holding the video and the bar
+together, so going full screen does not take the controls away.
+
+**The first watch speed cap is unchanged.** The bar is handed a list of speeds that is already
+capped, so it never has to know the rule, only draw it.
+
+**Captions are deliberately defensive.** They were reached through YouTube's bar, which is now gone,
+so the button drives the iframe API instead. That module answers to two different names depending on
+the video and neither is documented any more, so both are tried and every call is wrapped. The button
+is offered by default and only says "No captions" when every way of asking has failed, because a
+button that disappears and comes back is worse than one that is offered and turns out to do nothing.
+Checking that on a real video is the first item on the preview checklist.
+
 ## What is not in this package
 
-The video player is file 25. The control room ease-of-use pass and the role-aware guide at
-`/lms/studio/guide` are file 26.
+The control room ease-of-use pass and the role-aware guide at `/lms/studio/guide` are file 26.
 
 **The browser acceptance test is not in this package.** It was to be built alongside the badges, and
 it is still worth building, but what file 24 turned out to need was two links and a lookup rather

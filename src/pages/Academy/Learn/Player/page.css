@@ -11,6 +11,39 @@
    that the page is one height, then jumps to another the moment the
    player appears, usually just as somebody is reaching for a control. */
 
+/* The shell is what goes full screen: the video AND the bar under it.
+   Full screen on the video alone would take the controls away at the
+   moment somebody most wants them. */
+.acad-player__shell {
+  display: grid;
+}
+.acad-player__shell:fullscreen {
+  align-content: center;
+  background: #0b0a0e;
+  padding: 16px;
+}
+
+.acad-player__stage {
+  position: relative;
+}
+
+/* THE SHIELD covers the picture. With YouTube's bar switched off their
+   player still puts the video title and a share button over the top on
+   hover, and still offers "Copy video URL" on a right click, and this
+   is what stops both reaching the learner. It also catches a click on
+   the picture, which is how a click on a video is expected to behave.
+
+   It does NOT make the video undownloadable: the id is in the page
+   source either way. It stops the link being handed over, which is a
+   smaller and more honest claim. */
+.acad-player__shield {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  /* Nothing drawn. The video shows through it. */
+  background: transparent;
+}
+
 .acad-player__frame {
   position: relative;
   aspect-ratio: 16 / 9;

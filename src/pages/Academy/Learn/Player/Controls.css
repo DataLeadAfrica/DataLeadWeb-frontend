@@ -1,0 +1,169 @@
+/* The player's own control bar.
+
+   SITS UNDER THE VIDEO, not over it. Overlaid controls have to fade in
+   and out, which means a learner reaching for pause finds nothing there
+   and has to wiggle the mouse first. Under it they are always where
+   they were, and the video is never covered by them.
+
+   THE SCRUB IS A RANGE INPUT, styled rather than rebuilt, so that drag,
+   arrow keys, Home and End, and every screen reader keep working. The
+   filled part is drawn with a gradient driven by --acad-bar-at, which
+   the component sets, because a range input has no standard way to
+   colour the part behind the thumb. */
+
+.acad-bar {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------ scrub */
+
+.acad-bar__scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.acad-bar__scrub:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.acad-bar__scrub::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--acad-signal) 0 var(--acad-bar-at, 0%),
+    var(--acad-surface-3) var(--acad-bar-at, 0%) 100%
+  );
+}
+.acad-bar__scrub::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--acad-signal) 0 var(--acad-bar-at, 0%),
+    var(--acad-surface-3) var(--acad-bar-at, 0%) 100%
+  );
+}
+
+.acad-bar__scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--acad-signal);
+}
+.acad-bar__scrub::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--acad-signal);
+}
+
+.acad-bar__scrub:focus-visible {
+  outline: 2px solid var(--acad-signal);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+/* -------------------------------------------------------------- row */
+
+.acad-bar__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acad-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--acad-line);
+  border-radius: 10px;
+  background: var(--acad-surface-2);
+  color: inherit;
+  cursor: pointer;
+}
+.acad-bar__btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acad-bar__btn:hover:not(:disabled) {
+  background: var(--acad-surface-3);
+}
+.acad-bar__btn[aria-pressed="true"] {
+  background: var(--acad-ok-soft);
+  color: var(--acad-ok);
+  border-color: transparent;
+}
+.acad-bar__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.acad-bar__clock {
+  font-size: 12.5px;
+  color: var(--acad-muted);
+  white-space: nowrap;
+}
+
+.acad-bar__vol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.acad-bar__volslider {
+  width: 86px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--acad-signal);
+}
+
+.acad-bar__spacer {
+  flex: 1 1 auto;
+}
+
+.acad-bar__speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--acad-muted);
+}
+.acad-bar__speed select {
+  border: 1px solid var(--acad-line);
+  border-radius: 10px;
+  background: var(--acad-surface-2);
+  color: inherit;
+  font: inherit;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+
+/* On a narrow screen the volume slider is the first thing to go: the
+   mute button stays, and the phone has its own volume keys anyway. */
+@media (max-width: 560px) {
+  .acad-bar__volslider,
+  .acad-bar__speedlabel {
+    display: none;
+  }
+}

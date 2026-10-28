@@ -26,6 +26,30 @@ export type YTPlayer = {
   setPlaybackRate(rate: number): void;
   getPlaybackRate(): number;
   getAvailablePlaybackRates(): number[];
+
+  /* Sound. The player keeps its own volume, which is not the device's,
+     so muting here does not touch anything else the person is
+     listening to. */
+  setVolume(volume: number): void;
+  getVolume(): number;
+  mute(): void;
+  unMute(): void;
+  isMuted(): boolean;
+
+  /* Captions.
+
+     THE MODULE HAS TWO NAMES. The newer player calls it "captions" and
+     the older one "cc", and which one answers depends on the video
+     rather than on anything we control, so both are tried. Neither is
+     documented by Google any more, which is why the player page wraps
+     every call in a try and treats silence as "this video has no
+     captions" rather than as an error worth showing anybody. */
+  loadModule(module: string): void;
+  unloadModule(module: string): void;
+  setOption(module: string, option: string, value: unknown): void;
+  getOption(module: string, option: string): unknown;
+  getOptions(): string[];
+
   destroy(): void;
 };
 

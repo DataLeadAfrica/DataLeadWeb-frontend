@@ -106,6 +106,72 @@ by running the attack again and getting ALLOWED.
 
 ---
 
+## PHASE 6E, FILE 25, 22 October 2026. The lesson video player
+
+Laid on main after file 24 merged. **Front end only.** No numbered SQL file, no verify, no undo,
+nothing to paste into Supabase. The checklist in `PHASE-6E-FILE-25-PREVIEW-CHECKS.md` is the test,
+because YouTube is unreachable from the machine this is built on.
+
+### YouTube's own bar is off, and the copy link with it
+
+Dr Ayoola noticed a copy link on the player and did not want learners handed the video's address.
+That button belongs to YouTube's own control bar, which was still switched on, and switching it off
+was already what this package was for.
+
+`controls: 0` takes the bar. `disablekb: 1` stops their keyboard shortcuts doing a second thing to
+the same keys. `iv_load_policy: 3` takes the cards and annotations, which are links out by another
+name. `fs: 0` takes their full screen button, because ours goes full screen on the shell instead so
+the controls come too. `youtube-nocookie` and `rel: 0` were already there.
+
+With the bar off, YouTube still puts the video title and a share button over the picture on hover,
+and still offers "Copy video URL" on a right click. A transparent shield over the frame covers both,
+and catches the click as play or pause, which is what a click on a video is expected to do. It is a
+**sibling** of the mount rather than a child, because the mount's children belong to the YouTube API
+and are replaced wholesale when a lesson changes.
+
+**It does not make the videos undownloadable, and three places in the code say so**: the player vars,
+the shield's CSS and the control bar's header. The id is in the page source and the network traffic
+whatever the player looks like. Taking the button away stops the link being offered, which is a
+smaller and more honest claim than "the videos are protected". The only real answer is to stop
+hosting them on YouTube.
+
+### One set of controls
+
+A learner had our speed box under a YouTube bar with everything else on it. There is now one bar:
+play and pause, a scrub bar, the clock, volume with mute, captions, speed and full screen.
+
+The scrub and the volume are **range inputs, styled rather than rebuilt**, so drag, arrow keys, Home,
+End and every screen reader keep working. A div with pointer arithmetic gets none of that right first
+time.
+
+The arithmetic lives in `Player/controls.js` beside a `.d.ts`, the way `slices.js` does, so
+`node --test` can reach it without a browser. Nine tests cover it. The case worth having is a lesson
+whose length was never recorded: it reports zero, and a scrub bar that divides by it puts `NaN` into
+a style attribute, which browsers quietly drop, so the bar renders at whatever width it had before.
+File 20 existed because video lessons were going out with no length recorded.
+
+The first watch cap is unchanged. The bar is handed an already capped list of speeds, so it never has
+to know the rule, only draw it.
+
+### Captions, kept defensive on purpose
+
+Captions were reached through the bar that is now gone, so the button drives the iframe API. That
+module answers to `captions` on some videos and `cc` on others, and neither name is documented by
+Google any more, so both are tried and every call is wrapped. The button is offered by default and
+only says "No captions" when every way of asking has failed.
+
+A tracklist probe would make it honest on a video with no captions. Without a real video to test
+against, the same probe could just as easily disable captions on a video that has them, so it was not
+guessed at: it is the first item on the preview checklist instead.
+
+### What was tested
+
+`tests/player-controls.test.mjs`, 9 tests, all pass. `npm test` 315 pass in total, build clean, lint
+unchanged from main. Everything a real video is needed for is on the checklist, with what to look for
+and what it means if it is wrong.
+
+---
+
 ## PHASE 6E, FILE 24, 22 October 2026. Module badges, the path exam, and two counts
 
 Laid on main after file 23 merged. Nothing in here is a hole: it is a new thing for learners, two
