@@ -575,8 +575,8 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
         <div class="v" id="m-tg">&mdash;</div>
         <div class="s" id="m-tg-s">None set</div>
       </button>
-      <button class="mini hidden" id="m-leave-btn" onclick="go('leave')">
-        <div class="k">Annual leave</div>
+      <button class="mini" id="m-leave-btn" onclick="go('leave')">
+        <div class="k" id="m-leave-k">Leave</div>
         <div class="v" id="m-leave">&mdash;</div>
         <div class="s" id="m-leave-s">&mdash;</div>
       </button>
@@ -591,6 +591,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       <button onclick="go('profile')">My details</button>
       <button onclick="go('finance')">My finance</button>
       <button onclick="go('timesheet')">Sign off the month</button>
+      <button onclick="go('leave')">Leave</button>
       <button onclick="go('req')">Requisition</button>
       <button onclick="go('policies')">Policies and targets</button>
       <button id="dc-more" class="hidden" onclick="go('dc')">Queries and warnings</button>
@@ -3211,17 +3212,24 @@ async function loadMinis(){
       : open + " still open, " + (tg.length - open) + " rated";
   }
 
-  // corps members have no annual leave (Handbook §3.13), so do not offer it
-  if(PROFILE.employment_type !== "nysc"){
-    $("m-leave-btn").classList.remove("hidden");
-    $("m-leave").innerHTML = '14 <small>days a year</small>';
-    $("m-leave-s").textContent = "Tap to see your leave";
-    const { data: al } = await db.from("my_leave_balance").select("remaining,earned,taken,is_accruing").eq("kind", "annual").maybeSingle();
-    if(al){
-      $("m-leave").innerHTML = Number(al.remaining || 0) + ' <small>of ' + Number(al.earned || 0) + ' days left</small>';
-      $("m-leave-s").textContent = (Number(al.taken || 0) > 0 ? al.taken + " taken this year" : "None taken this year") +
-        (al.is_accruing ? " · still building up" : "");
-    }
+  // Everyone can ask for leave, so the tile is always there. Sick leave is
+  // open to all, corps members and interns included (Handbook 3.13, 8.4).
+  // Annual leave is for confirmed employees only, so the tile shows annual
+  // days to those who have them, and sick days to everyone else.
+  $("m-leave-k").textContent = "Leave";
+  $("m-leave").innerHTML = '&mdash;';
+  $("m-leave-s").textContent = "Ask for sick or other leave";
+  const { data: bal } = await db.from("my_leave_balance").select("kind,remaining,earned,taken,is_accruing,available_to_me,days_per_year");
+  const al = (bal || []).find(b => b.kind === "annual" && b.available_to_me);
+  const sk = (bal || []).find(b => b.kind === "sick" && b.available_to_me);
+  if(al){
+    $("m-leave-k").textContent = "Annual leave";
+    $("m-leave").innerHTML = Number(al.remaining || 0) + ' <small>of ' + Number(al.earned || 0) + ' days left</small>';
+    $("m-leave-s").textContent = (Number(al.taken || 0) > 0 ? al.taken + " taken this year" : "None taken this year") +
+      (al.is_accruing ? " \u00b7 still building up" : "");
+  } else if(sk){
+    $("m-leave").innerHTML = Number(sk.remaining || 0) + ' <small>of ' + Number(sk.days_per_year || sk.earned || 0) + ' sick days left</small>';
+    $("m-leave-s").textContent = "Ask for sick or other leave";
   }
 }
 
