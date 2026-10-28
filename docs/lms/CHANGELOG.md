@@ -14,6 +14,60 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6G, FILE 27, 28 October 2026. Nobody could be certified, and the screen said it was fine
+
+Found by walking the whole system end to end on a clean database rather than by reading it.
+
+### The fault
+
+A course exam is created as a draft. Publishing the course does not publish it, and nothing else did
+either, because `lms_publish_exam` has been on the server since file 16 and was **called by nothing
+in the entire site**. So every course ever built had an exam no learner could sit: the learner
+watches everything, reaches a hundred per cent, and the page reports no exam, because it only looks
+for a published one.
+
+**And the publish checklist ticked nine green over it.** It asked whether the exam had enough
+questions and never whether it was published, so the one screen whose job is to say what is left
+reported success over a course nobody could finish. `lms_publish_path` was called by nothing either,
+so no path could ever go live.
+
+### Proved both ways
+
+A learner was taken from nothing to a hundred per cent and found no exam. `lms_publish_exam` was then
+called by hand: the exam opened, the learner sat it, passed, and was issued certificate
+`AUDITCOURSE-2026-GEN-6C39B8`. The chain was never broken. It had no way to be started.
+
+### What is in it
+
+The two buttons that did not exist, a tenth checklist row that asks whether the exam is published,
+and three functions brought into line with their siblings.
+
+**That last part is not a security fix, and the first draft of this entry wrongly said it was.**
+`lms_publish_exam`, `lms_publish_path` and `lms_ensure_path_exam` asked `lms_is_staff()` where every
+sibling asks for an administrator, which looks like a hole. It is not one: a facilitator calling them
+was refused anyway by the `lms_guard_quiz` and `lms_guard_path` triggers underneath, which was
+checked by trying it on a database without this file. The rule was already enforced one layer down.
+These three were the only functions leaning on a trigger to say no rather than saying it themselves.
+
+### A test that would have passed while proving nothing
+
+`file_27_tests.sql` gained a section 0 that checks the three actors really hold the roles the test
+thinks they do. The profile row is made by a trigger on the account, so an UPDATE that runs too early
+quietly changes nothing, and a learner masquerading as a facilitator is refused by every guard, which
+would have turned section 1 green while testing nothing at all.
+
+The helper that reads the checklist also had to be fixed: it asked `if not found` after an `EXECUTE`,
+and **EXECUTE does not set FOUND**, so it answered "no row 10" even with row 10 sitting there, and
+two checks failed for a reason that had nothing to do with what they were checking.
+
+### What was tested
+
+18 checks, all pass. On a database without file 27, the two checklist checks fail, which is the
+honest count: the guard rows pass there too, because the triggers were already refusing.
+`27_verify.sql` prints 6 rows and runs cleanly before the file as well as after.
+
+---
+
 ## PHASE 6F, FILE 26, 23 October 2026. A facilitator could edit courses that were not theirs
 
 Laid on main. The review asked what two lines of file 23 did, and checking that turned up a second

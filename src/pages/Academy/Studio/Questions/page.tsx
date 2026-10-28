@@ -4,7 +4,7 @@ import { Link, useParams, useSearchParams } from "react-router";
 import RequireStaff from "../RequireStaff";
 import Seo from "../../../../components/Seo/component";
 import Paste from "./Paste";
-import { ArrowIcon, PlusIcon, TickIcon } from "../Icons";
+import { ArrowIcon, PlusIcon, TickIcon, WarnIcon } from "../Icons";
 import { Done, Head, Problem, Waiting } from "../ui";
 import {
   asClock,
@@ -14,7 +14,7 @@ import {
   type StudioCourseFull,
   type StudioQuestion,
 } from "../Builder/data";
-import { retireQuestion, saveQuestion } from "../../../../lib/studio";
+import { publishExam, retireQuestion, saveQuestion } from "../../../../lib/studio";
 import { routes } from "../../../routes";
 
 // Checks and exams: every question in one set, and the way to write one.
@@ -197,7 +197,7 @@ function Editor({
   );
 }
 
-function Inner({ kind }: { kind: "course" | "path" }) {
+function Inner({ kind, isAdmin }: { kind: "course" | "path"; isAdmin: boolean }) {
   const { id = "" } = useParams();
   const isPath = kind === "path";
   const [params] = useSearchParams();
@@ -334,6 +334,53 @@ function Inner({ kind }: { kind: "course" | "path" }) {
         </div>
       ) : null}
 
+        {/* PUBLISHING THE EXAM. There was no way to do this anywhere in
+            the site, and nothing said so: an exam is created as a draft,
+            publishing the COURSE does not publish it, and the checklist
+            ticked nine rows over a course whose learners would reach a
+            hundred per cent and find no exam waiting. */}
+        {!lesson && course.exam && course.exam.status !== "published" ? (
+          <div className="stu__msg is-warn" style={{ marginBottom: 18 }}>
+            <WarnIcon />
+            <span>
+              <b>This exam is still a draft, so no learner can sit it.</b>{" "}
+              Somebody who finishes every lesson will reach the end of the
+              course and find nothing to take, and no certificate can be issued
+              until it is published.
+              {course.exam.bank < course.exam.needed ? (
+                <>
+                  {" "}
+                  Write {course.exam.needed - course.exam.bank} more question
+                  {course.exam.needed - course.exam.bank === 1 ? "" : "s"} first.
+                </>
+              ) : null}
+              {!isAdmin ? (
+                <> Publishing it is an administrator&apos;s decision, so ask one
+                  once the questions are ready.
+                </>
+              ) : null}
+            </span>
+            {isAdmin ? (
+              <button
+                type="button"
+                className="acad-btn acad-btn--auto"
+                disabled={course.exam.bank < course.exam.needed}
+                onClick={async () => {
+                  if (!course.exam) return;
+                  setProblem("");
+                  const got = await publishExam(course.exam.id);
+                  if (got.ok) {
+                    setDone("The exam is published. Learners can sit it now.");
+                    load();
+                  } else setProblem(got.message);
+                }}
+              >
+                Publish the exam
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
       <Problem>{problem}</Problem>
       <Done>{done}</Done>
 
@@ -450,5 +497,9 @@ export default function StudioQuestionsPage({
 }: {
   kind?: "course" | "path";
 }) {
-  return <RequireStaff>{() => <Inner kind={kind} />}</RequireStaff>;
+  return (
+    <RequireStaff>
+      {(role) => <Inner kind={kind} isAdmin={role === "admin"} />}
+    </RequireStaff>
+  );
 }
