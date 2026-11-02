@@ -291,11 +291,24 @@
   overflow: hidden;
 }
 
+/* No percentage: see the note above send() in page.tsx. A bar that slides
+   across shows that something is happening without claiming how much. */
 .pd__bar span {
   display: block;
   height: 100%;
+  width: 40%;
+  border-radius: 999px;
   background: var(--pd-orange);
-  transition: width 0.2s;
+  animation: pd-slide 1.3s ease-in-out infinite;
+}
+
+@keyframes pd-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
 }
 
 /* ---------- the button ----------
@@ -410,9 +423,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pd__drop,
-  .pd__bar span {
+  .pd__drop {
     transition: none;
+  }
+
+  .pd__bar span {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
   }
 }
 

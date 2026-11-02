@@ -91,37 +91,31 @@ function readAsBase64(file: File): Promise<string> {
   });
 }
 
-// Sent as text/plain on purpose. That is a "simple" request, so the
-// browser does not ask Google's server for permission first, which the
-// web app cannot answer. XMLHttpRequest rather than fetch, because it
-// reports how much of a large file has gone, and a 20 MB upload on a
-// slow connection should not look like a frozen page.
-function send(
-  body: string,
-  onProgress: (percent: number) => void,
-): Promise<Reply> {
-  return new Promise((resolve) => {
-    const failed: Reply = { ok: false, field: "form", message: NOT_CONFIRMED };
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", SUBMIT_URL);
-    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
-    xhr.timeout = 5 * 60 * 1000;
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    };
-    xhr.onload = () => {
-      try {
-        resolve(JSON.parse(xhr.responseText) as Reply);
-      } catch {
-        resolve(failed);
-      }
-    };
-    xhr.onerror = () => resolve(failed);
-    xhr.ontimeout = () => resolve(failed);
-    xhr.send(body);
-  });
+// Sent as text/plain on purpose. That makes it a "simple" request, so the
+// browser sends it straight away instead of first asking Google's server
+// for permission, which an Apps Script web app cannot answer.
+//
+// It must NOT be sent with XMLHttpRequest and an upload progress listener.
+// Registering one makes the browser ask for that permission anyway, Google
+// refuses, and the real request is never sent. That is why there is no
+// percentage bar: the page cannot report one without breaking the upload.
+async function send(body: string): Promise<Reply> {
+  const failed: Reply = { ok: false, field: "form", message: NOT_CONFIRMED };
+  const stop = new AbortController();
+  const timer = window.setTimeout(() => stop.abort(), 5 * 60 * 1000);
+  try {
+    const response = await fetch(SUBMIT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body,
+      signal: stop.signal,
+    });
+    return (await response.json()) as Reply;
+  } catch {
+    return failed;
+  } finally {
+    window.clearTimeout(timer);
+  }
 }
 
 export default function Proposals() {
@@ -141,7 +135,6 @@ export default function Proposals() {
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [sending, setSending] = useState(false);
-  const [percent, setPercent] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -270,7 +263,6 @@ export default function Proposals() {
     if (!chosen) return;
 
     setSending(true);
-    setPercent(0);
 
     let fileBase64 = "";
     try {
@@ -298,7 +290,6 @@ export default function Proposals() {
         fileBase64,
         website: trap,
       }),
-      setPercent,
     );
     setSending(false);
 
@@ -332,7 +323,6 @@ export default function Proposals() {
     setTrap("");
     setErrors({});
     setFormError("");
-    setPercent(0);
     setDone(false);
     window.scrollTo({ top: 0 });
   }
@@ -728,12 +718,11 @@ export default function Proposals() {
           {sending && (
             <div className="pd__progress" role="status" aria-live="polite">
               <div className="pd__bar" aria-hidden="true">
-                <span style={{ width: `${percent}%` }} />
+                <span />
               </div>
               <p className="pd__hint">
-                {percent < 100
-                  ? `Uploading… ${percent}%. Please keep this page open.`
-                  : "Saving to the register… Please keep this page open."}
+                Uploading. A large file can take a minute. Please keep this
+                page open.
               </p>
             </div>
           )}
