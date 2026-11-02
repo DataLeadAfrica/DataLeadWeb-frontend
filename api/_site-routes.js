@@ -103,6 +103,7 @@ export const NOT_IN_SITEMAP = {
   learnerLogin: "a sign in page",
   myLearning: "behind a sign in",
   staffPortal: "staff only",
+  staffProposals: "staff only, unlisted, and carries noindex",
   mobepCertificate: "a test and certificate page for one training, reached by QR code, and carries noindex",
   academySignUp: "carries noindex",
   academySignIn: "carries noindex",

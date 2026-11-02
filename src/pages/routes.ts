@@ -74,6 +74,10 @@ export const routes = {
   myLearning: "/my-learning",
   learnerModule: "/my-learning/:slug",
   staffPortal: "/staff/portal",
+  // Where staff hand in a finished proposal for the register.
+  // Unlisted: not linked from the site, under /staff/ (closed in
+  // robots.txt) and carries noindex.
+  staffProposals: "/staff/proposals",
   certifications: "/certifications",
   // Self-service certificate for the MoBEP Power BI training (Oct 2026).
   // Reached by QR code only: not linked from the site, carries noindex.

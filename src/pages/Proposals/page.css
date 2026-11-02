@@ -1,0 +1,426 @@
+/* Proposal submission, /staff/proposals.
+ *
+ * Every rule is under .pd, and every colour is declared on .pd rather
+ * than on :root, so none of it can reach another page. (The learning
+ * portal's stylesheet sets :root values and a body background that apply
+ * site wide once it loads, and this page does not add to that problem.)
+ *
+ * The header's own spacer already pushes content below the fixed header,
+ * so this page adds no top offset of its own beyond ordinary padding.
+ */
+
+.pd {
+  --pd-paper: #faf8f4;
+  --pd-card: #ffffff;
+  --pd-text: #171717;
+  --pd-muted: #5d5d5d;
+  --pd-line: #e3e0da;
+  --pd-line-strong: #bdb8ae;
+  --pd-orange: #f56e0f;
+  --pd-orange-text: #b8470a;
+  --pd-orange-wash: #fde9da;
+  --pd-ok: #14532d;
+  --pd-ok-bg: #f2f8f5;
+  --pd-ok-line: #cbe5d8;
+  --pd-bad: #b3261e;
+  --pd-bad-bg: #fdecea;
+  --pd-bad-line: #f5c6c2;
+
+  background: var(--pd-paper);
+  color: var(--pd-text);
+  min-height: 80vh;
+  padding: 3rem 1.25rem 5rem;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.pd *,
+.pd *::before,
+.pd *::after {
+  box-sizing: border-box;
+}
+
+.pd__wrap {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.pd__h1 {
+  font-family: "ClashDisplay-Bold", "ClashDisplay-Regular", sans-serif;
+  font-weight: 700;
+  font-size: 1.9rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+}
+
+.pd__sub {
+  color: var(--pd-muted);
+  font-size: 0.97rem;
+  line-height: 1.55;
+  margin: 0 0 1.6rem;
+}
+
+.pd__card {
+  background: var(--pd-card);
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  padding: 1.75rem;
+}
+
+.pd__field {
+  min-width: 0;
+  margin: 0 0 1.35rem;
+}
+
+.pd__fieldset {
+  border: 0;
+  padding: 0;
+}
+
+.pd__label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  padding: 0;
+}
+
+.pd__req {
+  color: var(--pd-orange-text);
+}
+
+.pd__light {
+  font-weight: 400;
+  color: var(--pd-muted);
+}
+
+.pd__input {
+  width: 100%;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--pd-line-strong);
+  border-radius: 10px;
+  /* 1rem keeps phones from zooming the page when a box is tapped. */
+  font: inherit;
+  font-size: 1rem;
+  color: var(--pd-text);
+  background: #fff;
+}
+
+.pd__input--date {
+  max-width: 14rem;
+}
+
+/* When a problem is focused after Submit, keep it clear of the fixed
+   header (5rem tall) instead of sliding underneath it. */
+.pd__input,
+.pd__fieldset,
+.pd__link {
+  scroll-margin-top: 8rem;
+}
+
+.pd__textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+}
+
+.pd__input:focus,
+.pd__link:focus-visible,
+.pd__check input:focus-visible {
+  outline: 2px solid var(--pd-orange);
+  outline-offset: 2px;
+}
+
+.pd__input:disabled {
+  background: #f3f1ec;
+  color: var(--pd-muted);
+}
+
+.pd__input[aria-invalid="true"] {
+  border-color: var(--pd-bad);
+}
+
+.pd__hint {
+  font-size: 0.78rem;
+  color: var(--pd-muted);
+  margin: 0.35rem 0 0;
+}
+
+.pd__err {
+  color: var(--pd-bad);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin: 0.4rem 0 0;
+}
+
+.pd__err::before {
+  content: "! ";
+  font-weight: 700;
+}
+
+.pd__err--form {
+  background: var(--pd-bad-bg);
+  border: 1px solid var(--pd-bad-line);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  margin: 0 0 1.2rem;
+}
+
+/* ---------- tick boxes ---------- */
+
+.pd__checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 1rem;
+}
+
+.pd__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.94rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.pd__check input {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--pd-orange);
+  cursor: pointer;
+}
+
+.pd__check--inline {
+  margin-top: 0.6rem;
+  font-size: 0.88rem;
+  color: var(--pd-muted);
+}
+
+/* ---------- the file box ---------- */
+
+.pd__drop {
+  border: 2px dashed var(--pd-line-strong);
+  border-radius: 12px;
+  background: var(--pd-paper);
+  padding: 1.4rem 1rem;
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.pd__drop--over {
+  border-color: var(--pd-orange);
+  background: var(--pd-orange-wash);
+}
+
+.pd__drop--bad {
+  border-color: var(--pd-bad);
+}
+
+.pd__drop-main {
+  margin: 0 0 0.35rem;
+  font-size: 0.97rem;
+}
+
+.pd__drop-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--pd-muted);
+}
+
+.pd__file {
+  display: none;
+}
+
+.pd__picked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+}
+
+.pd__fname {
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.pd__fsize {
+  color: var(--pd-muted);
+  font-size: 0.85rem;
+}
+
+.pd__link {
+  font: inherit;
+  font-weight: 600;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--pd-orange-text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pd__link:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- the trap, off the page where only robots look ---------- */
+
+.pd__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- upload progress ---------- */
+
+.pd__progress {
+  margin: 0 0 1.2rem;
+}
+
+.pd__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--pd-line);
+  overflow: hidden;
+}
+
+.pd__bar span {
+  display: block;
+  height: 100%;
+  background: var(--pd-orange);
+  transition: width 0.2s;
+}
+
+/* ---------- the button ----------
+ *
+ * Styled here rather than with the site's .btn class. The learning
+ * portal's stylesheet defines a SECOND .btn (a white pill), and because
+ * Vite bundles every stylesheet together it wins on any page once the
+ * bundle loads, so .btn is not safe to lean on. This matches the site's
+ * orange button and its dark hover.
+ */
+
+.pd__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--pd-orange);
+  border-radius: 6px;
+  background: var(--pd-orange);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.pd__submit:hover:not(:disabled),
+.pd__submit:focus-visible {
+  background: #2c2b2d;
+  border-color: #2c2b2d;
+}
+
+.pd__submit:focus-visible {
+  outline: 2px solid var(--pd-orange);
+  outline-offset: 3px;
+}
+
+.pd__submit:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+/* ---------- after a successful submission ---------- */
+
+.pd__done {
+  background: var(--pd-ok-bg);
+  border-color: var(--pd-ok-line);
+  text-align: center;
+  padding: 2.4rem 1.75rem;
+}
+
+.pd__done .pd__sub {
+  color: var(--pd-ok);
+  max-width: 34rem;
+  margin: 0 auto 1.6rem;
+}
+
+.pd__done .pd__h1 {
+  margin-bottom: 1.4rem;
+}
+
+.pd__done .pd__submit {
+  width: auto;
+  margin: 0 auto;
+  padding-inline: 1.6rem;
+}
+
+.pd__tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.9rem;
+  border-radius: 50%;
+  background: var(--pd-ok);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.pd__ref {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 1.02rem;
+  white-space: nowrap;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 560px) {
+  .pd {
+    padding: 2rem 0.9rem 4rem;
+  }
+
+  .pd__card {
+    padding: 1.25rem 1.1rem;
+  }
+
+  .pd__h1 {
+    font-size: 1.6rem;
+  }
+
+  .pd__checks {
+    grid-template-columns: 1fr;
+  }
+
+  .pd__input--date {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd__drop,
+  .pd__bar span {
+    transition: none;
+  }
+}
+
+/* The site's floating WhatsApp button is fixed to the bottom right of
+   every page, which on a phone is exactly where this form's tick boxes
+   and button sit. Hidden on this page only. The button belongs to Footer,
+   so the rule lives here beside the page it is about, and a browser too
+   old to understand :has() simply keeps showing it. */
+body:has(.pd) .wa-float {
+  display: none;
+}
