@@ -82,6 +82,9 @@ export const EDITOR_FILES = [
   { source: "database/lms/26_table_writes.sql", shape: "bodies" },
   { source: "database/lms/26_undo.sql", shape: "bodies" },
   { source: "database/lms/26_verify.sql", shape: "checks" },
+  { source: "database/lms/27_publishing.sql", shape: "bodies" },
+  { source: "database/lms/27_undo.sql", shape: "bodies" },
+  { source: "database/lms/27_verify.sql", shape: "checks" },
 ];
 
 /**

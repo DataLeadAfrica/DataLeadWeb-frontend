@@ -269,6 +269,31 @@ export function pasteQuestions(quiz: string, rows: Record<string, string>[]) {
   return call<PasteOutcome[]>("lms_paste_questions", { p_quiz: quiz, p_rows: rows });
 }
 
+/**
+ * Publish a course exam.
+ *
+ * THIS HAD NO CALLER AT ALL until file 27. The function has been on the
+ * server since file 16, the exam is created as a draft, and publishing
+ * the COURSE does not publish it, so every course ever built had an
+ * exam no learner could sit. The publish checklist ticked nine rows
+ * over it and said nothing, which is why nobody noticed.
+ */
+export function publishExam(quiz: string) {
+  return call<string>("lms_publish_exam", { p_exam: quiz });
+}
+
+/** Publish a path. Also had no caller, so no path could ever go live. */
+export function publishPath(path: string) {
+  return call<string>("lms_publish_path", { p_path: path });
+}
+
+export type PathBlocker = { ok: boolean; label: string };
+
+/** What is still standing between a path and going live. */
+export function getPathBlockers(path: string) {
+  return call<PathBlocker[]>("lms_path_blockers", { p_path: path });
+}
+
 export function publishLessonCheck(quiz: string) {
   return call<string>("lms_publish_lesson_check", { p_quiz: quiz });
 }

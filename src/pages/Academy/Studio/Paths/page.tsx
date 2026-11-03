@@ -3,10 +3,18 @@ import { Link } from "react-router";
 
 import RequireStaff from "../RequireStaff";
 import Seo from "../../../../components/Seo/component";
-import { ArrowIcon, PlusIcon, WarnIcon } from "../Icons";
+import { ArrowIcon, PlusIcon, TickIcon, WarnIcon } from "../Icons";
 import { Done, Head, Problem, Waiting } from "../ui";
 import { certDb } from "../../../../lib/certificates";
-import { createPath, getOverview, setPathCourses, type StudioCourse } from "../../../../lib/studio";
+import {
+  createPath,
+  getOverview,
+  getPathBlockers,
+  publishPath,
+  setPathCourses,
+  type PathBlocker,
+  type StudioCourse,
+} from "../../../../lib/studio";
 import { routes } from "../../../routes";
 
 // Learning paths.
@@ -46,6 +54,10 @@ type PathRow = {
 
 function Inner({ isAdmin }: { isAdmin: boolean }) {
   const [paths, setPaths] = useState<PathRow[] | null>(null);
+  // WHAT IS STILL STANDING IN THE WAY, per path, asked of the server
+  // rather than worked out here, so this screen and lms_publish_path
+  // cannot come to different conclusions about the same path.
+  const [blockers, setBlockers] = useState<Record<string, PathBlocker[]>>({});
   const [courses, setCourses] = useState<StudioCourse[]>([]);
   const [inPath, setInPath] = useState<Record<string, string[]>>({});
   const [problem, setProblem] = useState("");
@@ -76,6 +88,15 @@ function Inner({ isAdmin }: { isAdmin: boolean }) {
 
     const o = await getOverview();
     if (o.ok) setCourses(o.data.courses);
+
+    const rows = (data || []) as PathRow[];
+    const found: Record<string, PathBlocker[]> = {};
+    for (const row of rows) {
+      if (row.status === "published") continue;
+      const b = await getPathBlockers(row.id);
+      if (b.ok) found[row.id] = b.data;
+    }
+    setBlockers(found);
   }, []);
 
   useEffect(() => {
@@ -223,6 +244,19 @@ function Inner({ isAdmin }: { isAdmin: boolean }) {
                   a course in another path has it here too.
                 </p>
 
+                {p.status !== "published" && (blockers[p.id] || []).length ? (
+                  <ul className="stu__steps" style={{ marginTop: 10 }}>
+                    {(blockers[p.id] || []).map((b) => (
+                      <li key={b.label} className={`stu__step ${b.ok ? "is-done" : "is-todo"}`}>
+                        {b.ok ? <TickIcon /> : <WarnIcon />}
+                        <div>
+                          <b>{b.label}</b>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
                 <div className="stu__chips" style={{ marginTop: 10 }}>
                   {/* THE WAY INTO THE PATH EXAM. Until this link
                       existed the exam had no address at all, so the
@@ -230,6 +264,30 @@ function Inner({ isAdmin }: { isAdmin: boolean }) {
                       condition nobody could meet. Administrators only,
                       which is what lms_studio_questions enforces
                       underneath whatever this page shows. */}
+                  {/* PUBLISHING A PATH. lms_publish_path has been on the
+                      server since file 16 and was called by nothing, so no
+                      path could ever go live and no path certificate could
+                      ever be issued. The blockers are listed above rather
+                      than left for the button to discover, because a button
+                      that fails and then explains is a worse screen than one
+                      that says what is left before you press it. */}
+                  {isAdmin && p.status !== "published" ? (
+                    <button
+                      type="button"
+                      className="stu__chip"
+                      disabled={(blockers[p.id] || []).some((b) => !b.ok)}
+                      onClick={async () => {
+                        setProblem("");
+                        const got = await publishPath(p.id);
+                        if (got.ok) {
+                          setDone("The path is live.");
+                          load();
+                        } else setProblem(got.message);
+                      }}
+                    >
+                      Publish the path
+                    </button>
+                  ) : null}
                   {isAdmin ? (
                     <Link
                       className="stu__chip"
