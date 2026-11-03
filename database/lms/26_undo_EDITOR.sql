@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/26_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_26_force', true), '') <> 'yes, I mean it' then
@@ -15,7 +17,8 @@ begin
       'course could change a lesson in somebody else''s live course, empty every chapter of '
       
       'every course in one statement, and read another course''s answer key. If you mean it, '
-      'paste this line at the top of this file and run the whole thing in one go, ending that '
+      'paste this line at the very top of this file, above the begin, and run the whole thing '
+      'in one go, ending that '
       'line with a semicolon: '
       'select set_config(''lms.undo_26_force'', ''yes, I mean it'', false)';
   end if;
@@ -186,3 +189,5 @@ do $$ begin
   raise notice '  yes on row 7. That is correct and is the hole back.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+commit;

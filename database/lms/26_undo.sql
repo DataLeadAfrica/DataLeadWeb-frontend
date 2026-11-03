@@ -18,6 +18,21 @@
 -- hand copied policy is how you restore something subtly different from
 -- what you had.
 
+-- THE WHOLE FILE IS ONE TRANSACTION, AND THE GUARD IS INSIDE IT.
+--
+-- Added in Phase 6H, after the same fault was found and proved on file
+-- 28's undo. The guard below raises when the flag is not set, and a
+-- raise stops the script only in a client that stops on an error. The
+-- Supabase editor does. psql, run plainly, does not: it prints the
+-- refusal, carries on to the next statement, and undoes everything
+-- anyway. The refusal is shown and ignored, which is the worst of both.
+--
+-- Inside a transaction there is nothing to ignore. The raise aborts it,
+-- Postgres itself refuses every statement after it, and the commit at
+-- the end becomes a rollback. Nothing in this file has happened until
+-- that last line runs.
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_26_force', true), '') <> 'yes, I mean it' then
@@ -26,7 +41,8 @@ begin
       'course could change a lesson in somebody else''s live course, empty every chapter of '
       
       'every course in one statement, and read another course''s answer key. If you mean it, '
-      'paste this line at the top of this file and run the whole thing in one go, ending that '
+      'paste this line at the very top of this file, above the begin, and run the whole thing '
+      'in one go, ending that '
       'line with a semicolon: '
       'select set_config(''lms.undo_26_force'', ''yes, I mean it'', false)';
   end if;
@@ -211,3 +227,7 @@ do $$ begin
   raise notice '  yes on row 7. That is correct and is the hole back.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+-- Nothing above has actually happened until this line runs. If the
+-- guard refused, this becomes a rollback and the database is untouched.
+commit;

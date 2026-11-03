@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/21_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_21_force', true), '') <> 'yes, I mean it' then
@@ -19,8 +21,6 @@ begin
       'select set_config(''lms.undo_21_force'', ''yes, I mean it'', false)';
   end if;
 end $$;
-
-begin;
 
 grant execute on function lms_link_participant(uuid, text) to anon, authenticated;
 grant execute on function lms_grant_free_courses(uuid) to anon, authenticated;

@@ -3,6 +3,7 @@ import { Route } from "react-router";
 
 import { routes } from "../routes";
 import RequireAccount from "./RequireAccount";
+import RequireSetup from "./RequireSetup";
 import PreviewNotice from "./ui/PreviewNotice";
 import Waiting from "./ui/Waiting";
 
@@ -33,6 +34,9 @@ const AcademySignUp = lazy(() => import("./SignUp/page"));
 const AcademySignIn = lazy(() => import("./SignIn/page"));
 const AcademyReset = lazy(() => import("./Reset/page"));
 const AcademyMe = lazy(() => import("./Me/page"));
+// Phase 6H. The first sign-in screen. Loaded on its own, so the
+// dashboard does not carry the weight of a screen most people see once.
+const AcademyWelcome = lazy(() => import("./Welcome/page"));
 
 // Phase 4. Four more pages, each loaded on its own: somebody reading
 // the blog pays nothing for the lesson player, and the player's biggest
@@ -84,16 +88,36 @@ export default function academyRouter() {
     <Route key="lms-up" path={routes.academySignUp} element={page(<AcademySignUp />)} />,
     <Route key="lms-in" path={routes.academySignIn} element={page(<AcademySignIn />)} />,
     <Route key="lms-rst" path={routes.academyReset} element={page(<AcademyReset />)} />,
+    // MY LEARNING IS BEHIND TWO GUARDS NOW, and they ask different
+    // questions. RequireAccount asks whether anybody is signed in, which
+    // is a local lookup. RequireSetup asks the database whether this is
+    // a bootcamp participant who has not filled in the first sign-in
+    // screen, and sends them to it once if so. It fails open: a database
+    // that does not answer means the dashboard is shown, never that
+    // somebody is held at a form they cannot get past.
     <Route
       key="lms-me"
       path={routes.academyMe}
       element={page(
         <RequireAccount>
-          <AcademyMe />
+          <RequireSetup>
+            <AcademyMe />
+          </RequireSetup>
         </RequireAccount>,
       )}
     />,
-  
+    // The first sign-in screen itself. Behind the account guard and NOT
+    // behind RequireSetup, which would send it to itself forever.
+    <Route
+      key="lms-welcome"
+      path={routes.academyWelcome}
+      element={page(
+        <RequireAccount>
+          <AcademyWelcome />
+        </RequireAccount>,
+      )}
+    />,
+
     // THE LEARNING PAGES. All four behind RequireAccount, because every
     // one of them shows one person's own progress.
     //

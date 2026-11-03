@@ -27,6 +27,21 @@
 -- onto a looser function still works, which is the point: the hole this
 -- reopens is who may press it, not whether it can be pressed.
 
+-- THE WHOLE FILE IS ONE TRANSACTION, AND THE GUARD IS INSIDE IT.
+--
+-- Added in Phase 6H, after the same fault was found and proved on file
+-- 28's undo. The guard below raises when the flag is not set, and a
+-- raise stops the script only in a client that stops on an error. The
+-- Supabase editor does. psql, run plainly, does not: it prints the
+-- refusal, carries on to the next statement, and undoes everything
+-- anyway. The refusal is shown and ignored, which is the worst of both.
+--
+-- Inside a transaction there is nothing to ignore. The raise aborts it,
+-- Postgres itself refuses every statement after it, and the commit at
+-- the end becomes a rollback. Nothing in this file has happened until
+-- that last line runs.
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_27_force', true), '') <> 'yes, I mean it' then
@@ -34,7 +49,8 @@ begin
       'This undo makes the publish screen report success over a course no learner can '
       'finish, which is the fault that meant nobody could ever be certified, and it lets '
       'any facilitator publish another person''s exam. If you mean it, paste this line at '
-      'the top of this file and run the whole thing in one go, ending that line with a '
+      'the very top of this file, above the begin, and run the whole thing in one go, '
+      'ending that line with a '
       'semicolon: '
       'select set_config(''lms.undo_27_force'', ''yes, I mean it'', false)';
   end if;
@@ -272,3 +288,7 @@ begin
   raise notice '  27_verify.sql now says NO on rows 1 to 4.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+-- Nothing above has actually happened until this line runs. If the
+-- guard refused, this becomes a rollback and the database is untouched.
+commit;

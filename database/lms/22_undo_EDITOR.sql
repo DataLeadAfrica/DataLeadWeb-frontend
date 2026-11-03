@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/22_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_22_force', true), '') <> 'yes, I mean it' then
@@ -18,8 +20,6 @@ begin
       'select set_config(''lms.undo_22_force'', ''yes, I mean it'', false)';
   end if;
 end $$;
-
-begin;
 
 create or replace function lms_create_path(p_name text, p_certificate_name text default '')
 returns uuid language plpgsql security definer set search_path = public as $$

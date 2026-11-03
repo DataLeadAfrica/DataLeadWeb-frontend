@@ -33,6 +33,10 @@ const Reports = lazy(() => import("./Reports/page"));
 const Settings = lazy(() => import("./Settings/page"));
 const Popups = lazy(() => import("./Popups/page"));
 const Health = lazy(() => import("./Health/page"));
+// Phase 6H.
+const Attendance = lazy(() => import("./Attendance/page"));
+const Register = lazy(() => import("./Register/page"));
+const Cards = lazy(() => import("./Cards/page"));
 
 function page(element: React.ReactNode) {
   return <Suspense fallback={<Waiting />}>{element}</Suspense>;
@@ -60,5 +64,8 @@ export default function studioRouter() {
     <Route key="stu-set" path={routes.studioSettings} element={page(<Settings />)} />,
     <Route key="stu-pop" path={routes.studioPopups} element={page(<Popups />)} />,
     <Route key="stu-h" path={routes.studioHealth} element={page(<Health />)} />,
+    <Route key="stu-att" path={routes.studioAttendance} element={page(<Attendance />)} />,
+    <Route key="stu-reg" path={routes.studioRegister} element={page(<Register />)} />,
+    <Route key="stu-card" path={routes.studioCards} element={page(<Cards />)} />,
   ];
 }

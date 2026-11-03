@@ -136,7 +136,7 @@ A day is closed, not removed. A record can be corrected by an administrator, whi
 it and why, and the row keeps its history. No function in this file deletes an attendance record or
 a form answer.
 
-## What the 14 verify rows mean
+## What each check in 28_verify_EDITOR.sql means
 
 | Row | What a NO would mean |
 |---|---|

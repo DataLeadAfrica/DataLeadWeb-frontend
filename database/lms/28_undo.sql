@@ -12,7 +12,7 @@
 -- running an undo.
 --
 -- SO THIS FILE WILL NOT DROP A TABLE THAT HOLDS ANYTHING. It removes the
--- nineteen functions, which is what makes the feature stop working, and
+-- twenty-three functions, which is what makes the feature stop working, and
 -- then looks at the five tables. Any that are empty are dropped. Any
 -- that hold rows are LEFT EXACTLY WHERE THEY ARE, and this file says so
 -- and says how many rows it is refusing to destroy. The tables are inert
@@ -30,6 +30,25 @@
 -- the badge table in one statement would be reopening a hole, and no
 -- part of the site has ever used it.
 
+-- THE WHOLE FILE IS ONE TRANSACTION, AND THE GUARD IS INSIDE IT. That
+-- is not tidiness, it is the guard working at all.
+--
+-- The guard below raises when the flag is not set. A raise stops the
+-- script only in a client that stops on an error. The Supabase editor
+-- does. psql, run plainly, does not: it reports the error, carries on
+-- to the next statement, and drops everything anyway. The refusal
+-- message is printed and ignored, which is the worst of both.
+--
+-- Inside a transaction there is nothing to ignore. The raise aborts it,
+-- every statement after it is refused by Postgres itself, and the
+-- commit at the end becomes a rollback. So an undo nobody meant to run
+-- changes nothing, in any client.
+--
+-- This was found by running the undo without the flag and then looking
+-- at whether the functions were still there, rather than by reading the
+-- error message and believing it.
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_28_force', true), '') <> 'yes, I mean it' then
@@ -37,24 +56,28 @@ begin
       'This undo removes attendance taking: the scanner, the access code, the day form '
       'and the first sign-in screen all stop working, and no attendance can be recorded '
       'while it is undone. It will NOT delete anybody''s attendance records. If you mean '
-      'it, paste this line at the top of this file and run the whole thing in one go, '
-      'ending that line with a semicolon: '
+      'it, paste this line at the very top of this file, above the begin, and run the '
+      'whole thing in one go, ending that line with a semicolon: '
       'select set_config(''lms.undo_28_force'', ''yes, I mean it'', false)';
   end if;
   raise notice 'Undo 28: going ahead. No attendance record will be deleted.';
 end $$;
 
 -- -------------------------------------------------------------- step 1
--- The nineteen functions. Dropped with their argument lists, because a
--- bare name is ambiguous once a database has been through a few files.
+-- The twenty-three functions. Dropped with their argument lists,
+-- because a bare name is ambiguous once a database has been through a
+-- few files.
 drop function if exists lms_attendance_correct(uuid, uuid, text);
 drop function if exists lms_attendance_cohorts();
 drop function if exists lms_attendance_register(text, date, date);
+drop function if exists lms_attendance_days_list(text, date, date);
+drop function if exists lms_attendance_roster(text);
 drop function if exists lms_attendance_live(uuid);
 drop function if exists lms_attendance_submit(text, integer, text, text);
 drop function if exists lms_attendance_my_day();
 drop function if exists lms_attendance_use_code(text);
 drop function if exists lms_attendance_scan(uuid, text, text);
+drop function if exists lms_attendance_today(text);
 drop function if exists lms_attendance_day(uuid);
 drop function if exists lms_attendance_close_day(uuid);
 drop function if exists lms_attendance_reveal_code(uuid, integer);
@@ -62,13 +85,14 @@ drop function if exists lms_attendance_open_day(text, text, text, integer);
 drop function if exists lms_save_my_setup(text, text, text, text, text);
 drop function if exists lms_my_setup();
 drop function if exists lms_participant_cards_for_print(text);
+drop function if exists lms_issue_cards_for_cohort(text);
 drop function if exists lms_card_mark_lost(uuid);
 drop function if exists lms_issue_participant_card(uuid);
 drop function if exists lms_unambiguous_code(integer);
 drop function if exists lms_wat_today();
 
 do $$ begin
-  raise notice 'Step 1: the nineteen functions are gone, so nothing can record attendance.';
+  raise notice 'Step 1: the twenty-three functions are gone, so nothing can record attendance.';
 end $$;
 
 -- -------------------------------------------------------------- step 2
@@ -142,6 +166,7 @@ begin
      and (p.proname like 'lms_attendance%'
           or p.proname in ('lms_wat_today', 'lms_unambiguous_code',
             'lms_issue_participant_card', 'lms_card_mark_lost',
+            'lms_issue_cards_for_cohort',
             'lms_participant_cards_for_print', 'lms_my_setup',
             'lms_save_my_setup'));
   raise notice '--------------------------------------------------------';
@@ -157,3 +182,7 @@ begin
   raise notice '  Run 28_verify_EDITOR.sql to see the result.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+-- Nothing above has actually happened until this line runs. If the
+-- guard refused, this becomes a rollback and the database is untouched.
+commit;

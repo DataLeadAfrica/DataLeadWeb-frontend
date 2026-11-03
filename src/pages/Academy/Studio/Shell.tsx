@@ -6,6 +6,7 @@ import "./control-room.css";
 import {
   AwardIcon,
   BookIcon,
+  CardIcon,
   ChartIcon,
   GridIcon,
   HomeIcon,
@@ -15,6 +16,7 @@ import {
   PathIcon,
   PopIcon,
   PulseIcon,
+  ScanIcon,
   SearchIcon,
   SlidersIcon,
   UsersIcon,
@@ -80,7 +82,25 @@ const ITEMS: Item[] = [
     hot: true,
   },
   { group: "people", to: routes.studioStaff, label: "Staff", icon: <KeyIcon />, adminOnly: true },
+  // Phase 6H. Attendance is NOT administrators only: the person who
+  // needs it is the facilitator standing in the room, and before this
+  // the People group was empty for them.
+  {
+    group: "people",
+    to: routes.studioAttendance,
+    label: "Attendance",
+    icon: <ScanIcon />,
+    adminOnly: false,
+  },
+  { group: "people", to: routes.studioCards, label: "ID cards", icon: <CardIcon />, adminOnly: true },
   { group: "results", to: routes.studioCerts, label: "Certificates", icon: <AwardIcon />, adminOnly: true },
+  {
+    group: "results",
+    to: routes.studioRegister,
+    label: "Attendance register",
+    icon: <ChartIcon />,
+    adminOnly: false,
+  },
   { group: "results", to: routes.studioReports, label: "Reports", icon: <ChartIcon />, adminOnly: false },
   { group: "site", to: routes.studioSettings, label: "Site settings", icon: <SlidersIcon />, adminOnly: true },
   {
@@ -104,7 +124,13 @@ const GROUPS: { key: Item["group"]; label: string }[] = [
 /** The four that fit across the bottom of a phone, per role. */
 const TABS = {
   admin: [routes.studio, routes.studioCourses, routes.studioLearners, routes.studioReports],
-  facilitator: [routes.studio, routes.studioCourses, routes.studioPaths, routes.studioReports],
+  // ATTENDANCE TOOK LEARNING PATHS' PLACE HERE, and only here. A phone
+  // is where a facilitator opens the control room at all: standing in a
+  // room with a class in front of them, marking people in. Building a
+  // learning path is something nobody has ever done on a phone. An
+  // administrator's four are unchanged, and both roles reach everything
+  // else through More.
+  facilitator: [routes.studio, routes.studioAttendance, routes.studioCourses, routes.studioReports],
 };
 
 type Props = {

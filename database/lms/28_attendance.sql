@@ -506,6 +506,45 @@ end $$;
 revoke execute on function lms_card_mark_lost(uuid) from public, anon;
 grant execute on function lms_card_mark_lost(uuid) to authenticated;
 
+-- Issues a card to everybody in a cohort who has none, and says how
+-- many it made.
+--
+-- ONE CALL RATHER THAN ONE PER PERSON. A cohort of a hundred issued
+-- from a browser one at a time is a hundred round trips on a Nigerian
+-- mobile connection, and a browser that loses its signal halfway
+-- through leaves half a cohort holding cards with nothing recording
+-- where it stopped. Here it is one statement in one transaction: all of
+-- them, or none of them.
+--
+-- SAFE TO PRESS TWICE. Anybody who already holds a card is not in the
+-- loop, so a second press makes nothing and returns 0 rather than
+-- issuing second cards and invalidating the printed ones.
+create or replace function lms_issue_cards_for_cohort(p_cohort text)
+returns integer language plpgsql security definer set search_path = public as $$
+declare v_p uuid; v_made integer := 0;
+begin
+  if not lms_is_admin() then
+    raise exception 'Only an administrator can issue ID cards.' using errcode = '42501';
+  end if;
+
+  for v_p in
+    select distinct e.participant_id
+      from participant_enrolments e
+      left join lms_participant_cards c on c.participant_id = e.participant_id
+     where e.cohort = p_cohort
+       and e.status = 'active'
+       and c.participant_id is null
+  loop
+    perform lms_issue_participant_card(v_p);
+    v_made := v_made + 1;
+  end loop;
+
+  return v_made;
+end $$;
+
+revoke execute on function lms_issue_cards_for_cohort(text) from public, anon;
+grant execute on function lms_issue_cards_for_cohort(text) to authenticated;
+
 -- The printable sheet for a cohort. This is the ONE place a token
 -- leaves the database, because the QR has to be drawn from it, and it is
 -- administrators only.
@@ -742,6 +781,43 @@ begin
   end if;
   return v_out;
 end $$;
+
+-- Today for a cohort, WITHOUT opening one.
+--
+-- lms_attendance_open_day above would answer this, because it hands
+-- back the day that is already open, but asking it is not free: where
+-- there is no day it makes one. A panel that called it on every page
+-- load would stand up an attendance day for whichever cohort the
+-- dropdown happened to be showing, every time any member of staff
+-- glanced at the screen, and the register would fill with classes that
+-- never happened. So "is today open" gets a function that only reads.
+--
+-- Null rather than an error when nothing is open. A cohort with no
+-- class today is the ordinary state of most cohorts on most days, not
+-- a fault to report.
+create or replace function lms_attendance_today(p_cohort text)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  if not lms_is_staff() then
+    raise exception 'Only staff can see an attendance day.' using errcode = '42501';
+  end if;
+
+  select d.id into v_id
+    from lms_attendance_days d
+   where d.cohort = p_cohort
+     and d.meets_on = lms_wat_today()
+     and d.closed_at is null
+   limit 1;
+
+  if v_id is null then
+    return null;
+  end if;
+  return lms_attendance_day(v_id);
+end $$;
+
+revoke execute on function lms_attendance_today(text) from public, anon;
+grant execute on function lms_attendance_today(text) to authenticated;
 
 revoke execute on function lms_attendance_open_day(text, text, text, integer)
   from public, anon;
@@ -1050,14 +1126,104 @@ end $$;
 revoke execute on function lms_attendance_live(uuid) from public, anon;
 grant execute on function lms_attendance_live(uuid) to authenticated;
 
+-- Everybody in a cohort, whether they have ever turned up or not.
+--
+-- THE REGISTER BELOW CANNOT ANSWER THIS. It returns one row per person
+-- per day they were present, so somebody who has never come to a class
+-- is not in it at all, and a grid built from it alone would quietly
+-- leave out exactly the people it exists to show. This is the list the
+-- rows of that grid are made from, and the list the ID card screen
+-- works through.
+--
+-- IT DOES NOT RETURN THE TOKEN. participant_no is the number printed on
+-- the front of the card, which is what somebody quotes on the phone.
+-- The secret inside the QR leaves the database in one place only, and
+-- this is not it.
+--
+-- has_account is here because a participant with no Academy account
+-- cannot be scanned in: attendance belongs to an account, the card
+-- belongs to a participant, and lms_attendance_scan refuses when there
+-- is no link between the two. Without this column the screen would
+-- print a card for somebody who cannot use it.
+create or replace function lms_attendance_roster(p_cohort text)
+returns table (participant_id uuid, user_id uuid, full_name text,
+               participant_no text, has_card boolean,
+               lost_at timestamptz, replaced_count integer,
+               has_account boolean)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not lms_is_staff() then
+    raise exception 'Only staff can see the cohort roster.' using errcode = '42501';
+  end if;
+
+  return query
+  -- distinct because nothing stops a participant holding two active
+  -- enrolments in the same cohort, and a roster that listed somebody
+  -- twice would be counted twice in every total built on it.
+  select distinct
+         p.id, pr.id, p.full_name,
+         c.participant_no, (c.participant_id is not null),
+         c.lost_at, coalesce(c.replaced_count, 0), (pr.id is not null)
+    from participant_enrolments e
+    join participants p on p.id = e.participant_id
+    left join lms_participant_cards c on c.participant_id = p.id
+    left join lms_profiles pr on pr.participant_id = p.id
+   where e.cohort = p_cohort
+     and e.status = 'active'
+   order by 3;
+end $$;
+
+revoke execute on function lms_attendance_roster(text) from public, anon;
+grant execute on function lms_attendance_roster(text) to authenticated;
+
+-- The days a cohort has had, newest first.
+--
+-- The columns of the grid. Worked out from the register instead, a day
+-- when nobody turned up at all would vanish from the grid, and that is
+-- the one day anybody needs to see.
+create or replace function lms_attendance_days_list(
+  p_cohort text,
+  p_from   date default null,
+  p_to     date default null
+)
+returns table (id uuid, meets_on date, mode text, title text,
+               closed_at timestamptz, checked_in integer)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not lms_is_staff() then
+    raise exception 'Only staff can see the attendance days.' using errcode = '42501';
+  end if;
+
+  return query
+  select d.id, d.meets_on, d.mode, d.title, d.closed_at,
+         (select count(*)::integer from lms_attendance_checkins c
+           where c.day_id = d.id)
+    from lms_attendance_days d
+   where d.cohort = p_cohort
+     and (p_from is null or d.meets_on >= p_from)
+     and (p_to   is null or d.meets_on <= p_to)
+   order by d.meets_on desc;
+end $$;
+
+revoke execute on function lms_attendance_days_list(text, date, date) from public, anon;
+grant execute on function lms_attendance_days_list(text, date, date) to authenticated;
+
 -- The cohort's register, which is what the grid and the export read.
 -- One row per person per day they were present.
+--
+-- DROPPED FIRST, because this one returns a table and a later file that
+-- adds a column to it cannot say "create or replace": Postgres refuses
+-- to change the return type of a function that already exists. Dropping
+-- throws its grants away, which is why they are given again below.
+drop function if exists lms_attendance_register(text, date, date);
+
 create or replace function lms_attendance_register(
   p_cohort text,
   p_from   date default null,
   p_to     date default null
 )
-returns table (meets_on date, full_name text, participant_no text,
+returns table (meets_on date, participant_id uuid, user_id uuid,
+               full_name text, participant_no text,
                method text, checked_in_at timestamptz,
                followed text, confidence integer)
 language plpgsql stable security definer set search_path = public as $$
@@ -1068,6 +1234,8 @@ begin
 
   return query
   select d.meets_on,
+         pr.participant_id,
+         c.user_id,
          coalesce(pa.full_name, pr.full_name),
          pc.participant_no,
          c.method,
@@ -1084,7 +1252,9 @@ begin
    where d.cohort = p_cohort
      and (p_from is null or d.meets_on >= p_from)
      and (p_to   is null or d.meets_on <= p_to)
-   order by d.meets_on desc, 2;
+   -- By day, then by name. Column 4 is the name: it used to be column
+   -- 2, and gaining participant_id and user_id in front of it moved it.
+   order by d.meets_on desc, 4;
 end $$;
 
 revoke execute on function lms_attendance_register(text, date, date) from public, anon;
@@ -1177,17 +1347,20 @@ begin
    where n.nspname = 'public'
      and p.proname in ('lms_wat_today', 'lms_unambiguous_code',
        'lms_issue_participant_card', 'lms_card_mark_lost',
+       'lms_issue_cards_for_cohort',
        'lms_participant_cards_for_print', 'lms_my_setup', 'lms_save_my_setup',
        'lms_attendance_open_day', 'lms_attendance_reveal_code',
-       'lms_attendance_close_day', 'lms_attendance_day', 'lms_attendance_scan',
+       'lms_attendance_close_day', 'lms_attendance_day',
+       'lms_attendance_today', 'lms_attendance_scan',
        'lms_attendance_use_code', 'lms_attendance_my_day',
        'lms_attendance_submit', 'lms_attendance_live',
+       'lms_attendance_roster', 'lms_attendance_days_list',
        'lms_attendance_register', 'lms_attendance_cohorts',
        'lms_attendance_correct');
   raise notice '--------------------------------------------------------';
   raise notice 'File 28 is in.';
   raise notice '  New tables: % of 5.', v_t;
-  raise notice '  New functions: % of 19.', v_f;
+  raise notice '  New functions: % of 23.', v_f;
   raise notice '  No table in this file is writable from a browser, and';
   raise notice '  the two holding a secret are not readable either.';
   raise notice '  Every day boundary is Nigerian time, not the server clock.';

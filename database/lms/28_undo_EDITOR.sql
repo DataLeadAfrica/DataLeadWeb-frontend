@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/28_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_28_force', true), '') <> 'yes, I mean it' then
@@ -14,8 +16,8 @@ begin
       'This undo removes attendance taking: the scanner, the access code, the day form '
       'and the first sign-in screen all stop working, and no attendance can be recorded '
       'while it is undone. It will NOT delete anybody''s attendance records. If you mean '
-      'it, paste this line at the top of this file and run the whole thing in one go, '
-      'ending that line with a semicolon: '
+      'it, paste this line at the very top of this file, above the begin, and run the '
+      'whole thing in one go, ending that line with a semicolon: '
       'select set_config(''lms.undo_28_force'', ''yes, I mean it'', false)';
   end if;
   raise notice 'Undo 28: going ahead. No attendance record will be deleted.';
@@ -24,11 +26,14 @@ end $$;
 drop function if exists lms_attendance_correct(uuid, uuid, text);
 drop function if exists lms_attendance_cohorts();
 drop function if exists lms_attendance_register(text, date, date);
+drop function if exists lms_attendance_days_list(text, date, date);
+drop function if exists lms_attendance_roster(text);
 drop function if exists lms_attendance_live(uuid);
 drop function if exists lms_attendance_submit(text, integer, text, text);
 drop function if exists lms_attendance_my_day();
 drop function if exists lms_attendance_use_code(text);
 drop function if exists lms_attendance_scan(uuid, text, text);
+drop function if exists lms_attendance_today(text);
 drop function if exists lms_attendance_day(uuid);
 drop function if exists lms_attendance_close_day(uuid);
 drop function if exists lms_attendance_reveal_code(uuid, integer);
@@ -36,13 +41,14 @@ drop function if exists lms_attendance_open_day(text, text, text, integer);
 drop function if exists lms_save_my_setup(text, text, text, text, text);
 drop function if exists lms_my_setup();
 drop function if exists lms_participant_cards_for_print(text);
+drop function if exists lms_issue_cards_for_cohort(text);
 drop function if exists lms_card_mark_lost(uuid);
 drop function if exists lms_issue_participant_card(uuid);
 drop function if exists lms_unambiguous_code(integer);
 drop function if exists lms_wat_today();
 
 do $$ begin
-  raise notice 'Step 1: the nineteen functions are gone, so nothing can record attendance.';
+  raise notice 'Step 1: the twenty-three functions are gone, so nothing can record attendance.';
 end $$;
 
 do $$
@@ -107,6 +113,7 @@ begin
      and (p.proname like 'lms_attendance%'
           or p.proname in ('lms_wat_today', 'lms_unambiguous_code',
             'lms_issue_participant_card', 'lms_card_mark_lost',
+            'lms_issue_cards_for_cohort',
             'lms_participant_cards_for_print', 'lms_my_setup',
             'lms_save_my_setup'));
   raise notice '--------------------------------------------------------';
@@ -122,3 +129,5 @@ begin
   raise notice '  Run 28_verify_EDITOR.sql to see the result.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+commit;

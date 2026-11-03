@@ -33,6 +33,21 @@
 -- lms_my_course is the pre-24 one again, which this file does, so they
 -- become invisible rather than lost.
 
+-- THE WHOLE FILE IS ONE TRANSACTION, AND THE GUARD IS INSIDE IT.
+--
+-- Added in Phase 6H, after the same fault was found and proved on file
+-- 28's undo. The guard below raises when the flag is not set, and a
+-- raise stops the script only in a client that stops on an error. The
+-- Supabase editor does. psql, run plainly, does not: it prints the
+-- refusal, carries on to the next statement, and undoes everything
+-- anyway. The refusal is shown and ignored, which is the worst of both.
+--
+-- Inside a transaction there is nothing to ignore. The raise aborts it,
+-- Postgres itself refuses every statement after it, and the commit at
+-- the end becomes a rollback. Nothing in this file has happened until
+-- that last line runs.
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_24_force', true), '') <> 'yes, I mean it' then
@@ -40,7 +55,8 @@ begin
       'This undo stops module badges being awarded and takes away the only way the '
       'control room has of reaching a path exam, so no path can be published while it '
       'is undone. Every badge already earned is kept. If you mean it, paste this line '
-      'at the top of this file and run the whole thing in one go, ending that line '
+      'at the very top of this file, above the begin, and run the whole thing in one go, '
+      'ending that line '
       'with a semicolon: '
       'select set_config(''lms.undo_24_force'', ''yes, I mean it'', false)';
   end if;
@@ -427,3 +443,7 @@ begin
   raise notice '  and still read only, they just stop being awarded.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+-- Nothing above has actually happened until this line runs. If the
+-- guard refused, this becomes a rollback and the database is untouched.
+commit;

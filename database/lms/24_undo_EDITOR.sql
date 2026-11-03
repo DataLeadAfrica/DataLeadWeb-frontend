@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/24_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_24_force', true), '') <> 'yes, I mean it' then
@@ -14,7 +16,8 @@ begin
       'This undo stops module badges being awarded and takes away the only way the '
       'control room has of reaching a path exam, so no path can be published while it '
       'is undone. Every badge already earned is kept. If you mean it, paste this line '
-      'at the top of this file and run the whole thing in one go, ending that line '
+      'at the very top of this file, above the begin, and run the whole thing in one go, '
+      'ending that line '
       'with a semicolon: '
       'select set_config(''lms.undo_24_force'', ''yes, I mean it'', false)';
   end if;
@@ -385,3 +388,5 @@ begin
   raise notice '  and still read only, they just stop being awarded.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+commit;

@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/23_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_23_force', true), '') <> 'yes, I mean it' then
@@ -20,8 +22,6 @@ begin
       'select set_config(''lms.undo_23_force'', ''yes, I mean it'', false)';
   end if;
 end $$;
-
-begin;
 
 drop policy if exists p_prog_self_write on lms_lesson_progress;
 create policy p_prog_self_write on lms_lesson_progress

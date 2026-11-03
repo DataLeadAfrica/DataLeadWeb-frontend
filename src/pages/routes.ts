@@ -97,6 +97,12 @@ export const routes = {
   academySignIn: "/lms/sign-in",
   academyReset: "/lms/reset",
   academyMe: "/lms/me",
+  // Phase 6H. The first sign-in screen, and afterwards the page a
+  // learner comes back to in order to change those answers. A bootcamp
+  // participant who has not filled it in is sent here by RequireSetup
+  // before My learning draws; anybody else reaches it only by asking
+  // for it.
+  academyWelcome: "/lms/welcome",
 
   // Phase 4, the learning pages. Every one of them is behind a sign in
   // and carries noindex: they show one learner's own progress, and a
@@ -139,4 +145,15 @@ export const routes = {
   studioSettings: "/lms/studio/settings",
   studioPopups: "/lms/studio/popups",
   studioHealth: "/lms/studio/health",
+
+  // Phase 6H, attendance. Three staff pages.
+  //
+  // Attendance is for facilitators as well as administrators, because a
+  // facilitator is the person standing in the room. The register is the
+  // same: somebody teaching a cohort should be able to see who has been
+  // turning up without asking an administrator for a report. ID cards
+  // are administrators only, and so are the functions behind them.
+  studioAttendance: "/lms/studio/attendance",
+  studioRegister: "/lms/studio/register",
+  studioCards: "/lms/studio/cards",
 };

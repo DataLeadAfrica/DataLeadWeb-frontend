@@ -163,3 +163,27 @@ export const OutIcon = ({ className }: P) =>
 
 export const DownIcon = ({ className }: P) =>
   box(<path d="M12 4v12M7 11l5 5 5-5M4 20h16" />, className);
+
+// Phase 6H. The two attendance icons.
+//
+// ScanIcon is four corner brackets with a line across the middle: the
+// shape every camera viewfinder in the world uses, so it needs no
+// label to be understood on a phone held up at a door.
+export const ScanIcon = ({ className }: P) =>
+  box(
+    <>
+      <path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3" />
+      <path d="M4 12h16" />
+    </>,
+    className,
+  );
+
+export const CardIcon = ({ className }: P) =>
+  box(
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="9" cy="11" r="2" />
+      <path d="M14 10h4M14 14h4M6 16c.7-1.3 1.8-2 3-2s2.3.7 3 2" />
+    </>,
+    className,
+  );

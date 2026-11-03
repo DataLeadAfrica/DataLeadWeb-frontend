@@ -96,6 +96,9 @@ export const NOT_IN_SITEMAP = {
   studioSettings: "staff only, administrators",
   studioPopups: "staff only, administrators",
   studioHealth: "staff only, administrators",
+  studioAttendance: "staff only",
+  studioRegister: "staff only",
+  studioCards: "staff only, administrators",
 
   // Pages behind a sign in, or that only make sense after an action.
   myCertificate: "behind a sign in",
@@ -109,6 +112,7 @@ export const NOT_IN_SITEMAP = {
   academySignIn: "carries noindex",
   academyReset: "carries noindex",
   academyMe: "behind a sign in, and carries noindex",
+  academyWelcome: "behind a sign in, and carries noindex",
   academyCourse: "carries a :slug. Each published course is added to the sitemap from the database instead",
   academyPath:
     "carries a :slug, so there is no one address to list. The edge function does NOT answer it: " +

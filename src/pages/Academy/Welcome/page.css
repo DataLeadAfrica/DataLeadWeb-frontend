@@ -1,0 +1,321 @@
+/* The first sign-in screen.
+
+   ONE COLUMN, NOT TWO. Every other account page puts a pitch on the left
+   and a card on the right, because somebody signing up is still deciding
+   whether to. This person has already decided and already signed in, so
+   there is nothing left to sell them and the screen is one card with
+   nothing beside it to look at instead.
+
+   It carries two things the rest of the Academy does not: the meter
+   across the top, and the sunken panel holding what we already know.
+   The panel is sunken rather than raised on purpose: it reads as the
+   floor of the card, something already settled and behind them, while
+   the questions sit on the surface in front. */
+
+.acad-welcome {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.acad-welcome__card {
+  padding: 34px 36px 30px;
+}
+
+/* Holds the place while the two reads come back, at the height the card
+   will be, so the page does not jump when it arrives. */
+.acad-welcome__waiting {
+  min-height: 560px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-l);
+  background:
+    linear-gradient(
+      100deg,
+      var(--acad-surface) 0%,
+      var(--acad-surface-2) 40%,
+      var(--acad-surface) 80%
+    )
+    0 0 / 300% 100%;
+  animation: acad-welcome-wait 1.7s ease-in-out infinite;
+}
+@keyframes acad-welcome-wait {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.acad-welcome__card--done {
+  text-align: center;
+}
+.acad-welcome__card--done .acad-msg {
+  justify-content: center;
+  margin: 8px 0 0;
+  font-size: 16px;
+}
+.acad-welcome__after {
+  margin: 14px 0 22px;
+  color: var(--acad-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.acad-welcome__note {
+  text-align: left;
+}
+
+/* ---------------------------------------------------------- the meter ---
+
+   Four questions, a bar that fills as they are answered, and the count
+   in mono beside it. People abandon a form whose end they cannot see.
+
+   The fill is the signal gradient rather than a flat colour, and it
+   carries a soft glow of its own, so a form at 3 of 4 looks nearly done
+   rather than merely three quarters coloured in. */
+
+.acad-prog {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.acad-prog__track {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--acad-surface-3);
+}
+
+.acad-prog__fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--acad-signal-soft),
+    var(--acad-signal)
+  );
+  box-shadow: 0 0 12px var(--acad-glow);
+  transition: width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.acad-prog__count {
+  flex: none;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--acad-faint);
+}
+
+/* Read out, not drawn. The bar is decoration and the count beside it is
+   a number with no units, so the one sentence that says what the bar
+   means goes to a screen reader instead. */
+.acad-vis-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----------------------------------------------------------- the head --- */
+
+.acad-welcome__title {
+  margin: 10px 0 0;
+}
+.acad-welcome__sub {
+  margin: 8px 0 26px;
+  max-width: 48ch;
+}
+
+/* Trouble reading, said once at the top. It sits in the flow rather
+   than over the form, because the form still works. */
+.acad-welcome__load {
+  margin: 0 0 22px;
+  padding: 11px 13px;
+  border: 1px solid var(--acad-line-strong);
+  border-radius: var(--acad-r-s);
+  background: var(--acad-surface-2);
+}
+
+/* ------------------------------------------- what we already have ---
+
+   Sunken: a panel inset into the card rather than sitting on it. The
+   inset shadow is what does it, and it is the only place in the Academy
+   that uses one, because this is the only place something is meant to
+   read as already settled. */
+
+.acad-known {
+  margin: 0 0 28px;
+  padding: 20px 20px 18px;
+  border: 1px solid var(--acad-line);
+  border-radius: var(--acad-r-m);
+  background: var(--acad-surface-2);
+  box-shadow: inset 0 2px 10px -6px rgba(22, 24, 32, 0.22);
+}
+
+.acad-known__title {
+  margin: 0 0 14px;
+  font: 600 11px/1 var(--acad-f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acad-faint);
+}
+
+.acad-known__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.acad-known__cell {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.acad-known__k {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--acad-faint);
+}
+.acad-known__k svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.acad-known__v {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--acad-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acad-known__why {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--acad-muted);
+}
+
+.acad-known__phone {
+  margin-top: 16px;
+}
+
+/* The six the sign up page already asked. A two column list, because a
+   label and a value in a row is how somebody checks a fact rather than
+   reads a sentence. */
+
+.acad-known__six {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--acad-line-strong);
+}
+
+.acad-known__sixhead {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-known__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 16px;
+  margin: 0;
+}
+.acad-known__dl dt {
+  font-size: 12.5px;
+  color: var(--acad-muted);
+}
+.acad-known__dl dd {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--acad-text);
+}
+
+.acad-known__askstaff {
+  margin: 14px 0 0;
+  font-size: 11.5px;
+  color: var(--acad-faint);
+}
+
+/* ------------------------------------------------------- the questions --- */
+
+.acad-welcome__asks {
+  display: grid;
+  gap: 20px;
+}
+.acad-welcome__asks .acad-known__title {
+  margin-bottom: 2px;
+}
+
+.acad-welcome__end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.acad-welcome__stuck {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--acad-muted);
+}
+.acad-welcome__stuck a {
+  color: var(--acad-signal-text);
+  font-weight: 600;
+}
+
+/* Sign out, which lives in a sentence rather than on a button, because
+   it is the thing almost nobody on this screen wants. */
+.acad-welcome__out {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--acad-signal-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.acad-welcome__out:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .acad-welcome__card {
+    padding: 26px 20px 24px;
+  }
+  .acad-known__grid {
+    grid-template-columns: 1fr;
+  }
+  /* The two column list becomes one column of pairs: at 320px wide a
+     label column wide enough for "You heard about us from" leaves
+     nothing for the answer. */
+  .acad-known__dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .acad-known__dl dt {
+    margin-top: 8px;
+  }
+  .acad-welcome__end .acad-btn {
+    width: 100%;
+  }
+}

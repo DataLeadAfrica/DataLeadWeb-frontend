@@ -7,6 +7,8 @@
 -- Paste THIS one into the Supabase SQL Editor.
 --
 -- source: database/lms/27_undo.sql
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_27_force', true), '') <> 'yes, I mean it' then
@@ -14,7 +16,8 @@ begin
       'This undo makes the publish screen report success over a course no learner can '
       'finish, which is the fault that meant nobody could ever be certified, and it lets '
       'any facilitator publish another person''s exam. If you mean it, paste this line at '
-      'the top of this file and run the whole thing in one go, ending that line with a '
+      'the very top of this file, above the begin, and run the whole thing in one go, '
+      'ending that line with a '
       'semicolon: '
       'select set_config(''lms.undo_27_force'', ''yes, I mean it'', false)';
   end if;
@@ -244,3 +247,5 @@ begin
   raise notice '  27_verify.sql now says NO on rows 1 to 4.';
   raise notice '--------------------------------------------------------';
 end $$;
+
+commit;

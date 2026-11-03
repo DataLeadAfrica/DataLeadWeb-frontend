@@ -39,12 +39,14 @@ scope(t) as (values
 -- card token that the QR holds.
 secret(t) as (values ('lms_participant_cards'), ('lms_attendance_days')),
 
--- The nineteen functions, so a missing one is named rather than guessed.
+-- The twenty-three functions, so a missing one is named rather than
+-- guessed.
 fns(f) as (values
   ('lms_wat_today()'),
   ('lms_unambiguous_code(integer)'),
   ('lms_issue_participant_card(uuid)'),
   ('lms_card_mark_lost(uuid)'),
+  ('lms_issue_cards_for_cohort(text)'),
   ('lms_participant_cards_for_print(text)'),
   ('lms_my_setup()'),
   ('lms_save_my_setup(text, text, text, text, text)'),
@@ -52,11 +54,14 @@ fns(f) as (values
   ('lms_attendance_reveal_code(uuid, integer)'),
   ('lms_attendance_close_day(uuid)'),
   ('lms_attendance_day(uuid)'),
+  ('lms_attendance_today(text)'),
   ('lms_attendance_scan(uuid, text, text)'),
   ('lms_attendance_use_code(text)'),
   ('lms_attendance_my_day()'),
   ('lms_attendance_submit(text, integer, text, text)'),
   ('lms_attendance_live(uuid)'),
+  ('lms_attendance_roster(text)'),
+  ('lms_attendance_days_list(text, date, date)'),
   ('lms_attendance_register(text, date, date)'),
   ('lms_attendance_cohorts()'),
   ('lms_attendance_correct(uuid, uuid, text)')),
@@ -71,9 +76,9 @@ checks as (
     'A NO means file 28 did not finish. Nothing below it will read correctly, so fix this one first.' as what_it_means
 
   union all select 2,
-    'All nineteen new functions are in place',
+    'All twenty-three new functions are in place',
     case when (select count(*) from fns z
-                where to_regprocedure('public.' || z.f) is not null) = 19
+                where to_regprocedure('public.' || z.f) is not null) = 23
          then 'yes' else 'NO' end,
     'A NO means part of file 28 is missing. The screens will show an error rather than a blank page, which is the better of the two, but attendance cannot be taken.'
 
@@ -175,7 +180,7 @@ checks as (
                   and g.grantee in ('anon', 'authenticated', 'PUBLIC')
                   and g.privilege_type = 'TRUNCATE') = 0
          then 'yes' else 'NO' end,
-    'THE ROW THAT WILL STILL BE WORKING IN A YEAR. The default privileges on this database grant everything on a new table to the browser roles, so every file that makes one leaves TRUNCATE behind unless it says otherwise. Row level security does not apply to TRUNCATE: no policy can refuse it. A NO names the table in the list underneath.'
+    'THE ROW THAT WILL STILL BE WORKING IN A YEAR. The default privileges on this database grant everything on anything newly created to all three browser roles, so every file that adds one leaves TRUNCATE behind unless it says otherwise. Row level security does not apply to TRUNCATE: no policy can refuse it. A NO names each one in the list underneath.'
 
   -- ASKED THROUGH query_to_xml, and the guard is INSIDE the string it is
   -- given, not around it. Postgres resolves relations when it plans a

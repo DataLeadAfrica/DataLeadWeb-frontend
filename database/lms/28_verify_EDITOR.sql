@@ -12,6 +12,7 @@ fns(f) as (values
   ('lms_unambiguous_code(integer)'),
   ('lms_issue_participant_card(uuid)'),
   ('lms_card_mark_lost(uuid)'),
+  ('lms_issue_cards_for_cohort(text)'),
   ('lms_participant_cards_for_print(text)'),
   ('lms_my_setup()'),
   ('lms_save_my_setup(text, text, text, text, text)'),
@@ -19,11 +20,14 @@ fns(f) as (values
   ('lms_attendance_reveal_code(uuid, integer)'),
   ('lms_attendance_close_day(uuid)'),
   ('lms_attendance_day(uuid)'),
+  ('lms_attendance_today(text)'),
   ('lms_attendance_scan(uuid, text, text)'),
   ('lms_attendance_use_code(text)'),
   ('lms_attendance_my_day()'),
   ('lms_attendance_submit(text, integer, text, text)'),
   ('lms_attendance_live(uuid)'),
+  ('lms_attendance_roster(text)'),
+  ('lms_attendance_days_list(text, date, date)'),
   ('lms_attendance_register(text, date, date)'),
   ('lms_attendance_cohorts()'),
   ('lms_attendance_correct(uuid, uuid, text)')),
@@ -40,7 +44,7 @@ checks (n, checking, answer, note) as (
   union all select 2,
     'check 2',
     case when (select count(*) from fns z
-                where to_regprocedure('public.' || z.f) is not null) = 19
+                where to_regprocedure('public.' || z.f) is not null) = 23
          then 'yes' else 'NO' end,
     ''
 

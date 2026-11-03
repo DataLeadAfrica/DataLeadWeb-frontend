@@ -767,6 +767,151 @@ begin
   perform t28_say('8g the register shows all three who were present', v_n::text, '3');
 end $$;
 
+-- ---------------------------------------------------------------------
+-- 9. The four the screens needed
+--
+-- Added after the panel, the register and the ID card screen were
+-- built, because building them is what showed they were missing. The
+-- first is the important one: without it a panel could only find out
+-- whether today was open by calling the function that OPENS one.
+-- ---------------------------------------------------------------------
+do $$
+declare
+  v_said text; v_day uuid; v_j jsonb; v_n integer; v_before integer;
+  v_made integer; v_again integer; v_sig text;
+begin
+  select id into v_day from lms_attendance_days where cohort = 't28-alpha';
+
+  -- 9a it finds the day that is open
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select lms_attendance_today('t28-alpha') into v_j;
+  reset role;
+  perform t28_say('9a today finds the open day',
+    coalesce((v_j->>'id')::uuid, '00000000-0000-0000-0000-000000000000')::text,
+    v_day::text);
+
+  -- 9b and says nothing, rather than raising, when there is none
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select lms_attendance_today('t28-nowhere') into v_j;
+  reset role;
+  perform t28_say('9b and returns nothing for a cohort with no class today',
+    coalesce(v_j::text, 'nothing'), 'nothing');
+
+  -- 9c THE REASON THIS FUNCTION EXISTS. Asking must not create.
+  select count(*) into v_before from lms_attendance_days;
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  perform lms_attendance_today('t28-nowhere');
+  perform lms_attendance_today('t28-alpha');
+  reset role;
+  select count(*) into v_n from lms_attendance_days;
+  perform t28_say('9c asking what is open today opens nothing',
+    v_n::text, v_before::text);
+
+  -- 9d a learner cannot ask
+  perform t28_be('28a10000-0000-0000-0000-0000000000a1');
+  set local role authenticated;
+  begin
+    perform lms_attendance_today('t28-alpha');
+    v_said := 'ALLOWED';
+  exception when others then v_said := 'refused';
+  end;
+  reset role;
+  perform t28_say('9d a learner cannot ask what is open today', v_said, 'refused');
+
+  -- 9e the roster holds everybody in the cohort, present or not
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select count(*) into v_n from lms_attendance_roster('t28-alpha');
+  reset role;
+  perform t28_say('9e the roster holds all three in the cohort', v_n::text, '3');
+
+  -- 9f including the one who has never turned up and has no card
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select count(*) into v_n from lms_attendance_roster('t28-alpha') r
+   where r.has_card = false;
+  reset role;
+  perform t28_say('9f and shows who is still waiting for a card', v_n::text, '1');
+
+  -- 9g AND IT HANDS OUT NO TOKEN. Asked of the function's own result
+  -- type rather than of a row, so it is true of every row there will
+  -- ever be rather than of the four in this test.
+  select pg_get_function_result(to_regprocedure('public.lms_attendance_roster(text)'))
+    into v_sig;
+  perform t28_say('9g the roster cannot return a card token',
+    (position('card_token' in coalesce(v_sig, '')) = 0)::text, 'true');
+
+  -- 9h a learner cannot read the roster
+  perform t28_be('28a10000-0000-0000-0000-0000000000a1');
+  set local role authenticated;
+  begin
+    perform count(*) from lms_attendance_roster('t28-alpha');
+    v_said := 'ALLOWED';
+  exception when others then v_said := 'refused';
+  end;
+  reset role;
+  perform t28_say('9h a learner cannot read the roster', v_said, 'refused');
+
+  -- 9i the day list, which is what the grid's columns are made of
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select count(*) into v_n from lms_attendance_days_list('t28-alpha', null, null);
+  reset role;
+  perform t28_say('9i the day list holds the cohort day', v_n::text, '1');
+
+  -- 9j and a learner cannot read it either
+  perform t28_be('28a10000-0000-0000-0000-0000000000a1');
+  set local role authenticated;
+  begin
+    perform count(*) from lms_attendance_days_list('t28-alpha', null, null);
+    v_said := 'ALLOWED';
+  exception when others then v_said := 'refused';
+  end;
+  reset role;
+  perform t28_say('9j a learner cannot read the day list', v_said, 'refused');
+
+  -- 9k the register carries the participant, so a grid can join on it
+  -- rather than on a name. Two people called Chidi Okeke in one cohort
+  -- is not a far fetched thing to plan for.
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  select count(*) into v_n from lms_attendance_register('t28-alpha', null, null) g
+   where g.participant_id is not null;
+  reset role;
+  perform t28_say('9k every register row names its participant', v_n::text, '3');
+
+  -- 9l a facilitator cannot issue a cohort's cards
+  perform t28_be('28f10000-0000-0000-0000-0000000000f1');
+  set local role authenticated;
+  begin
+    perform lms_issue_cards_for_cohort('t28-alpha');
+    v_said := 'ALLOWED';
+  exception when others then v_said := 'refused';
+  end;
+  reset role;
+  perform t28_say('9l a facilitator cannot issue a cohort of cards', v_said, 'refused');
+
+  -- 9m an administrator can, and it makes one card for the one person
+  -- without one rather than four for everybody
+  perform t28_be('28d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  select lms_issue_cards_for_cohort('t28-alpha') into v_made;
+  reset role;
+  perform t28_say('9m issuing a cohort makes cards only for those without one',
+    v_made::text, '1');
+
+  -- 9n AND PRESSING IT AGAIN MAKES NOTHING. A second card would
+  -- invalidate the one already printed and handed over.
+  perform t28_be('28d10000-0000-0000-0000-0000000000d1');
+  set local role authenticated;
+  select lms_issue_cards_for_cohort('t28-alpha') into v_again;
+  reset role;
+  perform t28_say('9n and pressing it again makes nothing', v_again::text, '0');
+end $$;
+
 -- ------------------------------------------------------------- results
 \pset tuples_only off
 \pset format aligned

@@ -31,6 +31,21 @@
 -- So this undo is about the three function definitions and nothing else.
 -- The data it created is harmless and stays.
 
+-- THE WHOLE FILE IS ONE TRANSACTION, AND THE GUARD IS INSIDE IT.
+--
+-- Added in Phase 6H, after the same fault was found and proved on file
+-- 28's undo. The guard below raises when the flag is not set, and a
+-- raise stops the script only in a client that stops on an error. The
+-- Supabase editor does. psql, run plainly, does not: it prints the
+-- refusal, carries on to the next statement, and undoes everything
+-- anyway. The refusal is shown and ignored, which is the worst of both.
+--
+-- The transaction used to open below this block, which made the undo
+-- atomic and left the refusal exactly as ignorable as it was. Opened
+-- above it, the raise aborts the transaction, Postgres refuses every
+-- statement after it, and the commit at the end becomes a rollback.
+begin;
+
 do $$
 begin
   if coalesce(current_setting('lms.undo_22_force', true), '') <> 'yes, I mean it' then
@@ -43,7 +58,6 @@ begin
   end if;
 end $$;
 
-begin;
 
 -- ------------------------------------------------------------ step 1 of 6
 -- lms_create_path, as file 17 wrote it, with no programme.
