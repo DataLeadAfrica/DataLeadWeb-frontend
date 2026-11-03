@@ -14,6 +14,105 @@ a second copy of its own; that copy is gone and its entry is below.
 
 ---
 
+## PHASE 6H, FILE 28, 3 November 2026. Attendance for bootcamp participants
+
+Laid on `main` at `d0c2c9b`.
+
+### What it adds
+
+Attendance taking for a bootcamp, two ways in. In a room, staff scan the QR on a participant's ID
+card. Online, the facilitator reveals a code during the class, good for about twenty minutes and
+once per account. One record per participant per day either way, and the day's short form stays
+locked to anybody who was not marked present.
+
+Plus a four-question screen the first time a learner signs in: preferred name, laptop or phone,
+internet quality, experience with the topic, and an optional note about what they want out of it.
+
+### What it does not add, and why
+
+**No photograph.** The scanner showing a face is the strongest answer to a shared card, and it was
+asked for, costed and then declined for now. So no photo column was created and no storage bucket
+was set up: the scanner shows a name and a cohort. A later file can add one without disturbing
+anything here. Half-building it would have left a column nothing fills and a rule nobody enforces.
+
+**No columns on the certification tables.** The ID card needs a number and a secret token, and the
+obvious home was two new columns on `participants`. `participants` is a certification table, so the
+card data went into `lms_participant_cards`, which points at it instead.
+
+**No re-asking what the sign-up page already asks.** Six of the thirteen fields originally proposed
+for the first-sign-in screen are already collected, and made mandatory, by the About you section of
+the sign-up page. The screen shows those back read only rather than asking again.
+
+### The design decision worth recording
+
+The new practical fields went into a table of their own rather than onto `lms_learner_profiles`.
+That table holds the disability answer, so file 26 stripped it back until a learner cannot read even
+their own row and the only route in is one administrator function that writes an audit line every
+time. That is right for sensitive personal data and wrong for "do you have a laptop": a facilitator
+checking who is phone-only should not be setting off a sensitive-data audit entry.
+
+The name rule came out of the same choice and is stronger than asked for. Only staff may change a
+participant's name, because it has to match the card. Rather than disable a text box, the new table
+has no name column, no write permission and no name parameter on its save function. There is nothing
+to re-enable.
+
+### One change to an existing table, which only takes something away
+
+`lms_module_badges`, made in file 24, still let a signed-in person empty it in one statement.
+
+The cause is general: the default privileges on this database grant **everything** on a new table to
+`anon` and `authenticated`, so `revoke select, insert, update, delete` leaves TRUNCATE behind, and
+**row level security does not apply to TRUNCATE** — no policy can refuse it. It is not reachable
+through the REST layer, which only ever issues the four, but the rule since file 26 is to take the
+permission away rather than trust the layer above.
+
+Every other `lms_` table was already covered, most of them by file 26. Row 12 of `28_verify.sql`
+now asks the general question, so a table added by a later file is caught without anybody
+remembering to come back here.
+
+### Proved by mutation, not just by passing
+
+The suite is 79 checks and they all pass, which on its own proves nothing. The usual negative proof
+could not be used: every table and function is new, so on a database without file 28 the suite dies
+on the first missing function rather than reporting failures.
+
+So each protection was broken deliberately, one at a time, and the suite run to see what went red.
+Eleven mutations, every one noticed, from 1 check red to 6.
+
+**That exercise found two real problems.** The expired-code check was using a learner from the wrong
+cohort, so the code was being refused by the cohort test and the check would have gone green on a
+database that ignored the time window completely. And the scan function's return value leaned on a
+constraint held in another object, so it raised "more than one row returned by a subquery" instead
+of anything a reader could act on. Both are fixed, and a fourth test learner exists solely so the
+window check has somebody in the right cohort to refuse.
+
+### The undo is deliberately unlike the others
+
+Files 17 to 27 moved rules, so undoing them touched nobody's records. Attendance is a record of
+something that happened to a person on a day, and the standing rule is that such a thing is not
+removed outright.
+
+So `28_undo.sql` removes the nineteen functions, which is what makes the feature stop, then drops
+only the tables that are **empty**. Any table holding rows is left where it is and the undo reports
+how many rows it refused to destroy. Those tables are inert without the functions. It does not hand
+TRUNCATE back on the badge table either, because that would reopen a hole.
+
+### What is in it
+
+| File | What |
+|---|---|
+| `database/lms/28_attendance.sql` | The five tables, the nineteen functions, the grants |
+| `database/lms/28_verify.sql` | 14 checks. Row 13 is expected to say NO on day one |
+| `database/lms/28_undo.sql` | Refuses twice, and never deletes a record |
+| `database/lms/tests/file_28_tests.sql` | 79 checks |
+| `docs/lms/PHASE-6H-RUN-ORDER.md` | What to paste, in what order |
+| `docs/lms/PHASE-6H-PLAIN.md` | The whole thing in plain English |
+
+The `_EDITOR.sql` copies are generated by `scripts/lms/make-editor-sql.mjs` and were checked to
+build a database whose nineteen stored function sources match a `psql` build byte for byte.
+
+---
+
 ## PHASE 6G, FILE 27, 28 October 2026. Nobody could be certified, and the screen said it was fine
 
 Found by walking the whole system end to end on a clean database rather than by reading it.
