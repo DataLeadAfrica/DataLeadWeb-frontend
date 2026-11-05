@@ -59,6 +59,11 @@ export const PAYMENTS: Record<string, CoursePayment> = {
     full: { amount: 100000, paystack: "dla-employability-full-v2" },
     nysc: { amount: 60000, paystack: "dla-employability-nysc-v2" },
   },
+  "Grant and Proposal Writing": {
+    // TODO: add `paystack` slug once the Paystack page exists, to enable the
+    // "Pay online" button. Until then the form shows the amount + bank transfer.
+    full: { amount: 150000 },
+  },
   "Digital Creators": {
     full: { amount: 100000, paystack: "dla-digital-creators-full-v2" },
   },
