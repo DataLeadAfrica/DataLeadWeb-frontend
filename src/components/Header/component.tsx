@@ -201,6 +201,7 @@ export default function Header() {
     "HR Analytics": routes.coursesHrAnalytcis,
     "Research Methodology and Manuscript Writing":
       routes.coursesResearchMethodologies,
+    "Grant and Proposal Writing": routes.coursesGrantProposal,
     "Employability & Entrepreneurship": routes.coursesEmployability,
   };
 

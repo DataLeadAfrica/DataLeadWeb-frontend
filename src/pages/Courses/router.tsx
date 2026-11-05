@@ -8,6 +8,7 @@ import bioinformatics from "./assets/bioinformatics.svg";
 import digital_creation from "./assets/digital-creation.svg";
 import employability_entrepreneurship from "./assets/employability-entrepreneurship.svg";
 import research_methodologies from "./assets/research-methodologies.svg";
+import grant_proposal_writing from "./assets/grant-proposal-writing.svg";
 import hr_analytics from "./assets/hr-analytics.svg";
 import business_analytics from "./assets/business-analytics.svg";
 import ai_ml_kids from "./assets/ai-ml-kids.svg";
@@ -234,6 +235,69 @@ const courseInfos: Array<CourseInfo> = [
       "Referencing using tools like Zotero and Mendeley": "",
       "Common reasons for manuscript rejection and how to avoid them": "",
     },
+  },
+  {
+    imgSrc: grant_proposal_writing,
+    link: routes.coursesGrantProposal,
+    name: "Grant and Proposal Writing",
+    formLink: "#",
+    desc: "This course equips NGO staff, researchers and development professionals with the practical skills to write proposals that win. Over three intensive days, you learn a clear, repeatable process for turning ideas into funded projects, from reading a call to designing a logframe, writing the narrative and building a compliant budget.",
+    price: "150,000",
+    tagline:
+      "Turn your ideas into funded projects. A practical, hands-on course that takes you from reading a call to a submission-ready proposal, in three days.",
+    duration: "3 days",
+    cohortNote: "Next cohort now enrolling",
+    modules: {
+      "Grants and the Funding Landscape":
+        "Understand the funding ecosystem, how grants and donor funding work, and how to find and track the right opportunities.",
+      "Reading Calls and Donor Requirements":
+        "Decode calls for proposals, RFPs and RFAs, eligibility and compliance, and align your idea with donor priorities.",
+      "Designing a Winning Project":
+        "Turn an idea into a credible project with problem statements, theory of change, logframes and clear indicators.",
+      "Writing the Proposal":
+        "Write strong concept notes and full proposals, with clear technical narratives, work plans, methodology and sustainability.",
+      "Budgeting and Financial Planning":
+        "Build realistic, donor-compliant budgets with budget narratives, cost justification and value for money.",
+      "Review, Submission and Beyond":
+        "Review and strengthen your proposal, submit it well, avoid common rejections, and manage reporting and donor relationships.",
+    },
+    outcomes: [
+      "Identify and assess the right funding opportunities",
+      "Interpret calls and meet every donor requirement",
+      "Design projects with clear logframes and results frameworks",
+      "Write persuasive concept notes and full proposals",
+      "Build realistic, donor-compliant budgets",
+      "Submit with confidence and avoid common rejections",
+    ],
+    tools: [
+      "Microsoft Word",
+      "Excel",
+      "Logical Framework",
+      "Theory of Change",
+      "Budget templates",
+    ],
+    whoFor: [
+      "NGO and nonprofit staff",
+      "Researchers",
+      "Programme and M&E officers",
+      "Fundraising and business development teams",
+      "Consultants who write proposals",
+    ],
+    faqs: [
+      {
+        q: "Do I need prior experience?",
+        a: "No. The course starts from the basics and gives you a repeatable method. Beginners and regular proposal-writers both benefit.",
+      },
+      { q: "How long is it?", a: "Three intensive days, onsite in Abuja or online." },
+      {
+        q: "What will I leave with?",
+        a: "A submission-ready concept note or proposal responding to a real call, plus templates you can reuse.",
+      },
+      {
+        q: "Will I get a certificate?",
+        a: "Yes, a Data-Lead Africa certificate on completion.",
+      },
+    ],
   },
   {
     imgSrc: ai_ml_kids,

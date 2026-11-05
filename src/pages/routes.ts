@@ -59,6 +59,7 @@ export const routes = {
   coursesResearchMethodologies:
     "/courses/research-methodology-manuscript-writing",
   coursesEmployability: "/courses/employability-entrepreneurship",
+  coursesGrantProposal: "/courses/grant-and-proposal-writing",
   coursesDigitalCreation: "/courses/digital-creation",
   coursesKids: "/courses/kids",
   coursesAiMlKids: "/courses/ai-ml-for-kids",
