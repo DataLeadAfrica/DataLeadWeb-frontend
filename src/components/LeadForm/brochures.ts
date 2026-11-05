@@ -23,6 +23,11 @@ export const BROCHURES: Brochure[] = [
     duration: "Intensive",
   },
   {
+    name: "Grant and Proposal Writing",
+    file: "grant-proposal-writing.pdf",
+    duration: "3 days",
+  },
+  {
     name: "Employability & Entrepreneurship",
     file: "employability-entrepreneurship.pdf",
     duration: "2 weeks",
