@@ -1,88 +1,137 @@
 // ============================================================
-// COWRIE SHELL . NOTICE FOR EVERYONE
-// One banner at the top of every Cowrie Shell page (staff, admin,
-// finance, record, sign-in). It can be shrunk to a single line, never
-// hidden completely, so the advice stays one tap away.
-//
-// To take the notice down, set NOTICE_ON to false. To change it, edit
-// the words below. Nothing else needs to change.
+// COWRIE SHELL . NOTICE TO ALL STAFF
+// The banner at the top of every Cowrie Shell page (staff, admin,
+// finance, record, sign-in). What it says is not written here: the CEO
+// or the COO writes it in Admin ("Notice to all staff"), and this file
+// asks the database for whatever is up today. No notice, no banner.
+// It can be shrunk to one line, never hidden; a new notice opens again.
 // ============================================================
 (function(){
-  var NOTICE_ON = true;
-  var NOTICE_ID = "ebola-fct-2026-10";          // change this when the notice changes, so everyone sees it open again
+  var URL = "https://bwlzhpgbyqxjhvedcxxu.supabase.co";
+  var KEY = "sb_publishable_PXDNEH8B7bOCH4bl9K_4OA_bU0YbheV";
+  var SESSION = "sb-bwlzhpgbyqxjhvedcxxu-auth-token";
 
-  if(!NOTICE_ON || document.getElementById("dla-notice")) return;
-
-  var STEPS = [
-    "<b>Wash your hands often</b> with soap and running water, or use an alcohol-based sanitiser, especially after public transport, the market, a hospital visit or shaking hands.",
-    "<b>Wipe shared surfaces every day:</b> desks, door handles, keyboards, phones, and the meeting and training rooms.",
-    "<b>Do not touch the blood or body fluids</b> (vomit, stool, urine, saliva) of anyone who is ill, or the body of anyone who has died of an unexplained illness.",
-    "<b>Avoid bush meat,</b> especially bats and monkeys.",
-    "<b>If you feel unwell</b> with a fever, severe weakness, headache, muscle pain, sore throat, vomiting, diarrhoea or unexplained bleeding: <b>stay at home, tell your line manager, and call NCDC on <a href=\"tel:6232\">6232</a></b> before going to a hospital. Please do not self-medicate.",
-    "<b>Share only official updates</b> from NCDC. Please do not forward rumours, and be kind to anyone who is unwell or being monitored."
-  ];
+  var TONES = {
+    info:      { bg:"#eef5fb", line:"#c9dcec", ink:"#173a55", head:"#0f4c78", chip:"Notice",      icon:"i", dot:"#1f6fb2" },
+    celebrate: { bg:"#fff6ee", line:"#f6d3b6", ink:"#3d2a1c", head:"#8a3d07", chip:"From the office", icon:"★", dot:"#f56e0f" },
+    alert:     { bg:"#fff4f2", line:"#f1c9c3", ink:"#3b1f1b", head:"#7a1a12", chip:"Important",   icon:"!", dot:"#b42318" }
+  };
 
   var css =
-    "#dla-notice{font-family:Poppins,system-ui,sans-serif;background:#fff4f2;border-bottom:1px solid #f1c9c3;color:#3b1f1b;position:relative;z-index:5}" +
-    "#dla-notice .dn-in{max-width:1040px;margin:0 auto;padding:16px 22px 18px;display:flex;gap:14px;align-items:flex-start}" +
-    "#dla-notice .dn-ic{flex:none;width:30px;height:30px;border-radius:50%;background:#b42318;color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;margin-top:2px}" +
-    "#dla-notice .dn-body{flex:1;min-width:0}" +
-    "#dla-notice .dn-chip{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#b42318;margin-bottom:2px}" +
-    "#dla-notice h2{font-size:17px;line-height:1.3;margin:0 0 6px;color:#7a1a12;font-weight:600;font-family:inherit}" +
-    "#dla-notice p{font-size:13.5px;line-height:1.55;margin:0 0 10px;max-width:78ch}" +
-    "#dla-notice ol{margin:0 0 10px 18px;padding:0;font-size:13.5px;line-height:1.55;max-width:84ch}" +
-    "#dla-notice li{margin:0 0 5px}" +
-    "#dla-notice a{color:#b42318;font-weight:600}" +
-    "#dla-notice .dn-foot{font-size:12px;color:#7d5a55}" +
-    "#dla-notice .dn-btn{flex:none;font:inherit;font-size:12px;background:#fff;border:1px solid #e3b1aa;color:#7a1a12;border-radius:8px;padding:5px 11px;cursor:pointer}" +
-    "#dla-notice .dn-btn:hover{border-color:#b42318}" +
-    "#dla-notice .dn-short{display:none;font-size:13.5px;line-height:1.5}" +
-    "#dla-notice.dn-min .dn-in{padding:9px 22px;align-items:center}" +
-    "#dla-notice.dn-min .dn-ic{width:22px;height:22px;font-size:12px;margin:0}" +
-    "#dla-notice.dn-min .dn-full{display:none}" +
-    "#dla-notice.dn-min .dn-short{display:block}" +
-    "@media (max-width:560px){#dla-notice .dn-in{padding:14px 16px;flex-wrap:wrap}#dla-notice .dn-body{flex:1 1 calc(100% - 44px)}" +
-    "#dla-notice .dn-btn{margin-left:44px}#dla-notice.dn-min .dn-in{padding:9px 16px}}" +
-    "@media print{#dla-notice{display:none!important}}";
+    ".dla-ntc{font-family:Poppins,system-ui,sans-serif;border-bottom:1px solid var(--n-line);background:var(--n-bg);color:var(--n-ink);position:relative;z-index:5}" +
+    ".dla-ntc .dn-in{max-width:1040px;margin:0 auto;padding:16px 22px 18px;display:flex;gap:14px;align-items:flex-start}" +
+    ".dla-ntc .dn-ic{flex:none;width:30px;height:30px;border-radius:50%;background:var(--n-dot);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px;margin-top:2px}" +
+    ".dla-ntc .dn-body{flex:1;min-width:0}" +
+    ".dla-ntc .dn-chip{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--n-dot);margin-bottom:2px}" +
+    ".dla-ntc h2{font-size:17px;line-height:1.3;margin:0 0 6px;color:var(--n-head);font-weight:600;font-family:inherit}" +
+    ".dla-ntc p{font-size:13.5px;line-height:1.55;margin:0 0 10px;max-width:80ch}" +
+    ".dla-ntc ul{margin:0 0 10px 18px;padding:0;font-size:13.5px;line-height:1.55;max-width:84ch}" +
+    ".dla-ntc li{margin:0 0 5px}" +
+    ".dla-ntc a{color:var(--n-dot);font-weight:600}" +
+    ".dla-ntc .dn-full > :last-child{margin-bottom:0}" +
+    ".dla-ntc .dn-btn{flex:none;font:inherit;font-size:12px;background:#fff;border:1px solid var(--n-line);color:var(--n-head);border-radius:8px;padding:5px 11px;cursor:pointer}" +
+    ".dla-ntc .dn-btn:hover{border-color:var(--n-dot)}" +
+    ".dla-ntc .dn-short{display:none;font-size:13.5px;line-height:1.5}" +
+    ".dla-ntc.dn-min .dn-in{padding:9px 22px;align-items:center}" +
+    ".dla-ntc.dn-min .dn-ic{width:22px;height:22px;font-size:11px;margin:0}" +
+    ".dla-ntc.dn-min .dn-full{display:none}" +
+    ".dla-ntc.dn-min .dn-short{display:block}" +
+    "@media (max-width:560px){.dla-ntc .dn-in{padding:14px 16px;flex-wrap:wrap}.dla-ntc .dn-body{flex:1 1 calc(100% - 44px)}" +
+    ".dla-ntc .dn-btn{margin-left:44px}.dla-ntc.dn-min .dn-in{padding:9px 16px}}" +
+    "@media print{.dla-ntc{display:none!important}}";
 
-  var html =
-    '<div class="dn-in">' +
-      '<div class="dn-ic" aria-hidden="true">!</div>' +
-      '<div class="dn-body">' +
-        '<div class="dn-full">' +
-          '<div class="dn-chip">Health alert</div>' +
-          '<h2>Ebola: a confirmed case in the FCT</h2>' +
-          '<p>The Nigeria Centre for Disease Control (NCDC) has confirmed a case of Ebola in the FCT. ' +
-            'There is no need to panic, but please take these simple steps to protect yourself, your family and your colleagues.</p>' +
-          '<ol><li>' + STEPS.join('</li><li>') + '</li></ol>' +
-          '<div class="dn-foot">NCDC toll-free: <a href="tel:6232">6232</a> or <a href="tel:080097000010">0800-970000-10</a>. ' +
-            'Information from NCDC, 25 October 2026. If you have any worries, speak to your line manager.</div>' +
-        '</div>' +
-        '<div class="dn-short"><b>Health alert: Ebola case confirmed in the FCT.</b> Wash your hands often. ' +
-          'If you feel unwell, stay at home and call NCDC on <a href="tel:6232">6232</a>.</div>' +
-      '</div>' +
-      '<button class="dn-btn" type="button" aria-expanded="true">Show less</button>' +
-    '</div>';
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
+  // **bold** words
+  function inline(s){
+    return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  }
+  // blank line = new paragraph; a line starting with "- " is a bullet
+  function bodyHtml(text){
+    var out = [], list = [], para = [];
+    function flushP(){ if(para.length){ out.push("<p>" + para.map(inline).join("<br>") + "</p>"); para = []; } }
+    function flushL(){ if(list.length){ out.push("<ul><li>" + list.map(inline).join("</li><li>") + "</li></ul>"); list = []; } }
+    String(text || "").replace(/\r/g, "").split("\n").forEach(function(line){
+      var t = line.trim();
+      if(!t){ flushP(); flushL(); return; }
+      var m = t.match(/^[-*•]\s+(.*)$/);
+      if(m){ flushP(); list.push(m[1]); } else { flushL(); para.push(t); }
+    });
+    flushP(); flushL();
+    return out.join("");
+  }
 
-  function key(){ return "dla-notice-min:" + NOTICE_ID; }
-  function isMin(){ try { return localStorage.getItem(key()) === "1"; } catch(e){ return false; } }
-  function remember(v){ try { localStorage.setItem(key(), v ? "1" : "0"); } catch(e){} }
-
-  function mount(){
-    if(document.getElementById("dla-notice")) return;
-    var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+  function styleOnce(){
+    if(document.getElementById("dla-ntc-css")) return;
+    var st = document.createElement("style"); st.id = "dla-ntc-css"; st.textContent = css;
+    (document.head || document.documentElement).appendChild(st);
+  }
+  function vars(el, tone){
+    var t = TONES[tone] || TONES.info;
+    el.style.setProperty("--n-bg", t.bg); el.style.setProperty("--n-line", t.line);
+    el.style.setProperty("--n-ink", t.ink); el.style.setProperty("--n-head", t.head); el.style.setProperty("--n-dot", t.dot);
+    return t;
+  }
+  // build the banner for a notice; used for the real thing and for Admin's preview
+  function build(n, preview){
+    styleOnce();
     var box = document.createElement("div");
-    box.id = "dla-notice"; box.setAttribute("role", "region"); box.setAttribute("aria-label", "Health alert");
-    box.innerHTML = html;
-    document.body.insertBefore(box, document.body.firstChild);
+    box.className = "dla-ntc"; box.setAttribute("role", "region"); box.setAttribute("aria-label", "Notice to all staff");
+    var t = vars(box, n.tone);
+    box.innerHTML =
+      '<div class="dn-in">' +
+        '<div class="dn-ic" aria-hidden="true">' + t.icon + '</div>' +
+        '<div class="dn-body">' +
+          '<div class="dn-full"><div class="dn-chip">' + t.chip + '</div>' +
+            '<h2>' + inline(n.title) + '</h2>' + bodyHtml(n.body) + '</div>' +
+          '<div class="dn-short"><b>' + inline(n.short || n.title) + '</b></div>' +
+        '</div>' +
+        '<button class="dn-btn" type="button" aria-expanded="true">Show less</button>' +
+      '</div>';
     var b = box.querySelector(".dn-btn");
+    var key = "dla-notice-min:" + (n.id || "preview");
     function paint(min){
       box.classList.toggle("dn-min", min);
-      b.textContent = min ? "Show advice" : "Show less";
+      b.textContent = min ? "Show more" : "Show less";
       b.setAttribute("aria-expanded", min ? "false" : "true");
     }
-    paint(isMin());
-    b.addEventListener("click", function(){ var m = !box.classList.contains("dn-min"); paint(m); remember(m); });
+    var startMin = false;
+    if(!preview){ try { startMin = localStorage.getItem(key) === "1"; } catch(e){} }
+    paint(startMin);
+    b.addEventListener("click", function(){
+      var m = !box.classList.contains("dn-min"); paint(m);
+      if(!preview){ try { localStorage.setItem(key, m ? "1" : "0"); } catch(e){} }
+    });
+    return box;
   }
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
+
+  function token(){
+    try {
+      var s = JSON.parse(localStorage.getItem(SESSION) || "null");
+      if(s && s.access_token && (!s.expires_at || s.expires_at * 1000 > Date.now() + 5000)) return s.access_token;
+    } catch(e){}
+    return null;
+  }
+  function ask(withToken){
+    var h = { "apikey": KEY, "Content-Type": "application/json" };
+    var tk = withToken ? token() : null;
+    if(tk) h["Authorization"] = "Bearer " + tk;
+    return fetch(URL + "/rest/v1/rpc/current_notice", { method:"POST", headers:h, body:"{}" })
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function show(n){
+    var old = document.getElementById("dla-notice");
+    if(!n || !n.title){ if(old) old.remove(); return; }
+    var box = build(n, false); box.id = "dla-notice";
+    if(old) old.replaceWith(box); else document.body.insertBefore(box, document.body.firstChild);
+  }
+  function refresh(){
+    return ask(true).catch(function(){ return ask(false); }).then(show).catch(function(){ /* no notice today */ });
+  }
+
+  window.dlaNotice = { refresh: refresh, build: build };
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", refresh); else refresh();
+  // after someone signs in on this page, look again (a staff-only notice may now apply)
+  window.addEventListener("storage", function(e){ if(e.key === SESSION) refresh(); });
+  setTimeout(refresh, 4000);
 })();

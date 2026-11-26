@@ -463,6 +463,28 @@ body.sv-open{overflow:hidden}
 .lvp-msg.tone-plain{background:#f7f7f9;border-left-color:#c9c6cf;color:#3e3c44}
 .lvp.is-big .lvp-msg{font-size:14px}
 @media (max-width:520px){ .lvp-top{flex-direction:column;gap:6px} .lvp-back{text-align:left} }
+/* ---------- notice to all staff ---------- */
+.nt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nt-hint{font-size:11.5px;color:var(--faint,#8b8792);margin-top:4px}
+.nt-tick{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--ink,#2c2b2d);margin:4px 0 14px}
+.nt-tick input{width:17px;height:17px;accent-color:var(--orange)}
+.nt-prev{border:1px dashed var(--line);border-radius:12px;overflow:hidden;margin:6px 0 14px}
+.nt-prev .dla-ntc{border-bottom:none}
+.nt-prev-empty{padding:16px;font-size:12.5px;color:var(--muted)}
+.nt-now{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;margin-bottom:8px}
+.nt-now:last-of-type{margin-bottom:14px}
+.nt-pill{display:inline-block;font-size:11px;font-weight:600;border-radius:99px;padding:2px 10px}
+.nt-pill.on{background:var(--green-bg);color:var(--green)}
+.nt-pill.off{background:var(--paper,#f4f3f6);color:var(--muted)}
+.nt-act{display:flex;gap:10px;flex-wrap:wrap}
+.nt-act button{flex:1 1 200px}
+.nt-hist{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.nt-hist summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+.nt-hrow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.nt-hrow:last-child{border-bottom:none}
+.nt-hrow small{display:block;color:var(--muted)}
+.nt-hrow button{font-size:12px;padding:4px 10px;flex:none}
+@media (max-width:640px){ .nt-grid{grid-template-columns:1fr} }
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -625,6 +647,7 @@ body.sv-open{overflow:hidden}
     <div id="ad-money"></div>
     <div id="ad-loans"></div>
     <div id="ad-leave"></div>
+    <div id="ad-notice"></div>
 
     <div class="section-label">Where to</div>
     <div class="doors" id="doors"></div>
@@ -1832,6 +1855,7 @@ function go(v){
 async function loadHub(){
   adMoney();   // the money, from the Finance ledger
   adLeave();   // who is on leave, and when they are back
+  adNotice();  // the notice at the top of everyone's pages
   const { data, error } = await db.from("firm_at_a_glance").select("*").maybeSingle();
   if(oops("The firm", error)) return;
   const f = data || {};
@@ -3594,6 +3618,108 @@ async function pLeave(id){
   if(!rows || !rows.length || !P || P.id !== id) return;
   box.innerHTML = '<div class="lvp-wrap"><div class="lvp-list">' + rows.map(r => lvpCard(r, {})).join("") + '</div></div>';
 }
+
+// ============================================================
+// NOTICE TO ALL STAFF
+// One notice at a time, at the top of every Cowrie Shell page. Written
+// here, kept in the database (staff_notices), shown by notice.js.
+// Publishing replaces whatever is up; everyone sees the new one open.
+// ============================================================
+let NT_LIST = [];
+const NT_TONES = { celebrate:"Good news or an announcement", info:"General information", alert:"Urgent alert" };
+const ntDate = d => d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }) : "";
+const ntToday = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+
+async function adNotice(){
+  const box = $("ad-notice"); if(!box) return;
+  const { data, error } = await db.rpc("admin_notices");
+  if(error){
+    box.innerHTML = '<div class="panel"><h3>Notice to all staff</h3><div class="ps">Not switched on yet. Run script 23 in Supabase to turn this on.</div></div>';
+    console.warn("admin_notices:", error.message); return;
+  }
+  NT_LIST = data || [];
+  const live = NT_LIST.find(n => n.active && n.showing_now) || null;
+  const next = NT_LIST.find(n => n.active && !n.showing_now) || null;
+  const cur = next || live;                                  // the form edits the latest one
+  const line = (n, on) => '<div class="nt-now"><span class="nt-pill ' + (on ? "on" : "off") + '">' + (on ? "Showing now" : "Scheduled") + '</span>' +
+      '<span><b>' + esc(n.title) + '</b> · ' + (on ? "since " : "from ") + ntDate(n.show_from) +
+      (n.show_until ? " until " + ntDate(n.show_until) : ", until you take it down") +
+      (n.on_sign_in ? " · also on the sign-in page" : "") + '</span></div>';
+  const status = (live ? line(live, true) : "") + (next ? line(next, false) : "") +
+    (!live && !next ? '<div class="nt-now"><span class="nt-pill off">Nothing showing</span><span>No notice is up at the moment.</span></div>' : "");
+  const f = cur || { title:"", body:"", short_line:"", tone:"celebrate", show_from:ntToday(), show_until:null, on_sign_in:false };
+  const old = NT_LIST.filter(n => !n.active);
+
+  box.innerHTML = '<div class="panel" id="nt-panel"><h3>Notice to all staff</h3>' +
+    '<div class="ps">One notice at a time, at the top of every staff, Finance and Admin page. Publishing replaces whatever is up, and everyone sees the new one open in full.</div>' +
+    status +
+    '<div class="fld"><label for="nt-title">Heading</label><input id="nt-title" maxlength="120" value="' + esc(f.title) + '" oninput="ntPreview()"></div>' +
+    '<div class="fld"><label for="nt-body">Message</label><textarea id="nt-body" rows="9" oninput="ntPreview()">' + esc(f.body) + '</textarea>' +
+      '<div class="nt-hint">Leave a blank line between paragraphs. Start a line with a dash and a space ("- ") for a bullet point. Put **two stars** around words to make them bold.</div></div>' +
+    '<div class="fld"><label for="nt-short">One-line version <span style="font-weight:400">(optional)</span></label><input id="nt-short" maxlength="200" value="' + esc(f.short_line || "") + '" oninput="ntPreview()">' +
+      '<div class="nt-hint">What people see when they shrink the notice. Leave it blank to use the heading.</div></div>' +
+    '<div class="nt-grid">' +
+      '<div class="fld"><label for="nt-tone">Style</label><select id="nt-tone" onchange="ntPreview()">' +
+        Object.keys(NT_TONES).map(k => '<option value="' + k + '"' + (f.tone === k ? " selected" : "") + '>' + NT_TONES[k] + '</option>').join("") + '</select></div>' +
+      '<div class="nt-grid"><div class="fld"><label for="nt-from">Show from</label><input type="date" id="nt-from" value="' + esc(f.show_from || ntToday()) + '"></div>' +
+        '<div class="fld"><label for="nt-until">Until <span style="font-weight:400">(optional)</span></label><input type="date" id="nt-until" value="' + esc(f.show_until || "") + '"></div></div>' +
+    '</div>' +
+    '<label class="nt-tick"><input type="checkbox" id="nt-signin"' + (f.on_sign_in ? " checked" : "") + '> Also show it on the sign-in page, before people sign in. Anyone who opens that page can read it, so leave this off for anything internal.</label>' +
+    '<label>Preview</label><div class="nt-prev" id="nt-prev"></div>' +
+    '<div id="nt-msg"></div>' +
+    '<div class="nt-act"><button class="btn-primary" id="nt-pub" onclick="ntPublish()">' + (cur ? "Publish the changes" : "Publish to all staff") + '</button>' +
+      (cur ? '<button id="nt-end" onclick="ntEnd()">' + (live && next ? "Take both down" : "Take it down") + '</button>' : "") + '</div>' +
+    (old.length ? '<details class="nt-hist"><summary>Earlier notices (' + old.length + ')</summary>' +
+      old.map(n => '<div class="nt-hrow"><span><b>' + esc(n.title) + '</b><small>' + ntDate(n.show_from) +
+        (n.ended_at ? " · taken down " + ntDate(String(n.ended_at).slice(0,10)) : "") +
+        (n.created_by_name ? " · by " + esc(n.created_by_name) : "") + '</small></span>' +
+        '<button onclick="ntReuse(' + n.id + ')">Use again</button></div>').join("") + '</details>' : "") +
+  '</div>';
+  ntPreview();
+}
+function ntPreview(){
+  const box = $("nt-prev"); if(!box) return;
+  const n = { title: $("nt-title").value.trim(), body: $("nt-body").value, short: $("nt-short").value.trim(), tone: $("nt-tone").value };
+  box.innerHTML = "";
+  if(!n.title && !n.body.trim()){ box.innerHTML = '<div class="nt-prev-empty">Write a heading and a message to see it here.</div>'; return; }
+  if(window.dlaNotice && window.dlaNotice.build) box.appendChild(window.dlaNotice.build(n, true));
+}
+function ntReuse(id){
+  const n = NT_LIST.find(x => x.id === id); if(!n) return;
+  $("nt-title").value = n.title; $("nt-body").value = n.body; $("nt-short").value = n.short_line || "";
+  $("nt-tone").value = n.tone; $("nt-from").value = ntToday(); $("nt-until").value = "";
+  $("nt-signin").checked = !!n.on_sign_in;
+  ntPreview(); $("nt-title").scrollIntoView({ behavior:"smooth", block:"center" });
+}
+async function ntPublish(){
+  const title = $("nt-title").value.trim(), body = $("nt-body").value.trim();
+  const from = $("nt-from").value || ntToday(), until = $("nt-until").value || null;
+  if(title.length < 3){ msg("nt-msg", "err", "Give it a heading", "A few words that say what the notice is about."); return; }
+  if(body.length < 3){ msg("nt-msg", "err", "Write the message", "What do you want everyone to know?"); return; }
+  if(until && until < from){ msg("nt-msg", "err", "Check the dates", "The end date is before the start date."); return; }
+  if(!confirm(from > ntToday()
+      ? "Schedule this notice for " + ntDate(from) + "? Whatever is up now stays until the day before."
+      : "Publish this notice to all staff? It replaces whatever is up now.")) return;
+  btn("nt-pub", true, "Publishing");
+  const { error } = await db.rpc("admin_publish_notice", {
+    p_title: title, p_body: body, p_short: $("nt-short").value.trim() || null, p_tone: $("nt-tone").value,
+    p_from: from, p_until: until, p_on_sign_in: $("nt-signin").checked });
+  btn("nt-pub", false, "Publish to all staff");
+  if(error){ msg("nt-msg", "err", "Not published", error.message); return; }
+  toast(from > ntToday() ? "Scheduled. It will appear on " + ntDate(from) + "." : "Published. Everyone will see it next time a page opens.");
+  await adNotice();
+  if(window.dlaNotice) window.dlaNotice.refresh();
+}
+async function ntEnd(){
+  if(!confirm("Take the notice down? It disappears from everyone's pages.")) return;
+  btn("nt-end", true, "Taking down");
+  const { error } = await db.rpc("admin_end_notice");
+  if(error){ btn("nt-end", false, "Take it down"); msg("nt-msg", "err", "Not taken down", error.message); return; }
+  toast("Taken down.");
+  await adNotice();
+  if(window.dlaNotice) window.dlaNotice.refresh();
+}
+window.ntPreview = ntPreview; window.ntReuse = ntReuse; window.ntPublish = ntPublish; window.ntEnd = ntEnd;
 
 // staff loans waiting for the CEO or COO, on the Admin home
 window.adLoanDecide = adLoanDecide;
