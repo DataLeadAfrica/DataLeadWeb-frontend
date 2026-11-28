@@ -483,6 +483,13 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .hq-act button{font-size:13px;padding:8px 12px}
 .hq-small{font-size:12px;color:var(--muted);margin-top:8px}
 .hq a{color:var(--clr-orange);font-weight:600}
+/* ---------- weekend class ---------- */
+.shell.wknd .sbody{stroke-dasharray:2 2}
+.wc{margin:0 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.wc-tick{display:flex;gap:9px;align-items:center;margin:0;font-size:14px;color:var(--clr-gray);cursor:pointer}
+.wc-tick input{width:18px;height:18px;accent-color:var(--clr-orange);flex:none}
+.wc .fld{margin:10px 0 4px}
+.wc .hint{margin:4px 0 0}
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -1024,11 +1031,14 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <button class="back" onclick="go('home')">&larr; Back</button>
     <div class="eyebrow">Extra hours</div>
     <h1 style="font-size:26px;margin-bottom:4px">Overtime</h1>
-    <p style="color:var(--muted);margin-bottom:18px" id="ot-lede">Overtime is paid only when it has been asked for and approved. Ask before the day; if it could not wait, ask as soon as you can afterwards.</p>
+    <p style="color:var(--muted);margin-bottom:18px" id="ot-lede">Overtime is paid only when it has been asked for and approved. Ask before the day; if it could not wait, ask as soon as you can afterwards. Asking for a weekend day opens it in your timesheet.</p>
+    <div class="alert info" style="margin-top:-6px">Facilitating a weekend class? You do not need to ask. Tick <b style="display:inline">I facilitated a weekend class</b> on the Friday in your timesheet, and the extra hours are paid automatically.</div>
 
     <div class="card" id="ot-ask">
       <h3>Ask for overtime</h3>
       <p class="cardsub">Your line manager, the CEO or the COO approves it. Once approved, log the hours in your timesheet as usual.</p>
+      <div class="fld"><label for="ot-kind">What kind of work?</label>
+        <select id="ot-kind"><option value="field_work">Field work</option><option value="other">Other work</option></select></div>
       <div class="grid2">
         <div class="fld"><label for="ot-date">Day</label><input type="date" id="ot-date" oninput="otHint()"></div>
         <div class="fld"><label for="ot-hours">Extra hours</label><input type="number" id="ot-hours" min="0.5" max="16" step="0.5" placeholder="e.g. 3"></div>
@@ -1383,6 +1393,13 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       <div class="fld"><label>Standard for this day</label><input id="mo-std" disabled></div>
     </div>
     <div class="fld"><label>What you did</label><textarea id="mo-act" placeholder="e.g. Cleaned and coded the Chad baseline dataset, drafted the WASH indicators."></textarea></div>
+    <div class="wc hidden" id="mo-wc">
+      <label class="wc-tick"><input type="checkbox" id="mo-wc-on" onchange="wcToggle()"> I facilitated a weekend class</label>
+      <div id="mo-wc-more" class="hidden">
+        <div class="fld"><label for="mo-wc-name">Which class?</label><input id="mo-wc-name" placeholder="e.g. Data Analytics Bootcamp, weekend cohort"></div>
+        <p class="hint" id="mo-wc-hint"></p>
+      </div>
+    </div>
     <div class="fld hidden" id="mo-late-wrap"><label id="mo-late-lab">Why are you submitting your timesheet late?</label>
       <input id="mo-late" placeholder="You are expected to fill your timesheet daily."></div>
     <div id="mo-ai" class="ai-note hidden"></div>
@@ -1869,6 +1886,11 @@ async function loadTimesheet(){
     DAYS = {};
     (d.data||[]).forEach(r => DAYS[r.work_date] = r);
 
+    // overtime asked for (pending or approved) opens a weekend day
+    OT_DATES = {};
+    const otq = await db.rpc("my_overtime");
+    if(!otq.error) (otq.data || []).forEach(o => { if(o.state === "pending" || o.state === "approved") OT_DATES[o.work_date] = o; });
+
     // approved leave. Not absence, and not something to log.
     LEAVE = {};
     const lv = await db.rpc("my_leave_days", { p_from: first, p_to: last });
@@ -1954,8 +1976,25 @@ function buildStrip(){
   for(let d = 1; d <= dim; d++){
     const dt = new Date(TS_YEAR, TS_MONTH-1, d);
     const w = dt.getDay();
-    if(w === 0 || w === 6) continue;                // not a working day, not a shell
     const iso = TS_YEAR + "-" + String(TS_MONTH).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    if(w === 0 || w === 6){
+      // a weekend is not a day owed. It appears only when opened: the Saturday of
+      // a weekend class (ticked on the Friday), or a day with overtime asked for.
+      const why = weekendOpen(iso);
+      if(!why) continue;
+      const rec = DAYS[iso], st = dayState(iso);
+      const tipW = why === "class" ? " \u00b7 weekend class" : why === "ot" ? " \u00b7 overtime asked for" : " \u00b7 weekend";
+      const lab = shellLabel(dt, d, null, rec, iso === todayISO) + tipW;
+      const shut = st === "closed" || st === "future";
+      html += '<button class="shell wknd' + (rec ? " on" : "") + (shut ? " shut" : "") + '"' + (shut ? "" : ' onclick="openDay(\'' + iso + '\')"') +
+        ' aria-label="' + esc(lab) + '"><span class="tip">' + esc(lab) + '</span>' +
+        '<svg viewBox="0 0 26 36" aria-hidden="true">' +
+          '<ellipse class="sbody" cx="13" cy="18" rx="10" ry="15.5"/>' +
+          '<path class="slit" d="M13 4.5v27" fill="none" stroke-linecap="round"/>' +
+          '<path class="teeth" d="M10.6 9h4.8M10.1 14h5.8M10.1 22h5.8M10.6 27h4.8" fill="none" stroke-linecap="round"/>' +
+        '</svg></button>';
+      continue;
+    }
     const hol = HOLIDAYS[iso];
     const lev = LEAVE[iso];
     const rec = DAYS[iso];
@@ -2000,7 +2039,7 @@ function buildStrip(){
 }
 
 const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-function standardFor(dt){ return dt.getDay() === 5 ? 5.5 : 7; }
+function standardFor(dt){ return dt.getDay() === 5 ? 5 : 7; }      // Friday is 9am to 2pm
 function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
 function shellLabel(dt, d, hol, rec, isToday, lev){
   const day = DOWFULL[dt.getDay()] + " " + d + " " + MONTHS[TS_MONTH-1];
@@ -2039,7 +2078,7 @@ function openDay(iso){
   }
   editing = iso;
   const dt = new Date(iso + "T00:00:00");
-  const std = dt.getDay() === 5 ? 5.5 : 7;
+  const std = standardFor(dt);
   $("mo-title").textContent = dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
   const offDay = !!HOLIDAYS[iso] || dt.getDay() === 0 || dt.getDay() === 6;
   $("mo-std").value = offDay ? (HOLIDAYS[iso] ? "None: public holiday" : "None: weekend") : std + " hours";
@@ -2050,6 +2089,7 @@ function openDay(iso){
   renderDayNotes(iso);
   thinAcknowledged = false;
   hqReset();
+  wcSetup(iso, dt);
   OT_MINE = null; otMine();
   const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
   $("modal").classList.remove("hidden");
@@ -2197,8 +2237,48 @@ document.addEventListener("input", e => {
 let thinAcknowledged = false;
 
 // ============================================================
+// WEEKEND CLASSES
+// Facilitators tick "I facilitated a weekend class" on the Friday and
+// name the class. That opens the Saturday in the timesheet, and the
+// extra Friday hours and the Saturday's hours are paid automatically.
+// Any other weekend work (field work) needs an overtime request, which
+// also opens the day. Before December, nothing here applies.
+// ============================================================
+let OT_DATES = {};
+function friOf(iso){ const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() - 1); return isoOf(d); }
+function weekendOpen(iso){
+  if(iso < HQ_RULE_FROM) return null;
+  const dow = new Date(iso + "T00:00:00").getDay();
+  if(dow === 6 && DAYS[friOf(iso)] && DAYS[friOf(iso)].weekend_class) return "class";
+  if(OT_DATES[iso]) return "ot";
+  if(DAYS[iso]) return "logged";
+  return null;
+}
+const wcOn = () => !$("mo-wc").classList.contains("hidden") && $("mo-wc-on").checked;
+const wcName = () => ($("mo-wc-name").value || "").trim();
+function wcSetup(iso, dt){
+  const box = $("mo-wc"), dow = dt.getDay();
+  const show = iso >= HQ_RULE_FROM && (dow === 5 || dow === 6);
+  box.classList.toggle("hidden", !show);
+  if(!show) return;
+  const rec = DAYS[iso], fri = dow === 6 ? DAYS[friOf(iso)] : null;
+  const cls = (rec && rec.weekend_class) || (dow === 6 && !rec && fri && fri.weekend_class) || "";
+  $("mo-wc-on").checked = !!cls;
+  $("mo-wc-name").value = cls;
+  $("mo-wc-hint").textContent = dow === 5
+    ? "Your hours after 2pm today, and your Saturday hours, are paid automatically. Saving this opens Saturday in your timesheet."
+    : "Your hours today are paid automatically as part of the weekend class.";
+  wcToggle();
+}
+function wcToggle(){
+  $("mo-wc-more").classList.toggle("hidden", !$("mo-wc-on").checked);
+  hqReset();
+}
+window.wcToggle = wcToggle;
+
+// ============================================================
 // LONGER OR SHORTER THAN THE NORMAL DAY
-// More than the normal day (7 hours, 5.5 on Friday; any hours on a
+// More than the normal day (7 hours, 5 on Friday; any hours on a
 // weekend or public holiday) is paid only with approved overtime, so
 // they are asked whether they have it, and can ask for it there and
 // then. Fewer hours needs their line manager's agreement, so they say
@@ -2229,6 +2309,7 @@ async function hoursQuestion(hours, act){
   if(hours > std){
     if(iso < HQ_RULE_FROM) return { flag:null, note:null };          // before December: paid as before
     const extra = hours - std;
+    if(wcOn()) return { flag:"over", note:"Weekend class: " + wcName() + " (paid automatically)" };
     const mine = (await otMine()).find(o => o.work_date === iso && (o.state === "approved" || o.state === "pending"));
     if(mine && mine.state === "approved"){
       const ok = Number(mine.approved_hours);
@@ -2325,6 +2406,13 @@ async function saveDay(){
     return;
   }
 
+  // a weekend class must say which class
+  if(wcOn() && wcName().length < 2){
+    $("mo-wc-name").focus();
+    $("mo-wc-hint").innerHTML = '<span style="color:var(--red)">Say which class you facilitated.</span>';
+    return;
+  }
+
   // longer or shorter than the normal day: ask, and keep the answer with the day
   const hq = await hoursQuestion(hours, act);
   if(hq === null) return;                   // a question is on screen; nothing saved yet
@@ -2337,6 +2425,11 @@ async function saveDay(){
   if(error){ alert("Could not save: " + error.message); return; }
   const hn = await db.rpc("set_day_hours_note", { p_date: editing, p_flag: hq.flag, p_note: hq.note });
   if(hn.error) console.warn("hours note:", hn.error.message);
+  if(!$("mo-wc").classList.contains("hidden")){
+    const wc = await db.rpc("set_weekend_class", { p_date: editing, p_class: wcOn() ? wcName() : null });
+    if(wc.error) alert("The day is saved, but the weekend class was not recorded: " + wc.error.message);
+    else if(wcOn() && new Date(editing + "T00:00:00").getDay() === 5) toast("Saved. Saturday is now open in your timesheet for the class.");
+  }
   if(hq.askOt){
     const { error: oe } = await db.rpc("request_overtime", { p_date: editing, p_hours: hq.askOt.hours, p_reason: hq.askOt.reason });
     if(oe) alert("The day is saved, but the overtime request was not sent: " + oe.message);
@@ -2616,9 +2709,10 @@ function rvHoursLine(d){
   if(d.kind === "counted" || d.hours === null || d.hours === undefined || d.normal_day === null || d.normal_day === undefined) return "";
   const h = Number(d.hours), n = Number(d.normal_day);
   const line = (c, t) => '<span style="color:var(--' + c + ');font-size:12px">' + t + '</span>';
+  if(d.weekend_class) return line("green", "Weekend class: " + esc(d.weekend_class) + (h > n ? " \u00b7 " + (Math.round((h - n) * 10) / 10) + "h paid automatically" : ""));
   if(h > n){
     const extra = Math.round((h - n) * 10) / 10;
-    if(d.ot_state === "approved") return line("green", extra + "h over the normal day \u00b7 overtime approved (" + Number(d.ot_hours) + "h)");
+    if(d.ot_state === "approved") return line("green", extra + "h over the normal day \u00b7 " + (d.ot_kind === "field_work" ? "field work" : "overtime") + " approved (" + Number(d.ot_hours) + "h)");
     if(d.ot_state === "pending") return line("amber", extra + "h over the normal day \u00b7 overtime waiting for approval");
     if(d.work_date < "2026-12-01") return "";
     return line("clay", extra + "h over the normal day \u00b7 no overtime asked for, so not paid");
@@ -3131,7 +3225,7 @@ function renderNow(){
   } else if(isWorkday && !todayLogged){
     st = { ey:"Right now", h:"Log today",
            p:DOWFULL[dow] + ", " + dom + " " + monthName + ". " +
-             (dow === 5 ? "Five and a half hours is a full Friday." : "Seven hours is a full day.") +
+             (dow === 5 ? "Five hours, 9am to 2pm, is a full Friday." : "Seven hours is a full day.") +
              " Say what you worked on and it takes half a minute.",
            cta:"Log today", act:"today" };
   } else if(planNeeded()){
@@ -3350,7 +3444,7 @@ function otHint(){
   const d = new Date(v + "T00:00:00"), dow = d.getDay();
   if(HOLIDAYS && HOLIDAYS[v]) h.textContent = "A public holiday: every hour you work that day counts as overtime.";
   else if(dow === 0 || dow === 6) h.textContent = "A weekend: every hour you work that day counts as overtime.";
-  else h.textContent = "A weekday: overtime is the hours beyond your normal day (" + (dow === 5 ? "5.5 hours on a Friday" : "7 hours") + ").";
+  else h.textContent = "A weekday: overtime is the hours beyond your normal day (" + (dow === 5 ? "5 hours on a Friday, 9am to 2pm" : "7 hours") + ").";
 }
 
 async function loadOvertime(){
@@ -3386,7 +3480,7 @@ async function loadOvertime(){
     else pill = '<span class="ot-pill cancelled">Cancelled</span>';
     const why = r.decision_note ? (r.state === "declined" ? "Reason: " : "Note: ") + esc(r.decision_note) + (r.decided_by_name ? " (" + esc(r.decided_by_name) + ")" : "") : "";
     const canCancel = r.state === "pending" || (r.state === "approved" && r.work_date > today);
-    return '<div class="ot-row"><span><b>' + otDay(r.work_date) + '</b> · ' + otH(r.hours) +
+    return '<div class="ot-row"><span><b>' + otDay(r.work_date) + '</b> · ' + otH(r.hours) + (r.kind === "field_work" ? ' · field work' : "") +
         (r.asked_late ? ' · <span style="color:var(--amber)">asked after the day</span>' : "") +
         '<small>' + esc(r.reason) + '</small>' + (note ? '<small>' + note + '</small>' : "") + (why ? '<small>' + why + '</small>' : "") + '</span>' +
       '<span class="ot-side">' + pill + (canCancel ? '<br><button onclick="otCancel(' + r.id + ')">Cancel</button>' : "") + '</span></div>';
@@ -3399,12 +3493,13 @@ async function otAsk(){
   if(!(h >= 0.5 && h <= 16)){ msg("ot-msg", "err", "Check the hours", "Between 0.5 and 16 extra hours."); return; }
   if(!why){ msg("ot-msg", "err", "Say what it is for", "Your manager needs to know what the work is."); return; }
   btn("ot-btn", true, "Sending");
-  const { error } = await db.rpc("request_overtime", { p_date: d, p_hours: h, p_reason: why });
+  const { error } = await db.rpc("request_overtime", { p_date: d, p_hours: h, p_reason: why, p_kind: val("ot-kind") || "other" });
   btn("ot-btn", false, "Send for approval");
   if(error){ msg("ot-msg", "err", "Not sent", error.message); return; }
   $("ot-msg").innerHTML = ""; set("ot-date", ""); set("ot-hours", ""); set("ot-reason", ""); otHint();
   toast("Sent. Your manager will see it in their approvals.");
   loadOvertime();
+  if(typeof loadTimesheet === "function") loadTimesheet().catch(() => {});
 }
 async function otCancel(id){
   if(!confirm("Cancel this overtime request?")) return;
@@ -3420,7 +3515,7 @@ async function loadOtQueue(){
   if(error){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Not switched on yet.</p>'; return; }
   if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No overtime waiting.</p>'; return; }
   wrap.innerHTML = data.map(o => '<div class="qrow"><span class="dot todo"></span>' +
-    '<span class="t"><b>' + esc(o.staff) + ' · ' + otDay(o.work_date) + ' · ' + otH(o.hours) + '</b>' +
+    '<span class="t"><b>' + esc(o.staff) + ' · ' + otDay(o.work_date) + ' · ' + otH(o.hours) + (o.kind === "field_work" ? ' · field work' : "") + '</b>' +
     '<span>' + esc(o.reason) + ' · ' + (o.day_kind === "normal" ? "hours beyond the normal day" : o.day_kind === "weekend" ? "weekend" : "public holiday") +
       (o.asked_late ? ' · <span style="color:var(--amber)">asked after the day</span>' : "") +
       (Number(o.approved_this_month) > 0 ? ' · ' + otH(o.approved_this_month) + ' already approved this month' : "") + '</span></span>' +
