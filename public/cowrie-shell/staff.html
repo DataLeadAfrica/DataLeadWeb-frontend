@@ -464,6 +464,17 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .hold-req{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
 .hold-req h3{font-size:16px;margin-bottom:4px}
 .hold-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+/* ---------- overtime ---------- */
+.ot-row{display:grid;grid-template-columns:1fr auto;gap:6px 14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.ot-row:last-child{border-bottom:none}
+.ot-row small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.ot-pill{display:inline-block;font-size:11px;font-weight:600;border-radius:99px;padding:2px 10px;white-space:nowrap}
+.ot-pill.pending{background:var(--amber-bg);color:var(--amber)}
+.ot-pill.approved{background:var(--green-bg);color:var(--green)}
+.ot-pill.declined{background:var(--red-bg);color:var(--red)}
+.ot-pill.cancelled{background:var(--paper,#f4f3f6);color:var(--muted)}
+.ot-side{text-align:right}
+.ot-side button{margin-top:6px;font-size:12px;padding:4px 10px}
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -604,6 +615,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       <button onclick="go('finance')">My finance</button>
       <button onclick="go('timesheet')">Sign off the month</button>
       <button onclick="go('leave')">Leave</button>
+      <button onclick="go('overtime')">Overtime</button>
       <button onclick="go('req')">Requisition</button>
       <button onclick="go('policies')">Policies and targets</button>
       <button id="dc-more" class="hidden" onclick="go('dc')">Queries and warnings</button>
@@ -740,6 +752,12 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
       <h3>Leave awaiting you</h3>
       <p class="cardsub">Sick and bereavement stop with you. Everything else goes on to the COO or the CEO after you.</p>
       <div id="ap-lv"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Overtime awaiting you</h3>
+      <p class="cardsub">Overtime is paid only when approved, and never more than the hours approved. You can approve fewer hours than asked.</p>
+      <div id="ap-ot"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
     </div>
 
     <div class="card hidden" id="ap-info-card">
@@ -993,6 +1011,33 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 
 
   <!-- ---------- requisitions ---------- -->
+  <!-- ============ OVERTIME ============ -->
+  <section id="v-overtime" class="hidden">
+    <button class="back" onclick="go('home')">&larr; Back</button>
+    <div class="eyebrow">Extra hours</div>
+    <h1 style="font-size:26px;margin-bottom:4px">Overtime</h1>
+    <p style="color:var(--muted);margin-bottom:18px" id="ot-lede">Overtime is paid only when it has been asked for and approved. Ask before the day; if it could not wait, ask as soon as you can afterwards.</p>
+
+    <div class="card" id="ot-ask">
+      <h3>Ask for overtime</h3>
+      <p class="cardsub">Your line manager, the CEO or the COO approves it. Once approved, log the hours in your timesheet as usual.</p>
+      <div class="grid2">
+        <div class="fld"><label for="ot-date">Day</label><input type="date" id="ot-date" oninput="otHint()"></div>
+        <div class="fld"><label for="ot-hours">Extra hours</label><input type="number" id="ot-hours" min="0.5" max="16" step="0.5" placeholder="e.g. 3"></div>
+      </div>
+      <p class="hint" id="ot-hint" style="margin:-6px 0 12px"></p>
+      <div class="fld"><label for="ot-reason">What is the work, and why does it need extra time?</label>
+        <textarea id="ot-reason" rows="3" placeholder="e.g. Field data collection in Kuje on Saturday, agreed with the client"></textarea></div>
+      <div id="ot-msg"></div>
+      <button class="btn-primary" id="ot-btn" onclick="otAsk()">Send for approval</button>
+    </div>
+
+    <div class="card">
+      <h3>Your overtime</h3>
+      <div id="ot-list"><p style="color:var(--faint);font-size:13px">Loading&hellip;</p></div>
+    </div>
+  </section>
+
   <section id="v-req" class="hidden">
     <button class="back" onclick="go('home')">&larr; Back</button>
     <div class="eyebrow">Money</div>
@@ -1434,7 +1479,7 @@ window.reviewTs=reviewTs; window.reviewPlan=reviewPlan; window.openReview=openRe
 window.openPlanReview=openPlanReview; window.setTarget=setTarget; window.rateTarget=rateTarget;
 window.loadTeamTargets=loadTeamTargets; window.tgKind=tgKind; window.tgDates=tgDates;
 
-const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","req","dc"];
+const VIEWS = ["home","profile","timesheet","plans","approvals","review","planreview","team","finance","policies","leave","overtime","req","dc"];
 function go(v){
   VIEWS.forEach(k => $("v-"+k).classList.toggle("hidden", k!==v));
   window.scrollTo(0,0);
@@ -1444,6 +1489,7 @@ function go(v){
   if(v === "approvals") loadApprovals();
   if(v === "team") loadTeam();
   if(v === "leave") loadLeave();
+  if(v === "overtime") loadOvertime();
   if(v === "req") loadReq();
   if(v === "finance") loadMyFinance();
   if(v === "dc") loadMyDiscipline();
@@ -2388,7 +2434,8 @@ async function loadApprovals(){
       if(w) w.innerHTML = '<div class="alert err"><b>Could not load the leave</b>' +
         esc(e && e.message ? e.message : String(e)) + '</div>';
     }),
-    loadLeaveInfo().catch(e => console.warn("leave for information:", e))
+    loadLeaveInfo().catch(e => console.warn("leave for information:", e)),
+    loadOtQueue().catch(e => console.warn("overtime queue:", e))
   ]);
 }
 
@@ -3151,6 +3198,120 @@ async function holdAsk(){
 }
 window.holdForm = holdForm; window.holdAsk = holdAsk;
 
+// ============================================================
+// OVERTIME: ASKED FOR, THEN APPROVED
+// From 1 December 2026 overtime is paid only when it was asked for and
+// approved, and never more than the hours approved or the extra hours
+// actually logged. The line manager, the CEO or the COO approves.
+// ============================================================
+const OT_DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], OT_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const otDay = iso => { const d = new Date(iso + "T00:00:00"); return OT_DOW[d.getDay()] + " " + d.getDate() + " " + OT_MON[d.getMonth()]; };
+const otH = n => { const x = Number(n); return (Number.isInteger(x) ? x : x.toFixed(1)) + (x === 1 ? " hour" : " hours"); };
+let OT_RULE_FROM = "2026-12-01";
+
+function otHint(){
+  const v = val("ot-date"), h = $("ot-hint"); if(!h) return;
+  if(!v){ h.textContent = ""; return; }
+  const d = new Date(v + "T00:00:00"), dow = d.getDay();
+  if(HOLIDAYS && HOLIDAYS[v]) h.textContent = "A public holiday: every hour you work that day counts as overtime.";
+  else if(dow === 0 || dow === 6) h.textContent = "A weekend: every hour you work that day counts as overtime.";
+  else h.textContent = "A weekday: overtime is the hours beyond your normal day (" + (dow === 5 ? "5.5 hours on a Friday" : "7 hours") + ").";
+}
+
+async function loadOvertime(){
+  const list = $("ot-list");
+  const { data, error } = await db.rpc("my_overtime");
+  if(error){
+    list.innerHTML = '<div class="alert err"><b>Could not load</b>' + esc(error.message) + '</div>'; return;
+  }
+  const rows = data || [];
+  const eligible = rows.length ? rows[0].eligible : PROFILE.overtime_eligible;
+  if(rows.length && rows[0].rule_from) OT_RULE_FROM = rows[0].rule_from;
+  $("ot-ask").classList.toggle("hidden", eligible === false);
+  if(eligible === false){
+    $("ot-lede").textContent = "Paid overtime is not part of your contract. If you think this is wrong, speak to your line manager.";
+  }
+  const today = isoOf(new Date());
+  $("ot-date").min = OT_RULE_FROM > today ? OT_RULE_FROM : isoOf(new Date(Date.now() - 31 * 864e5));
+  if(!rows.length){ list.innerHTML = '<p style="color:var(--faint);font-size:13px">No overtime requests yet.</p>'; return; }
+  list.innerHTML = rows.map(r => {
+    const past = r.work_date < today;
+    let pill, note = "";
+    if(r.state === "pending") pill = '<span class="ot-pill pending">Waiting for approval</span>';
+    else if(r.state === "approved"){
+      pill = '<span class="ot-pill approved">Approved: ' + otH(r.approved_hours) + '</span>';
+      if(Number(r.approved_hours) < Number(r.hours)) note = "You asked for " + otH(r.hours) + ". ";
+      if(r.work_date <= today){
+        const extra = Number(r.extra_logged || 0), paid = Math.min(extra, Number(r.approved_hours));
+        note += r.logged_hours === null ? "Log the hours in your timesheet to be paid for them."
+              : "Paid for " + otH(paid) + (extra > Number(r.approved_hours) ? " (you logged " + otH(extra) + " extra; only the approved hours are paid)." : ".");
+      }
+    }
+    else if(r.state === "declined") pill = '<span class="ot-pill declined">Declined</span>';
+    else pill = '<span class="ot-pill cancelled">Cancelled</span>';
+    const why = r.decision_note ? (r.state === "declined" ? "Reason: " : "Note: ") + esc(r.decision_note) + (r.decided_by_name ? " (" + esc(r.decided_by_name) + ")" : "") : "";
+    const canCancel = r.state === "pending" || (r.state === "approved" && r.work_date > today);
+    return '<div class="ot-row"><span><b>' + otDay(r.work_date) + '</b> · ' + otH(r.hours) +
+        (r.asked_late ? ' · <span style="color:var(--amber)">asked after the day</span>' : "") +
+        '<small>' + esc(r.reason) + '</small>' + (note ? '<small>' + note + '</small>' : "") + (why ? '<small>' + why + '</small>' : "") + '</span>' +
+      '<span class="ot-side">' + pill + (canCancel ? '<br><button onclick="otCancel(' + r.id + ')">Cancel</button>' : "") + '</span></div>';
+  }).join("");
+}
+
+async function otAsk(){
+  const d = val("ot-date"), h = parseFloat(val("ot-hours")), why = val("ot-reason");
+  if(!d){ msg("ot-msg", "err", "Choose the day", ""); return; }
+  if(!(h >= 0.5 && h <= 16)){ msg("ot-msg", "err", "Check the hours", "Between 0.5 and 16 extra hours."); return; }
+  if(!why){ msg("ot-msg", "err", "Say what it is for", "Your manager needs to know what the work is."); return; }
+  btn("ot-btn", true, "Sending");
+  const { error } = await db.rpc("request_overtime", { p_date: d, p_hours: h, p_reason: why });
+  btn("ot-btn", false, "Send for approval");
+  if(error){ msg("ot-msg", "err", "Not sent", error.message); return; }
+  $("ot-msg").innerHTML = ""; set("ot-date", ""); set("ot-hours", ""); set("ot-reason", ""); otHint();
+  toast("Sent. Your manager will see it in their approvals.");
+  loadOvertime();
+}
+async function otCancel(id){
+  if(!confirm("Cancel this overtime request?")) return;
+  const { error } = await db.rpc("cancel_overtime", { p_id: id });
+  if(error){ toast(error.message); return; }
+  toast("Cancelled."); loadOvertime();
+}
+
+// the approver's list
+async function loadOtQueue(){
+  const wrap = $("ap-ot"); if(!wrap) return;
+  const { data, error } = await db.rpc("overtime_to_approve");
+  if(error){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">Not switched on yet.</p>'; return; }
+  if(!data || !data.length){ wrap.innerHTML = '<p style="color:var(--faint);font-size:13px">No overtime waiting.</p>'; return; }
+  wrap.innerHTML = data.map(o => '<div class="qrow"><span class="dot todo"></span>' +
+    '<span class="t"><b>' + esc(o.staff) + ' · ' + otDay(o.work_date) + ' · ' + otH(o.hours) + '</b>' +
+    '<span>' + esc(o.reason) + ' · ' + (o.day_kind === "normal" ? "hours beyond the normal day" : o.day_kind === "weekend" ? "weekend" : "public holiday") +
+      (o.asked_late ? ' · <span style="color:var(--amber)">asked after the day</span>' : "") +
+      (Number(o.approved_this_month) > 0 ? ' · ' + otH(o.approved_this_month) + ' already approved this month' : "") + '</span></span>' +
+    '<span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn-primary" onclick="otDecide(' + o.id + ',true,' + Number(o.hours) + ')">Approve</button>' +
+    '<button onclick="otDecide(' + o.id + ',false)">Decline</button></span></div>').join("");
+}
+async function otDecide(id, approve, asked){
+  let hours = null, note = null;
+  if(approve){
+    const a = prompt("How many hours do you approve? (up to " + asked + ")", String(asked));
+    if(a === null) return;
+    hours = parseFloat(a);
+    if(!(hours > 0 && hours <= asked)){ toast("Approve between 0.5 and " + asked + " hours."); return; }
+    note = prompt("A note for them (optional).") || null;
+  } else {
+    note = prompt("Why are you declining? They will see this.");
+    if(note === null) return;
+    if(!note.trim()){ toast("A reason is needed."); return; }
+  }
+  const { error } = await db.rpc("decide_overtime", { p_id: id, p_approve: approve, p_hours: hours, p_note: note });
+  if(error){ toast(error.message); return; }
+  toast(approve ? "Approved." : "Declined. They have your reason.");
+  loadOtQueue(); loadWaiting();
+}
+window.otHint = otHint; window.otAsk = otAsk; window.otCancel = otCancel; window.otDecide = otDecide;
+
 // ---- payday takes the card over, once a month ----
 async function checkPayday(){
   const { data, error } = await db.from("my_payslip").select("*").limit(1);
@@ -3202,15 +3363,17 @@ async function loadWaiting(){
   // asking is safe and an empty answer simply hides the button. Gating
   // this on ROLES meant Gabriel and Onishola, who manage people but hold
   // no special role, never saw that anything was waiting on them.
-  const [pl, ts, lv] = await Promise.all([
+  const [pl, ts, lv, ot] = await Promise.all([
     db.from("plans_to_review").select("staff,submitted_at"),
     db.from("timesheets_to_review").select("staff,signed_at"),
     // Leave was never counted here at all, so a leave request on its own
     // could never make this button appear. It is why Felicia's maternity
     // request reached nobody.
-    db.from("leave_to_approve").select("staff,created_at")
+    db.from("leave_to_approve").select("staff,created_at"),
+    db.rpc("overtime_to_approve")
   ]);
-  const n = (pl.data?.length || 0) + (ts.data?.length || 0) + (lv.data?.length || 0);
+  const otN = Array.isArray(ot.data) ? ot.data.length : 0;
+  const n = (pl.data?.length || 0) + (ts.data?.length || 0) + (lv.data?.length || 0) + otN;
   const w = $("waiting");
   if(!n){ w.classList.add("hidden"); return; }
   w.classList.remove("hidden");
@@ -3218,7 +3381,8 @@ async function loadWaiting(){
   // Name who has waited longest. A number is a nag; a name is a reason.
   const all = [...(ts.data||[]).map(x => ({who:x.staff, at:x.signed_at, what:"timesheet"})),
                ...(pl.data||[]).map(x => ({who:x.staff, at:x.submitted_at, what:"plan"})),
-               ...(lv.data||[]).map(x => ({who:x.staff, at:x.created_at, what:"leave request"}))]
+               ...(lv.data||[]).map(x => ({who:x.staff, at:x.created_at, what:"leave request"})),
+               ...(otN ? ot.data : []).map(x => ({who:x.staff, at:x.created_at, what:"overtime request"}))]
               .filter(x => x.at).sort((a,b) => new Date(a.at) - new Date(b.at));
   let tail = "";
   if(all.length){
@@ -3230,6 +3394,7 @@ async function loadWaiting(){
   if(ts.data?.length) bits.push(ts.data.length + " timesheet" + (ts.data.length>1?"s":""));
   if(pl.data?.length) bits.push(pl.data.length + " plan" + (pl.data.length>1?"s":""));
   if(lv.data?.length) bits.push(lv.data.length + " leave request" + (lv.data.length>1?"s":""));
+  if(otN) bits.push(otN + " overtime request" + (otN>1?"s":""));
 
   w.innerHTML = '<span class="n">' + n + '</span><span class="t"><b>Waiting on you</b><span>' +
     bits.join(" and ") + " from your team." + esc(tail) + '</span></span><span class="arr">\u2192</span>';
