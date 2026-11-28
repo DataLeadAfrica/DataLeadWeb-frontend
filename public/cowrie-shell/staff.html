@@ -475,6 +475,14 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .ot-pill.cancelled{background:var(--paper,#f4f3f6);color:var(--muted)}
 .ot-side{text-align:right}
 .ot-side button{margin-top:6px;font-size:12px;padding:4px 10px}
+/* ---------- longer or shorter than the normal day ---------- */
+.hq{margin:4px 0 14px;padding:14px 16px;border-radius:12px;background:var(--amber-bg);border:1px solid #f2d9a6;font-size:13.5px;line-height:1.5}
+.hq b{display:block;margin-bottom:3px}
+.hq .fld{margin:10px 0 8px}
+.hq-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.hq-act button{font-size:13px;padding:8px 12px}
+.hq-small{font-size:12px;color:var(--muted);margin-top:8px}
+.hq a{color:var(--clr-orange);font-weight:600}
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -1378,6 +1386,7 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <div class="fld hidden" id="mo-late-wrap"><label id="mo-late-lab">Why are you submitting your timesheet late?</label>
       <input id="mo-late" placeholder="You are expected to fill your timesheet daily."></div>
     <div id="mo-ai" class="ai-note hidden"></div>
+    <div id="mo-hq" class="hq hidden" role="alert"></div>
     <div id="mo-notes" class="mo-notes hidden"></div>
     <div class="actions">
       <button onclick="closeModal()">Cancel</button>
@@ -2032,13 +2041,16 @@ function openDay(iso){
   const dt = new Date(iso + "T00:00:00");
   const std = dt.getDay() === 5 ? 5.5 : 7;
   $("mo-title").textContent = dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
-  $("mo-std").value = std + " hours";
+  const offDay = !!HOLIDAYS[iso] || dt.getDay() === 0 || dt.getDay() === 6;
+  $("mo-std").value = offDay ? (HOLIDAYS[iso] ? "None: public holiday" : "None: weekend") : std + " hours";
   $("mo-hours").value = DAYS[iso] ? DAYS[iso].hours : std;
   $("mo-act").value = DAYS[iso] ? (DAYS[iso].activity || "") : "";
   $("mo-ai").className = "ai-note hidden";
   showDayContext(iso);
   renderDayNotes(iso);
   thinAcknowledged = false;
+  hqReset();
+  OT_MINE = null; otMine();
   const b = $("mo-save"); b.textContent = "Save"; b.className = "btn-primary";
   $("modal").classList.remove("hidden");
 }
@@ -2174,6 +2186,7 @@ document.addEventListener("keydown", e => {
 
 // Typing more after a warning means they took the hint: re-check on the next save.
 document.addEventListener("input", e => {
+  if(e.target && e.target.id === "mo-hours") hqReset();
   if(e.target && e.target.id === "mo-act" && thinAcknowledged){
     thinAcknowledged = false;
     const b = $("mo-save"); if(b){ b.textContent = "Save"; b.className = "btn-primary"; }
@@ -2182,6 +2195,92 @@ document.addEventListener("input", e => {
 });
 
 let thinAcknowledged = false;
+
+// ============================================================
+// LONGER OR SHORTER THAN THE NORMAL DAY
+// More than the normal day (7 hours, 5.5 on Friday; any hours on a
+// weekend or public holiday) is paid only with approved overtime, so
+// they are asked whether they have it, and can ask for it there and
+// then. Fewer hours needs their line manager's agreement, so they say
+// who agreed and why. The answer is kept with the day for the manager.
+// ============================================================
+let HQ_MODE = null, OT_MINE = null;
+const HQ_RULE_FROM = "2026-12-01";        // overtime approval starts here (as in the database)
+const hqH = n => { const x = Math.round(Number(n) * 10) / 10; return x + (x === 1 ? " hour" : " hours"); };
+function hqReset(){ HQ_MODE = null; const b = $("mo-hq"); if(b){ b.className = "hq hidden"; b.innerHTML = ""; } }
+async function otMine(){
+  if(OT_MINE) return OT_MINE;
+  const { data, error } = await db.rpc("my_overtime");
+  OT_MINE = error ? [] : (data || []);
+  return OT_MINE;
+}
+function hqAnswer(mode){ HQ_MODE = mode; saveDay(); }
+function hqHours(){ hqReset(); const h = $("mo-hours"); h.focus(); h.select(); }
+function hqLeave(){ closeModal(); go("leave"); }
+
+async function hoursQuestion(hours, act){
+  const iso = editing, dt = new Date(iso + "T00:00:00");
+  const off = !!HOLIDAYS[iso] || dt.getDay() === 0 || dt.getDay() === 6;
+  const std = off ? 0 : standardFor(dt);
+  const box = $("mo-hq");
+  const show = html => { box.innerHTML = html; box.className = "hq"; box.scrollIntoView({ block:"nearest" }); };
+
+  // ---- longer than the normal day ----
+  if(hours > std){
+    if(iso < HQ_RULE_FROM) return { flag:null, note:null };          // before December: paid as before
+    const extra = hours - std;
+    const mine = (await otMine()).find(o => o.work_date === iso && (o.state === "approved" || o.state === "pending"));
+    if(mine && mine.state === "approved"){
+      const ok = Number(mine.approved_hours);
+      return { flag:"over", note:"Overtime approved: " + hqH(ok) + (extra > ok ? "; the other " + hqH(extra - ok) + (extra - ok === 1 ? " is" : " are") + " not paid" : "") };
+    }
+    if(mine) return { flag:"over", note:"Overtime asked for (" + hqH(mine.hours) + "), waiting for approval" };
+    if(HQ_MODE === "ot-ask"){
+      const reason = ($("hq-reason") || {}).value ? $("hq-reason").value.trim() : "";
+      if(!reason){ $("hq-reason").focus(); return null; }
+      return { flag:"over", note:"Overtime asked for when logging the day", askOt:{ hours: Math.min(extra, 16), reason } };
+    }
+    if(HQ_MODE === "ot-skip") return { flag:"over", note:"No overtime asked for: the extra " + hqH(extra) + (extra === 1 ? " is" : " are") + " not paid" };
+    const head = off ? (HOLIDAYS[iso] ? "This is a public holiday" : "This is a weekend") + ": all " + hqH(hours) + " count as overtime"
+                     : "That is " + hqH(extra) + " more than your normal day (" + hqH(std) + ")";
+    if(PROFILE.overtime_eligible === false){
+      show('<b>' + head + '</b>Paid overtime is not part of your contract, so the extra time is not paid. ' +
+        'If you think this is wrong, speak to your line manager.' +
+        '<div class="hq-act"><button onclick="hqAnswer(\'ot-skip\')">Save anyway</button><button onclick="hqHours()">Change my hours</button></div>');
+      return null;
+    }
+    show('<b>' + head + '</b>Overtime is paid only when it has been approved, and you have not asked for overtime for this day. ' +
+      'Did your line manager ask you to work the extra time?' +
+      '<div class="fld"><label for="hq-reason">What needed the extra time?</label>' +
+        '<textarea id="hq-reason" rows="2">' + esc(act || "") + '</textarea></div>' +
+      '<div class="hq-act"><button class="btn-primary" onclick="hqAnswer(\'ot-ask\')">Save and ask for ' + hqH(Math.min(extra, 16)) + ' of overtime</button>' +
+        '<button onclick="hqAnswer(\'ot-skip\')">Save without overtime</button>' +
+        '<button onclick="hqHours()">Change my hours</button></div>' +
+      '<div class="hq-small">Without approval, the extra time is not paid. Your manager will see this answer when reviewing your timesheet.</div>');
+    return null;
+  }
+
+  // ---- shorter than the normal day ----
+  if(std > 0 && hours < std && !LEAVE[iso]){
+    const short = std - hours;
+    if(HQ_MODE === "under-ok"){
+      const why = ($("hq-why") || {}).value ? $("hq-why").value.trim() : "";
+      if(!why){ $("hq-why").focus(); return null; }
+      return { flag:"under", note: why };
+    }
+    show('<b>That is ' + hqH(short) + ' less than your normal day (' + hqH(std) + ')</b>' +
+      'Did your line manager agree to you working fewer hours today?' +
+      '<div class="fld"><label for="hq-why">Who agreed, and why?</label>' +
+        '<input id="hq-why" placeholder="e.g. Agreed with Onishola: hospital appointment in the afternoon"></div>' +
+      '<div class="hq-act"><button class="btn-primary" onclick="hqAnswer(\'under-ok\')">Yes, save with this reason</button>' +
+        '<button onclick="hqHours()">Change my hours</button></div>' +
+      '<div class="hq-small">If you were unwell or away for part of the day, <a href="#" onclick="hqLeave();return false">ask for leave</a> instead. ' +
+        'Your manager will see this answer when reviewing your timesheet.</div>');
+    return null;
+  }
+  return { flag:null, note:null };
+}
+window.hqAnswer = hqAnswer; window.hqHours = hqHours; window.hqLeave = hqLeave;
 
 async function saveDay(){
   const hours = parseFloat($("mo-hours").value);
@@ -2226,12 +2325,23 @@ async function saveDay(){
     return;
   }
 
+  // longer or shorter than the normal day: ask, and keep the answer with the day
+  const hq = await hoursQuestion(hours, act);
+  if(hq === null) return;                   // a question is on screen; nothing saved yet
+
   const { error } = await db.rpc("log_day", {
     p_date: editing, p_hours: hours, p_activity: act || null,
     p_ai_flag: f.thin, p_ai_note: f.thin ? f.why : null,
     p_late_reason: lateReason || null
   });
   if(error){ alert("Could not save: " + error.message); return; }
+  const hn = await db.rpc("set_day_hours_note", { p_date: editing, p_flag: hq.flag, p_note: hq.note });
+  if(hn.error) console.warn("hours note:", hn.error.message);
+  if(hq.askOt){
+    const { error: oe } = await db.rpc("request_overtime", { p_date: editing, p_hours: hq.askOt.hours, p_reason: hq.askOt.reason });
+    if(oe) alert("The day is saved, but the overtime request was not sent: " + oe.message);
+    else toast("Day saved, and overtime asked for. Your manager will see it in their approvals.");
+  }
   await loadTimesheet();
   setTimeout(closeModal, f.thin ? 1100 : 600);
 }
@@ -2496,9 +2606,28 @@ async function openReview(id){
           (d.activity ? ": " + esc(d.activity) : "") + "."
         : esc(d.activity || "\u2014")) + '</span>' +
       (d.late_reason ? '<span style="color:var(--clay);font-size:12px">Filed late: ' +
-        esc(d.late_reason) + '</span>' : "") + '</span>' +
+        esc(d.late_reason) + '</span>' : "") + rvHoursLine(d) + '</span>' +
       (d.ai_flag ? '<span style="color:var(--amber);font-size:12px">\u2691</span>' : "") + '</div>';
   }).join("");
+}
+
+// longer or shorter than the normal day, and what they said about it
+function rvHoursLine(d){
+  if(d.kind === "counted" || d.hours === null || d.hours === undefined || d.normal_day === null || d.normal_day === undefined) return "";
+  const h = Number(d.hours), n = Number(d.normal_day);
+  const line = (c, t) => '<span style="color:var(--' + c + ');font-size:12px">' + t + '</span>';
+  if(h > n){
+    const extra = Math.round((h - n) * 10) / 10;
+    if(d.ot_state === "approved") return line("green", extra + "h over the normal day \u00b7 overtime approved (" + Number(d.ot_hours) + "h)");
+    if(d.ot_state === "pending") return line("amber", extra + "h over the normal day \u00b7 overtime waiting for approval");
+    if(d.work_date < "2026-12-01") return "";
+    return line("clay", extra + "h over the normal day \u00b7 no overtime asked for, so not paid");
+  }
+  if(h < n){
+    const short = Math.round((n - h) * 10) / 10;
+    return line("clay", short + "h short of the normal day \u00b7 " + (d.hours_flag === "under" && d.hours_note ? "they say: \u201c" + esc(d.hours_note) + "\u201d" : "no reason given"));
+  }
+  return "";
 }
 
 async function reviewTs(approve){
@@ -3116,6 +3245,12 @@ async function mpSave(andSign){
     if(on && !(hours > 0 && hours <= 24)){ msg("mp-msg", "err", "Check the hours", "The hours for " + planDay(iso) + " must be between 0.5 and 24."); return; }
     if(on && !act){ msg("mp-msg", "err", "Say what you plan to do", "Write a line for " + planDay(iso) + ", or untick it if you will not be working."); $("mp-a-" + i).focus(); return; }
     items.push({ date: iso, on, hours: on ? hours : null, activity: on ? act : null });
+  }
+  const odd = items.filter(it => it.on && it.hours !== standardFor(new Date(it.date + "T00:00:00")));
+  if(odd.length){
+    const lines = odd.map(it => { const n = standardFor(new Date(it.date + "T00:00:00"));
+      return planDay(it.date) + ": " + it.hours + " hours (normal day " + n + ")" + (it.hours > n ? ", the extra is paid only with approved overtime" : ", has your line manager agreed?"); });
+    if(!confirm("Some days are not the normal length:\n\n" + lines.join("\n") + "\n\nSave anyway?")) return;
   }
   const bid = andSign ? "mp-sign" : "mp-save", blab = $(bid).textContent;
   btn(bid, true, "Saving");
