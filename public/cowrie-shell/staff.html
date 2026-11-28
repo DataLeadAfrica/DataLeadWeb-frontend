@@ -455,6 +455,15 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
 .mp-act button{flex:1 1 200px}
 .mp-done{display:inline-block;font-size:12px;color:var(--green);background:var(--green-bg);border-radius:99px;padding:2px 10px;margin-left:6px;vertical-align:middle}
 @media (max-width:620px){ .mp-row{grid-template-columns:1fr 110px} .mp-row textarea{grid-column:1/-1} .mp-tick{padding-top:4px} }
+/* ---------- account on hold (indefinite leave) ---------- */
+.hold{min-height:100vh;display:grid;place-items:center;padding:24px}
+.hold-card{width:100%;max-width:560px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px}
+.hold-card h1{font-size:26px;margin:2px 0 10px}
+.hold-card p{font-size:14px;line-height:1.6;margin:0 0 12px;color:var(--clr-gray)}
+.hold-card .alert{font-size:13.5px;line-height:1.55}
+.hold-req{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.hold-req h3{font-size:16px;margin-bottom:4px}
+.hold-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -508,6 +517,9 @@ table.rcpt .dn{display:block;font-style:normal;font-size:11px;color:var(--clay);
     <stop offset="50%" stop-color="#f56e0f"/><stop offset="50%" stop-color="#eee5d8"/>
   </linearGradient>
 </defs></svg>
+
+<!-- ============ ACCOUNT ON HOLD (indefinite leave) ============ -->
+<div id="hold" class="hold hidden"><div class="hold-card" id="hold-card"></div></div>
 
 <div id="app" class="wrap hidden">
   <div class="topbar">
@@ -1522,6 +1534,10 @@ async function enterApp(){
     return;
   }
   PROFILE = data;
+
+  // indefinite leave: the account is on hold, and this is all they see
+  const { data: hold } = await db.rpc("my_hold");
+  if(hold){ showHold(hold); return; }
 
   $("who-name").textContent = PROFILE.display_name || PROFILE.full_name;
   $("who-dept").textContent = PROFILE.department || "\u2014";
@@ -3065,6 +3081,76 @@ async function mpSave(andSign){
 }
 window.mpTick = mpTick; window.mpCopy = mpCopy; window.mpSave = mpSave;
 
+// ============================================================
+// ACCOUNT ON HOLD: INDEFINITE LEAVE
+// Set from Admin. While on hold, this screen is all the person sees:
+// what it means, the six-month limit, and a way to ask to come back.
+// The database refuses timesheets, leave and pay for the days on hold.
+// ============================================================
+let HOLD = null;
+function holdDate(d){ return d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", year:"numeric" }) : ""; }
+function showHold(h){
+  HOLD = h;
+  $("gate").classList.add("hidden"); $("app").classList.add("hidden"); $("hold").classList.remove("hidden");
+  const name = esc((PROFILE.full_name || "").split(/\s+/)[0] || "");
+  const foot = '<div class="hold-foot"><span>Questions? Please speak to the Head of Operations.</span><button onclick="signOut()">Sign out</button></div>';
+  const logo = '<div class="eyebrow">Indefinite leave</div>';
+  let html;
+  if(h.state === "ended"){
+    html = logo + '<h1>Your indefinite leave has ended</h1>' +
+      '<p>Your employment with Data-Lead Africa ended on ' + holdDate(h.ended_on) + '. Thank you, ' + name + ', for all your work with us.</p>' +
+      '<p>If you have any questions about your final pay or your documents, please contact the Head of Operations.</p>' + foot;
+  } else if(h.state === "returning"){
+    html = logo + '<h1>Welcome back soon, ' + name + '</h1>' +
+      '<p>You are due back on <b>' + holdDate(h.ended_on) + '</b>. Your account opens again that morning, with your timesheet and everything else.</p>' +
+      '<p>We look forward to having you back.</p>' + foot;
+  } else if(h.state === "limit_passed"){
+    html = logo + '<h1>Your indefinite leave has reached its limit</h1>' +
+      '<p>Indefinite leave can last no more than six months. Yours reached that limit on <b>' + holdDate(h.limit_on) + '</b>, so it cannot continue.</p>' +
+      '<p>Please contact the Head of Operations about what happens next.</p>' + foot;
+  } else {
+    const asked = h.request_at
+      ? '<div class="alert ok" style="margin-top:0"><b>You have asked to come back from ' + holdDate(h.request_from) + '.</b>' +
+          'Sent on ' + new Date(h.request_at).toLocaleDateString("en-GB", { day:"numeric", month:"long" }) + '. ' +
+          'The office will let you know whether a position is available.' +
+          (h.request_note ? '<br><i>“' + esc(h.request_note) + '”</i>' : '') + '</div>' +
+        '<button onclick="holdForm(true)" id="hd-change">Change my request</button>'
+      : "";
+    html = logo + '<h1>Your account is on hold</h1>' +
+      '<p>' + name + ', you have been on indefinite leave since <b>' + holdDate(h.starts_on) + '</b>. ' +
+        'While you are away there is no timesheet to fill in, and this time is unpaid.</p>' +
+      '<div class="alert warn"><b>Coming back depends on a position being available.</b>' +
+        'While you are away, we may need to fill your role, so we cannot promise that a post will be open when you are ready to return.</div>' +
+      '<div class="alert info">Indefinite leave can last no more than six months. The last possible day is <strong>' + holdDate(h.limit_on) + '</strong>' +
+        (Number(h.days_left) > 0 ? ', ' + h.days_left + ' days from now' : '') + '. After that, it cannot continue.</div>' +
+      '<div class="hold-req"><h3>Ready to come back?</h3>' +
+        '<p style="font-size:13px;color:var(--muted)">Tell us when you could return. We will check whether a position is available and come back to you.</p>' +
+        asked +
+        '<div id="hd-form"' + (h.request_at ? ' class="hidden"' : '') + '>' +
+          '<div class="fld"><label for="hd-from">From when could you return?</label>' +
+            '<input type="date" id="hd-from" min="' + isoOf(new Date()) + '" max="' + esc(h.limit_on) + '" value="' + esc(h.request_from || "") + '"></div>' +
+          '<div class="fld"><label for="hd-note">Anything we should know <span style="font-weight:400">(optional)</span></label>' +
+            '<textarea id="hd-note" rows="3">' + esc(h.request_note || "") + '</textarea></div>' +
+          '<div id="hd-msg"></div>' +
+          '<button class="btn-primary" style="width:100%" id="hd-btn" onclick="holdAsk()">Ask to come back</button>' +
+        '</div></div>' + foot;
+  }
+  $("hold-card").innerHTML = html;
+}
+function holdForm(on){ $("hd-form").classList.toggle("hidden", !on); const c = $("hd-change"); if(c) c.classList.add("hidden"); }
+async function holdAsk(){
+  const from = val("hd-from");
+  if(!from){ msg("hd-msg", "err", "Choose a date", "From when could you come back?"); return; }
+  btn("hd-btn", true, "Sending");
+  const { error } = await db.rpc("request_reactivation", { p_from: from, p_note: val("hd-note") || null });
+  btn("hd-btn", false, "Ask to come back");
+  if(error){ msg("hd-msg", "err", "Not sent", error.message); return; }
+  const { data: h } = await db.rpc("my_hold");
+  if(h) showHold(h);
+  toast("Sent. The office will be in touch.");
+}
+window.holdForm = holdForm; window.holdAsk = holdAsk;
+
 // ---- payday takes the card over, once a month ----
 async function checkPayday(){
   const { data, error } = await db.from("my_payslip").select("*").limit(1);
@@ -3313,6 +3399,13 @@ const LVP_MSG = {
     them: { upcoming:"Unpaid leave approved. Agree a handover before they go.",
             on_leave:"On approved unpaid leave.",
             back:"Back from unpaid leave. A quick catch-up will help." } },
+  indefinite: { tone:"plain",
+    me:   { upcoming:"Your indefinite leave starts soon. Coming back depends on a position being available.",
+            on_leave:"Coming back depends on a position being available. Indefinite leave cannot run beyond six months.",
+            back:"Welcome back." },
+    them: { upcoming:"Indefinite leave starts soon. Agree a handover before they go.",
+            on_leave:"On indefinite leave, unpaid. Their return depends on a position being available, and it cannot run beyond six months.",
+            back:"Back from indefinite leave. Plan a return-to-work chat." } },
   administrative: { tone:"plain",
     me:   { upcoming:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
             on_leave:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
@@ -3350,6 +3443,12 @@ function lvpCard(r, opts){
     nums = '<span>Starts ' + (inDays === 1 ? "tomorrow" : "in " + lvpPl(inDays, "day")) + '</span>' +
            '<span><b>' + total + '</b> working ' + (total === 1 ? "day" : "days") + '</span>';
     dates = 'Last day ' + lvpD(r.ends_on, true) + ' · back on ' + lvpD(r.resume_on, true);
+  } else if(r.kind === "indefinite" && r.phase === "on_leave"){
+    head = opts.self ? "You are on indefinite leave" : who;
+    backK = "Return"; backV = "If a post is free";
+    nums = '<span><b>' + used + '</b> working ' + (used === 1 ? "day" : "days") + ' so far</span>' +
+           '<span><b>' + left + '</b> working ' + (left === 1 ? "day" : "days") + ' to the six-month limit</span>';
+    dates = 'Started ' + lvpD(r.starts_on) + ' \u00b7 six-month limit ' + lvpD(r.ends_on, true);
   } else if(r.phase === "on_leave"){
     const back = lvpGap(today, r.resume_on);
     head = opts.self ? "You are on " + esc((r.label || "leave").toLowerCase()) : who;

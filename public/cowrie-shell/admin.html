@@ -485,6 +485,18 @@ body.sv-open{overflow:hidden}
 .nt-hrow small{display:block;color:var(--muted)}
 .nt-hrow button{font-size:12px;padding:4px 10px;flex:none}
 @media (max-width:640px){ .nt-grid{grid-template-columns:1fr} }
+/* ---------- indefinite leave ---------- */
+.hd-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;margin-bottom:8px}
+.hd-pill{display:inline-block;font-size:11px;font-weight:600;border-radius:99px;padding:2px 10px;background:var(--amber-bg,#fdf3e1);color:var(--amber,#9a5b00)}
+.hd-pill.red{background:var(--red-bg);color:var(--red)}
+.hd-pill.green{background:var(--green-bg);color:var(--green)}
+.hd-list{margin:6px 0 12px 18px;font-size:13px;line-height:1.55;color:var(--muted)}
+.hd-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.hd-act > button{flex:1 1 200px}
+.hd-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.hd-hub-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.hd-hub-row:last-child{border-bottom:none}
+.hd-hub-row small{display:block;color:var(--muted);font-size:12px}
 </style>
 <script src="/cowrie-shell/notice.js" defer></script>
 </head>
@@ -647,6 +659,7 @@ body.sv-open{overflow:hidden}
     <div id="ad-money"></div>
     <div id="ad-loans"></div>
     <div id="ad-leave"></div>
+    <div id="ad-holds"></div>
     <div id="ad-notice"></div>
 
     <div class="section-label">Where to</div>
@@ -685,6 +698,7 @@ body.sv-open{overflow:hidden}
     <div id="p-alert"></div>
     <div class="glance" id="p-glance"></div>
     <div id="p-leave"></div>
+    <div id="p-hold"></div>
 
     <div class="panel">
       <div class="panel-head">
@@ -1855,6 +1869,7 @@ function go(v){
 async function loadHub(){
   adMoney();   // the money, from the Finance ledger
   adLeave();   // who is on leave, and when they are back
+  adHolds();   // indefinite leave, and anyone asking to come back
   adNotice();  // the notice at the top of everyone's pages
   const { data, error } = await db.from("firm_at_a_glance").select("*").maybeSingle();
   if(oops("The firm", error)) return;
@@ -2687,7 +2702,7 @@ async function openPerson(id){
   $("p-alert").innerHTML = blocks.length
     ? '<div class="alert warn"><b>Needs attention</b>' + blocks.join(" ") + '</div>' : "";
 
-  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pApprove(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id), pLeave(id) ]);
+  await Promise.all([ pGlance(id, P_Y, P_M), pMonth(id, P_Y, P_M), pApprove(id, P_Y, P_M), pTargets(id), pPay(id), pFacts(), pAppts(id), pComplete(id), paintPermit(), pDeleteCheck(id), pDiscipline(id), pLeave(id), pHold(id) ]);
   set("pr-eff", iso(new Date(Y, M, 1)));   // default: the first of next month
   set("st-eff", iso(now));
   $("promo").classList.add("hidden"); $("stat").classList.add("hidden"); $("typ").classList.add("hidden");
@@ -3526,6 +3541,13 @@ const LVP_MSG = {
     them: { upcoming:"Unpaid leave approved. Agree a handover before they go.",
             on_leave:"On approved unpaid leave.",
             back:"Back from unpaid leave. A quick catch-up will help." } },
+  indefinite: { tone:"plain",
+    me:   { upcoming:"Your indefinite leave starts soon. Coming back depends on a position being available.",
+            on_leave:"Coming back depends on a position being available. Indefinite leave cannot run beyond six months.",
+            back:"Welcome back." },
+    them: { upcoming:"Indefinite leave starts soon. Agree a handover before they go.",
+            on_leave:"On indefinite leave, unpaid. Their return depends on a position being available, and it cannot run beyond six months.",
+            back:"Back from indefinite leave. Plan a return-to-work chat." } },
   administrative: { tone:"plain",
     me:   { upcoming:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
             on_leave:"You are on administrative leave while a matter is looked into. It is not a penalty. If you have any questions, please contact the CEO's office.",
@@ -3563,6 +3585,12 @@ function lvpCard(r, opts){
     nums = '<span>Starts ' + (inDays === 1 ? "tomorrow" : "in " + lvpPl(inDays, "day")) + '</span>' +
            '<span><b>' + total + '</b> working ' + (total === 1 ? "day" : "days") + '</span>';
     dates = 'Last day ' + lvpD(r.ends_on, true) + ' · back on ' + lvpD(r.resume_on, true);
+  } else if(r.kind === "indefinite" && r.phase === "on_leave"){
+    head = opts.self ? "You are on indefinite leave" : who;
+    backK = "Return"; backV = "If a post is free";
+    nums = '<span><b>' + used + '</b> working ' + (used === 1 ? "day" : "days") + ' so far</span>' +
+           '<span><b>' + left + '</b> working ' + (left === 1 ? "day" : "days") + ' to the six-month limit</span>';
+    dates = 'Started ' + lvpD(r.starts_on) + ' \u00b7 six-month limit ' + lvpD(r.ends_on, true);
   } else if(r.phase === "on_leave"){
     const back = lvpGap(today, r.resume_on);
     head = opts.self ? "You are on " + esc((r.label || "leave").toLowerCase()) : who;
@@ -3720,6 +3748,139 @@ async function ntEnd(){
   if(window.dlaNotice) window.dlaNotice.refresh();
 }
 window.ntPreview = ntPreview; window.ntReuse = ntReuse; window.ntPublish = ntPublish; window.ntEnd = ntEnd;
+
+// ============================================================
+// INDEFINITE LEAVE
+// Put on hold from a person's page. While on hold they see only a hold
+// screen and can ask to come back; their return depends on a position
+// being available; it cannot run beyond six months. Welcome them back
+// (CEO or COO) or end their employment (CEO only) from here.
+// ============================================================
+const hdD = d => d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }) : "";
+const hdToday = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+// the same as the database: six months on (kept within the month), less one day
+const hdAddMonths = iso => {
+  const [y, m, d] = iso.split("-").map(Number), t = new Date(y, m - 1 + 6, 1);
+  const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
+  const e = new Date(t.getFullYear(), t.getMonth(), Math.min(d, last) - 1);
+  return e.getFullYear() + "-" + String(e.getMonth()+1).padStart(2,"0") + "-" + String(e.getDate()).padStart(2,"0");
+};
+
+async function pHold(id){
+  const box = $("p-hold"); if(!box) return;
+  box.innerHTML = "";
+  const { data, error } = await db.rpc("admin_holds", { p_staff: id });
+  if(error){ console.warn("admin_holds:", error.message); return; }
+  if(!P || P.id !== id) return;
+  const rows = data || [], today = hdToday();
+  const open = rows.find(r => r.open);
+  const returning = rows.find(r => r.outcome === "returned" && r.ended_on > today);
+  const first = esc(((P.full_name || "").split(/\s+/)[0]) || "them");
+  let body;
+
+  if(open){
+    const limitTxt = open.limit_passed
+      ? '<span class="hd-pill red">Six-month limit reached</span><span>It ended on ' + hdD(open.limit_on) + ' and cannot continue. Welcome them back or end their employment.</span>'
+      : '<span class="hd-pill">On indefinite leave</span><span>Since ' + hdD(open.starts_on) + ' · six-month limit ' + hdD(open.limit_on) +
+        ' (' + open.days_left + ' days left)</span>';
+    body = '<div class="hd-row">' + limitTxt + '</div>' +
+      '<div class="hd-row" style="color:var(--muted)">Reason: ' + esc(open.reason) + (open.created_by_name ? ' · set by ' + esc(open.created_by_name) : "") + '</div>' +
+      (open.request_at ? '<div class="alert ok" style="margin:10px 0"><b>' + first + ' has asked to come back from ' + hdD(open.request_from) + '.</b> ' +
+          'Asked on ' + new Date(open.request_at).toLocaleDateString("en-GB", { day:"numeric", month:"short" }) + '.' +
+          (open.request_note ? '<br><i>“' + esc(open.request_note) + '”</i>' : "") + '</div>' : "") +
+      '<div class="hd-act"><button class="btn-primary" onclick="hdShow(\'back\')">Welcome ' + first + ' back</button>' +
+        '<button onclick="hdShow(\'end\')">End employment</button></div>' +
+      '<div class="hd-box hidden" id="hd-back">' +
+        '<div class="fld"><label for="hd-back-on">First day back</label><input type="date" id="hd-back-on" value="' + esc(open.request_from || today) + '"></div>' +
+        '<div class="fld"><label for="hd-back-note">Note <span style="font-weight:400">(optional)</span></label><input id="hd-back-note" placeholder="For example: returning to the same post"></div>' +
+        '<button class="btn-primary" style="width:100%" id="hd-back-btn" onclick="hdBack()">Confirm the return</button></div>' +
+      '<div class="hd-box hidden" id="hd-end">' +
+        '<div class="alert err" style="margin-top:0">This ends ' + first + '’s employment and marks them as exited. Only the CEO can do it, and it cannot be undone here. ' +
+          'Send the exit letter from the Employment panel below as usual.</div>' +
+        '<div class="grid2"><div class="fld"><label for="hd-end-on">Last day of employment</label><input type="date" id="hd-end-on" value="' + esc(open.limit_passed ? open.limit_on : today) + '"></div>' +
+        '<div class="fld"><label for="hd-end-why">Reason</label><select id="hd-end-why">' +
+          '<option>The position has been filled</option><option' + (open.limit_passed ? " selected" : "") + '>The six-month limit was reached</option>' +
+          '<option>They have chosen not to return</option></select></div></div>' +
+        '<button class="btn-primary" style="width:100%;background:var(--red);border-color:var(--red)" id="hd-end-btn" onclick="hdEnd()">End employment</button></div>' +
+      '<div id="hd-msg"></div>';
+  } else if(returning){
+    body = '<div class="hd-row"><span class="hd-pill green">Coming back</span><span>' + first + ' returns on ' + hdD(returning.ended_on) +
+      '. Until then the account stays on hold.</span></div>';
+  } else {
+    const past = rows.filter(r => !r.open);
+    body = '<div class="hd-row" style="color:var(--muted)">Not on indefinite leave.' +
+        (past.length ? ' Last time: ' + hdD(past[0].starts_on) + ' to ' + hdD(past[0].ended_on) + ' (' + (past[0].outcome === "returned" ? "came back" : "employment ended") + ').' : "") + '</div>' +
+      '<button onclick="hdShow(\'start\')">Put ' + first + ' on indefinite leave</button>' +
+      '<div class="hd-box hidden" id="hd-start">' +
+        '<div class="grid2"><div class="fld"><label for="hd-from">Starts on</label><input type="date" id="hd-from" value="' + today + '" oninput="hdLimit()"></div>' +
+        '<div class="fld"><label>Six-month limit</label><div id="hd-limit" style="padding:10px 0;font-size:14px"></div></div></div>' +
+        '<div class="fld"><label for="hd-why">Reason</label><input id="hd-why" placeholder="For example: asked for indefinite leave after maternity leave"></div>' +
+        '<div style="font-size:13px">From the start date:</div><ul class="hd-list">' +
+          '<li>Their account goes on hold. All they can do is ask to come back.</li>' +
+          '<li>No timesheet, no leave requests and no pay for the days on hold. Any special access (Finance, approvals) is paused.</li>' +
+          '<li>They are told that coming back depends on a position being available, as the role may be filled.</li>' +
+          '<li>It cannot run beyond six months. After that they can no longer ask to come back, and you will be asked to decide.</li></ul>' +
+        '<button class="btn-primary" style="width:100%" id="hd-start-btn" onclick="hdStart()">Put ' + first + ' on indefinite leave</button></div>' +
+      '<div id="hd-msg"></div>';
+  }
+  box.innerHTML = '<div class="panel"><h3>Indefinite leave</h3>' + body + '</div>';
+  if($("hd-limit")) hdLimit();
+}
+function hdShow(which){
+  ["hd-start","hd-back","hd-end"].forEach(k => { const el = $(k); if(el) el.classList.toggle("hidden", k !== "hd-" + which || !el.classList.contains("hidden")); });
+}
+function hdLimit(){ const f = $("hd-from").value; $("hd-limit").textContent = f ? hdD(hdAddMonths(f)) : "—"; }
+async function hdStart(){
+  const from = $("hd-from").value, why = $("hd-why").value.trim();
+  if(!from){ msg("hd-msg", "err", "Choose the start date", ""); return; }
+  if(!why){ msg("hd-msg", "err", "Give the reason", "It is kept on their record."); return; }
+  if(!confirm("Put " + P.full_name + " on indefinite leave from " + hdD(from) + "? Their account will be on hold from that day.")) return;
+  btn("hd-start-btn", true, "Saving");
+  const { error } = await db.rpc("admin_start_hold", { p_staff: P.id, p_from: from, p_reason: why });
+  btn("hd-start-btn", false, "Put on indefinite leave");
+  if(error){ msg("hd-msg", "err", "Not done", error.message); return; }
+  toast(P.full_name + " is on indefinite leave from " + hdD(from) + ".");
+  pHold(P.id); pLeave(P.id); adHolds();
+}
+async function hdBack(){
+  const on = $("hd-back-on").value;
+  if(!on){ msg("hd-msg", "err", "Choose the first day back", ""); return; }
+  if(!confirm("Welcome " + P.full_name + " back from " + hdD(on) + "? Their account opens again that day.")) return;
+  btn("hd-back-btn", true, "Saving");
+  const { error } = await db.rpc("admin_end_hold", { p_staff: P.id, p_outcome: "returned", p_on: on, p_note: $("hd-back-note").value.trim() || null });
+  btn("hd-back-btn", false, "Confirm the return");
+  if(error){ msg("hd-msg", "err", "Not done", error.message); return; }
+  toast("Done. " + P.full_name + " is back from " + hdD(on) + ".");
+  pHold(P.id); pLeave(P.id); adHolds();
+}
+async function hdEnd(){
+  const on = $("hd-end-on").value, why = $("hd-end-why").value;
+  if(!on){ msg("hd-msg", "err", "Choose the last day", ""); return; }
+  if(!confirm("End " + P.full_name + "'s employment from " + hdD(on) + "? Reason: " + why + ". This marks them as exited.")) return;
+  btn("hd-end-btn", true, "Saving");
+  const { error } = await db.rpc("admin_end_hold", { p_staff: P.id, p_outcome: "employment_ended", p_on: on, p_note: why });
+  btn("hd-end-btn", false, "End employment");
+  if(error){ msg("hd-msg", "err", "Not done", error.message); return; }
+  toast("Employment ended. Send the exit letter from the Employment panel.");
+  openPerson(P.id);
+}
+// Admin home: who is on indefinite leave, and who has asked to come back
+async function adHolds(){
+  const box = $("ad-holds"); if(!box) return;
+  const { data, error } = await db.rpc("admin_holds");
+  if(error){ box.innerHTML = ""; return; }
+  const open = (data || []).filter(r => r.open);
+  if(!open.length){ box.innerHTML = ""; return; }
+  box.innerHTML = '<div class="panel"><h3>Indefinite leave</h3><div class="ps">Coming back depends on a position being available. It cannot run beyond six months.</div>' +
+    open.map(r => '<div class="hd-hub-row"><span><b>' + esc(r.staff_name) + '</b>' +
+      '<small>Since ' + hdD(r.starts_on) + ' · limit ' + hdD(r.limit_on) + (r.limit_passed ? "" : " (" + r.days_left + " days left)") + '</small></span>' +
+      '<span>' + (r.limit_passed ? '<span class="hd-pill red">Limit reached: decide</span>'
+        : r.request_at ? '<span class="hd-pill green">Asked to come back from ' + hdD(r.request_from) + '</span>'
+        : '<span class="hd-pill">On hold</span>') +
+      ' <button style="margin-left:8px;font-size:12px;padding:4px 10px" onclick="openPerson(\'' + r.staff_id + '\')">Open</button></span></div>').join("") +
+  '</div>';
+}
+window.hdShow = hdShow; window.hdLimit = hdLimit; window.hdStart = hdStart; window.hdBack = hdBack; window.hdEnd = hdEnd;
 
 // staff loans waiting for the CEO or COO, on the Admin home
 window.adLoanDecide = adLoanDecide;
